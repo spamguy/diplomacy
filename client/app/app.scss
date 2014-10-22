@@ -1,0 +1,118 @@
+@font-face {
+	font-family: 'CarbonType';
+		src: url('/assets/fonts/carbontype_regular_macroman/carbontype-webfont.woff') format('woff'), // standards
+		//url('#{$src}.ttf') format('truetype'), // Safari, Android, iOS
+		url('/assets/fonts/carbontype_regular_macroman/carbontype-webfont.svg') format('svg'); // legacy iOS
+}
+
+$icon-font-path: "/lib/bootstrap-sass/assets/fonts/bootstrap";
+$headings-font-family: 'CarbonType';
+$fa-font-path: '/lib/font-awesome/fonts';
+
+@import 'bootstrap-sass/assets/stylesheets/bootstrap';
+@import 'font-awesome/scss/font-awesome';
+
+/**
+ * App-wide Styles
+ */
+
+body
+{
+	margin-top: 60px;
+}
+
+// Component styles are injected through grunt
+// injector
+@import 'games/games.scss';
+@import 'games/view/view.scss';
+@import 'main/main.scss';
+// endinjector
+
+// via http://www.minimit.com/articles/solutions-tutorials/bootstrap-3-responsive-columns-of-same-height
+/* vertical alignment styles */
+.col-top {
+    vertical-align:top;
+}
+.col-middle {
+    vertical-align:middle;
+}
+.col-bottom {
+    vertical-align:bottom;
+}
+
+/* fix firefox responsive images */
+.img-responsive {
+    width: 100%
+}
+
+/* columns of same height styles */
+.container-xs-height {
+    display:table;
+    padding-left:0px;
+    padding-right:0px;
+}
+.row-xs-height {
+    display:table-row;
+}
+.col-xs-height {
+    display:table-cell;
+    float:none;
+}
+@media (min-width: 768px) {
+    .container-sm-height {
+        display:table;
+        padding-left:0px;
+        padding-right:0px;
+    }
+    .row-sm-height {
+        display:table-row;
+    }
+    .col-sm-height {
+        display:table-cell;
+        float:none;
+    }
+}
+@media (min-width: 992px) {
+    .container-md-height {
+        display:table;
+        padding-left:0px;
+        padding-right:0px;
+    }
+    .row-md-height {
+        display:table-row;
+    }
+    .col-md-height {
+        display:table-cell;
+        float:none;
+    }
+}
+@media (min-width: 1200px) {
+    .container-lg-height {
+        display:table;
+        padding-left:0px;
+        padding-right:0px;
+    }
+    .row-lg-height {
+        display:table-row;
+    }
+    .col-lg-height {
+        display:table-cell;
+        float:none;
+    }
+}
+
+// mixins
+%vertical-align {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+// consistent validation error appearance
+form .CustomValidationError
+{
+	color: red;
+	padding: 10px;
+}

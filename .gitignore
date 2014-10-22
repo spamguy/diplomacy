@@ -1,0 +1,13 @@
+node_modules
+public
+.tmp
+.sass-cache
+.idea
+client/bower_components
+dist
+/server/config/local.env.js
+/client/temp
+config.json
+local.env.sample.js
+/karma.conf.js
+datasources.json

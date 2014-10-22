@@ -1,0 +1,16 @@
+<div id="usernameFormGroup" class="form-group">
+	<span class="help-block">Let's start with choosing a username under which you sign in.</span>
+	
+	<input id="username" name="username" class="form-control input-lg" type="text" ng-model="user.username"
+		ng-class="{'has-error':!signupForm.username.$valid}"
+		sg-valid-username
+		validation-field-required="true"
+	/>
+	<span data-ng-show="signupForm.username.$error.unique" class="CustomValidationError">Username already exists.</span>
+</div>
+
+<div class="form-group">
+	<button ui-sref="main.signup.password" data-ng-disabled="signupForm.$invalid">
+		<i class="fa fa-arrow-circle-o-right fa-3x"></i>
+	</button>
+</div>

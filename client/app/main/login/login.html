@@ -1,0 +1,17 @@
+<div class="container" ng-controller="LoginController">
+	<form name="loginForm" ng-submit="login()">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="form-group">
+					<input type="text" name="username" class="form-control input-lg" ng-model="user.username">
+					<input type="password" name="password" class="form-control input-lg" ng-model="user.password">
+					
+				</div>
+				
+				<div class="form-group">
+					<button type="submit" data-ng-disabled="loginForm.$invalid">Submit</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
