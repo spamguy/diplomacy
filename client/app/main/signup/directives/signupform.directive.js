@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('signupform.directives', ['diplomacy'])
-	.directive('sgValidUsername', function($http, userService) {
+	.directive('sgValidUsername', ['$timeout', 'userService', function($timeout, userService) {
 		var waitTimer;
 
 		return {
@@ -12,10 +12,11 @@ angular.module('signupform.directives', ['diplomacy'])
 				 * Attach event to username field:
 				 * If it looks like user is done typing (blur/keyup), wait one second before querying DB.
 				 */
-				element.on('blur keyup', function(e) {
+				var promise;
+				element.on('blur keyup', function(e) {$timeout.cancel(promise);
 					if (e.target.value) {
-						clearInterval(waitTimer);
-						waitTimer = setTimeout(function() {
+						$timeout.cancel(promise);
+						promise = $timeout(function() {
 							userService.checkIfUserExists(e.target.value, function(data) {
 								ctrl.$setValidity('unique', !data.exists);
 							});
@@ -24,7 +25,7 @@ angular.module('signupform.directives', ['diplomacy'])
 				});
 			}
 		};
-	});
+	}]);
 	
 //	.directive('sgValidPassword', function() {
 //		return {
