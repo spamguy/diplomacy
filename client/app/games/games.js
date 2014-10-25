@@ -1,6 +1,8 @@
 'use strict';
 
-angular.module('diplomacy')
+angular.module('games', [
+	'ui.router'
+])
   .config(function ($stateProvider) {
     $stateProvider
 		.state('games', {

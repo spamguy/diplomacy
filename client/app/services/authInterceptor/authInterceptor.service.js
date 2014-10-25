@@ -1,7 +1,7 @@
 'use strict';
 
 // Courtesy https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/
-angular.module('diplomacy')
+angular.module('authInterceptor', [])
 	.factory('authInterceptor', function ($rootScope, $q, $window) {
 		return {
     		request: function (config) {

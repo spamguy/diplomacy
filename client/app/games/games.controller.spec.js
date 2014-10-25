@@ -3,7 +3,7 @@
 describe('Controller: GamesController', function () {
 
   // load the controller's module
-  beforeEach(module('diplomacy'));
+  beforeEach(module('games'));
 
   var GamesController, scope;
 
@@ -14,8 +14,4 @@ describe('Controller: GamesController', function () {
       $scope: scope
     });
   }));
-
-  it('should ...', function () {
-    expect(1).toEqual(1);
-  });
 });

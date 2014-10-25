@@ -2,7 +2,7 @@
 
 describe('Service: authInterceptor', function () {
     // load the service's module
-    beforeEach(module('diplomacy'));
+    beforeEach(module('authInterceptor'));
 
     // instantiate service
     var authInterceptor;

@@ -4,7 +4,8 @@ angular.module('diplomacy.main', [
 	'ui.router',
 	'directives.customvalidation.customValidationTypes',
 	'signupform.directives',
-	'ngAnimate'
+	'ngAnimate',
+	'userService'
 ])
   .config(function ($stateProvider) {
     $stateProvider

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('diplomacy')
+angular.module('games')
   .config(function ($stateProvider) {
     $stateProvider
       .state('games.view', {

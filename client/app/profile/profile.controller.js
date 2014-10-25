@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('diplomacyApp')
-  .controller('ProfileCtrl', function ($scope) {
+angular.module('profile')
+  .controller('ProfileController', function ($scope) {
     $scope.message = 'Hello';
   });

@@ -1,7 +1,7 @@
 // jshint ignore: start
 
-angular.module('diplomacy')
-	.factory('d3', [function() {
+angular.module('d3Service', [])
+	.factory('d3Service', [function() {
 		var d3;
 
 		// adapted from https://github.com/EpiphanyMachine/d3AngularIntegration/blob/master/app/scripts/services/d3.js

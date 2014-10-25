@@ -6,7 +6,7 @@ describe('userService', function () {
 		usernameExistsHandler,
 		userService;
 		
-	beforeEach(module('diplomacy'));
+	beforeEach(module('userService'));
 	
 	beforeEach(function() {
 		inject(function ($injector, $rootScope, $compile, $q, $timeout) {

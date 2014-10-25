@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('signupform.directives', ['diplomacy'])
+angular.module('signupform.directives', ['userService'])
 	.directive('sgValidUsername', ['$timeout', 'userService', function($timeout, userService) {
 		var waitTimer;
 

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('games.directives', [])
-	.controller('MapController', ['$scope', 'd3', function($scope, d3) {
+	.controller('MapController', ['$scope', 'd3Service', function($scope, d3Service) {
 		var self = this,
 			scope = $scope.$new();
 

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('diplomacy')
+angular.module('userService', [])
 	.factory('userService', function($http, $window) {
 		return {
 			checkIfUserExists: function(username, callback) {

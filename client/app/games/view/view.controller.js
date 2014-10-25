@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('diplomacy')
+angular.module('games')
   .controller('ViewCtrl', function ($scope) {
     $scope.message = 'Hello';
   });
