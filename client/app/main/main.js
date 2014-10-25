@@ -15,7 +15,6 @@ angular.module('diplomacy.main', [
 	})
 	.state('main.home', {
 	  url: '/',
-	  templateUrl: 'app/main/main.html',
-	  controller: 'MainController'
+	  templateUrl: 'app/main/main.html'
 	});
   });
