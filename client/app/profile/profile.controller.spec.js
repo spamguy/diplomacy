@@ -5,17 +5,19 @@ describe('Controller: ProfileCtrl', function () {
   // load the controller's module
   beforeEach(module('profile'));
 
-  var ProfileCtrl, scope;
+  var ProfileController, scope;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    ProfileCtrl = $controller('ProfileController', {
+    ProfileController = $controller('ProfileController', {
       $scope: scope
     });
   }));
 
-  it('should ...', function () {
-    expect(1).toEqual(1);
+  it('defines two tabs', function () {
+    expect(scope.tabs).toBeDefined();
+
+    expect(scope.tabs).length.toEqual(2);
   });
 });

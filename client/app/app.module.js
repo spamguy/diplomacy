@@ -3,8 +3,11 @@
 angular.module('diplomacy', [
 	'ui.router',
 	'ui.bootstrap',
-	'games',
+	'authInterceptor',
+	'd3Service',
+	'userService',
 	'games.directives',
+	'games',
 	'diplomacy.main',
 	'authInterceptor',
 	'profile'

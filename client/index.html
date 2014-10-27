@@ -1,4 +1,4 @@
-<!doctype html >
+<!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -72,25 +72,27 @@
     <!-- endbuild -->
 
         <!-- build:js({.tmp,client}) app/app.js -->
-        <script src="app/app.js"></script>
-          <!-- injector:js --> 
-                   <script src="app/app.controller.js"></script>
+        <script src="app/app.module.js"></script>
+          <!-- injector:js -->
+        <script src="app/services/d3Service/d3Service.service.js"></script>
+        <script src="app/services/userService/userService.service.js"></script>
+        <script src="app/services/authInterceptor/authInterceptor.service.js"></script>
+
+        <script src="app/games/games.module.js"></script>
+        <script src="app/main/main.module.js"></script>
+        <script src="app/profile/profile.module.js"></script>
+
+        <script src="app/app.controller.js"></script>
           <script src="app/games/directives/games.directives.js"></script>
-          <script src="app/games/games.js"></script>
           <script src="app/games/games.controller.js"></script>
           <script src="app/games/view/view.controller.js"></script>
-          <script src="app/games/view/view.js"></script>
+          <script src="app/games/view/view.state.js"></script>
           <script src="app/main/login/login.controller.js"></script>
-          <script src="app/main/login/login.js"></script>
-          <script src="app/main/main.js"></script>
+          <script src="app/main/login/login.state.js"></script>
           <script src="app/main/signup/directives/signupform.directive.js"></script>
           <script src="app/main/signup/signup.controller.js"></script>
-          <script src="app/main/signup/signup.js"></script>
-          <script src="app/profile/profile.js"></script>
+          <script src="app/main/signup/signup.state.js"></script>
           <script src="app/profile/profile.controller.js"></script>
-          <script src="app/services/d3Service/d3Service.service.js"></script>
-		  <script src="app/services/userService/userService.js"></script>
-      <script src="app/services/authInterceptor/authInterceptor.service.js"></script>
           <!-- endinjector -->
         <!-- endbuild -->
 </body>

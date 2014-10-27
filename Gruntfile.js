@@ -225,27 +225,8 @@ module.exports = function (grunt) {
       }
     },
     karma: {
-      options: {
-        frameworks: ['jasmine'],
-        files: [  //this files data is also updated in the watch handler, if updated change there too
-			'node_modules/angular/angular.js',
-			'node_modules/angular-mocks/angular-mocks.js',
-			'node_modules/angular-ui-router/release/angular-ui-router.js',
-			'node_modules/angular-bootstrap/ui-bootstrap.js',
-			'node_modules/angular-ui-form-validation/dist/angular-ui-form-validation.js',
-			'node_modules/angular-animate/angular-animate.js',
-			'client/app/**/*.js'
-        ],
-        //logLevel:'ERROR',
-        reporters:['mocha'],
-        autoWatch: false, //watching is handled by grunt-contrib-watch
-        singleRun: true
-      },
-      all_tests: {
-        browsers: ['PhantomJS',/*, '/Internet/Google\ Chrome.app/Contents/MacOS/Google\ Chrome',*/'/Internet/Firefox.app/Contents/MacOS/firefox-bin']
-      },
-      during_watch: {
-        browsers: ['PhantomJS']
+      unit: {
+        configFile: 'karma.conf.js'
       }
     }
   });

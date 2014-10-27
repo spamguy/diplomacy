@@ -26,35 +26,3 @@ angular.module('signupform.directives', ['userService'])
 			}
 		};
 	}]);
-	
-//	.directive('sgValidPassword', function() {
-//		return {
-//			restrict: 'A',
-//			require: 'ngModel',
-//			link: function(scope, element, attrs, ctrl) {
-//				element.on('blur', function(e) {
-//					if (e.target.value.trim() === '') {
-//						ctrl.$setValidity('whitespace', false);
-//					}
-//					else {
-//						ctrl.$setValidity('whitespace', true);
-//						
-//						if (e.target.value.length < 5)
-//							ctrl.$setValidity('length', false);
-//					}
-//				});
-//			}
-//		};
-//	})
-//	
-//	.directive('sgPasswordMatch', function() {
-//		return {
-//			restrict: 'A',
-//			require: 'ngModel',
-//			link: function(scope, element, attrs, ctrl) {
-//				element.on('blur', function(e) {
-//					ctrl.$setValidity('mismatch', false);//e.target.value === $('#password1').val());
-//				});
-//			}
-//		};
-//	});
