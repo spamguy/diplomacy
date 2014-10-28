@@ -1,3 +1,5 @@
-<div class="col-md-12">
-This is the profile view.
-</div>
+<tabset>
+	<tab ng-repeat="t in tabs" heading="{{t.heading}}" select="go(t.route)" active="t.active"></tab>
+</tabset>
+
+<ui-view />

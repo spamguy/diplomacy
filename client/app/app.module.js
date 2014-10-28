@@ -6,7 +6,7 @@ angular.module('diplomacy', [
 	'authInterceptor',
 	'd3Service',
 	'userService',
-	'games.directives',
+	'games.directive',
 	'games',
 	'diplomacy.main',
 	'authInterceptor',

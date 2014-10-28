@@ -1,9 +1,11 @@
 'use strict';
 
 angular.module('profile', [
-	'ui.router'
+	'ui.router',
+  'ui.bootstrap'
 ])
-  .config(function ($stateProvider) {
+  .config(function ($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise("/profile/playing");
     $stateProvider
       .state('profile', {
         url: '/profile',
@@ -12,5 +14,13 @@ angular.module('profile', [
         data: {
         	restricted: true
         }
+      })
+      .state('profile.playing', {
+        url: '/playing',
+        templateUrl: 'templates/profile/playing.tmpl.html'
+      })
+      .state('profile.gming', {
+        url: '/gming',
+        templateUrl: 'templates/profile/gming.tmpl.html'
       });
   });
