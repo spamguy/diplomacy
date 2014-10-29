@@ -34,11 +34,6 @@ app.use('/api', expressJwt({ secret: seekrits.SESSION_SECRET }));
 app.use('/lib', express.static(path.join(root, '../node_modules')));
 
 app.use(express.static(root));
-// app.use(express.static(path.join(root, 'temp')));
-// app.route('/assets')
-// 	.get(function(req, res) {
-// 		res.sendfile(path.join(root, 'assets', req.path));
-// 	});
 
 // web routes: all other routes should redirect to the index.html for client-side routing
 app.route('/*')

@@ -2,7 +2,8 @@
 
 angular.module('profile', [
 	'ui.router',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'gameService'
 ])
   .config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise("/profile/playing");

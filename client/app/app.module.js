@@ -6,10 +6,10 @@ angular.module('diplomacy', [
 	'authInterceptor',
 	'd3Service',
 	'userService',
+		'gameService',
 	'games.directive',
 	'games',
 	'diplomacy.main',
-	'authInterceptor',
 	'profile'
 ])
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {

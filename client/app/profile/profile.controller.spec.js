@@ -13,11 +13,13 @@ describe('Controller: ProfileCtrl', function () {
     ProfileController = $controller('ProfileController', {
       $scope: scope
     });
+
+    scope.$digest();
   }));
 
   it('defines two tabs', function () {
     expect(scope.tabs).toBeDefined();
 
-    expect(scope.tabs).length.toEqual(2);
+    expect(scope.tabs.length).toEqual(2);
   });
 });
