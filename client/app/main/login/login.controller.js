@@ -12,6 +12,8 @@ angular.module('diplomacy')
 						.success(function(data, status) {
 							$window.sessionStorage.token = data.token;
 
+							$scope.setCurrentUser(data.id);
+
 							// redirect to profile
 							$state.go('profile');
 						})

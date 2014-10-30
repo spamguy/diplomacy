@@ -6,6 +6,7 @@ angular.module('profile')
 			{ 'heading': 'Games I\'m Playing', route: 'profile.playing', active: true },
 			{ 'heading': 'Games I\'m Mastering', route: 'profile.gming', active: false }
 		];
+		$scope.playing = $scope.gming = [];
 
 		$scope.$on("$stateChangeSuccess", function() {
 			$scope.tabs.forEach(function(tab) {

@@ -25,18 +25,9 @@ module.exports = (function() {
 			try {
 				require('../models/user').User
 					.findOne({ 'username': username }, function(err, maybeUser) {
-				// find user with matching username
-				// models.User
-				// 	.find({
-				// 		where: { username: username }
-				// 	})
-				// 	.complete(function(err, maybeUser) {
 						// if no results, stop trying
 						if (!maybeUser)
 							return done(null, false, { error: 'Invalid username and/or password.' });
-
-						console.log('salt = ' + maybeUser.passwordsalt);
-						console.log('hash = ' + maybeUser.password);
 						
 						// if a match was found, test against the stored hash
 						pbkdf2.verify(maybeUser.passwordsalt, maybeUser.password, password, function(err, match) {
@@ -64,7 +55,7 @@ module.exports = (function() {
 			if (!user) { return res.json(401, { error: 'Incorrect username and/or password.' }); }
 			
 			token = jwt.sign(user, seekrits.SESSION_SECRET, { expiresInMinutes: 60 * 2 });
-			res.json({ token: token });
+			res.json({ id: user._id, token: token });
 		})(req, res, next);
 	});
 	
@@ -79,14 +70,6 @@ module.exports = (function() {
 			});
 
 			user.save();
-			// var user = models.User
-			// 	.build({
-			// 		username: req.body.username,
-			// 		password: hash,
-			// 		passwordsalt: salt,
-			// 		email: req.body.email
-			// 	});
-			// user.save();
 		});
 	});
 		
