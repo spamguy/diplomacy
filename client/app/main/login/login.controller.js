@@ -26,8 +26,4 @@ angular.module('diplomacy')
 				}
 			}
 		});
-		
-		$scope.login = function() {
-			$scope.user.login();
-		};
   });

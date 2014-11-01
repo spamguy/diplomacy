@@ -29,6 +29,7 @@ app.use('/auth', require('./api/auth'));
 // API routes
 app.use('/publicapi', require('./api/public'));
 app.use('/api', expressJwt({ secret: seekrits.SESSION_SECRET }));
+app.use('/api', require('./api/private'));
 
 // node module content
 app.use('/lib', express.static(path.join(root, '../node_modules')));
