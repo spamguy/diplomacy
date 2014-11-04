@@ -55,7 +55,7 @@ module.exports = (function() {
 			if (!user) { return res.json(401, { error: 'Incorrect username and/or password.' }); }
 			
 			token = jwt.sign(user, seekrits.SESSION_SECRET, { expiresInMinutes: 60 * 2 });
-			res.json({ id: user._id, token: token });
+			res.json({ id: user._id, token: token, refreshtoken: user.refreshtoken });
 		})(req, res, next);
 	});
 	
@@ -66,6 +66,7 @@ module.exports = (function() {
 				username: req.body.username,
 				password: hash,
 				passwordsalt: salt,
+				refreshtoken: pbkdf2.random(10).toString('hex'),
 				email: req.body.email
 			});
 

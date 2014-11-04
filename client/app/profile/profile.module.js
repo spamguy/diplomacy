@@ -3,9 +3,12 @@
 angular.module('profile', [
 	'ui.router',
   'ui.bootstrap',
+  'restangular',
   'gameService'
 ])
-  .config(function ($stateProvider, $urlRouterProvider) {
+  .config(function ($stateProvider, $urlRouterProvider, RestangularProvider) {
+    RestangularProvider.setBaseUrl('/api');
+
     $urlRouterProvider.otherwise("/profile/playing");
     $stateProvider
       .state('profile', {

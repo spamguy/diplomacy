@@ -3,17 +3,37 @@
 angular.module('diplomacy', [
 	'ui.router',
 	'ui.bootstrap',
-	'authInterceptor',
+	'LocalStorageModule',
+	'angular-jwt',
 	'd3Service',
 	'userService',
-		'gameService',
+	'gameService',
 	'games.directive',
 	'games',
 	'diplomacy.main',
 	'profile'
 ])
-.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
-	$httpProvider.interceptors.push('authInterceptor');
+.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider) {
+	localStorageServiceProvider.setPrefix('diplomacy');
+
+	jwtInterceptorProvider.tokenGetter = function(jwtHelper, $http, userService) {
+		var oldToken = userService.getToken();
+
+		if (oldToken && jwtHelper.isTokenExpired(oldToken)) {
+			return $http({
+				url: '/auth/refresh',
+				refresh_token: userService.getRefreshToken(),
+				id: userService.getCurrentUser()
+			})
+			.then(function(newToken) {
+				userService.setToken(newToken);
+			});
+		}
+		else {
+			return oldToken;	
+		}
+	};
+	$httpProvider.interceptors.push('jwtInterceptor');
 	
 	$urlRouterProvider
 		.otherwise('/');

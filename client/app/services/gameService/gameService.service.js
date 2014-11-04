@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('gameService', [])
-	.factory('gameService', function($http, $window) {
+angular.module('gameService', ['userService'])
+	.factory('gameService', function($http, userService) {
 		return {
-			getAllForCurrentUser: function(id, callback) {
-				$http.get('/api/users/' + id + '/games')
+			getAllForCurrentUser: function(callback) {
+				$http.get('/api/users/' + userService.getCurrentUser() + '/games')
 					.success(callback);
 			}
 		};

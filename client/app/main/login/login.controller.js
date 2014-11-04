@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('diplomacy')
-	.controller('LoginController', function ($scope, $http, $window, $state) {
+	.controller('LoginController', function ($scope, $http, $window, $state, userService) {
 		angular.extend($scope, {
 			user: {
 				username: null,
@@ -10,9 +10,9 @@ angular.module('diplomacy')
 				login: function() {
 					$http.post('/auth/login', this)
 						.success(function(data, status) {
-							$window.sessionStorage.token = data.token;
-
-							$scope.setCurrentUser(data.id);
+							userService.setCurrentUser(data.id);
+							userService.setToken(data.token);
+							userService.setRefreshToken(data.refreshtoken);
 
 							// redirect to profile
 							$state.go('profile');

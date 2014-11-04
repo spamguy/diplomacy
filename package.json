@@ -7,6 +7,8 @@
     "angular": "^1.3.0",
     "angular-animate": "^1.3.0",
     "angular-bootstrap": "^0.11.0",
+    "angular-jwt": "0.0.4",
+    "angular-local-storage": "^0.1.4",
     "angular-ui-form-validation": "^1.2.12",
     "angular-ui-router": "^0.2.11",
     "body-parser": "~1.5.0",
@@ -30,6 +32,7 @@
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "pg": "^3.5.0",
+    "restangular": "^1.4.0",
     "sequelize": "^2.0.0-rc1",
     "sequelize-cli": "^0.3.3",
     "serve-favicon": "^2.0.1"
