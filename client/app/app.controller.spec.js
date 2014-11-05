@@ -13,8 +13,4 @@ describe('AppController', function () {
 
 		scope.$digest();
 	}));
-
-	it('is null when not logged in', function() {
-		expect(scope.currentUser).toBeNull();
-	});
 });

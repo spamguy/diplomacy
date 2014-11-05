@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('gameService', ['userService'])
-	.factory('gameService', function($http, userService) {
+angular.module('gameService', ['userService', 'restangular'])
+	.factory('gameService', function($http, userService, Restangular) {
 		return {
 			getAllForCurrentUser: function(callback) {
-				$http.get('/api/users/' + userService.getCurrentUser() + '/games')
-					.success(callback);
+				Restangular.one('users', userService.getCurrentUser()).getList('games')
+					.then(callback);
 			}
 		};
 	}

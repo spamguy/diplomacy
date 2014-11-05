@@ -3,7 +3,6 @@
 describe('userService', function () {
 	var $scope,
 		$httpBackend, // $http mock
-		usernameExistsHandler,
 		userService;
 		
 	beforeEach(module('userService'));
