@@ -11,13 +11,15 @@ angular.module('signupform.directives', ['userService'])
 				/*
 				 * Attach event to username field:
 				 * If it looks like user is done typing (blur/keyup), wait one second before querying DB.
+				 *
+				 * TODO: Decouple service from directive.
 				 */
 				var promise;
-				element.on('blur keyup', function(e) {$timeout.cancel(promise);
+				element.on('blur keyup', function(e) {
+					$timeout.cancel(promise);
 					if (e.target.value) {
-						$timeout.cancel(promise);
 						promise = $timeout(function() {
-							userService.checkIfUserExists(e.target.value, function(data) {
+							userService.userExists(e.target.value).then(function(data) {
 								ctrl.$setValidity('unique', !data.exists);
 							});
 						}, 1000);

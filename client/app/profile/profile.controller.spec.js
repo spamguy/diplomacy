@@ -31,7 +31,7 @@ describe('ProfileController', function () {
     }));
 
     afterEach(function() {
-        httpBackend.flush(); // You'll want to add this to confirm things are working
+        httpBackend.flush();
         httpBackend.verifyNoOutstandingExpectation();
         httpBackend.verifyNoOutstandingRequest();
     });

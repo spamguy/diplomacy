@@ -8,7 +8,6 @@ angular.module('diplomacy', [
 	'd3Service',
 	'userService',
 	'gameService',
-	'games.directive',
 	'games',
 	'diplomacy.main',
 	'profile'

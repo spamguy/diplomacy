@@ -1,11 +1,15 @@
 'use strict';
 
-angular.module('userService', ['LocalStorageModule'])
-	.factory('userService', function($http, $window, localStorageService) {
+angular.module('userService', ['LocalStorageModule', 'restangular'])
+	.factory('userService', function(localStorageService, Restangular) {
+		var userExistsPromise;
+
 		return {
-			checkIfUserExists: function(username, callback) {
-				$http.get('/publicapi/users/' + username + '/exists')
-					.success(callback);
+			userExists: function(username) {
+				Restangular.setBaseUrl('/publicapi');
+				if (!userExistsPromise)
+					userExistsPromise = Restangular.one('users', username).customGET('exists');
+				return userExistsPromise;
 			},
 
 			isAuthenticated: function() {

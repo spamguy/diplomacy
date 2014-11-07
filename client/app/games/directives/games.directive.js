@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('games.directive', [
+angular.module('games.directives', [
 	'd3Service'
 ])
 .controller('MapController', ['$scope', 'd3Service', function($scope, d3Service) {

@@ -8,8 +8,8 @@ angular.module('profile')
 		];
 
 		$scope.playing = [];
-		gameService.getAllForCurrentUser(function(games) {
-			$scope.playing = games.plain();
+		gameService.getAllForCurrentUser().then(function(games) {
+			$scope.playing = games;
 		});
 
 		// $scope.$on("$stateChangeSuccess", function() {

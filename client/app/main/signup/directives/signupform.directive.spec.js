@@ -4,7 +4,9 @@ describe('SignupForm directives', function () {
 	var $timeout,
 		scope,
 		userService,
-		el;
+		el,
+		q,
+		deferred;
 		
 	beforeEach(function() {
 		module('signupform.directives');
@@ -15,10 +17,13 @@ describe('SignupForm directives', function () {
 			$timeout = _$timeout_;
 			scope = $rootScope.$new();
             el = $compile('<input id="username" type="text" name="username" ng-model="user.username" sg-valid-username />')(scope);
+            q = $q;
+            deferred = q.defer();
+            deferred.resolve({ exists: true });
 			
 			userService = $injector.get('userService');
             scope.user = { username: 'test_username' };
-			spyOn(userService, 'checkIfUserExists').and.returnValue({ exists: true });
+			spyOn(userService, 'userExists').and.returnValue(deferred.promise);
 		});
 	});
    
@@ -29,7 +34,7 @@ describe('SignupForm directives', function () {
 		el.triggerHandler('blur');
 		$timeout.flush();
 		
-		expect(userService.checkIfUserExists).toHaveBeenCalled();
+		expect(userService.userExists).toHaveBeenCalled();
    });
    
 	it('Fires on arbitrary keyup', function() {
@@ -42,7 +47,7 @@ describe('SignupForm directives', function () {
 			el.triggerHandler('keyup', keyArray[i]);
 			$timeout.flush();
 
-			expect(userService.checkIfUserExists).toHaveBeenCalled();
+			expect(userService.userExists).toHaveBeenCalled();
 		}
 	});
 	

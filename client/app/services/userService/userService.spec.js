@@ -22,7 +22,7 @@ describe('userService', function () {
    });
    
    it('should return JSON with the property "exists"', function() {
-	    userService.checkIfUserExists('sample_username', function(data) {
+	    userService.userExists('sample_username').then(function(data) {
 		    expect(data.exists).toBeDefined();
 	    });
 		$httpBackend.flush();
