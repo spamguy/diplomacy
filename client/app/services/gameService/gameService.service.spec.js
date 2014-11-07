@@ -8,6 +8,7 @@ describe('gameService', function () {
     // load the service's module
     beforeEach(module('gameService'));
 
+    // TODO: Restangularise this
     beforeEach(function() {
         inject(function ($injector, $rootScope, $compile, $q, $timeout) {
             scope = $rootScope;

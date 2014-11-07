@@ -5,7 +5,8 @@ angular.module('diplomacy.main', [
 	'directives.customvalidation.customValidationTypes',
 	'signupform.directives',
 	'ngAnimate',
-	'userService'
+	'userService',
+	'gameService'
 ])
   .config(function ($stateProvider) {
     $stateProvider
@@ -16,6 +17,7 @@ angular.module('diplomacy.main', [
 	})
 	.state('main.home', {
 	  url: '/',
-	  templateUrl: 'app/main/main.html'
+	  templateUrl: 'app/main/home/home.html',
+	  controller: 'HomeController'
 	});
   });

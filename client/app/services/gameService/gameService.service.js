@@ -10,7 +10,11 @@ angular.module('gameService', ['userService', 'restangular'])
 				if (!getAllForCurrentUserPromise)
 					getAllForCurrentUserPromise = Restangular.one('users', userService.getCurrentUser()).getList('games');
 				return getAllForCurrentUserPromise;
-			}
+			},
+
+			getVariant: function(variantName) {
+				return null;
+			},
 		};
 	}
 );

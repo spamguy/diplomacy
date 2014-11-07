@@ -10,7 +10,8 @@ angular.module('diplomacy', [
 	'gameService',
 	'games',
 	'diplomacy.main',
-	'profile'
+	'profile',
+	'app.directives'
 ])
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider) {
 	localStorageServiceProvider.setPrefix('diplomacy');
