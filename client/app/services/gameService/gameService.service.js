@@ -12,9 +12,17 @@ angular.module('gameService', ['userService', 'restangular'])
 				return getAllForCurrentUserPromise;
 			},
 
+			// TODO: hook up to DB
 			getVariant: function(variantName) {
-				return null;
+				return { name: 'standard' };
 			},
+
+			// TODO: figure out constraints (not too early, not too late) and hook up to DB
+			getRandomStandardGame: function() {
+				return {
+
+				};
+			}
 		};
 	}
 );

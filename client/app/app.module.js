@@ -5,13 +5,13 @@ angular.module('diplomacy', [
 	'ui.bootstrap',
 	'LocalStorageModule',
 	'angular-jwt',
-	'd3Service',
+	'd3',
 	'userService',
 	'gameService',
 	'games',
 	'diplomacy.main',
 	'profile',
-	'app.directives'
+	'map.directives'
 ])
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider) {
 	localStorageServiceProvider.setPrefix('diplomacy');
