@@ -2,8 +2,10 @@ angular.module('map.directives', ['d3'])
     .directive('sgMap', ['d3Service', function(d3Service) {
         'use strict';
 
-        var clicked = function(d) {
+        var regionClicked = function(d) {
             console.log(d);
+
+            // TODO: Order input logic
         };
 
         return {
@@ -33,13 +35,11 @@ angular.module('map.directives', ['d3'])
                         .attr('width', 1152)
                         .attr('height', 965);
 
-                    if (scope.readonly) {
+                    if (scope.readonly && xml) {
                         svg.append(function() { return xml.documentElement.getElementById('MouseLayer'); })
                             .selectAll('path')
                             .attr('fill', 'transparent')
-                            .on('click', function() {
-                                // TODO: Order input logic here
-                            });
+                            .on('click', regionClicked);
                     }
                 });
             }

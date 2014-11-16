@@ -1,5 +1,5 @@
 <div class="tab-pane">
-	<div class="gameListing" ng-repeat="game in playing">
-		{{game.name}}
-	</div>
+    <div class="gameListing" ng-repeat="game in playing | gmStatus:false">
+        {{game.name}}
+    </div>
 </div>

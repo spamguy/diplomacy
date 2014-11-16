@@ -21,23 +21,23 @@
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-	
-	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
- 		<div class="container">
-			<div class="navbar-header">
-				<a class="navbar-brand" ui-sref="main.home">Diplomacy</a>
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"></button>
-			</div>
-			
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav">
-					<li><a ui-sref="games.view({ id: 1 })">Game</a></li>
-					<li><a ui-sref="main.login">Log In</a></li>
-					<li><a ui-sref="main.signup.username">Sign Up</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" ui-sref="main.home">Diplomacy</a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"></button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li ng-if="isAuthenticated"><a ui-sref="games.view({ id: 1 })">Game</a></li>
+                    <li><a ui-sref="main.login">Log In</a></li>
+                    <li><a ui-sref="main.signup.username">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <!-- Add your site or application content here -->
     <div ui-view=""></div>
@@ -60,17 +60,17 @@
       <script src="lib/jquery/dist/jquery.js"></script> <!-- Required for angular-ui-form-validation -->
       <script src="lib/lodash/dist/lodash.js"></script>
       <script src="lib/angular/angular.js"></script>
-	  <script src="lib/angular-animate/angular-animate.js"></script>
+      <script src="lib/angular-animate/angular-animate.js"></script>
       <script src="lib/restangular/dist/restangular.js"></script>
       <script src="lib/angular-local-storage/dist/angular-local-storage.js"></script>
       <script src="lib/angular-jwt/dist/angular-jwt.js"></script>
 <!--      <script src="node_modules/dist/angular-cookies/angular-cookies.js"></script>
       <script src="node_modules/dist/angular-sanitize/angular-sanitize.js"></script>-->
-	<script src="lib/angular-mocks/angular-mocks.js"></script>
+    <script src="lib/angular-mocks/angular-mocks.js"></script>
       <script src="lib/angular-bootstrap/ui-bootstrap.js"></script>
       <!--<script src="bower_components/lodash/dist/lodash.compat.js"></script>-->
       <script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
-	  <script src="lib/angular-ui-form-validation/dist/angular-ui-form-validation.js"></script>
+      <script src="lib/angular-ui-form-validation/dist/angular-ui-form-validation.js"></script>
       <!-- endbower -->
     <!-- endbuild -->
 
@@ -79,7 +79,7 @@
         <script src="app/services/d3Service/d3Service.service.js"></script>
         <script src="app/services/userService/userService.service.js"></script>
         <script src="app/services/gameService/gameService.service.js"></script>
-        
+
         <script src="app/app.module.js"></script>
 
         <script src="app/games/games.module.js"></script>
@@ -98,6 +98,7 @@
           <script src="app/main/signup/signup.controller.js"></script>
           <script src="app/main/signup/signup.state.js"></script>
           <script src="app/profile/profile.controller.js"></script>
+          <script src="app/profile/profile.filter.js"></script>
           <!-- endinjector -->
         <!-- endbuild -->
 </body>

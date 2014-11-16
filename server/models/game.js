@@ -1,12 +1,30 @@
-var mongoose = require('mongoose');
+var GameSchema;
+module.exports = function(id) {
+    'use strict';
 
-var GameSchema = new mongoose.Schema({
-	name: String,
-	variant_id: mongoose.Schema.Types.ObjectId
-});
+    var mongoose = require('mongoose');
 
-var Game = mongoose.model('Game', GameSchema);
+    if (!GameSchema) {
+        GameSchema = new mongoose.Schema({
+            name: String,
+            variant_id: mongoose.Schema.Types.ObjectId
+        });
+        GameSchema.virtual('isAdmin')
+            .get(function() {
+                for (var p = 0; p < this.length; p++) {
+                    if (p.power === '*' && p._id === id)
+                        return true;
+                }
 
-module.exports = {
-  Game: Game
+                // no admin found with id pairing
+                return false;
+            });
+        GameSchema.set('toJSON', { virtuals: true });
+    }
+
+    var Game = mongoose.model('Game', GameSchema);
+
+    return {
+      Game: Game
+    };
 };
