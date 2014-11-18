@@ -24,6 +24,10 @@ angular.module('userService', ['LocalStorageModule', 'restangular'])
 				localStorageService.set('token', token);
 			},
 
+			unsetToken: function() {
+				localStorageService.remove('token');
+			},
+
 			getRefreshToken: function() {
 				return localStorageService.get('refreshtoken');
 			},

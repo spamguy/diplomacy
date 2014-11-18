@@ -4,6 +4,7 @@ module.exports = (function() {
         'SALT_SIZE': 64,
         'KEY_LENGTH': 128
     };
+    var SESSION_LENGTH = 60 * 4;
 
     var express = require('express');
     var app = express();
@@ -59,7 +60,7 @@ module.exports = (function() {
                 id: user._id
             };
 
-            token = jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: 60 * 2 });
+            token = jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH });
             res.json({ id: user._id, token: token, refreshtoken: user.refreshtoken });
         })(req, res, next);
     });
@@ -78,6 +79,22 @@ module.exports = (function() {
             user.save();
         });
     });
+
+    // app.post('/refresh', function(req, res, next) {
+    //     var refreshToken = req.body.refreshtoken,
+    //         id = req.body.id;
+
+    //     return require('../models/user').User
+    //         .findOne({ '_id': id }, function(err, user) {
+    //             var safeUser = {
+    //                 username: user.username,
+    //                 id: user._id
+    //             };
+
+    //             var newToken = jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH });
+    //             res.send(newToken);
+    //         });
+    // });
 
     return app;
 }());

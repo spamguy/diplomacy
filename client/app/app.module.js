@@ -16,18 +16,13 @@ angular.module('diplomacy', [
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider) {
     localStorageServiceProvider.setPrefix('diplomacy');
 
-    jwtInterceptorProvider.tokenGetter = function(jwtHelper, $http, userService) {
+    jwtInterceptorProvider.tokenGetter = function(jwtHelper, $state, $http, userService) {
         var oldToken = userService.getToken();
 
         if (oldToken && jwtHelper.isTokenExpired(oldToken)) {
-            return $http({
-                url: '/auth/refresh',
-                refresh_token: userService.getRefreshToken(),
-                id: userService.getCurrentUser()
-            })
-            .then(function(newToken) {
-                userService.setToken(newToken);
-            });
+            console.log('Token is expired: ' + oldToken);
+            userService.unsetToken();
+            $state.go('main.home');
         }
         else {
             return oldToken;

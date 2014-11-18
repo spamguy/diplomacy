@@ -1,12 +1,3 @@
-@font-face {
-	font-family: 'CarbonType';
-		src: url('/assets/fonts/carbontype_regular_macroman/carbontype-webfont.woff') format('woff'), // standards
-		//url('#{$src}.ttf') format('truetype'), // Safari, Android, iOS
-		url('/assets/fonts/carbontype_regular_macroman/carbontype-webfont.svg') format('svg'); // legacy iOS
-}
-
-$icon-font-path: "/lib/bootstrap-sass/assets/fonts/bootstrap";
-$headings-font-family: 'CarbonType';
 $fa-font-path: '/lib/font-awesome/fonts';
 
 @import 'bootstrap-sass/assets/stylesheets/bootstrap';
