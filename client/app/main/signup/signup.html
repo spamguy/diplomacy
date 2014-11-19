@@ -1,56 +1,27 @@
-<div class="container" ng-controller="SignupController">
-	<div class="text-center">
-		<h2>Welcome!</h2>
+<div class="text-center">
+    <h2>Welcome!</h2>
 
-		<p>Glad to <del>stab</del> meet you. Before you can start playing, please set up an account for yourself.</p>
-	</div>
-	
-	<form id="signupForm" name="signupForm" ng-submit="processForm()">
-		<div class="row">
-			<div class="col-md-6 center-block">
-				<div id="form-views" ui-view />
-			</div>
-		</div>
-		<!-- <div class="row">
-			<div class="col-sm-4 col-sm-height">
-				<div id="usernameFormGroup" class="form-group" ng-class="{'has-error':!signupForm.username.$valid}">
-					<label class="control-label" for="username">Username</label>
-					<input id="username" name="username" class="form-control" type="text" ng-model="user.username" sg-valid-username validation-field-required="true" />
-				</div>
-			</div>
-			<div class="col-sm-4 col-sm-height col-middle errorContainer">
-				<span data-ng-show="signupForm.username.$error.unique">Username already exists.</span>
-				<span data-ng-show="signupForm.username.$error.whitespace">Username is required.</span>
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="col-sm-4 col-sm-height">
-				<div class="form-group" ng-class="{error:!signupForm.password1.$valid}">
-					<label class="control-label" for="password1">Password</label>
-					<input id="password1" name="password1" class="form-control" type="password" ng-model="user.password" sg-valid-password />
-				</div>
-			</div>
-			<div class="col-sm-4 col-sm-height col-middle errorContainer">
-				<span data-ng-show="signupForm.password1.$error.whitespace">Password is required.</span>
-				<span data-ng-show="signupForm.password1.$error.length">Password must be longer than five characters.</span>
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="col-sm-4 col-sm-height">
-				<div class="form-group" ng-class="{error:!signupForm.password2.$valid}">
-					<label class="control-label" for="password2">Confirm Password</label>
-					<input id="password2" name="password2" class="form-control" type="password" ng-model="user.password2" sg-password-match />
-				</div>
-			</div>
-			<div class="col-sm-4 col-sm-height col-middle errorContainer">
-				<span data-ng-show="signupForm.password2.$error.mismatch">Passwords don't match.</span>
-			</div>
-		</div>
+    <p>Glad to <del>stab</del> meet you. Before you can start playing, please set up an account for yourself.</p>
+</div>
 
-		<div>
-			<button type="submit" class="btn btn-primary" data-ng-disabled="signupForm.$invalid">Submit</button>
-		</div> -->
-	</form>
+<div class="container container-md-height" ng-controller="SignupController">
+    <div class="row row-md-height">
+        <div class="col-md-1 col-md-height col-middle animatedFormArrows">
+            <button ng-click="getPrevState()" data-ng-disabled="signupForm.$invalid">
+                <i class="fa fa-arrow-circle-o-left fa-3x"></i>
+            </button>
+        </div>
+        <div class="col-md-8 col-md-height">
+            <form id="signupForm" name="signupForm" ng-submit="processForm()">
+                <div class="row">
+                    <div id="form-views" ui-view />
+                </div>
+            </form>
+        </div>
+        <div class="col-md-1 col-md-height col-middle animatedFormArrows">
+            <button ng-click="getNextState()" data-ng-disabled="signupForm.$invalid">
+                <i class="fa fa-arrow-circle-o-right fa-3x"></i>
+            </button>
+        </div>
+    </div>
 </div>
