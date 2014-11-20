@@ -18,9 +18,25 @@ $rl-light-grey: #7e827a;
 
 body
 {
-    margin-top: 60px;
+    //margin-top: 60px;
     background-color: $rl-dark-grey;
     color: #ddd;
+}
+
+nav
+{
+    background: $rl-red;
+    margin-bottom: 10px;
+
+    i
+    {
+        margin: 10px;
+    }
+}
+
+.loggedOut
+{
+    color: $rl-red;
 }
 
 // tabs
@@ -34,6 +50,9 @@ li.ng-isolate-scope a
     background-color: $rl-red;
     border: 0;
     color: #ddd;
+    padding: 6px 5px;
+    text-transform: uppercase;
+    cursor: pointer;
 }
 
 li.ng-isolate-scope.active a
@@ -41,6 +60,8 @@ li.ng-isolate-scope.active a
     background-color: $rl-light-grey;
     border: 0;
     color: #ddd;
+    padding: 5px 6px;
+    text-transform: uppercase;
 }
 
 .tab-pane

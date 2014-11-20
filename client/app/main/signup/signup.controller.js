@@ -26,7 +26,7 @@ angular.module('diplomacy.main')
                 case 'main.signup.password':
                     $state.go('main.signup.email');
                     break;
-            };
+            }
         };
 
         $scope.getPrevState = function() {
@@ -37,6 +37,6 @@ angular.module('diplomacy.main')
                 case 'main.signup.password':
                     $state.go('main.signup.username');
                     break;
-            };
+            }
         };
     }]);
