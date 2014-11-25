@@ -1,2 +1,21 @@
-<div class="container">
+<div class="container container-md-height">
+    <div class="row row-md-height">
+        <div class="col-md-1 col-md-height col-middle animatedFormArrows">
+            <button ng-click="getPrevState()" data-ng-disabled="signupForm.$invalid">
+                <i class="fa fa-arrow-circle-o-left fa-3x"></i>
+            </button>
+        </div>
+        <div class="col-md-8 col-md-height">
+            <form id="signupForm" name="signupForm" ng-submit="processForm()">
+                <div class="row">
+                    <div id="form-views" ui-view />
+                </div>
+            </form>
+        </div>
+        <div class="col-md-1 col-md-height col-middle animatedFormArrows">
+            <button ng-click="getNextState()" data-ng-disabled="signupForm.$invalid">
+                <i class="fa fa-arrow-circle-o-right fa-3x"></i>
+            </button>
+        </div>
+    </div>
 </div>

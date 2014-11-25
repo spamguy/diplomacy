@@ -1,5 +1,14 @@
 <div class="tab-pane">
-    <div class="gameListing" ng-repeat="game in playing | gmStatus:false" ui-sref="games.view({ id: game._id })">
-        {{game.name}}
-    </div>
+    <table class="gameListing" ng-repeat="game in playingList = (playing | gmStatus:false)" ui-sref="games.view({ id: game._id })">
+        <tr>
+            <td class="map">
+                <sg-map variant="variants[game.variant]" />
+            </td>
+            <td>
+                <h4>{{game.name}}</h4>
+                <hr />
+            </td>
+        </tr>
+    </table>
+    <div ng-hide="playingList.length">You're not playing any games. <a ui-sref="games.list">How about joining one?</a></div>
 </div>

@@ -1,5 +1,11 @@
 $fa-font-path: '/lib/font-awesome/fonts';
 
+// RL colour scheme defs
+$rl-red: #703030;
+$rl-dark-grey: #2f343b;
+$rl-light-grey: #7e827a;
+$rl-tan: #e3cda4;
+
 @import 'bootstrap-sass/assets/stylesheets/bootstrap';
 @import 'font-awesome/scss/font-awesome';
 
@@ -10,11 +16,6 @@ $fa-font-path: '/lib/font-awesome/fonts';
 @import 'main/main.scss';
 @import 'profile/profile.scss';
 // endinjector
-
-// RL colour scheme defs
-$rl-red: #703030;
-$rl-dark-grey: #2f343b;
-$rl-light-grey: #7e827a;
 
 body
 {

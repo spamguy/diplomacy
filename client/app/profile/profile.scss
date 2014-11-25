@@ -1,6 +1,11 @@
 .gameListing
 {
-    border: 1px dotted red;
     width: 100%;
     cursor: pointer;
+    border: 1px solid grey;
+
+    td.map
+    {
+        width: 100px;
+    }
 }

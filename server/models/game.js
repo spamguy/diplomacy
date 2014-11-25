@@ -7,7 +7,7 @@ module.exports = function(id) {
     if (!GameSchema) {
         GameSchema = new mongoose.Schema({
             name: String,
-            variant_id: mongoose.Schema.Types.ObjectId
+            variant: String
         });
         GameSchema.virtual('isAdmin')
             .get(function() {

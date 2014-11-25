@@ -16,6 +16,7 @@
     "composable-middleware": "^0.3.0",
     "compression": "^1.0.3",
     "cookie-parser": "~1.0.1",
+    "easy-pbkdf2": "^0.1.1",
     "errorhandler": "^1.1.1",
     "express": "~4.0.0",
     "express-jwt": "^0.4.0",

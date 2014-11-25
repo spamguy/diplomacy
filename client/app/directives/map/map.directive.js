@@ -21,26 +21,30 @@ angular.module('map.directives', ['d3'])
             restrict: 'E',
             link: function(scope, element, attrs) {
                 element = element[0];
-                d3Service.xml('assets/variants/' + scope.variant.name + '/' + scope.variant.name + '.svg', 'image/svg+xml', function(xml) {
-                    var svg = d3Service.select(element)
-                        .append('svg')
-                        .attr("width", '100%')
-                        .attr("viewBox", '0 0 1152 965');
 
-                    svg.append('g')
-                        .append('svg:image')
-                        .attr('x', 0)
-                        .attr('y', 0)
-                        .attr('xlink:href', '/assets/variants/' + scope.variant.name + '/' + 'std_bit.png')
-                        .attr('width', 1152)
-                        .attr('height', 965);
+                scope.variant.then(function(response) {
+                    var variantData = response.data;
+                    d3Service.xml('lib/variants/' + variantData.name + '/' + variantData.name + '.svg', 'image/svg+xml', function(xml) {
+                        var svg = d3Service.select(element)
+                            .append('svg')
+                            .attr("width", '100%')
+                            .attr("viewBox", '0 0 1152 965');
 
-                    if (scope.readonly && xml) {
-                        svg.append(function() { return xml.documentElement.getElementById('MouseLayer'); })
-                            .selectAll('path')
-                            .attr('fill', 'transparent')
-                            .on('click', regionClicked);
-                    }
+                        svg.append('g')
+                            .append('svg:image')
+                            .attr('x', 0)
+                            .attr('y', 0)
+                            .attr('xlink:href', '/lib/variants/' + variantData.name + '/' + 'std_bit.png')
+                            .attr('width', 1152)
+                            .attr('height', 965);
+
+                        if (scope.readonly && xml) {
+                            svg.append(function() { return xml.documentElement.getElementById('MouseLayer'); })
+                                .selectAll('path')
+                                .attr('fill', 'transparent')
+                                .on('click', regionClicked);
+                        }
+                    });
                 });
             }
         };
