@@ -25,5 +25,24 @@ module.exports = (function() {
             });
     });
 
+    app.get('/users/:id/games/:gid/moves', function(req, res) {
+        var player_id = mongoose.Types.ObjectId(req.param('id')),
+            game_id = mongoose.Types.ObjectId(req.param('gid'));
+
+        return require('../models/playerseason').PlayerSeason
+            .find({ 'game_id': game_id, 'player_id': player_id }, function(err, moves) {
+                return res.send(moves);
+            });
+    });
+
+    app.get('/games/:id/moves', function(req, res) {
+        var id = mongoose.Types.ObjectId(req.param('id'));
+
+        return require('../models/playerseason').PlayerSeason
+            .find({ 'game_id': id }, function(err, moves) {
+                return res.send(moves);
+            });
+    });
+
     return app;
 }());

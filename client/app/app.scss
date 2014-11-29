@@ -20,7 +20,7 @@ $rl-tan: #e3cda4;
 body
 {
     //margin-top: 60px;
-    background-color: $rl-dark-grey;
+    background-color: $rl-red;
     color: #ddd;
 }
 
@@ -43,12 +43,12 @@ nav
 // tabs
 .nav-tabs
 {
-    border-bottom: 1px solid $rl-light-grey;
+    border-bottom: 1px solid $rl-dark-grey;
 }
 
 li.ng-isolate-scope a
 {
-    background-color: $rl-red;
+    background-color: $rl-dark-grey;
     border: 0;
     color: #ddd;
     padding: 6px 5px;

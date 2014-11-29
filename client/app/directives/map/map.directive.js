@@ -11,12 +11,10 @@ angular.module('map.directives', ['d3'])
         return {
             replace: true,
             scope: {
-                variant: '=variant',
-                positions: '=positions',
-                readonly: '=readonly',
-                arrows: '=arrows',
-                width: '=width',
-                height: '=height'
+                variant: '=variant',        // full variant data (JSON)
+                moves: '=moves',        // movement data, full or partial (JSON)
+                readonly: '=readonly',      // whether to allow user interaction (bool)
+                arrows: '=arrows'           // whether to show movement arrows -- true implies 'moves' is defined (bool)
             },
             restrict: 'E',
             link: function(scope, element, attrs) {
@@ -27,16 +25,16 @@ angular.module('map.directives', ['d3'])
                     d3Service.xml('lib/variants/' + variantData.name + '/' + variantData.name + '.svg', 'image/svg+xml', function(xml) {
                         var svg = d3Service.select(element)
                             .append('svg')
-                            .attr("width", '100%')
-                            .attr("viewBox", '0 0 1152 965');
+                            .attr("width", '100%')              // TODO: change?
+                            .attr("viewBox", '0 0 1152 965');   // TODO: do not hardcode viewBox dimensions
 
                         svg.append('g')
                             .append('svg:image')
                             .attr('x', 0)
                             .attr('y', 0)
-                            .attr('xlink:href', '/lib/variants/' + variantData.name + '/' + 'std_bit.png')
-                            .attr('width', 1152)
-                            .attr('height', 965);
+                            .attr('xlink:href', '/lib/variants/' + variantData.name + '/' + 'std_bit.png')  // TODO: find better filename for map BG
+                            .attr('width', 1152)                // TODO: do not hardcode width
+                            .attr('height', 965);               // TODO: do not hardcode height
 
                         if (scope.readonly && xml) {
                             svg.append(function() { return xml.documentElement.getElementById('MouseLayer'); })

@@ -2,10 +2,15 @@
 {
     width: 100%;
     cursor: pointer;
-    border: 1px solid grey;
+
+    &:hover
+    {
+        color: $rl-tan;
+    }
 
     td.map
     {
         width: 100px;
+        padding-right: 10px;
     }
 }

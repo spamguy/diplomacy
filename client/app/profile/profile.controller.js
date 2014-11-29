@@ -8,15 +8,29 @@ angular.module('profile')
         ];
 
         $scope.variants = { };
+        $scope.moves = { };
 
         $scope.playing = [];
         gameService.getAllForCurrentUser().then(function(games) {
             $scope.playing = games;
 
             for (var i = 0; i < games.length; i++) {
-                var variantName = games[i].variant;
+                var theGame = games[i];
+                // identify what variants need fetching
+                var variantName = theGame.variant;
                 if (!$scope.variants[variantName])
-                    $scope.variants[variantName] = { }; // add placeholder object
+                    $scope.variants[variantName] = { };
+
+                /*
+                 * Identify the extent of each game's move data to get, given these rules:
+                 *     1) Old seasons are fully exposed: old positions, moves, resolution.
+                 *     2) Current seasons expose old positions.
+                 *     3) Players see their own orders in current seasons.
+                 *     4) GMs see everything in current seasons.
+                 */
+                var movesToScopeCallback = function(moves) { $scope.moves[theGame._id] = moves; };
+                theGame.isAdmin ? gameService.getMoveData(theGame._id).then(movesToScopeCallback) :
+                    gameService.getMoveDataForCurrentUser(theGame._id).then(movesToScopeCallback);
             }
 
             // populate keys with promises

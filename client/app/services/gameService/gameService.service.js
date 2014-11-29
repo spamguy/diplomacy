@@ -24,6 +24,26 @@ angular.module('gameService', ['userService', 'restangular'])
                 return {
 
                 };
+            },
+
+            getMoveData: function(gameID, year, season) {
+                var options = { };
+                if (year)
+                    options.year = year;
+                if (season)
+                    options.season = season;
+
+                return Restangular.one('games', gameID).getList('moves', options);
+            },
+
+            getMoveDataForCurrentUser: function(gameID, year, season) {
+                var options = { };
+                if (year)
+                    options.year = year;
+                if (season)
+                    options.season = season;
+
+                return Restangular.one('users', userService.getCurrentUser()).one('games', gameID).getList('moves', options);
             }
         };
     }

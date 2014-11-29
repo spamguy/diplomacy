@@ -2,7 +2,7 @@
     <table class="gameListing" ng-repeat="game in playingList = (playing | gmStatus:false)" ui-sref="games.view({ id: game._id })">
         <tr>
             <td class="map">
-                <sg-map variant="variants[game.variant]" />
+                <sg-map variant="variants[game.variant]" arrows="true" moves="moves[game._id]" />
             </td>
             <td>
                 <h4>{{game.name}}</h4>
