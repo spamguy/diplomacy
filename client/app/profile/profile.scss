@@ -6,6 +6,12 @@
     &:hover
     {
         color: $rl-tan;
+        background-color: $rl-light-grey;
+
+        hr
+        {
+            border-top: 1px solid $rl-tan;
+        }
     }
 
     td.map

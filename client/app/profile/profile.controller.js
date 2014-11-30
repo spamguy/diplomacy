@@ -14,6 +14,7 @@ angular.module('profile')
         gameService.getAllForCurrentUser().then(function(games) {
             $scope.playing = games;
 
+            var movesToScopeCallback = function(moves) { $scope.moves[theGame._id] = moves; };
             for (var i = 0; i < games.length; i++) {
                 var theGame = games[i];
                 // identify what variants need fetching
@@ -28,8 +29,9 @@ angular.module('profile')
                  *     3) Players see their own orders in current seasons.
                  *     4) GMs see everything in current seasons.
                  */
-                var movesToScopeCallback = function(moves) { $scope.moves[theGame._id] = moves; };
-                theGame.isAdmin ? gameService.getMoveData(theGame._id).then(movesToScopeCallback) :
+                if (theGame.isAdmin)
+                    gameService.getMoveData(theGame._id).then(movesToScopeCallback);
+                else
                     gameService.getMoveDataForCurrentUser(theGame._id).then(movesToScopeCallback);
             }
 
