@@ -1,0 +1,3 @@
+[submodule "variants"]
+	path = variants
+	url = git@github.com:spamguy/diplomacy-variants.git
