@@ -34,20 +34,27 @@ app.use('/api', require('./api/private'));
 // node module content
 app.use('/lib', express.static(path.join(root, '../node_modules')));
 
+// variant content
+app.use('/variants', express.static(path.join(root, '../variants')));
+
 app.use(express.static(root));
 
 // web routes: all other routes should redirect to the index.html for client-side routing
 app.route('/*')
-	.get(function(req, res) {
-		if (req.path.indexOf('.tmpl.html') !== -1) {
-			res.sendfile(path.join(root, 'app', req.path));
-		}
-		else
-			res.sendfile(path.join(root, 'index.html'));
-	});
+    .get(function(req, res) {
+        if (req.path.indexOf('.tmpl.html') !== -1) {
+            res.sendfile(path.join(root, 'app', req.path));
+        }
+        else if (req.path.indexOf('.json') !== -1) {
+            res.json(req.path);
+        }
+        else {
+            res.sendfile(path.join(root, 'index.html'));
+        }
+    });
 
 //models.sequelize.sync().success(function() {
-	app.listen(9000, process.env.IP, function () {
-	  console.log('Express server listening on %d', 9000);
-	});
+    app.listen(9000, process.env.IP, function () {
+      console.log('Express server listening on %d', 9000);
+    });
 //});

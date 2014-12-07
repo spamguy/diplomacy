@@ -10,12 +10,7 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <!-- build:css({.tmp,client}) app/app.css -->
     <link rel="stylesheet" href="temp/app.css">
-    <!-- injector:css -->
-    <!-- endinjector -->
-    <!-- endbuild -->
 </head>
 <body ng-controller="AppController">
     <!--[if lt IE 7]>
@@ -61,18 +56,10 @@
     <script src="lib/restangular/dist/restangular.js"></script>
     <script src="lib/angular-local-storage/dist/angular-local-storage.js"></script>
     <script src="lib/angular-jwt/dist/angular-jwt.js"></script>
-    <!--      <script src="node_modules/dist/angular-cookies/angular-cookies.js"></script>
-    <script src="node_modules/dist/angular-sanitize/angular-sanitize.js"></script>-->
     <script src="lib/angular-mocks/angular-mocks.js"></script>
     <script src="lib/angular-bootstrap/ui-bootstrap.js"></script>
-    <!--<script src="bower_components/lodash/dist/lodash.compat.js"></script>-->
     <script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="lib/angular-ui-form-validation/dist/angular-ui-form-validation.js"></script>
-    <!-- endbower -->
-    <!-- endbuild -->
-
-    <!-- build:js({.tmp,client}) app/app.js -->
-    <!-- injector:js -->
     <script src="app/services/d3Service/d3Service.service.js"></script>
     <script src="app/services/userService/userService.service.js"></script>
     <script src="app/services/gameService/gameService.service.js"></script>
@@ -96,7 +83,5 @@
     <script src="app/main/signup/signup.state.js"></script>
     <script src="app/profile/profile.controller.js"></script>
     <script src="app/profile/profile.filter.js"></script>
-    <!-- endinjector -->
-    <!-- endbuild -->
 </body>
 </html>

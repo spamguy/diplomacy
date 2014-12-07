@@ -7,6 +7,7 @@ var OrderSchema = new mongoose.Schema({
 var PlayerSeasonSchema = new mongoose.Schema({
     game_id: mongoose.Schema.Types.ObjectId,
     player_id: mongoose.Schema.Types.ObjectId,
+    power: String,
     year: Number,
     season: {
         type: String,

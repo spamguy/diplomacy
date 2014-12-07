@@ -15,7 +15,7 @@ angular.module('gameService', ['userService', 'restangular'])
 
             getVariant: function(variantName) {
                 if (!getVariantPromise)
-                    getVariantPromise = $http.get('lib/variants/' + variantName + '/' + variantName + '.json');
+                    getVariantPromise = $http.get('variants/' + variantName + '/' + variantName + '.json');
                 return getVariantPromise;
             },
 
