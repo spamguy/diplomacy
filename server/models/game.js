@@ -7,7 +7,9 @@ module.exports = function(id) {
     if (!GameSchema) {
         GameSchema = new mongoose.Schema({
             name: String,
-            variant: String
+            variant: String,
+            year: Number,
+            season: Number
         });
         GameSchema.virtual('isAdmin')
             .get(function() {

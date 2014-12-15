@@ -9,10 +9,7 @@ var PlayerSeasonSchema = new mongoose.Schema({
     player_id: mongoose.Schema.Types.ObjectId,
     power: String,
     year: Number,
-    season: {
-        type: String,
-        enum: 'Spring Summer Fall Winter'.split(' ')
-    },
+    season: Number,
     moves: [ OrderSchema ]
 });
 

@@ -32,7 +32,7 @@ angular.module('profile')
                 if (theGame.isAdmin)
                     gameService.getMoveData(theGame._id).then(movesToScopeCallback);
                 else
-                    gameService.getMoveDataForCurrentUser(theGame._id).then(movesToScopeCallback);
+                    gameService.getMoveDataForCurrentUser(theGame._id, theGame.year, theGame.season).then(movesToScopeCallback);
             }
 
             // populate keys with promises

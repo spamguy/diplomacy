@@ -80,21 +80,5 @@ module.exports = (function() {
         });
     });
 
-    // app.post('/refresh', function(req, res, next) {
-    //     var refreshToken = req.body.refreshtoken,
-    //         id = req.body.id;
-
-    //     return require('../models/user').User
-    //         .findOne({ '_id': id }, function(err, user) {
-    //             var safeUser = {
-    //                 username: user.username,
-    //                 id: user._id
-    //             };
-
-    //             var newToken = jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH });
-    //             res.send(newToken);
-    //         });
-    // });
-
     return app;
 }());

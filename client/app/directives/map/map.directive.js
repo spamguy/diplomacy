@@ -8,6 +8,12 @@ angular.module('map.directives', ['d3'])
             // TODO: Order input logic
         };
 
+        var getCentroid = function(selection) {
+            var   bbox = selection.getBBox();
+            // return the center of the bounding box
+            return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
+        };
+
         return {
             replace: true,
             scope: {
@@ -36,21 +42,40 @@ angular.module('map.directives', ['d3'])
                             .attr('width', 1152)                // TODO: do not hardcode width
                             .attr('height', 965);               // TODO: do not hardcode height
 
+                        var mouseLayer = svg.append(function() { return xml.documentElement.getElementById('MouseLayer'); })
+                            .selectAll('path')
+                            .attr('fill', 'transparent');
+
                         // if not readonly, apply UI events
-                        if (scope.readonly && xml) {
-                            svg.append(function() { return xml.documentElement.getElementById('MouseLayer'); })
-                                .selectAll('path')
-                                .attr('fill', 'transparent')
-                                .on('click', regionClicked);
-                        }
+                        if (scope.readonly && xml)
+                            mouseLayer.on('click', regionClicked);
 
-                        for (var p = 0; p < scope.moves.length; p++) {
-                            var powerMoves = scope.moves[p];
-                            var powerData = variantData.powers[powerMoves.power];
+                        var regions = svg.select('#MouseLayer').selectAll('path');
 
-                            for (var unit in powerMoves.moves[0]) {
-                                console.log('Processing ' + unit);
+                        // centroids should be kept around in case hard coords are not available
+                        var centroids = { };
+                        for (var r = 0; r < regions[0].length; r++)
+                            centroids[regions[0][r].id] = getCentroid(regions[0][r]);
+
+                        // if moves supplied, render them
+                        if (scope.moves) {
+                            // morph to d3-consumable array
+                            var d3Moves = [];
+                            for (var p = 0; p < scope.moves.length; p++) {
+                                var temp = scope.moves[p];
+                                d3Moves = temp.moves.reduce(function(coll, item) { coll.push(item); return coll; }, d3Moves);
                             }
+
+                            svg.selectAll('circle')
+                                .data(d3Moves)
+                                .enter()
+                                .append('circle')
+                                .attr('cx', function(d) {
+                                    return centroids[d.u.toLowerCase()][0]; })
+                                .attr('cy', function(d) {
+                                    return centroids[d.u.toLowerCase()][1]; })
+                                .attr('fill', 'red')
+                                .attr('r', 20);
                         }
                     });
                 });
@@ -58,7 +83,3 @@ angular.module('map.directives', ['d3'])
         };
     }]
 );
-
-//              d3.xml('assets/images/bitmap_std.svg', 'image/svg+xml', function(xml) {
-//                  document.body.appendChild(xml.documentElement);
-//              });
