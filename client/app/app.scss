@@ -42,7 +42,10 @@ nav
     h1
     {
         text-transform: uppercase;
-        color: $rl-tan;
+        background: -webkit-linear-gradient(top, $rl-tan, $rl-red);
+        background: linear-gradient(top, $rl-tan, $rl-red);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 }
 

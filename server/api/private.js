@@ -27,6 +27,16 @@ module.exports = (function() {
             });
     });
 
+    app.get('/users/:id/games/:gid', function(req, res) {
+        var id = mongoose.Types.ObjectId(req.param('id')),
+            gid = mongoose.Types.ObjectId(req.param('gid'));
+
+        return require('../models/game')(id).Game
+            .findOne({ 'games._id': id }, function(err, game) {
+                return res.send(game);
+            });
+    });
+
     /**
      * @description Fetches a set of movements for a game. The active season's moves -- excluding the player's -- are redacted.
      * @param  {string} id The ID of the game.

@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('games')
-  .config(function ($stateProvider) {
+    .config(function ($stateProvider) {
     $stateProvider
-      .state('games.view', {
+        .state('games.view', {
             url: '/:id',
             controller: 'ViewController',
             templateUrl: 'app/games/view/view.html'
         });
-  });
+    });

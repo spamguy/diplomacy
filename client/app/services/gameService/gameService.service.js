@@ -29,7 +29,7 @@ angular.module('gameService', ['userService', 'restangular'])
 
             getGame: function(gameID) {
                 if (!getGamePromise)
-                    getGamePromise = Restangular.one('games', gameID);
+                    getGamePromise = Restangular.one('users', userService.getCurrentUser()).one('games', gameID).get();
                 return getGamePromise;
             },
 
