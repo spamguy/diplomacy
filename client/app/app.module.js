@@ -35,15 +35,18 @@ angular.module('diplomacy', [
 
     $locationProvider.html5Mode(true);
 })
-  .run(function ($rootScope, AUTH_EVENTS, userService) {
-      $rootScope.$on('$stateChangeStart', function (event, next) {
+.run(function ($rootScope, AUTH_EVENTS, userService) {
+    $rootScope.$on('$stateChangeStart', function (event, next) {
         var isRestricted = !!(next.data && next.data.restricted);
+
+        $rootScope.isAuthenticated = userService.isAuthenticated();
+
         // if page is restricted and auth is bad, block entry to route
-          if (isRestricted && !userService.isAuthenticated()) {
+        if (isRestricted && !userService.isAuthenticated()) {
             event.preventDefault();
             $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
           }
-      });
+        });
     })
 .constant('AUTH_EVENTS', { // courtesy https://medium.com/opinionated-angularjs/techniques-for-authentication-in-angularjs-applications-7bbf0346acec
     loginSuccess: 'auth-login-success',

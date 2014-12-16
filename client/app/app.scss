@@ -24,6 +24,11 @@ body
     color: #ddd;
 }
 
+h1, h2, h3, h4, h5, h6
+{
+    font-family: 'Montserrat';
+}
+
 nav
 {
     background: $rl-red;
@@ -33,22 +38,23 @@ nav
     {
         margin: 10px;
     }
-}
 
-.loggedOut
-{
-    color: $rl-red;
+    h1
+    {
+        text-transform: uppercase;
+        color: $rl-tan;
+    }
 }
 
 // tabs
 .nav-tabs
 {
-    border-bottom: 1px solid $rl-dark-grey;
+    border-bottom: 1px solid $rl-light-grey;
 }
 
 li.ng-isolate-scope a
 {
-    background-color: $rl-dark-grey;
+    background-color: $rl-light-grey;
     border: 0;
     color: #ddd;
     padding: 6px 5px;
@@ -58,17 +64,18 @@ li.ng-isolate-scope a
 
 li.ng-isolate-scope.active a
 {
-    background-color: $rl-dark-grey;
+    background-color: $rl-light-grey;
     border: 0;
     color: #ddd;
     padding: 5px 6px;
     text-transform: uppercase;
+    font-family: 'Montserrat';
 }
 
 .tab-pane
 {
-    background-color: $rl-dark-grey;
-    padding: 0 15px 15px 15px;
+    background-color: $rl-light-grey;
+    padding: 0 10px 10px 10px;
 }
 
 // via http://www.minimit.com/articles/solutions-tutorials/bootstrap-3-responsive-columns-of-same-height

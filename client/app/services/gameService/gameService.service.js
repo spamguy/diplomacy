@@ -5,6 +5,7 @@ angular.module('gameService', ['userService', 'restangular'])
         // promises, promises
         var getAllForCurrentUserPromise;
         var getVariantPromise;
+        var getGamePromise;
 
         return {
             getAllForCurrentUser: function() {
@@ -24,6 +25,12 @@ angular.module('gameService', ['userService', 'restangular'])
                 return {
 
                 };
+            },
+
+            getGame: function(gameID) {
+                if (!getGamePromise)
+                    getGamePromise = Restangular.one('games', gameID);
+                return getGamePromise;
             },
 
             getMoveData: function(gameID, year, season) {

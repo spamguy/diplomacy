@@ -1,4 +1,4 @@
 'use strict';
 
-describe('Controller: ViewCtrl', function () {
+describe('Controller: ViewController', function () {
 });

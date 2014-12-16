@@ -5,7 +5,7 @@ angular.module('games')
     $stateProvider
       .state('games.view', {
             url: '/:id',
-            controller: 'ViewCtrl',
+            controller: 'ViewController',
             templateUrl: 'app/games/view/view.html'
         });
   });
