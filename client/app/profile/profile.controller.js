@@ -45,6 +45,9 @@ angular.module('profile')
         //      tab.active = $scope.active(tab.route);
         //  });
         // });
+        $scope.goToGame = function(game, variant, moves) {
+            $state.go('games.view', { id: game._id });
+        };
 
         $scope.active = function(route){
             return $state.is(route);

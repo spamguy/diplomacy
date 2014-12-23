@@ -8,5 +8,7 @@ angular.module('games')
                 gameService.getMoveData(theGame._id).then(movesToScopeCallback);
             else
                 gameService.getMoveDataForCurrentUser(theGame._id).then(movesToScopeCallback);
+
+            $scope.variant = gameService.getVariantData(theGame.variant);
         });
     });

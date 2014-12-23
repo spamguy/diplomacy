@@ -31,8 +31,8 @@ module.exports = (function() {
         var id = mongoose.Types.ObjectId(req.param('id')),
             gid = mongoose.Types.ObjectId(req.param('gid'));
 
-        return require('../models/game')(id).Game
-            .findOne({ 'games._id': id }, function(err, game) {
+        return require('../models/game')(gid).Game
+            .findOne({ '_id': gid }, function(err, game) {
                 return res.send(game);
             });
     });
