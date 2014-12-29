@@ -1,6 +1,6 @@
 <div class="container">
     <tabset>
-        <tab ng-repeat="t in tabs" heading="{{t.heading}}" select="go(t.route)" active="t.active"></tab>
+        <tab ng-repeat="t in tabs" heading="{{t.heading}}" ui-sref="{{t.route}}" active="t.active"></tab>
     </tabset>
 
     <ui-view />
