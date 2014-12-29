@@ -1,34 +1,34 @@
 angular.module('map.directives', ['d3'])
-    .directive('sgMap', ['d3Service', function(d3Service) {
-        'use strict';
+.directive('sgMap', ['d3Service', function(d3Service) {
+    'use strict';
 
-        var regionClicked = function(d) {
-            console.log(d);
+    var regionClicked = function(d) {
+        console.log(d);
 
-            // TODO: Order input logic
-        };
+        // TODO: Order input logic
+    };
 
-        var getCentroid = function(selection) {
-            var   bbox = selection.getBBox();
-            // return the center of the bounding box
-            return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
-        };
+    var getCentroid = function(selection) {
+        var   bbox = selection.getBBox();
+        // return the center of the bounding box
+        return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
+    };
 
-        return {
-            replace: true,
-            scope: {
-                variant: '=variant',        // full variant data (JSON)
-                moves: '=moves',            // movement data, full or partial (JSON)
-                readonly: '=readonly',      // whether to allow user interaction (bool)
-                arrows: '=arrows'           // whether to show movement arrows -- true implies 'moves' is defined (bool)
-            },
-            restrict: 'E',
-            link: function(scope, element, attrs) {
-                element = element[0];
+    return {
+        replace: true,
+        scope: {
+            variant: '=variant',        // full variant data (JSON)
+            moves: '=moves',            // movement data, full or partial (JSON)
+            readonly: '=readonly',      // whether to allow user interaction (bool)
+            arrows: '=arrows'           // whether to show movement arrows -- true implies 'moves' is defined (bool)
+        },
+        restrict: 'E',
+        link: function(scope, element, attrs) {
+            element = element[0];
 
-                scope.variant.then(function(response) {
-                    var variantData = response.data;
-                    d3Service.xml('variants/' + variantData.name + '/' + variantData.name + '.svg', 'image/svg+xml', function(xml) {
+            scope.$watch('variant', function(variant) {
+                if (variant.name) {
+                    d3Service.xml('variants/' + scope.variant.name + '/' + scope.variant.name + '.svg', 'image/svg+xml', function(xml) {
                         var svg = d3Service.select(element)
                             .append('svg')
                             .attr("width", '100%')              // TODO: change?
@@ -38,7 +38,7 @@ angular.module('map.directives', ['d3'])
                             .append('svg:image')
                             .attr('x', 0)
                             .attr('y', 0)
-                            .attr('xlink:href', 'variants/' + variantData.name + '/' + 'std_bit.png')  // TODO: find better filename for map BG
+                            .attr('xlink:href', 'variants/' + scope.variant.name + '/' + 'std_bit.png')  // TODO: find better filename for map BG
                             .attr('width', 1152)                // TODO: do not hardcode width
                             .attr('height', 965);               // TODO: do not hardcode height
 
@@ -78,8 +78,8 @@ angular.module('map.directives', ['d3'])
                                 .attr('r', 20);
                         }
                     });
-                });
-            }
-        };
-    }]
-);
+                }
+            });
+        }
+    };
+}]);

@@ -1,14 +1,11 @@
 'use strict';
 
 angular.module('games')
-    .controller('ViewController', function ($scope, $stateParams, gameService) {
-        gameService.getGame($stateParams.id).then(function(theGame) {
-            var movesToScopeCallback = function(moves) { $scope.moves = moves; };
-            if (theGame.isAdmin)
-                gameService.getMoveData(theGame._id).then(movesToScopeCallback);
-            else
-                gameService.getMoveDataForCurrentUser(theGame._id).then(movesToScopeCallback);
-
-            $scope.variant = gameService.getVariantData(theGame.variant);
-        });
+    .controller('ViewController', function ($scope, $stateParams, gameService, variant, game) {
+        $scope.variant = variant.data;
+        var movesToScopeCallback = function(moves) { $scope.moves = moves; };
+        if (game.isAdmin)
+            gameService.getMoveData(game._id).then(movesToScopeCallback);
+        else
+            gameService.getMoveDataForCurrentUser(game._id).then(movesToScopeCallback);
     });

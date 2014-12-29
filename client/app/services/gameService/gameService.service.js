@@ -4,7 +4,6 @@ angular.module('gameService', ['userService', 'restangular'])
     .factory('gameService', function($http, userService, Restangular) {
         // promises, promises
         var getAllForCurrentUserPromise;
-        var getVariantPromise;
         var getGamePromise;
 
         return {
@@ -15,9 +14,7 @@ angular.module('gameService', ['userService', 'restangular'])
             },
 
             getVariant: function(variantName) {
-                if (!getVariantPromise)
-                    getVariantPromise = $http.get('variants/' + variantName + '/' + variantName + '.json');
-                return getVariantPromise;
+                return $http.get('variants/' + variantName + '/' + variantName + '.json');
             },
 
             // TODO: figure out constraints (not too early, not too late) and hook up to DB

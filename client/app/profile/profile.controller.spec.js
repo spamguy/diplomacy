@@ -7,14 +7,28 @@ describe('ProfileController', function () {
         deferred,
         deferred2,
         deferred3,
-        httpBackend;
+        httpBackend,
+        $state,
+        $injector,
+        games,
+        variant;
+
+    games = [
+        { name: 'Game 1', variant: 'standard' },
+        { name: 'Game 2', variant: 'standard' },
+        { name: 'Game 3', variant: 'not-standard' }
+    ];
+
+    variant = { name: 'something' };
 
     // Load the module that the controller you are testing is in
     beforeEach(module('profile'));
 
-    beforeEach(inject(function(_$q_, _$rootScope_) {
+    beforeEach(inject(function(_$q_, _$rootScope_, _$state_, _$injector_) {
         $q = _$q_;
         $rootScope = _$rootScope_;
+        $state = _$state_;
+        $injector = _$injector_;
     }));
 
     beforeEach(inject(function($controller) {
@@ -23,13 +37,6 @@ describe('ProfileController', function () {
             getAllForCurrentUser: function() {
                 deferred = $q.defer();
                 return deferred.promise;
-                // Place the fake return object here
-                // deferred.resolve([
-                //     { name: 'Game 1', variant: 'standard' },
-                //     { name: 'Game 2', variant: 'standard' },
-                //     { name: 'Game 3', variant: 'not-standard'}
-                // ]);
-                // return deferred.promise;
             },
             getMoveDataForCurrentUser: function() {
                 deferred2 = $q.defer();
@@ -40,6 +47,7 @@ describe('ProfileController', function () {
                 return deferred3.promise;
             }
         };
+
         spyOn(mockService, 'getAllForCurrentUser').and.callThrough();
         spyOn(mockService, 'getMoveDataForCurrentUser').and.callThrough();
         spyOn(mockService, 'getVariant').and.callThrough();
@@ -52,9 +60,10 @@ describe('ProfileController', function () {
         httpBackend.whenGET('app/profile/profile.html').respond(200, '');
         httpBackend.whenGET('templates/profile/playing.tmpl.html').respond(200, '');
         httpBackend.whenGET('templates/profile/gming.tmpl.html').respond(200, '');
+        httpBackend.whenGET('/api/users/games').respond(200, games);
 
         $scope = $rootScope.$new();
-        $controller('ProfileController', { $scope: $scope, gameService: mockService });
+        $controller('ProfileController', { $scope: $scope, gameService: mockService, games: games });
     }));
 
     afterEach(function() {
@@ -63,30 +72,30 @@ describe('ProfileController', function () {
         httpBackend.verifyNoOutstandingRequest();
     });
 
-    it('should have an empty game list by default', function() {
-        expect($scope.playing.length).toEqual(0);
-    });
+    it('resolves game data', function() {
+        $state.go('profile');
 
-    it('fetches a list of games', function() {
-        deferred.resolve([
-            { name: 'Game 1', variant: 'standard' },
-            { name: 'Game 2', variant: 'standard' },
-            { name: 'Game 3', variant: 'not-standard'}
-        ]);
-        $rootScope.$apply();
+        $rootScope.$digest();
 
-        deferred.promise.then(function(games) {
-            expect(games.length).toEqual(3);
+        $injector.invoke($state.get('profile').resolve.games).then(function(result) {
+            expect(result.length).toBe(games.length);
         });
     });
 
     // one call for 'standard', one for 'not-standard'
     it('fetches variant data once per distinct variant', function() {
-        deferred3.resolve();
-        $rootScope.$apply();
+        $state.go('profile');
+
+        $rootScope.$digest();
 
         deferred3.promise.then(function(moves) {
             expect(mockService.getVariant.calls.count()).toEqual(2);
         });
+    });
+
+    // seriously, I seem to have a problem not deleting them
+    it('has active and go methods', function() {
+        expect($scope.active).toBeDefined();
+        expect($scope.go).toBeDefined();
     });
 });
