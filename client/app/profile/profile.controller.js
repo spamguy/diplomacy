@@ -47,12 +47,4 @@ angular.module('profile')
         $scope.goToGame = function(game, variant, moves) {
             $state.go('games.view', { id: game._id });
         };
-
-        $scope.active = function(route){
-            return $state.is(route);
-        };
-
-        $scope.go = function(route) {
-            $state.go(route);
-        };
     });

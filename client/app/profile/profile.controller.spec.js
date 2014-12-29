@@ -92,10 +92,4 @@ describe('ProfileController', function () {
             expect(mockService.getVariant.calls.count()).toEqual(2);
         });
     });
-
-    // seriously, I seem to have a problem not deleting them
-    it('has active and go methods', function() {
-        expect($scope.active).toBeDefined();
-        expect($scope.go).toBeDefined();
-    });
 });
