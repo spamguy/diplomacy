@@ -2,8 +2,8 @@ angular.module('map.directives', ['d3'])
 .directive('sgMap', ['d3Service', function(d3Service) {
     'use strict';
 
-    var regionClicked = function(d) {
-        console.log(d);
+    var regionClicked = function() {
+        console.log(this.id);
 
         // TODO: Order input logic
     };
@@ -29,6 +29,8 @@ angular.module('map.directives', ['d3'])
             scope.$watch('variant', function(variant) {
                 if (variant.name) {
                     d3Service.xml('variants/' + scope.variant.name + '/' + scope.variant.name + '.svg', 'image/svg+xml', function(xml) {
+                        // STEP 1: build base SVG
+
                         var svg = d3Service.select(element)
                             .append('svg')
                             .attr("width", '100%')              // TODO: change?
@@ -46,11 +48,42 @@ angular.module('map.directives', ['d3'])
                             .selectAll('path')
                             .attr('fill', 'transparent');
 
-                        // if not readonly, apply UI events
-                        if (scope.readonly && xml)
+                        // STEP 2: if not readonly, apply UI events
+
+                        if (!scope.readonly && xml)
                             mouseLayer.on('click', regionClicked);
 
                         var regions = svg.select('#MouseLayer').selectAll('path');
+
+                        // STEP 3: apply SC dots
+
+                        // strip regions without SC info
+                        var scs = _.filter(scope.variant.regions, function(r) { return r.sc; });
+
+                        // append SC group and one SC dot per collection item
+                        var scGroup = svg.append('g')
+                            .attr('class', 'scGroup')
+                            .selectAll('path')
+                            .data(scs)
+                            .enter();
+
+                        // inner circle
+                        scGroup.append('circle')
+                            .attr('cx', function(d) { return d.sc.x; })
+                            .attr('cy', function(d) { return d.sc.y; })
+                            .attr('fill', 'black') // TODO: colour by controlling power
+                            .attr('r', 4)
+                            .attr('id', function(d) { return 'sc_inner_' + d.r.toLowerCase(); });
+
+                        // outer ring
+                        scGroup.append('circle')
+                            .attr('cx', function(d) { return d.sc.x; })
+                            .attr('cy', function(d) { return d.sc.y; })
+                            .attr('stroke', 'black') // TODO: colour by controlling power
+                            .attr('stroke-width', 1)
+                            .attr('fill', 'transparent')
+                            .attr('r', 6)
+                            .attr('id', function(d) { return 'sc_outer_' + d.r.toLowerCase(); });
 
                         // centroids should be kept around in case hard coords are not available
                         var centroids = { };
@@ -75,7 +108,8 @@ angular.module('map.directives', ['d3'])
                                 .attr('cy', function(d) {
                                     return centroids[d.u.toLowerCase()][1]; })
                                 .attr('fill', 'red')
-                                .attr('r', 20);
+                                .attr('r', 20)
+                                .attr('id', function(d) { return 'unit_' + d.u.toLowerCase(); });
                         }
                     });
                 }
