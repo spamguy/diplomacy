@@ -26,6 +26,9 @@ module.exports = function(id) {
 
     var Game = mongoose.model('Game', GameSchema);
 
+    // helper functions
+    Game.test = function() { console.log('hello there!'); };
+
     return {
       Game: Game
     };

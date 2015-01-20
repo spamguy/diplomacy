@@ -33,6 +33,7 @@ app.use('/api', require('./api/private'));
 
 // node module content
 app.use('/lib', express.static(path.join(root, '../node_modules')));
+app.use('/blib', express.static(path.join(root, '../bower_components')));
 
 // variant content
 app.use('/variants', express.static(path.join(root, '../variants')));

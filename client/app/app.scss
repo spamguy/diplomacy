@@ -81,6 +81,24 @@ li.ng-isolate-scope.active a
     padding: 0 10px 10px 10px;
 }
 
+// map things
+path.link
+{
+    fill: none;
+    stroke: #f00;
+    stroke-width: 2px;
+}
+
+path.link.move
+{
+    stroke: #f00;
+}
+
+marker#end
+{
+    fill: #f00;
+}
+
 // via http://www.minimit.com/articles/solutions-tutorials/bootstrap-3-responsive-columns-of-same-height
 /* vertical alignment styles */
 .col-top {

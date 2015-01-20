@@ -36,6 +36,19 @@ angular.module('map.directives', ['d3'])
                             .attr("width", '100%')              // TODO: change?
                             .attr("viewBox", '0 0 1152 965');   // TODO: do not hardcode viewBox dimensions
 
+                        svg.append("svg:defs").selectAll("marker")
+                                .data(["end"])      // Different link/path types can be defined here
+                              .enter().append("svg:marker")    // This section adds in the arrows
+                                .attr("id", String)
+                                .attr("viewBox", "0 -5 10 10")
+                                .attr("refX", 15)
+                                .attr("refY", -1.5)
+                                .attr("markerWidth", 100)
+                                .attr("markerHeight", 100)
+                                .attr("orient", "auto")
+                              .append("svg:path")
+                                .attr("d", "M0,-5L10,0L0,5");
+
                         svg.append('g')
                             .append('svg:image')
                             .attr('x', 0)
@@ -90,26 +103,51 @@ angular.module('map.directives', ['d3'])
                         for (var r = 0; r < regions[0].length; r++)
                             centroids[regions[0][r].id] = getCentroid(regions[0][r]);
 
+                        // this will be useful
+                        var regionDictionary = _.indexBy(scope.variant.regions, 'r');
+
                         // if moves supplied, render them
                         if (scope.moves) {
-                            // morph to d3-consumable array
-                            var d3Moves = [];
-                            for (var p = 0; p < scope.moves.length; p++) {
-                                var temp = scope.moves[p];
-                                d3Moves = temp.moves.reduce(function(coll, item) { coll.push(item); return coll; }, d3Moves);
+                            var links = [];
+                            var baseNode = { fixed: true };
+                            for (var s = 0; s < scope.moves.length; s++) {
+                                var power = scope.moves[s];
+                                for (var po = 0; po < power.moves.length; po++) {
+                                    var order = power.moves[po];
+                                    if (order.v) {
+                                        links.push({
+                                            source: _.assign(regionDictionary[order.u], baseNode),
+                                            target: _.assign(regionDictionary[order.v], baseNode)
+                                        });
+                                    }
+                                }
                             }
 
-                            svg.selectAll('circle')
-                                .data(d3Moves)
-                                .enter()
-                                .append('circle')
-                                .attr('cx', function(d) {
-                                    return centroids[d.u.toLowerCase()][0]; })
-                                .attr('cy', function(d) {
-                                    return centroids[d.u.toLowerCase()][1]; })
-                                .attr('fill', 'red')
-                                .attr('r', 20)
-                                .attr('id', function(d) { return 'unit_' + d.u.toLowerCase(); });
+                            var force = d3Service.layout.force()
+                                .nodes(scope.variant.regions)
+                                .links(links);
+
+                                force.start();
+                                  for (var i = 100; i > 0; --i) force.tick();
+                                  force.stop();
+
+                            svg.append('svg:g')
+                                .selectAll("path")
+                                  .data(force.links())
+                                .enter().append("svg:path")
+                                .attr("marker-end", "url(#end)")
+                                .attr('class', 'link move')
+                                .attr("d", function(d) {
+                                    var dx = d.target.x - d.source.x,
+                                        dy = d.target.y - d.source.y,
+                                        dr = Math.sqrt(dx * dx + dy * dy);
+                                    return "M" +
+                                        d.source.x + "," +
+                                        d.source.y + "A" +
+                                        dr + "," + dr + " 0 0,1 " +
+                                        d.target.x + "," +
+                                        d.target.y;
+                                });
                         }
                     });
                 }

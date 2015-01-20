@@ -21,7 +21,7 @@ module.exports = (function() {
     app.get('/users/:id/games', function(req, res) {
         var id = mongoose.Types.ObjectId(req.param('id'));
 
-        return require('../models/game')(id).Game
+        return require('../../models/game')(id).Game
             .find({ 'players._id': id }, function(err, players) {
                 return res.send(players);
             });
@@ -31,7 +31,7 @@ module.exports = (function() {
         var id = mongoose.Types.ObjectId(req.param('id')),
             gid = mongoose.Types.ObjectId(req.param('gid'));
 
-        return require('../models/game')(gid).Game
+        return require('../../models/game')(gid).Game
             .findOne({ '_id': gid }, function(err, game) {
                 return res.send(game);
             });
@@ -57,12 +57,12 @@ module.exports = (function() {
         if (token_player_id !== player_id.toString())
             return res.send(401, 'Token does not match the supplied player.');
 
-        require('../models/game')(player_id).Game.findOne({ '_id': game_id }, function(err, game) {
+        require('../../models/game')(player_id).Game.findOne({ '_id': game_id }, function(err, game) {
             var isComplete = game.isComplete,
                 currentSeason = game.season,
                 currentYear = game.year;
 
-            var seasonQuery = require('../models/playerseason').PlayerSeason.find({ 'game_id': game_id });
+            var seasonQuery = require('../../models/playerseason').PlayerSeason.find({ 'game_id': game_id });
             if (year)
                 seasonQuery.find({ 'year': year });
             if (season)
@@ -95,7 +95,7 @@ module.exports = (function() {
     app.get('/games/:id/moves', function(req, res) {
         var id = mongoose.Types.ObjectId(req.param('id'));
 
-        return require('../models/playerseason').PlayerSeason
+        return require('../../models/playerseason').PlayerSeason
             .find({ 'game_id': id }, function(err, moves) {
                 return res.send(moves);
             });

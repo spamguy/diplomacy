@@ -8,7 +8,7 @@ module.exports = (function() {
 
     var express = require('express');
     var app = express();
-    //var models = require('../models');
+    //var models = require('../../models');
     var pbkdf2 = require('easy-pbkdf2')(hashOptions);
     var passport = require('passport');
     var LocalStrategy = require('passport-local').Strategy;
@@ -24,7 +24,7 @@ module.exports = (function() {
     passport.use(new LocalStrategy(
         function(username, password, done) {
             try {
-                require('../models/user').User
+                require('../../models/user').User
                     .findOne({ 'username': username }, function(err, maybeUser) {
                         // if no results, stop trying
                         if (!maybeUser)
@@ -68,7 +68,7 @@ module.exports = (function() {
     app.put('/new', function(req, res, next) {
         var salt = pbkdf2.generateSalt();
         pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
-            var user = new require('../models/user').User({
+            var user = new require('../../models/user').User({
                 username: req.body.username,
                 password: hash,
                 passwordsalt: salt,

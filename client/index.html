@@ -4,15 +4,16 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" ng-app="diplomacy"> <!--<![endif]-->
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <base href="/">
+    <!-- <meta charset="utf-8"> -->
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
+    <!-- <base href="/"> -->
     <title></title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
-    <link href="http://fonts.googleapis.com/css?family=Montserrat:700" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Josefin+Sans:400,700" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="temp/app.css">
+    <!-- <meta name="description" content=""> -->
+    <!-- <meta name="viewport" content="width=device-width"> -->
+    <link href="blib/angular-aside/dist/css/angular-aside.min.css" rel="stylesheet" type="text/css" />
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:700" rel="stylesheet" type="text/css" />
+    <link href="http://fonts.googleapis.com/css?family=Josefin+Sans:400,700" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="temp/app.css" />
 </head>
 <body ng-controller="AppController">
     <!--[if lt IE 7]>
@@ -51,9 +52,14 @@
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
+
+    <!-- base stuff -->
     <script src="lib/jquery/dist/jquery.js"></script> <!-- Required for angular-ui-form-validation -->
     <script src="lib/lodash/dist/lodash.js"></script>
     <script src="lib/angular/angular.js"></script>
+
+    <!-- angular libs -->
+    <script src="blib/angular-aside/dist/js/angular-aside.min.js"></script>
     <script src="lib/angular-animate/angular-animate.js"></script>
     <script src="lib/restangular/dist/restangular.js"></script>
     <script src="lib/angular-local-storage/dist/angular-local-storage.js"></script>
@@ -62,6 +68,8 @@
     <script src="lib/angular-bootstrap/ui-bootstrap.js"></script>
     <script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="lib/angular-ui-form-validation/dist/angular-ui-form-validation.js"></script>
+
+    <!-- my angular libs -->
     <script src="app/services/d3Service/d3Service.service.js"></script>
     <script src="app/services/userService/userService.service.js"></script>
     <script src="app/services/gameService/gameService.service.js"></script>
