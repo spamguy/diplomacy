@@ -1,5 +1,5 @@
 angular.module('map.directives', ['d3'])
-.directive('sgMap', ['d3Service', function(d3Service) {
+.directive('sgMap', ['d3Service', '$location', function(d3Service, $location) {
     'use strict';
 
     var regionClicked = function() {
@@ -24,6 +24,7 @@ angular.module('map.directives', ['d3'])
         },
         restrict: 'E',
         link: function(scope, element, attrs) {
+            var absURL = $location.absUrl();
             element = element[0];
 
             scope.$watch('variant', function(variant) {
@@ -37,14 +38,14 @@ angular.module('map.directives', ['d3'])
                             .attr("viewBox", '0 0 1152 965');   // TODO: do not hardcode viewBox dimensions
 
                         svg.append("svg:defs").selectAll("marker")
-                                .data(["end"])      // Different link/path types can be defined here
+                                .data(['move', 'support'])      // Different link/path types can be defined here
                               .enter().append("svg:marker")    // This section adds in the arrows
                                 .attr("id", String)
                                 .attr("viewBox", "0 -5 10 10")
                                 .attr("refX", 15)
                                 .attr("refY", -1.5)
-                                .attr("markerWidth", 100)
-                                .attr("markerHeight", 100)
+                                .attr("markerWidth", 6)
+                                .attr("markerHeight", 6)
                                 .attr("orient", "auto")
                               .append("svg:path")
                                 .attr("d", "M0,-5L10,0L0,5");
@@ -116,8 +117,8 @@ angular.module('map.directives', ['d3'])
                                     var order = power.moves[po];
                                     if (order.v) {
                                         links.push({
-                                            source: _.assign(regionDictionary[order.u], baseNode),
-                                            target: _.assign(regionDictionary[order.v], baseNode)
+                                            source: _.defaults(regionDictionary[order.u], { fixed: true }),
+                                            target: _.defaults(regionDictionary[order.v], { fixed: true, action: order.action })
                                         });
                                     }
                                 }
@@ -135,7 +136,8 @@ angular.module('map.directives', ['d3'])
                                 .selectAll("path")
                                   .data(force.links())
                                 .enter().append("svg:path")
-                                .attr("marker-end", "url(#end)")
+                                .attr("marker-end", function(d) {
+                                    return 'url(' + absURL + '#' + d.target.action + ')'; })
                                 .attr('class', 'link move')
                                 .attr("d", function(d) {
                                     var dx = d.target.x - d.source.x,

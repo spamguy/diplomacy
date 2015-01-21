@@ -85,18 +85,28 @@ li.ng-isolate-scope.active a
 path.link
 {
     fill: none;
-    stroke: #f00;
+    stroke: #000;
     stroke-width: 2px;
-}
 
-path.link.move
-{
-    stroke: #f00;
+    .fail
+    {
+        stroke: #f00;
+    }
 }
 
 marker#end
 {
-    fill: #f00;
+    fill: #000;
+
+    .fail
+    {
+        fill: #f00;
+    }
+}
+
+marker#support
+{
+    stroke-dasharray: '10, 5';
 }
 
 // via http://www.minimit.com/articles/solutions-tutorials/bootstrap-3-responsive-columns-of-same-height
