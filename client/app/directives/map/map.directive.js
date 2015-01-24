@@ -1,5 +1,5 @@
-angular.module('map.directives', ['d3'])
-.directive('sgMap', ['d3Service', '$location', function(d3Service, $location) {
+angular.module('map.directives', ['d3', 'SVGService'])
+.directive('sgMap', ['d3Service', '$location', 'SVGService', function(d3Service, $location, SVGService) {
     'use strict';
 
     var regionClicked = function() {
@@ -37,18 +37,22 @@ angular.module('map.directives', ['d3'])
                             .attr("width", '100%')              // TODO: change?
                             .attr("viewBox", '0 0 1152 965');   // TODO: do not hardcode viewBox dimensions
 
-                        svg.append("svg:defs").selectAll("marker")
-                                .data(['move', 'support'])      // Different link/path types can be defined here
-                              .enter().append("svg:marker")    // This section adds in the arrows
-                                .attr("id", String)
-                                .attr("viewBox", "0 -5 10 10")
-                                .attr("refX", 15)
-                                .attr("refY", -1.5)
-                                .attr("markerWidth", 6)
-                                .attr("markerHeight", 6)
-                                .attr("orient", "auto")
-                              .append("svg:path")
-                                .attr("d", "M0,-5L10,0L0,5");
+                        var defs = svg.append("svg:defs");
+                        defs.selectAll("marker")
+                            .data(['move', 'support'])      // Different link/path types can be defined here
+                            .enter().append("svg:marker")    // This section adds in the arrows
+                            .attr("id", String)
+                            .attr("viewBox", "0 -5 10 10")
+                            .attr("markerWidth", 6)
+                            .attr("markerHeight", 6)
+                            .attr("orient", "auto")
+                            .append("svg:path")
+                            .attr("d", "M0,-5L10,0L0,5");
+                        SVGService.getStar(function(star) {
+                            defs.append(function() { return star; })
+                                .attr('id', 'sc')
+                                .attr('fill', 'grey');
+                        });
 
                         svg.append('g')
                             .append('svg:image')
@@ -81,23 +85,14 @@ angular.module('map.directives', ['d3'])
                             .data(scs)
                             .enter();
 
-                        // inner circle
-                        scGroup.append('circle')
-                            .attr('cx', function(d) { return d.sc.x; })
-                            .attr('cy', function(d) { return d.sc.y; })
-                            .attr('fill', 'black') // TODO: colour by controlling power
-                            .attr('r', 4)
-                            .attr('id', function(d) { return 'sc_inner_' + d.r.toLowerCase(); });
-
-                        // outer ring
-                        scGroup.append('circle')
-                            .attr('cx', function(d) { return d.sc.x; })
-                            .attr('cy', function(d) { return d.sc.y; })
-                            .attr('stroke', 'black') // TODO: colour by controlling power
-                            .attr('stroke-width', 1)
-                            .attr('fill', 'transparent')
-                            .attr('r', 6)
-                            .attr('id', function(d) { return 'sc_outer_' + d.r.toLowerCase(); });
+                        // append pretty coloured stars per SC
+                        scGroup.append('use')
+                            .attr('xlink:href', absURL + '#sc')
+                            .attr('class', 'sc')
+                            .attr('transform', function(d) { return 'translate(' + d.sc.x + ',' + d.sc.y + ') scale(0.04)'; })
+                            .attr('fill', function(d) {
+                                return 'blue';//scope.variant.powers[d.power].colour;
+                            });
 
                         // centroids should be kept around in case hard coords are not available
                         var centroids = { };
@@ -113,6 +108,13 @@ angular.module('map.directives', ['d3'])
                             var baseNode = { fixed: true };
                             for (var s = 0; s < scope.moves.length; s++) {
                                 var power = scope.moves[s];
+
+                                // copy ownership info to region dict
+                                for (var sc = 0; sc < power.scs.length; sc++) {
+                                    var region = regionDictionary[power.scs[sc]];
+                                    if (region)
+                                        region.ownedBy = power.power;
+                                }
                                 for (var po = 0; po < power.moves.length; po++) {
                                     var order = power.moves[po];
                                     if (order.v) {
