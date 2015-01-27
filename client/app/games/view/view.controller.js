@@ -3,7 +3,7 @@
 angular.module('games')
     .controller('ViewController', function ($scope, $stateParams, gameService, variant, game) {
         $scope.variant = variant.data;
-        var movesToScopeCallback = function(moves) { $scope.moves = moves; };
+        var movesToScopeCallback = function(season) { $scope.season = season; };
         if (game.isAdmin)
             gameService.getMoveData(game._id).then(movesToScopeCallback);
         else

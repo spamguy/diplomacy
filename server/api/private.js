@@ -52,7 +52,6 @@ module.exports = (function() {
             season = req.param('season'),
             year = req.param('year');
 
-
         // The user calling this method should match the token to prevent API exploitation.
         if (token_player_id !== player_id.toString())
             return res.send(401, 'Token does not match the supplied player.');
@@ -60,9 +59,11 @@ module.exports = (function() {
         require('../../models/game')(player_id).Game.findOne({ '_id': game_id }, function(err, game) {
             var isComplete = game.isComplete,
                 currentSeason = game.season,
-                currentYear = game.year;
+                currentYear = game.year,
+                playerPower = _.find(game.players, function(p) { return p._id === player_id.toString()}),
+                powerShortName = playerPower.power;
 
-            var seasonQuery = require('../../models/playerseason').PlayerSeason.find({ 'game_id': game_id });
+            var seasonQuery = require('../../models/season').Season.find({ 'game_id': game_id });
             if (year)
                 seasonQuery.find({ 'year': year });
             if (season)
@@ -74,8 +75,9 @@ module.exports = (function() {
 
                     // incomplete games and active seasons are sanitised for your protection
                     if (!isComplete && (season.year !== currentYear || season.season !== currentSeason)) {
-                        if (season.player_id !== player_id.toString()) {
-                            season.moves = _.omit(season.moves, ['action', 'to']);
+                        for (var region = 0; region < season.moves; region++) {
+                            if (region.unit && region.unit.power !== powerShortName)
+                                region.unit = _.omit(region.unit, ['y1', 'x2', 'y2', 'action']);
                         }
                     }
                 }
@@ -95,7 +97,7 @@ module.exports = (function() {
     app.get('/games/:id/moves', function(req, res) {
         var id = mongoose.Types.ObjectId(req.param('id'));
 
-        return require('../../models/playerseason').PlayerSeason
+        return require('../../models/season').Season
             .find({ 'game_id': id }, function(err, moves) {
                 return res.send(moves);
             });

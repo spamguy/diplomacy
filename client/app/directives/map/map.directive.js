@@ -18,9 +18,9 @@ angular.module('map.directives', ['d3', 'SVGService'])
         replace: true,
         scope: {
             variant: '=variant',        // full variant data (JSON)
-            moves: '=moves',            // movement data, full or partial (JSON)
+            season: '=season',          // movement data (JSON)
             readonly: '=readonly',      // whether to allow user interaction (bool)
-            arrows: '=arrows'           // whether to show movement arrows -- true implies 'moves' is defined (bool)
+            arrows: '=arrows'           // whether to show movement arrows -- true implies season is defined (bool)
         },
         restrict: 'E',
         link: function(scope, element, attrs) {
@@ -75,14 +75,11 @@ angular.module('map.directives', ['d3', 'SVGService'])
 
                         // STEP 3: apply SC dots
 
-                        // strip regions without SC info
-                        var scs = _.filter(scope.variant.regions, function(r) { return r.sc; });
-
                         // append SC group and one SC dot per collection item
                         var scGroup = svg.append('g')
                             .attr('class', 'scGroup')
                             .selectAll('path')
-                            .data(scs)
+                            .data(_.filter(scope.variant.regions, function(r) { return r.sc; }))
                             .enter();
 
                         // append pretty coloured stars per SC
@@ -95,34 +92,25 @@ angular.module('map.directives', ['d3', 'SVGService'])
                             });
 
                         // centroids should be kept around in case hard coords are not available
-                        var centroids = { };
-                        for (var r = 0; r < regions[0].length; r++)
-                            centroids[regions[0][r].id] = getCentroid(regions[0][r]);
+                        // var centroids = { };
+                        // for (var r = 0; r < regions[0].length; r++)
+                        //     centroids[regions[0][r].id] = getCentroid(regions[0][r]);
 
                         // this will be useful
                         var regionDictionary = _.indexBy(scope.variant.regions, 'r');
 
                         // if moves supplied, render them
-                        if (scope.moves) {
+                        if (scope.season) {
                             var links = [];
                             var baseNode = { fixed: true };
-                            for (var s = 0; s < scope.moves.length; s++) {
-                                var power = scope.moves[s];
-
-                                // copy ownership info to region dict
-                                for (var sc = 0; sc < power.scs.length; sc++) {
-                                    var region = regionDictionary[power.scs[sc]];
-                                    if (region)
-                                        region.ownedBy = power.power;
-                                }
-                                for (var po = 0; po < power.moves.length; po++) {
-                                    var order = power.moves[po];
-                                    if (order.v) {
-                                        links.push({
-                                            source: _.defaults(regionDictionary[order.u], { fixed: true }),
-                                            target: _.defaults(regionDictionary[order.v], { fixed: true, action: order.action })
-                                        });
-                                    }
+                            for (var s = 0; s < scope.season.moves.length; s++) {
+                                var region = scope.season.moves[s];
+                                if (region.unit && region.unit.action) {
+                                    var target = region.unit.y1 || region.unit.y2;
+                                    links.push({
+                                        source: _.defaults(region, { fixed: true }),
+                                        target: _.defaults(regionDictionary[target], { fixed: true, action: region.unit.action })
+                                    });
                                 }
                             }
 
@@ -130,14 +118,15 @@ angular.module('map.directives', ['d3', 'SVGService'])
                                 .nodes(scope.variant.regions)
                                 .links(links);
 
-                                force.start();
-                                  for (var i = 100; i > 0; --i) force.tick();
-                                  force.stop();
+                            force.start();
+                            for (var i = 100; i > 0; --i) force.tick();
+                            force.stop();
 
                             svg.append('svg:g')
                                 .selectAll("path")
-                                  .data(force.links())
-                                .enter().append("svg:path")
+                                .data(force.links())
+                                .enter()
+                                .append("svg:path")
                                 .attr("marker-end", function(d) {
                                     return 'url(' + absURL + '#' + d.target.action + ')'; })
                                 .attr('class', 'link move')
