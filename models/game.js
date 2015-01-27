@@ -9,7 +9,12 @@ module.exports = function(id) {
             name: String,
             variant: String,
             year: Number,
-            season: Number
+            season: Number,
+            players: [{
+                    player_id: mongoose.Schema.Types.ObjectId,
+                    power: String
+                }
+            ]
         });
         GameSchema.virtual('isAdmin')
             .get(function() {

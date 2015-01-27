@@ -22,7 +22,7 @@ module.exports = (function() {
         var id = mongoose.Types.ObjectId(req.param('id'));
 
         return require('../../models/game')(id).Game
-            .find({ 'players._id': id }, function(err, players) {
+            .find({ 'players.player_id': id }, function(err, players) {
                 return res.send(players);
             });
     });
@@ -60,7 +60,7 @@ module.exports = (function() {
             var isComplete = game.isComplete,
                 currentSeason = game.season,
                 currentYear = game.year,
-                playerPower = _.find(game.players, function(p) { return p._id === player_id.toString()}),
+                playerPower = _.find(game.players, function(p) { return p.player_id.toString() === player_id.toString(); }),
                 powerShortName = playerPower.power;
 
             var seasonQuery = require('../../models/season').Season.find({ 'game_id': game_id });

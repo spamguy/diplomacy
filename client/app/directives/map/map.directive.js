@@ -79,7 +79,7 @@ angular.module('map.directives', ['d3', 'SVGService'])
                         var scGroup = svg.append('g')
                             .attr('class', 'scGroup')
                             .selectAll('path')
-                            .data(_.filter(scope.variant.regions, function(r) { return r.sc; }))
+                            .data(_.filter(scope.season.moves, function(r) { return r.sc; }))
                             .enter();
 
                         // append pretty coloured stars per SC
@@ -97,7 +97,7 @@ angular.module('map.directives', ['d3', 'SVGService'])
                         //     centroids[regions[0][r].id] = getCentroid(regions[0][r]);
 
                         // this will be useful
-                        var regionDictionary = _.indexBy(scope.variant.regions, 'r');
+                        var regionDictionary = _.indexBy(scope.season.moves, 'r');
 
                         // if moves supplied, render them
                         if (scope.season) {
@@ -114,33 +114,35 @@ angular.module('map.directives', ['d3', 'SVGService'])
                                 }
                             }
 
-                            var force = d3Service.layout.force()
-                                .nodes(scope.variant.regions)
-                                .links(links);
+                            if (links.length > 0) {
+                                var force = d3Service.layout.force()
+                                    .nodes(scope.season.moves)
+                                    .links(links);
 
-                            force.start();
-                            for (var i = 100; i > 0; --i) force.tick();
-                            force.stop();
+                                force.start();
+                                for (var i = 100; i > 0; --i) force.tick();
+                                force.stop();
 
-                            svg.append('svg:g')
-                                .selectAll("path")
-                                .data(force.links())
-                                .enter()
-                                .append("svg:path")
-                                .attr("marker-end", function(d) {
-                                    return 'url(' + absURL + '#' + d.target.action + ')'; })
-                                .attr('class', 'link move')
-                                .attr("d", function(d) {
-                                    var dx = d.target.x - d.source.x,
-                                        dy = d.target.y - d.source.y,
-                                        dr = Math.sqrt(dx * dx + dy * dy);
-                                    return "M" +
-                                        d.source.x + "," +
-                                        d.source.y + "A" +
-                                        dr + "," + dr + " 0 0,1 " +
-                                        d.target.x + "," +
-                                        d.target.y;
-                                });
+                                svg.append('svg:g')
+                                    .selectAll("path")
+                                    .data(force.links())
+                                    .enter()
+                                    .append("svg:path")
+                                    .attr("marker-end", function(d) {
+                                        return 'url(' + absURL + '#' + d.target.action + ')'; })
+                                    .attr('class', 'link move')
+                                    .attr("d", function(d) {
+                                        var dx = d.target.x - d.source.x,
+                                            dy = d.target.y - d.source.y,
+                                            dr = Math.sqrt(dx * dx + dy * dy);
+                                        return "M" +
+                                            d.source.x + "," +
+                                            d.source.y + "A" +
+                                            dr + "," + dr + " 0 0,1 " +
+                                            d.target.x + "," +
+                                            d.target.y;
+                                    });
+                            }
                         }
                     });
                 }
