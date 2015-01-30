@@ -50,8 +50,7 @@ angular.module('map.directives', ['d3', 'SVGService'])
                             .attr("d", "M0,-5L10,0L0,5");
                         SVGService.getStar(function(star) {
                             defs.append(function() { return star; })
-                                .attr('id', 'sc')
-                                .attr('fill', 'grey');
+                                .attr('id', 'sc');
                         });
 
                         svg.append('g')
@@ -77,24 +76,35 @@ angular.module('map.directives', ['d3', 'SVGService'])
 
                         // append SC group and one SC dot per collection item
                         var scGroup = svg.append('g')
-                            .attr('class', 'scGroup')
+                            .attr('id', 'scGroup')
                             .selectAll('path')
                             .data(_.filter(scope.season.moves, function(r) { return r.sc; }))
                             .enter();
 
-                        // append pretty coloured stars per SC
+                        // append one pretty coloured star per SC
                         scGroup.append('use')
                             .attr('xlink:href', absURL + '#sc')
                             .attr('class', 'sc')
-                            .attr('transform', function(d) { return 'translate(' + d.sc.x + ',' + d.sc.y + ') scale(0.04)'; })
+                            .attr('transform', function(d) { return 'translate(' + d.sc.x + ',' + d.sc.y + ') scale(0.03)'; })
                             .attr('fill', function(d) {
-                                return 'blue';//scope.variant.powers[d.power].colour;
+                                return d.sc && d.sc.ownedBy ? scope.variant.powers[d.sc.ownedBy].colour : '#bbbbbb';
                             });
 
-                        // centroids should be kept around in case hard coords are not available
-                        // var centroids = { };
-                        // for (var r = 0; r < regions[0].length; r++)
-                        //     centroids[regions[0][r].id] = getCentroid(regions[0][r]);
+                        // STEP 4a: apply armies
+                        var unitGroup = svg.append('g')
+                            .attr('id', 'unitGroup')
+                            .selectAll('circle')
+                            .data(_.filter(scope.season.moves, function(r) { return r.unit && r.unit.type === 1}))
+                            .enter()
+                            .append('circle')
+                            .attr('cx', function(d) { return d.x; })
+                            .attr('cy', function(d) { return d.y; })
+                            .attr('r', 10)
+                            .attr('stroke-width', '1px')
+                            .attr('stroke', '#000')
+                            .attr('fill', function(d) {
+                                return scope.variant.powers[d.unit.power].colour;
+                            });
 
                         // this will be useful
                         var regionDictionary = _.indexBy(scope.season.moves, 'r');
@@ -120,7 +130,7 @@ angular.module('map.directives', ['d3', 'SVGService'])
                                     .links(links);
 
                                 force.start();
-                                for (var i = 100; i > 0; --i) force.tick();
+                                for (var i = 5; i > 0; --i) force.tick();
                                 force.stop();
 
                                 svg.append('svg:g')

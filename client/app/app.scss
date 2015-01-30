@@ -81,8 +81,8 @@ li.ng-isolate-scope.active a
 // map things
 .sc
 {
-    stroke: 3px;
-    stroke-color: #000;
+    stroke: #000;
+    stroke-width: 30px;
 }
 
 path.link
@@ -97,7 +97,7 @@ path.link
     }
 }
 
-marker#end
+marker#move
 {
     fill: #000;
 
