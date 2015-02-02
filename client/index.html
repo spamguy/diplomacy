@@ -15,7 +15,7 @@
     <link href="blib/angular-material/angular-material.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="temp/app.css" />
 </head>
-<body ng-controller="AppController">
+<body ng-controller="AppController" layout="column">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
       <![endif]-->
@@ -35,7 +35,7 @@
     </nav>
 
     <!-- Add your site or application content here -->
-    <div ui-view=""></div>
+    <div ui-view="" layout="column" flex class="column-wrapper"></div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
     <!--<script>
@@ -64,7 +64,7 @@
     <script src="lib/angular-local-storage/dist/angular-local-storage.js"></script>
     <script src="lib/angular-jwt/dist/angular-jwt.js"></script>
     <script src="lib/angular-mocks/angular-mocks.js"></script>
-    <script src="lib/angular-bootstrap/ui-bootstrap.js"></script>
+    <!--<script src="lib/angular-bootstrap/ui-bootstrap.js"></script>-->
     <script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="blib/angular-aria/angular-aria.js"></script>
     <script src="lib/angular-ui-form-validation/dist/angular-ui-form-validation.js"></script>

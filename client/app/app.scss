@@ -4,7 +4,7 @@ $rl-dark-grey: #2f343b;
 $rl-light-grey: #7e827a;
 $rl-tan: #e3cda4;
 
-@import 'bootstrap-sass/assets/stylesheets/bootstrap';
+//@import 'bootstrap-sass/assets/stylesheets/bootstrap';
 
 // Component styles are injected through grunt
 // injector
@@ -88,7 +88,7 @@ li.ng-isolate-scope.active a
 path.link
 {
     fill: none;
-    stroke: #000;
+    stroke: #040;
     stroke-width: 2px;
 
     .fail
@@ -99,7 +99,7 @@ path.link
 
 marker#move
 {
-    fill: #000;
+    fill: #040;
 
     .fail
     {

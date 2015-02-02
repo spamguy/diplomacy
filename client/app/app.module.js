@@ -2,7 +2,6 @@
 
 angular.module('diplomacy', [
     'ui.router',
-    'ui.bootstrap',
     'LocalStorageModule',
     'angular-jwt',
     'd3',

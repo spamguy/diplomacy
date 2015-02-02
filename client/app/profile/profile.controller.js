@@ -3,16 +3,16 @@
 angular.module('profile')
     .controller('ProfileController', function ($scope, $state, $http, userService, gameService, games) {
         $scope.tabs = [
-            { 'heading': 'Games I\'m Playing', route: 'profile.playing', active: true },
-            { 'heading': 'Games I\'m Mastering', route: 'profile.gming', active: false }
+            { heading: 'Games I\'m Playing', disabled: false },
+            { heading: 'Games I\'m Mastering', disabled: false }
         ];
+        $scope.selectedIndex = 0;
 
         $scope.variants = { };
         $scope.moves = { };
 
         $scope.playing = games;
 
-        var movesToScopeCallback = function(moves) { $scope.moves[theGame._id] = moves; };
         for (var i = 0; i < games.length; i++) {
             var theGame = games[i];
             // identify what variants need fetching
@@ -28,22 +28,15 @@ angular.module('profile')
              *     4) GMs see everything in current seasons.
              */
             if (theGame.isAdmin)
-                gameService.getMoveData(theGame._id).then(movesToScopeCallback);
+                $scope.moves[theGame._id] = gameService.getMoveData(theGame._id);//.then(movesToScopeCallback);
             else
-                gameService.getMoveDataForCurrentUser(theGame._id, theGame.year, theGame.season).then(movesToScopeCallback);
+                $scope.moves[theGame._id] = gameService.getMoveDataForCurrentUser(theGame._id, theGame.year, theGame.season);//.then(movesToScopeCallback);
         }
 
         // populate keys
-        var varsToScopeCallback = function(variant) {
-            $scope.variants[key] = variant.data; };
         for (var key in $scope.variants)
-            gameService.getVariant(key).then(varsToScopeCallback);
+            $scope.variants[key] = gameService.getVariant(key);
 
-        // $scope.$on("$stateChangeSuccess", function() {
-        //  $scope.tabs.forEach(function(tab) {
-        //      tab.active = $scope.active(tab.route);
-        //  });
-        // });
         $scope.goToGame = function(game, variant, moves) {
             $state.go('games.view', { id: game._id });
         };

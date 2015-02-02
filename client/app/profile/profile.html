@@ -1,7 +1,26 @@
-<div class="container">
-    <tabset>
-        <tab ng-repeat="t in tabs" heading="{{t.heading}}" ui-sref="{{t.route}}" active="t.active"></tab>
-    </tabset>
-
-    <ui-view />
-</div>
+<md-tabs md-selected="selectedIndex">
+    <md-tab ng-repeat="tab in tabs" label="{{tab.heading}}" disabled="tab.disabled">
+        <ng-switch on="selectedIndex" class="tabpanel-container">
+            <div role="tabpanel" id="playingTabPanel" ng-switch-when="0">
+                <table class="gameListing" ng-repeat="game in playingList = (playing | gmStatus:false)" ng-click="goToGame(game, variants[game.variant], moves[game._id])">
+                    <tr>
+                        <td class="map">
+                            <sg-map variant="variants[game.variant]" arrows="true" season="moves[game._id]" />
+                        </td>
+                        <td>
+                            <span class="gameName">{{game.name}}</span>
+                            <hr />
+                        </td>
+                    </tr>
+                </table>
+                <div ng-hide="playingList.length">You're not playing any games. <a ui-sref="games.list">How about joining one?</a></div>
+            </div>
+            <div role="tabpanel" id="gmingTabPanel" ng-switch-when="1">
+                <div class="gameListing" ng-repeat="game in playingList = (playing | gmStatus:true)">
+                    {{game.name}}
+                </div>
+                <div ng-hide="playingList.length">You're not GMing any games. <a ui-sref="games.new">How about starting one?</a></div>
+            </div>
+        </ng-switch>
+    </md-tab>
+</md-tabs>

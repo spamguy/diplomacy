@@ -2,9 +2,9 @@
 
 angular.module('profile', [
     'ui.router',
-    'ui.bootstrap',
     'restangular',
-    'gameService'
+    'gameService',
+    'ngMaterial'
 ])
 .config(function ($stateProvider, $urlRouterProvider, RestangularProvider) {
     RestangularProvider.setBaseUrl('/api');

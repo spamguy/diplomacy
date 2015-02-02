@@ -16,16 +16,6 @@ angular.module('games', [
         templateUrl: 'app/games/view/view.html',
         data: {
             restricted: true
-        },
-        resolve: {
-            gameService: 'gameService',
-            game: function(gameService, $stateParams) {
-                return gameService.getGame($stateParams.id);
-            },
-
-            variant: function(gameService, game) {
-                return gameService.getVariant(game.variant);
-            }
         }
     });
 });

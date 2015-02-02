@@ -1,0 +1,20 @@
+{
+  "name": "diplomacy",
+  "version": "0.0.2",
+  "authors": [
+    "Will Oram <spamguy@spamguy.org>"
+  ],
+  "main": "index.html",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular-animate": "1.3.x",
+    "angular-material": "~0.7.0",
+    "lodash": "~3.0.0",
+    "hammerjs": "~2.0.2"
+  }
+}

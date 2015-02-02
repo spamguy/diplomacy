@@ -1,6 +1,0 @@
-<div class="tab-pane">
-    <div class="gameListing" ng-repeat="game in playingList = (playing | gmStatus:true)">
-        {{game.name}}
-    </div>
-    <div ng-hide="playingList.length">You're not GMing any games. <a ui-sref="games.new">How about starting one?</a></div>
-</div>
