@@ -1,6 +1,13 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 //var config = require('./config/environment');
-var seekrits = require('./config/local.env.sample');
+var seekrits;
+try {
+    seekrits = require('./config/local.env');
+}
+catch (ex) {
+    if (ex.code === 'MODULE_NOT_FOUND')
+        seekrits = require('./config/local.env.sample');
+}
 
 var path = require('path');
 var express = require('express');
@@ -42,20 +49,18 @@ app.use(express.static(root));
 
 // web routes: all other routes should redirect to the index.html for client-side routing
 app.route('/*')
-    .get(function(req, res) {
-        if (req.path.indexOf('.tmpl.html') !== -1) {
-            res.sendfile(path.join(root, 'app', req.path));
-        }
-        else if (req.path.indexOf('.json') !== -1) {
-            res.json(req.path);
-        }
-        else {
-            res.sendfile(path.join(root, 'index.html'));
-        }
-    });
+.get(function(req, res) {
+    if (req.path.indexOf('.tmpl.html') !== -1) {
+        res.sendfile(path.join(root, 'app', req.path));
+    }
+    else if (req.path.indexOf('.json') !== -1) {
+        res.json(req.path);
+    }
+    else {
+        res.sendfile(path.join(root, 'index.html'));
+    }
+});
 
-//models.sequelize.sync().success(function() {
-    app.listen(9000, process.env.IP, function () {
-      console.log('Express server listening on %d', 9000);
-    });
-//});
+app.listen(9000, process.env.IP, function () {
+  console.log('Express server listening on %d', 9000);
+});
