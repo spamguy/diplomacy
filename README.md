@@ -5,9 +5,11 @@
 
 # Goals
 1. The development process will be fully transparent. Custom map and ruleset creation should be simple but flexible.
-2. The user interface will be interactive and fun.
+2. The user interface will be responsive and fun.
 3. The project will bring together the best characteristics of previous Diplomacy implementations.
 4. The project will be fully unit-tested. (This is for my own good and reparations against many years of crimes against testability.)
+5. The project will keep the good, dedicated players in and the lame quitters out.
+6. Rapid games (< 15 minutes per season) will be possible without page refreshes.
 
 # Technology
 The application as a whole consists of three parts:
@@ -17,6 +19,5 @@ The application as a whole consists of three parts:
 
 # Installation
 
-At this early stage the kinks that prevent a smooth cloning process are still being worked out. The database needs scripting and incorporation into GitHub, and there is at least one file dedicated to sensitive information I can't include.
-
-If that doesn't stop you, clone this repository, run `npm install` inside the directory, then `grunt serve`.
+1. Install NodeJS and MongoDB.
+2. Run `npm install` inside the directory, then `grunt serve`.
