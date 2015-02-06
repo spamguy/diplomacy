@@ -69,15 +69,16 @@ module.exports = (function() {
             if (season)
                 seasonQuery.find({ 'season': season });
 
-            seasonQuery.exec(function(err, seasons) {
+            seasonQuery.lean().exec(function(err, seasons) {
                 for (var s = 0; s < seasons.length; s++) {
                     var season = seasons[s];
 
                     // incomplete games and active seasons are sanitised for your protection
-                    if (!isComplete && (season.year !== currentYear || season.season !== currentSeason)) {
-                        for (var region = 0; region < season.moves; region++) {
+                    if (!isComplete && (season.year === currentYear && season.season === currentSeason)) {
+                        for (var r = 0; r < season.regions.length; r++) {
+                            var region = season.regions[r];
                             if (region.unit && region.unit.power !== powerShortName)
-                                region.unit = _.omit(region.unit, ['y1', 'x2', 'y2', 'action']);
+                                delete region.unit.order;
                         }
                     }
                 }

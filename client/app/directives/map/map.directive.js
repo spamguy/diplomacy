@@ -84,7 +84,7 @@ angular.module('map.directives', ['d3', 'SVGService'])
             var scGroup = svg.append('g')
                 .attr('id', 'scGroup')
                 .selectAll('path')
-                .data(_.filter(season.moves, function(r) { return r.sc; }))
+                .data(_.filter(season.regions, function(r) { return r.sc; }))
                 .enter();
 
             // append one pretty coloured star per SC
@@ -100,7 +100,7 @@ angular.module('map.directives', ['d3', 'SVGService'])
             var unitGroup = svg.append('g')
                 .attr('id', 'unitGroup')
                 .selectAll('circle')
-                .data(_.filter(season.moves, function(r) { return r.unit && r.unit.type === 1; }))
+                .data(_.filter(season.regions, function(r) { return r.unit && r.unit.type === 1; }))
                 .enter()
                 .append('circle')
                 .attr('cx', function(d) { return d.x; })
@@ -113,38 +113,41 @@ angular.module('map.directives', ['d3', 'SVGService'])
                 });
 
             // this will be useful
-            var regionDictionary = _.indexBy(season.moves, 'r');
+            var regionDictionary = _.indexBy(season.regions, 'r');
 
             var links = [];
             var baseNode = { fixed: true };
-            for (var s = 0; s < season.moves.length; s++) {
-                var region = season.moves[s];
-                if (region.unit && region.unit.action) {
-                    var target = region.unit.y1 || region.unit.y2;
+            for (var s = 0; s < season.regions.length; s++) {
+                var region = season.regions[s];
+                if (region.unit && region.unit.order && region.unit.order.action) {
+                    var target = region.unit.order.y1 || region.unit.order.y2;
                     links.push({
                         source: _.defaults(region, { fixed: true }),
-                        target: _.defaults(regionDictionary[target], { fixed: true, action: region.unit.action })
+                        target: _.defaults(regionDictionary[target], { fixed: true, action: region.unit.order.action })
                     });
                 }
+            }
 
-                if (links.length > 0) {
-                    var force = d3Service.layout.force()
-                        .nodes(season.moves)
-                        .links(links);
+            if (links.length > 0) {
+                var force = d3Service.layout.force()
+                    .nodes(season.regions)
+                    .links(links);
 
-                    force.start();
-                    for (var i = 5; i > 0; --i) force.tick();
-                    force.stop();
+                var moveGroup = svg.append('g')
+                    .attr('id', 'moveGroup')
+                    .selectAll('path')
+                    .data(force.links())
+                    .enter();
 
-                    svg.append('svg:g')
-                        .selectAll("path")
-                        .data(force.links())
-                        .enter()
-                        .append("svg:path")
-                        .attr("marker-end", generateMarkerEnd)
-                        .attr('class', 'link move')
-                        .attr("d", generateCurvedArrow);
-                }
+                force.start();
+                for (var i = 20; i > 0; --i) force.tick();
+                force.stop();
+
+                moveGroup
+                    .append("svg:path")
+                    .attr("marker-end", generateMarkerEnd)
+                    .attr('class', 'link move')
+                    .attr("d", generateCurvedArrow);
             }
         });
     };

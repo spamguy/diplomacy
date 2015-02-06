@@ -12,10 +12,17 @@ module.exports = (function() {
     var pbkdf2 = require('easy-pbkdf2')(hashOptions);
     var passport = require('passport');
     var LocalStrategy = require('passport-local').Strategy;
-    var expressJwt = require('express-jwt');
     var jwt = require('jsonwebtoken');
-    var seekrits = require('../config/local.env.sample');
     var mongoose = require('mongoose');
+
+    var seekrits;
+    try {
+        seekrits = require('../config/local.env');
+    }
+    catch (ex) {
+        if (ex.code === 'MODULE_NOT_FOUND')
+            seekrits = require('../config/local.env.sample');
+    }
 
     mongoose.connect(seekrits.mongoURI);
     mongoose.set('debug', true);
@@ -60,7 +67,7 @@ module.exports = (function() {
                 id: user._id
             };
 
-            token = jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH });
+            token = jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH });console.log(token);
             res.json({ id: user._id, token: token, refreshtoken: user.refreshtoken });
         })(req, res, next);
     });
