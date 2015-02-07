@@ -161,6 +161,16 @@ module.exports = function(grunt) {
             unit: {
                 configFile: 'karma.conf.js'
             }
+        },
+        protractor: {
+            options: {
+                configFile: 'protractor.conf.js'
+            },
+            e2e: {
+                options: {
+                    keepAlive: false
+                }
+            }
         }
     });
 
@@ -170,5 +180,5 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build', ['jshint', 'clean:before', 'env:prod', 'preprocess', 'sass', 'ngtemplates', 'cssmin', /*'svgmin',*/ 'concat', 'uglify', 'htmlmin', 'clean:after']);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'sass', 'express:dev', 'open', 'watch']);
-    grunt.registerTask('test', ['karma:all_tests']);
+    grunt.registerTask('test', ['karma', 'protractor:e2e']);
 };

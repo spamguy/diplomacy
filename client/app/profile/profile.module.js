@@ -25,13 +25,5 @@ angular.module('profile', [
                 return gameService.getAllForCurrentUser();
             }
         }
-    })
-    .state('profile.playing', {
-        url: '/playing',
-        templateUrl: 'templates/profile/playing.tmpl.html'
-    })
-    .state('profile.gming', {
-        url: '/gming',
-        templateUrl: 'templates/profile/gming.tmpl.html'
     });
 });

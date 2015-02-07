@@ -58,8 +58,6 @@ describe('ProfileController', function () {
 
         // HACK: https://github.com/angular-ui/ui-router/issues/212
         httpBackend.whenGET('app/profile/profile.html').respond(200, '');
-        httpBackend.whenGET('templates/profile/playing.tmpl.html').respond(200, '');
-        httpBackend.whenGET('templates/profile/gming.tmpl.html').respond(200, '');
         httpBackend.whenGET('/api/users/games').respond(200, games);
 
         $scope = $rootScope.$new();
