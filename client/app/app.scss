@@ -26,9 +26,12 @@ body
     color: #ddd;
 }
 
-h1, h2, h3, h4, h5, h6
+.headline
 {
-    font-family: 'Montserrat';
+    font-size: 72pt;
+    font-family: 'Josefin Sans';
+    color: $rl-tan;
+    display: block;
 }
 
 nav
@@ -36,13 +39,9 @@ nav
     background: $rl-red;
     margin-bottom: 10px;
 
-    i
-    {
-        margin: 10px;
-    }
-
     h1
     {
+        font-family: 'Montserrat';
         text-transform: uppercase;
         background: -webkit-linear-gradient(top, $rl-tan, $rl-red);
         background: linear-gradient(top, $rl-tan, $rl-red);
@@ -115,79 +114,6 @@ marker#move
 marker#support
 {
     stroke-dasharray: '10, 5';
-}
-
-// via http://www.minimit.com/articles/solutions-tutorials/bootstrap-3-responsive-columns-of-same-height
-/* vertical alignment styles */
-.col-top {
-    vertical-align:top;
-}
-.col-middle {
-    vertical-align:middle;
-}
-.col-bottom {
-    vertical-align:bottom;
-}
-
-/* fix firefox responsive images */
-.img-responsive {
-    width: 100%
-}
-
-/* columns of same height styles */
-.container-xs-height {
-    display:table;
-    padding-left:0px;
-    padding-right:0px;
-}
-.row-xs-height {
-    display:table-row;
-}
-.col-xs-height {
-    display:table-cell;
-    float:none;
-}
-@media (min-width: 768px) {
-    .container-sm-height {
-        display:table;
-        padding-left:0px;
-        padding-right:0px;
-    }
-    .row-sm-height {
-        display:table-row;
-    }
-    .col-sm-height {
-        display:table-cell;
-        float:none;
-    }
-}
-@media (min-width: 992px) {
-    .container-md-height {
-        display:table;
-        padding-left:0px;
-        padding-right:0px;
-    }
-    .row-md-height {
-        display:table-row;
-    }
-    .col-md-height {
-        display:table-cell;
-        float:none;
-    }
-}
-@media (min-width: 1200px) {
-    .container-lg-height {
-        display:table;
-        padding-left:0px;
-        padding-right:0px;
-    }
-    .row-lg-height {
-        display:table-row;
-    }
-    .col-lg-height {
-        display:table-cell;
-        float:none;
-    }
 }
 
 // mixins
