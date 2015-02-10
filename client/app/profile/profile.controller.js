@@ -4,7 +4,8 @@ angular.module('profile')
     .controller('ProfileController', function ($scope, $state, $http, userService, gameService, games) {
         $scope.tabs = [
             { heading: 'Games I\'m Playing', disabled: false },
-            { heading: 'Games I\'m Mastering', disabled: false }
+            { heading: 'Games I\'m Mastering', disabled: false },
+            { heading: 'Completed', disabled: false }
         ];
         $scope.selectedIndex = 0;
 

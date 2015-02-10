@@ -1,4 +1,4 @@
-<div class="text-center">
+<!-- <div class="text-center">
     <h2>Welcome!</h2>
 
     <p>Glad to <del>stab</del> meet you. Before you can start playing, please set up an account for yourself.</p>
@@ -24,4 +24,15 @@
             </button>
         </div>
     </div>
-</div>
+</div> -->
+<wizard on-finish="onWizardFinished()">
+    <wz-step title="Welcome">
+        <h1>Welcome!</h1>
+
+        <input type="submit" wz-next value="Continue" />
+    </wz-step>
+    <wz-step title="User">
+    </wz-step>
+    <wz-step title="Password">
+    </wz-step>
+</wizard>

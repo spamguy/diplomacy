@@ -14,9 +14,14 @@ $rl-tan: #e3cda4;
 @import 'profile/profile.scss';
 // endinjector
 
+html, body
+{
+    min-height: 100%;
+    height: 100%;
+}
+
 body
 {
-    //margin-top: 60px;
     background-color: $rl-red;
     color: #ddd;
 }
