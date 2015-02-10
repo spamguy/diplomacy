@@ -1,3 +1,12 @@
 language: node_js
 node_js:
   - '0.10'
+
+# Travis SSH hack courtesy of http://stackoverflow.com/a/24600210/260460
+# Handle git submodules yourself
+git:
+    submodules: false
+# Use sed to replace the SSH URL with the public URL, then initialize submodules
+before_install:
+    - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+    - git submodule update --init --recursive
