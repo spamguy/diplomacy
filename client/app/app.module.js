@@ -10,11 +10,18 @@ angular.module('diplomacy', [
     'games',
     'diplomacy.main',
     'profile',
-    'map.directives'
+    'map.directives',
+    'ngMaterial'
 ])
-.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider) {
+.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider) {
+    // material design theme definitions
+    $mdThemingProvider.theme('default')
+        .primaryPalette('yellow');
+
+    // local storage config
     localStorageServiceProvider.setPrefix('diplomacy');
 
+    // JWT/auth setup
     jwtInterceptorProvider.tokenGetter = function(jwtHelper, $state, $http, userService) {
         var oldToken = userService.getToken();
 

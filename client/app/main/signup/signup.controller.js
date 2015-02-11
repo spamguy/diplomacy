@@ -14,6 +14,10 @@ angular.module('diplomacy.main')
             }
         });
 
+        $scope.canExitUsernameStep = function() {
+            return false;
+        };
+
         $scope.onWizardFinished = function() {
 
         };
