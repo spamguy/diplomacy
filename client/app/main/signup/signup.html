@@ -25,27 +25,34 @@
         </div>
     </div>
 </div> -->
+
 <div id="wizardContainer">
-    <wizard on-finish="onWizardFinished()">
-        <wz-step title="Welcome" canexit="canExitUsernameStep">
-            <div class="wizardStep">
-                <span class="headline">Welcome!</span>
+    <form name="signupForm">
+        <wizard on-finish="onWizardFinished()">
+            <wz-step title="Welcome" canexit="canExitUsernameStep">
+                <div class="wizardStep">
+                    <span class="headline">Welcome!</span>
 
-                <p class="text">Glad to <del>stab</del> meet you. Before you can start playing, please set up an account.</p>
+                    <p class="text">Glad to <del>stab</del> meet you. Before you can start playing, please set up an account.</p>
 
-                <md-input-container>
-                    <label>Username</label>
+                    <md-input-container>
+                        <label>Username</label>
 
-                    <!-- TODO: Debounce and/or use updateOn. See ng-model-options. -->
-                    <input type="text" name="username" ng-model="user.username" sg-valid-username />
-                </md-input-container>
+                        <!-- TODO: Debounce and/or use updateOn. See ng-model-options. -->
+                        <input type="text" name="username" ng-model="user.username" sg-valid-username />
 
-                <p><md-button wz-next class="md-raised md-primary">Continue</md-button></p>
-            </div>
-        </wz-step>
-        <wz-step title="User">
-        </wz-step>
-        <wz-step title="Password">
-        </wz-step>
-    </wizard>
+                        <div ng-messages="signupForm.username.$error">
+                            <div ng-message="unique">This username is taken. :(</div>
+                        </div>
+                    </md-input-container>
+
+                    <p><md-button wz-next class="md-raised md-primary">Continue</md-button></p>
+                </div>
+            </wz-step>
+            <wz-step title="User">
+            </wz-step>
+            <wz-step title="Password">
+            </wz-step>
+        </wizard>
+    </form>
 </div>

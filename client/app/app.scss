@@ -22,21 +22,20 @@ html, body
 
 body
 {
-    background-color: $rl-red;
-    color: #ddd;
+    background-color: $rl-tan;
 }
 
 .headline
 {
     font-size: 48pt;
     font-family: 'Josefin Sans';
-    color: $rl-tan;
+    color: $rl-red;
     display: block;
 }
 
 nav
 {
-    background: $rl-red;
+    background: $rl-tan;
     margin-bottom: 10px;
 
     h1

@@ -2,7 +2,7 @@
 
 angular.module('diplomacy.main', [
     'ui.router',
-    'directives.customvalidation.customValidationTypes',
+    'ngMessages',
     'signupform.directives',
     'ngAnimate',
     'userService',

@@ -16,7 +16,11 @@ angular.module('diplomacy', [
 .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider) {
     // material design theme definitions
     $mdThemingProvider.theme('default')
-        .primaryPalette('yellow');
+        .primaryPalette('brown');
+        // .primaryPalette('deep-orange', {
+        //     'default': '900',
+        //     'hue-1': 'A100'
+        // });
 
     // local storage config
     localStorageServiceProvider.setPrefix('diplomacy');
