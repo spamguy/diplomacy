@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('diplomacy.main')
-    .controller('SignupController', ['$scope', '$http', '$state', function ($scope, $http, $state) {
+    .controller('SignupController', ['$scope', '$http', '$state', 'WizardHandler', function ($scope, $http, $state, WizardHandler) {
         angular.extend($scope, {
             user: {
                 username: null,
@@ -15,7 +15,7 @@ angular.module('diplomacy.main')
         });
 
         $scope.canExitUsernameStep = function() {
-            return false;
+            return $scope.signupForm.$valid;
         };
 
         $scope.onWizardFinished = function() {

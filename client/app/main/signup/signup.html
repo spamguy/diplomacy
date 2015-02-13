@@ -39,7 +39,7 @@
                         <label>Username</label>
 
                         <!-- TODO: Debounce and/or use updateOn. See ng-model-options. -->
-                        <input type="text" name="username" ng-model="user.username" sg-valid-username />
+                        <input type="text" name="username" ng-model="user.username" sg-valid-username required />
 
                         <div ng-messages="signupForm.username.$error">
                             <div ng-message="unique">This username is taken. :(</div>

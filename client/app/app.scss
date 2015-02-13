@@ -33,20 +33,15 @@ body
     display: block;
 }
 
-nav
-{
-    background: $rl-tan;
-    margin-bottom: 10px;
 
-    h1
-    {
-        font-family: 'Montserrat';
-        text-transform: uppercase;
-        background: -webkit-linear-gradient(top, $rl-tan, $rl-red);
-        background: linear-gradient(top, $rl-tan, $rl-red);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+md-toolbar h1
+{
+    font-family: 'Montserrat';
+    text-transform: uppercase;
+    background: -webkit-linear-gradient(top, $rl-tan, $rl-red);
+    background: linear-gradient(top, $rl-tan, $rl-red);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 // tabs

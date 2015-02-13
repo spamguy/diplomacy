@@ -20,12 +20,15 @@
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
       <![endif]-->
+    <md-toolbar>
+        <h1>dipl.io</h1>
+    </md-toolbar>
 
-    <nav>
+<!--     <nav>
         <table style="width: 100%">
             <tr>
                 <td style="padding-left:10px">
-                    <h1>dipl.io</h1>
+
                 </td>
                 <td style="text-align: right">
                     <h2><a ui-sref="main.login" ng-if="!isAuthenticated">LOG IN</a></h2>
@@ -33,7 +36,7 @@
                 </td>
             </tr>
         </table>
-    </nav>
+    </nav> -->
 
     <!-- Add your site or application content here -->
     <div ui-view="" layout="column" flex class="column-wrapper"></div>
