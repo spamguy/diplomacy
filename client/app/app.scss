@@ -34,40 +34,18 @@ body
 }
 
 
-md-toolbar h1
+md-toolbar
 {
-    font-family: 'Montserrat';
-    text-transform: uppercase;
-    background: -webkit-linear-gradient(top, $rl-tan, $rl-red);
-    background: linear-gradient(top, $rl-tan, $rl-red);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-// tabs
-.nav-tabs
-{
-    border-bottom: 1px solid $rl-light-grey;
-}
-
-li.ng-isolate-scope a
-{
-    background-color: $rl-light-grey;
-    border: 0;
-    color: #ddd;
-    padding: 6px 5px;
-    text-transform: uppercase;
-    cursor: pointer;
-}
-
-li.ng-isolate-scope.active a
-{
-    background-color: $rl-light-grey;
-    border: 0;
-    color: #ddd;
-    padding: 5px 6px;
-    text-transform: uppercase;
-    font-family: 'Montserrat';
+    span.logo
+    {
+        font-family: 'Montserrat';
+        text-transform: uppercase;
+        background: -webkit-linear-gradient(top, $rl-tan, #794B52);
+        background: linear-gradient(top, $rl-tan, $rl-red);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 36pt;
+    }
 }
 
 .tab-pane

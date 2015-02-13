@@ -15,7 +15,12 @@ angular.module('diplomacy.main')
         });
 
         $scope.canExitUsernameStep = function() {
-            return $scope.signupForm.$valid;
+            return $scope.signupForm.username.$valid;
+        };
+
+        $scope.canExitPasswordStep = function() {
+            return $scope.signupForm.password.$valid &&
+                $scope.signupForm.password2.$valid;
         };
 
         $scope.onWizardFinished = function() {

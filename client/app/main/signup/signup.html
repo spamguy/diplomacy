@@ -1,31 +1,3 @@
-<!-- <div class="text-center">
-    <h2>Welcome!</h2>
-
-    <p>Glad to <del>stab</del> meet you. Before you can start playing, please set up an account for yourself.</p>
-</div>
-
-<div class="container container-md-height">
-    <div class="row row-md-height">
-        <div class="col-md-1 col-md-height col-middle animatedFormArrows">
-            <button ng-click="getPrevState()" data-ng-disabled="signupForm.$invalid">
-                <i class="fa fa-arrow-circle-o-left fa-3x"></i>
-            </button>
-        </div>
-        <div class="col-md-8 col-md-height">
-            <form id="signupForm" name="signupForm" ng-submit="processForm()">
-                <div class="row">
-                    <div id="form-views" ui-view />
-                </div>
-            </form>
-        </div>
-        <div class="col-md-1 col-md-height col-middle animatedFormArrows">
-            <button ng-click="getNextState()" data-ng-disabled="signupForm.$invalid">
-                <i class="fa fa-arrow-circle-o-right fa-3x"></i>
-            </button>
-        </div>
-    </div>
-</div> -->
-
 <div id="wizardContainer">
     <form name="signupForm">
         <wizard on-finish="onWizardFinished()">
@@ -33,7 +5,7 @@
                 <div class="wizardStep">
                     <span class="headline">Welcome!</span>
 
-                    <p class="text">Glad to <del>stab</del> meet you. Before you can start playing, please set up an account.</p>
+                    <p class="text">Glad to <del>stab</del> meet you. Please set up an account to start playing.</p>
 
                     <md-input-container>
                         <label>Username</label>
@@ -49,9 +21,28 @@
                     <p><md-button wz-next class="md-raised md-primary">Continue</md-button></p>
                 </div>
             </wz-step>
-            <wz-step title="User">
+            <wz-step title="Password" canexit="canExitPasswordStep">
+                <p class="text">Now choose a good password:</p>
+
+                <md-input-container>
+                    <label>Password</label>
+                    <input type="password" name="password" ng-model="user.password" required />
+                </md-input-container>
+
+                <p class="text">And confirm it:</p>
+
+                <md-input-container>
+                    <label>Password</label>
+                    <input type="password" name="password2" ng-model="user.password2" required sg-passwords-match="password" />
+
+                    <div ng-messages="signupForm.password2.$error">
+                        <div ng-message="pwmatch">The passwords do not match.</div>
+                    </div>
+                </md-input-container>
+
+                <p><md-button wz-next class="md-raised md-primary">Continue</md-button></p>
             </wz-step>
-            <wz-step title="Password">
+            <wz-step title="Email">
             </wz-step>
         </wizard>
     </form>

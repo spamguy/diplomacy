@@ -21,7 +21,16 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
       <![endif]-->
     <md-toolbar>
-        <h1>dipl.io</h1>
+        <div layout="row" layout-align="center center">
+            <span class="logo">dipl.io</span>
+
+            <span flex></span>
+
+            <div class="fill-height">
+                <md-button md-no-ink class="md-accent md-raised md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.signup">Sign up</md-button>
+                <md-button md-no-ink class="md-accent md-raised md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.login">Log in</md-button>
+            </div>
+        </div>
     </md-toolbar>
 
 <!--     <nav>
