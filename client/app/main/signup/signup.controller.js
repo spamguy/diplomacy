@@ -24,11 +24,11 @@ angular.module('diplomacy.main')
         };
 
         $scope.onWizardFinished = function() {
-
+            $scope.user.save();
         };
 
         // $scope.processForm = function() {
-        //     $scope.user.save();
+        //
         // };
 
         // $scope.getNextState = function() {

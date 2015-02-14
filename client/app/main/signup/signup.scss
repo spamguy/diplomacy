@@ -1,12 +1,13 @@
-#wizardContainer
+.wizardContainer
 {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 30px auto;
     height: 300px;
+
+    p.text
+    {
+        font-family: 'Montserrat';
+        font-size: 14pt;
+    }
 }
 
-.wizardStep p.text
-{
-    font-family: 'Montserrat';
-    font-size: 14pt;
-}

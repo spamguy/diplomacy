@@ -84,6 +84,7 @@ module.exports = (function() {
             });
 
             user.save();
+            return res.send({ username: user.username });
         });
     });
 

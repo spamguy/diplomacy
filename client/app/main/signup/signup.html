@@ -1,8 +1,7 @@
-<div id="wizardContainer">
     <form name="signupForm">
         <wizard on-finish="onWizardFinished()">
             <wz-step title="Welcome" canexit="canExitUsernameStep">
-                <div class="wizardStep">
+                <div class="wizardContainer">
                     <span class="headline">Welcome!</span>
 
                     <p class="text">Glad to <del>stab</del> meet you. Please set up an account to start playing.</p>
@@ -22,27 +21,42 @@
                 </div>
             </wz-step>
             <wz-step title="Password" canexit="canExitPasswordStep">
-                <p class="text">Now choose a good password:</p>
+                <div class="wizardContainer">
+                    <p class="text">Now choose a good password:</p>
 
-                <md-input-container>
-                    <label>Password</label>
-                    <input type="password" name="password" ng-model="user.password" required />
-                </md-input-container>
+                    <md-input-container>
+                        <label>Password</label>
+                        <input type="password" name="password" ng-model="user.password" required />
+                    </md-input-container>
 
-                <p class="text">And confirm it:</p>
+                    <p class="text">And confirm it:</p>
 
-                <md-input-container>
-                    <label>Password</label>
-                    <input type="password" name="password2" ng-model="user.password2" required sg-passwords-match="password" />
+                    <md-input-container>
+                        <label>Password</label>
+                        <input type="password" name="password2" ng-model="user.password2" required sg-compare-to="user.password" />
 
-                    <div ng-messages="signupForm.password2.$error">
-                        <div ng-message="pwmatch">The passwords do not match.</div>
-                    </div>
-                </md-input-container>
+                        <div ng-messages="signupForm.password2.$error">
+                            <div ng-message="compareTo">The passwords do not match.</div>
+                        </div>
+                    </md-input-container>
 
-                <p><md-button wz-next class="md-raised md-primary">Continue</md-button></p>
+                    <p><md-button wz-next class="md-raised md-primary">Continue</md-button></p>
+                </div>
             </wz-step>
             <wz-step title="Email">
+                <div class="wizardContainer">
+                    <p class="text">Finally, provide your email address:</p>
+
+                    <md-input-container>
+                        <label>Email</label>
+                        <input type="email" name="email" ng-model="user.email" required />
+                        <div ng-messages="signupForm.email.$error">
+                            <div ng-message="email">Not a valid email address.</div>
+                        </div>
+                    </md-input-container>
+
+                    <p><md-button ng-disabled="signupForm.$invalid" wz-finish class="md-raised md-primary">Submit</md-button></p>
+                </div>
             </wz-step>
         </wizard>
     </form>
