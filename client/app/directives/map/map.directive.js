@@ -96,9 +96,10 @@ angular.module('map.directives', ['d3', 'SVGService'])
                     return d.sc && d.sc.ownedBy ? variant.powers[d.sc.ownedBy].colour : '#bbbbbb';
                 });
 
-            // STEP 4a: apply armies
+            // STEP 4: apply unit markers
             var unitGroup = svg.append('g')
-                .attr('id', 'unitGroup')
+                .attr('id', 'unitGroup');
+            unitGroup
                 .selectAll('circle')
                 .data(_.filter(season.regions, function(r) { return r.unit && r.unit.type === 1; }))
                 .enter()
@@ -106,6 +107,20 @@ angular.module('map.directives', ['d3', 'SVGService'])
                 .attr('cx', function(d) { return d.x; })
                 .attr('cy', function(d) { return d.y; })
                 .attr('r', 10)
+                .attr('stroke-width', '1px')
+                .attr('stroke', '#000')
+                .attr('fill', function(d) {
+                    return variant.powers[d.unit.power].colour;
+                });
+            unitGroup
+                .selectAll('rect')
+                .data(_.filter(season.regions, function(r) { return r.unit && r.unit.type === 2; }))
+                .enter()
+                .append('rect')
+                .attr('x', function(d) { return d.x - 10; })
+                .attr('y', function(d) { return d.y - 5; })
+                .attr('height', 10)
+                .attr('width', 20)
                 .attr('stroke-width', '1px')
                 .attr('stroke', '#000')
                 .attr('fill', function(d) {
