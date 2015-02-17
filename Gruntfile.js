@@ -70,13 +70,6 @@ module.exports = function(grunt) {
                     '!server/**/*.spec.js'
                 ]
             },
-
-            // serverTest: {
-            //     options: {
-            //         jshintrc: 'server/.jshintrc-spec'
-            //     },
-            //     src: ['server/**/*.spec.js']
-            // },
             all: [
                 'client/{app,components}/**/*.js',
                 '!client/{app,components}/**/*.spec.js',
@@ -92,14 +85,14 @@ module.exports = function(grunt) {
         },
         clean: {
             before: {
-                src: ['dist', 'temp']
+                src: ['.tmp', 'temp', 'dist']
             },
             after: {
-                src: ['temp']
+                src: ['.tmp']
             }
         },
         useminPrepare: {
-            html: 'client/app/index.html',
+            html: 'client/index.html',
             options: {
                 dest: 'dist',
                 flow: {
@@ -119,16 +112,10 @@ module.exports = function(grunt) {
             html: ['dist/{,*/}*.html'],
             css: ['dist/styles/{,*/}*.css'],
             options: {
-            assetsDirs: [
-                'dist',
-                'dist/assets'
-            ]
-            }
-        },
-        concat: {
-            js: {
-                src: ['client/**/*.js', '!client/**/*.spec.js'],
-                dest: 'temp/app.js'
+                assetsDirs: [
+                    'dist',
+                    'dist/assets'
+                ]
             }
         },
         sass: {
@@ -148,62 +135,84 @@ module.exports = function(grunt) {
         cssmin: {
             css: {
                 src: 'client/temp/app.css',
-                dest: 'dist/client/app.css'
+                dest: 'dist/client/app.min.css'
             }
         },
         ngAnnotate: {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: 'temp',
+                    cwd: '.tmp/concat',
                     src: '*.js',
-                    dest: 'temp'
+                    dest: '.tmp/concat'
                 }]
+            }
+        },
+        ngtemplates: {
+            options: {
+                module: 'diplomacy',
+                htmlmin: {
+                    collapseBooleanAttributes: true,
+                    collapseWhitespace: true,
+                    removeAttributeQuotes: true,
+                    removeEmptyAttributes: true,
+                    removeRedundantAttributes: true,
+                    removeScriptTypeAttributes: true,
+                    removeStyleLinkTypeAttributes: true
+                },
+                concat: 'generated'
+            },
+            main: {
+                cwd: 'client',
+                src: ['{app,components}/**/*.html'],
+                dest: '.tmp/concat/templates.js'
             }
         },
         copy: {
             dist: {
                 files: [{
-                    expand: true,
-                    dot: true,
-                    cwd: 'client',
-                    dest: 'dist/client',
-                    src: [
-                        'index.html'
-                    ]
-                }, {
-                    expand: true,
-                    dest: 'dist',
-                    src: [
-                        'package.json',
-                        'server/**/*'
-                    ]
-                }]
+                        expand: true,
+                        cwd: 'client',
+                        dest: 'dist/client',
+                        src: ['index.html', 'robots.txt']
+                    }, {
+                        expand: true,
+                        dest: 'dist',
+                        src: [
+                            'server/**/*',
+                            'node_modules/**/*.{min.js,*map,css}'
+                        ]
+                    }, {
+                        expand: true,
+                        cwd: '.tmp/concat',
+                        dest: 'dist/client',
+                        src: ['*']
+                    }
+                ]
             }
         },
         htmlmin: {
             dist: {
                 options: {
-                collapseWhitespace: true,
-                conservativeCollapse: true,
-                collapseBooleanAttributes: true,
-                removeCommentsFromCDATA: true,
-                removeOptionalTags: true
-            },
-            files: [{
-                expand: true,
-                cwd: 'dist/client',
-                src: ['*.html'],
-                dest: 'dist/client'
-            }]
-        }
-    },
-    uglify: {
-        main: {
-            files: {
-                'dist/client/app.min.js': 'temp/app.js'
+                    collapseWhitespace: true,
+                    conservativeCollapse: true,
+                    collapseBooleanAttributes: true,
+                    removeCommentsFromCDATA: true,
+                    removeOptionalTags: true
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'dist/client',
+                    src: ['*.html'],
+                    dest: 'dist/client'
+                }]
             }
-        }
+        },
+        wiredep: {
+            target: {
+                src: 'index.html',
+                ignorePath: 'client'
+            }
         },
         karma: {
             unit: {
@@ -222,11 +231,22 @@ module.exports = function(grunt) {
         }
     });
 
-    // grunt.registerTask('express-keepalive', 'Keep grunt running', function() {
-    //     this.async();
-    // });
-
-    grunt.registerTask('build', ['jshint', 'clean:before', 'env:prod', 'preprocess', 'useminPrepare', 'concat', 'ngAnnotate', 'copy:dist', 'sass', 'cssmin', 'uglify', 'usemin', 'htmlmin', 'clean:after']);
-    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'sass', 'express:dev', 'open', 'watch']);
+    grunt.registerTask('build', [
+        'jshint',
+        'clean:before',
+        'env:prod',
+        'preprocess',
+        'wiredep',
+        'useminPrepare',
+        'concat',
+        'ngtemplates',
+        'ngAnnotate',
+        'copy:dist',
+        'sass',
+        'usemin',
+        'htmlmin',
+        'clean:after'
+    ]);
+    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
     grunt.registerTask('test', ['karma', 'protractor:e2e']);
 };
