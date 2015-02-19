@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" ng-app="diplomacy">
+<html class="no-js" ng-app="diplomacy" ng-strict-di>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +11,7 @@
     <link href="http://fonts.googleapis.com/css?family=Josefin+Sans:400" rel="stylesheet" type="text/css" />
     <!-- build:css app.min.css -->
     <link href="assets/css/angular-material.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/angular-wizard.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/angular-wizard.css" rel="stylesheet" type="text/css" /> <!-- Don't use factory CSS: https://github.com/mgonto/angular-wizard/issues/34 -->
     <link rel="stylesheet" href="temp/app.css" />
     <!-- endbuild -->
 </head>

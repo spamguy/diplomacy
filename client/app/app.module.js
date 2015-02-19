@@ -23,7 +23,7 @@ angular.module('diplomacy', [
     localStorageServiceProvider.setPrefix('diplomacy');
 
     // JWT/auth setup
-    jwtInterceptorProvider.tokenGetter = function(jwtHelper, $state, $http, userService) {
+    jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$state', '$http', 'userService', function(jwtHelper, $state, $http, userService) {
         var oldToken = userService.getToken();
 
         if (oldToken && jwtHelper.isTokenExpired(oldToken)) {
@@ -34,7 +34,7 @@ angular.module('diplomacy', [
         else {
             return oldToken;
         }
-    };
+    }];
     $httpProvider.interceptors.push('jwtInterceptor');
 
     $urlRouterProvider
