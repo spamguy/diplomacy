@@ -94,7 +94,7 @@ module.exports = function(grunt) {
         useminPrepare: {
             html: 'client/index.html',
             options: {
-                dest: 'dist',
+                dest: 'dist/client',
                 flow: {
                     html: {
                         steps: {
@@ -159,13 +159,12 @@ module.exports = function(grunt) {
                     removeRedundantAttributes: true,
                     removeScriptTypeAttributes: true,
                     removeStyleLinkTypeAttributes: true
-                },
-                concat: 'generated'
+                }
             },
             main: {
                 cwd: 'client',
                 src: ['{app,components}/**/*.html'],
-                dest: '.tmp/concat/templates.js'
+                dest: '.tmp/templates.js'
             }
         },
         copy: {
@@ -174,13 +173,14 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: 'client',
                         dest: 'dist/client',
-                        src: ['index.html', 'robots.txt']
+                        src: ['index.html', 'robots.txt', 'assets/**']
                     }, {
                         expand: true,
                         dest: 'dist',
                         src: [
                             'server/**/*',
-                            'node_modules/**/*.{min.js,*map,css}'
+                            'node_modules/**/*.{min.js,*map,css}',
+                            'variants/**/*'
                         ]
                     }, {
                         expand: true,
@@ -214,6 +214,12 @@ module.exports = function(grunt) {
                 ignorePath: 'client'
             }
         },
+        concat: {
+            templates: {
+                src: ['.tmp/concat/app.min.js', '.tmp/templates.js'],
+                dest: '.tmp/concat/app.min.js'
+            }
+        },
         karma: {
             unit: {
                 configFile: 'karma.conf.js'
@@ -238,13 +244,16 @@ module.exports = function(grunt) {
         'preprocess',
         'wiredep',
         'useminPrepare',
-        'concat',
         'ngtemplates',
+        'concat:generated',
+        'concat:templates',
         'ngAnnotate',
         'copy:dist',
         'sass',
         'usemin',
         'htmlmin',
+        'cssmin',
+        'uglify',
         'clean:after'
     ]);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
