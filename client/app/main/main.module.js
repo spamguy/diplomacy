@@ -9,7 +9,7 @@ angular.module('diplomacy.main', [
     'gameService',
     'mgo-angular-wizard'
 ])
-.config(function ($stateProvider) {
+.config(['$stateProvider', function ($stateProvider) {
     $stateProvider
     .state('main', {
         url: '',
@@ -26,4 +26,4 @@ angular.module('diplomacy.main', [
         templateUrl: 'app/main/signup/signup.html',
         controller: 'SignupController'
     });
-});
+}]);

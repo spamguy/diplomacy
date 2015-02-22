@@ -6,17 +6,11 @@ module.exports = (function() {
     var mongoose = require('mongoose');
 
     var _ = require('lodash');
-    var morgan = require('morgan');
-    var compression = require('compression');
-    var bodyParser = require('body-parser');
-    var errorHandler = require('errorhandler');
+    // var morgan = require('morgan');
+    // var compression = require('compression');
+    // var bodyParser = require('body-parser');
+    // var errorHandler = require('errorhandler');
     var jwt = require('jsonwebtoken');
-
-    app.use(compression());
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(bodyParser.json());
-    app.use(morgan('dev'));
-    app.use(errorHandler()); // Error handler - has to be last
 
     app.get('/users/:id/games', function(req, res) {
         var id = mongoose.Types.ObjectId(req.param('id'));

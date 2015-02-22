@@ -13,7 +13,7 @@ angular.module('diplomacy', [
     'map.directives',
     'ngMaterial'
 ])
-.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider) {
     // material design theme definitions
     $mdThemingProvider.theme('default')
         .primaryPalette('brown')
@@ -41,8 +41,8 @@ angular.module('diplomacy', [
         .otherwise('/');
 
     $locationProvider.html5Mode(true);
-})
-.run(function ($rootScope, userService) {
+}])
+.run(['$rootScope', 'userService', function ($rootScope, userService) {
     $rootScope.$on('$stateChangeStart', function (event, next) {
         var isRestricted = !!(next.data && next.data.restricted);
 
@@ -54,4 +54,4 @@ angular.module('diplomacy', [
             console.log('State change blocked');
         }
     });
-});
+}]);

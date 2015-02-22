@@ -6,7 +6,7 @@ angular.module('profile', [
     'gameService',
     'ngMaterial'
 ])
-.config(function ($stateProvider, $urlRouterProvider, RestangularProvider) {
+.config(['$stateProvider', '$urlRouterProvider', 'RestangularProvider', function ($stateProvider, $urlRouterProvider, RestangularProvider) {
     RestangularProvider.setBaseUrl('/api');
 
     $urlRouterProvider.otherwise("/profile/playing");
@@ -26,4 +26,4 @@ angular.module('profile', [
             }
         }
     });
-});
+}]);

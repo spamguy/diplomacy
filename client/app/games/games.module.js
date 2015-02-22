@@ -3,7 +3,7 @@
 angular.module('games', [
     'ui.router'
 ])
-.config(function ($stateProvider) {
+.config(['$stateProvider', function ($stateProvider) {
     $stateProvider
     .state('games', {
         abstract: true,
@@ -18,4 +18,4 @@ angular.module('games', [
             restricted: true
         }
     });
-});
+}]);
