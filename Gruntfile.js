@@ -1,8 +1,6 @@
 // Generated on 2014-10-02 using generator-angular-fullstack 2.0.13
 'use strict';
 
-var pkg = require('./package.json');
-
 module.exports = function(grunt) {
 
     // load all grunt tasks
@@ -179,8 +177,8 @@ module.exports = function(grunt) {
                         dest: 'dist',
                         src: [
                             'server/**/*',
-                            'node_modules/**/*.{min.js,*map,css}',
-                            'variants/**/*'
+                            'variants/**/*',
+                            '!server/config/local.env.js'
                         ]
                     }, {
                         expand: true,

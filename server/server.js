@@ -9,10 +9,7 @@ catch (ex) {
 
 var express = require('express');
 var expressJwt = require('express-jwt');
-var morgan = require('morgan');
-// var compression = require('compression');
 var bodyParser = require('body-parser');
-var errorHandler = require('errorhandler');
 
 var app = express();
 // app.use(compression());
