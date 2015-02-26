@@ -9,7 +9,7 @@ angular.module('profile', [
 .config(['$stateProvider', '$urlRouterProvider', 'RestangularProvider', function ($stateProvider, $urlRouterProvider, RestangularProvider) {
     RestangularProvider.setBaseUrl('/api');
 
-    $urlRouterProvider.otherwise("/profile/playing");
+    //$urlRouterProvider.otherwise("/profile/playing");
     $stateProvider
     .state('profile', {
         url: '/profile',

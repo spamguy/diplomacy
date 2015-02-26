@@ -38,7 +38,7 @@ angular.module('diplomacy', [
     $httpProvider.interceptors.push('jwtInterceptor');
 
     $urlRouterProvider
-        .otherwise('/');
+        .otherwise('/main/home');
 
     $locationProvider.html5Mode(true);
 }])

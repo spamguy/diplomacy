@@ -17,7 +17,7 @@ angular.module('diplomacy.main', [
         abstract: true
     })
     .state('main.home', {
-      url: '/',
+      url: '/home',
       templateUrl: 'app/main/home/home.html',
       controller: 'HomeController'
     })
@@ -25,5 +25,10 @@ angular.module('diplomacy.main', [
         url: '/signup',
         templateUrl: 'app/main/signup/signup.html',
         controller: 'SignupController'
+    })
+    .state('main.login', {
+        url: '/login',
+        templateUrl: 'app/main/login/login.html',
+        controller: 'LoginController'
     });
 }]);
