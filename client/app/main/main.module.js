@@ -12,7 +12,7 @@ angular.module('diplomacy.main', [
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider
     .state('main', {
-        url: '',
+        url: '/main',
         template: '<ui-view />',
         abstract: true
     })

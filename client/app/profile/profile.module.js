@@ -13,7 +13,7 @@ angular.module('profile', [
     $stateProvider
     .state('profile', {
         url: '/profile',
-        templateUrl: 'app/profile/profile.html',
+        templateUrl: '/app/profile/profile.html',
         controller: 'ProfileController',
         data: {
             restricted: true

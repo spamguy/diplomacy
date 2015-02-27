@@ -4,7 +4,6 @@ angular.module('diplomacy', [
     'ui.router',
     'LocalStorageModule',
     'angular-jwt',
-    'd3',
     'userService',
     'gameService',
     'games',
@@ -37,8 +36,8 @@ angular.module('diplomacy', [
     }];
     $httpProvider.interceptors.push('jwtInterceptor');
 
-    $urlRouterProvider
-        .otherwise('/main/home');
+    //$urlRouterProvider
+    //    .otherwise('/main/home');
 
     $locationProvider.html5Mode(true);
 }])

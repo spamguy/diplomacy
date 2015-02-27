@@ -1,5 +1,5 @@
-angular.module('map.directives', ['d3', 'SVGService'])
-.directive('sgMap', ['d3Service', '$location', 'SVGService', function(d3Service, $location, SVGService) {
+angular.module('map.directives', ['SVGService'])
+.directive('sgMap', ['$location', 'SVGService', function($location, SVGService) {
     'use strict';
 
     var absURL = "";
@@ -11,7 +11,7 @@ angular.module('map.directives', ['d3', 'SVGService'])
     };
 
     var getCentroid = function(selection) {
-        var   bbox = selection.getBBox();
+        var bbox = selection.getBBox();
         // return the center of the bounding box
         return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
     };
@@ -35,10 +35,10 @@ angular.module('map.directives', ['d3', 'SVGService'])
         variant = variant.data;
         season = season[0];
 
-        d3Service.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
+        d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
             // STEP 1: build base SVG
 
-            var svg = d3Service.select(el)
+            var svg = d3.select(el)
                 .append('svg')
                 .attr("width", '100%')              // TODO: change?
                 .attr("viewBox", '0 0 1152 965');   // TODO: do not hardcode viewBox dimensions
@@ -144,7 +144,7 @@ angular.module('map.directives', ['d3', 'SVGService'])
             }
 
             if (links.length > 0) {
-                var force = d3Service.layout.force()
+                var force = d3.layout.force()
                     .nodes(season.regions)
                     .links(links);
 

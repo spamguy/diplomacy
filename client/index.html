@@ -25,6 +25,7 @@
             <div class="fill-height">
                 <md-button md-no-ink class="md-accent md-raised md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.signup">Sign up</md-button>
                 <md-button md-no-ink class="md-accent md-raised md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.login">Log in</md-button>
+                <md-button md-no-ink class="md-accent md-raised md-toolbar-item" ng-if="isAuthenticated" ng-click="logOut()">Log out</md-button>
             </div>
         </div>
     </md-toolbar>
@@ -43,6 +44,7 @@
 
     <!-- build:js vendor.min.js -->
     <!-- bower:js -->
+    <script src="../bower_components/d3/d3.js"></script>
     <script src="../bower_components/angular/angular.js"></script>
     <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="../bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
@@ -59,7 +61,6 @@
     <!-- endbuild -->
 
     <!-- build:js app.min.js -->
-    <script src="app/services/d3Service/d3Service.service.js"></script>
     <script src="app/services/SVGService/SVGService.service.js"></script>
     <script src="app/services/userService/userService.service.js"></script>
     <script src="app/services/gameService/gameService.service.js"></script>

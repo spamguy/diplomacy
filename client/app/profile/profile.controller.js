@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('profile')
-    .controller('ProfileController', function ($scope, $state, $http, userService, gameService, games) {
+    .controller('ProfileController', ['$scope', '$state', '$http', 'userService', 'gameService', 'games', function ($scope, $state, $http, userService, gameService, games) {
         $scope.tabs = [
             { heading: 'Games I\'m Playing', disabled: false },
             { heading: 'Games I\'m Mastering', disabled: false },
@@ -41,4 +41,4 @@ angular.module('profile')
         $scope.goToGame = function(game, variant, moves) {
             $state.go('games.view', { id: game._id });
         };
-    });
+    }]);

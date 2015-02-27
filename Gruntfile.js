@@ -24,7 +24,7 @@ module.exports = function(grunt) {
         },
         open: {
             server: {
-                url: 'http://localhost:9000'
+                url: 'http://localhost'
             }
         },
         watch: {

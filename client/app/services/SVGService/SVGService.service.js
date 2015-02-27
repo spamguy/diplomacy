@@ -6,13 +6,13 @@
  *
  * Details here: http://stackoverflow.com/q/7215009/260460
  */
-angular.module('SVGService', ['d3'])
-.factory('SVGService', function(d3Service) {
+angular.module('SVGService', [])
+.factory('SVGService', [function() {
     return {
         getStar: function(callback) {
-            d3Service.xml('/assets/images/plain14.svg', function(xml) {
+            d3.xml('/assets/images/plain14.svg', function(xml) {
                 callback(xml.documentElement.firstElementChild);
             });
         }
     };
-});
+}]);
