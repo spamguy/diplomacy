@@ -63,11 +63,12 @@ angular.module('map.directives', ['SVGService'])
                 .append('svg:image')
                 .attr('x', 0)
                 .attr('y', 0)
-                .attr('xlink:href', 'variants/' + variant.name + '/' + 'std_bit.png')  // TODO: find better filename for map BG
+                .attr('xlink:href', 'variants/' + variant.name + '/' + variant.name + '.png')
                 .attr('width', 1152)                // TODO: do not hardcode width
                 .attr('height', 965);               // TODO: do not hardcode height
 
-            var mouseLayer = svg.append(function() { return xml.documentElement.getElementById('MouseLayer'); })
+            var mouseLayer = svg.append(function() {
+                return xml.documentElement.firstElementChild; })
                 .selectAll('path')
                 .attr('fill', 'transparent');
 
@@ -75,8 +76,6 @@ angular.module('map.directives', ['SVGService'])
 
             if (!readonly && xml)
                 mouseLayer.on('click', regionClicked);
-
-            var regions = svg.select('#MouseLayer').selectAll('path');
 
             // STEP 3: apply SC dots
 
