@@ -20,7 +20,7 @@
             <div ng-hide="playingList.length">You're not playing any games. <a ui-sref="games.list">How about joining one?</a></div>
         </div>
         <div role="tabpanel" id="gmingTabPanel" ng-switch-when="1">
-            <table class="gameListing" ng-repeat="game in playingList = (playing | gmStatus:false)" ng-click="goToGame(game, variants[game.variant], moves[game._id])">
+            <table class="gameListing" ng-repeat="game in playingList = (playing | gmStatus:true)" ng-click="goToGame(game, variants[game.variant], moves[game._id])">
                 <tr>
                     <td class="map">
                         <sg-map variant="variants[game.variant]" arrows="true" season="moves[game._id]" />

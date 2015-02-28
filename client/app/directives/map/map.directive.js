@@ -40,8 +40,8 @@ angular.module('map.directives', ['SVGService'])
 
             var svg = d3.select(el)
                 .append('svg')
-                .attr("width", '100%')              // TODO: change?
-                .attr("viewBox", '0 0 1152 965');   // TODO: do not hardcode viewBox dimensions
+                .attr("viewBox", '0 0 ' + xml.rootElement.getAttribute('width') + ' ' + xml.rootElement.getAttribute('height'))
+                .attr('preserveAspectRatio', 'xMaxYMax slice');
 
             var defs = svg.append("svg:defs");
             defs.selectAll("marker")
@@ -61,11 +61,9 @@ angular.module('map.directives', ['SVGService'])
 
             svg.append('g')
                 .append('svg:image')
-                .attr('x', 0)
-                .attr('y', 0)
                 .attr('xlink:href', 'variants/' + variant.name + '/' + variant.name + '.png')
-                .attr('width', 1152)                // TODO: do not hardcode width
-                .attr('height', 965);               // TODO: do not hardcode height
+                .attr('width', '100%')
+                .attr('height', '100%');
 
             var mouseLayer = svg.append(function() {
                 return xml.documentElement.firstElementChild; })

@@ -4,7 +4,6 @@ angular.module('gameService', ['userService', 'restangular'])
 .factory('gameService', ['$http', 'userService', 'Restangular', function($http, userService, Restangular) {
     // promises, promises
     var getAllForCurrentUserPromise;
-    var getGamePromise;
 
     return {
         getAllForCurrentUser: function() {
@@ -25,9 +24,7 @@ angular.module('gameService', ['userService', 'restangular'])
         },
 
         getGame: function(gameID) {
-            if (!getGamePromise)
-                getGamePromise = Restangular.one('users', userService.getCurrentUser()).one('games', gameID).get();
-            return getGamePromise;
+            return Restangular.one('users', userService.getCurrentUser()).one('games', gameID).get();
         },
 
         getMoveData: function(gameID, year, season) {
