@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - '0.10'
+  - '0.12'
 
 # Travis SSH hack courtesy of http://stackoverflow.com/a/24600210/260460
 # Handle git submodules yourself

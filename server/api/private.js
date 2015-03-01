@@ -40,11 +40,11 @@ module.exports = (function() {
      * @return {Array} An array of arrays, one for each season requested.
      */
     app.get('/users/:pid/games/:id/moves', function(req, res) {
-        var player_id = mongoose.Types.ObjectId(req.param('pid')),
-            game_id = mongoose.Types.ObjectId(req.param('id')),
+        var player_id = mongoose.Types.ObjectId(req.params.pid),
+            game_id = mongoose.Types.ObjectId(req.params.id),
             token_player_id = jwt.decode(req.headers.authorization.split(' ')[1]).id,
-            season = req.param('season'),
-            year = req.param('year');
+            season = req.params.season,
+            year = req.params.year;
 
         // The user calling this method should match the token to prevent API exploitation.
         if (token_player_id !== player_id.toString())
@@ -90,7 +90,7 @@ module.exports = (function() {
      * @return {Array} An array of arrays, one for each season requested.
      */
     app.get('/games/:id/moves', function(req, res) {
-        var id = mongoose.Types.ObjectId(req.param('id'));
+        var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/season').Season
             .find({ 'game_id': id }, function(err, moves) {
