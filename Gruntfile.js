@@ -255,5 +255,5 @@ module.exports = function(grunt) {
         'clean:after'
     ]);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
-    grunt.registerTask('test', ['karma', 'protractor:e2e']);
+    grunt.registerTask('test', ['karma']);
 };

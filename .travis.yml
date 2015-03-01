@@ -1,6 +1,13 @@
 language: node_js
 node_js:
   - '0.12'
+addons:
+    sauce_connect: true
+
+env:
+  global:
+    - secure: ioYHs4gjuL9iuwxamtKCkERvvSiBlAgxhLZ1Ry4xrZhNWe3e4pett3249hWovDYzG/eEHTA20/NDvZ1JIMYODFzY4gURVHNtUkoYNokLSDguTH1OPXGMmtQzJGersxYQOjRj3gSss7Z0joUrcfPQJsG1Vt0eHR/ewN7Qbm8NBn0=
+    - secure: NH3WbHM2Ir95csdWAdd7/ISYVvnYFQe7Rv4rCoYu9V6V2M9AzlARYTAvBqoK7PdD/RV0KR41t6OVeUxBVhuzT26NvBVZVyLcvfjK29AoKCDCU7VD7nQa/RQ9KyDr5DAHfyQQ5AQMhsla5qPTaFZb82F83lL44nDzrvYzE8CEaGw=
 
 # Travis SSH hack courtesy of http://stackoverflow.com/a/24600210/260460
 # Handle git submodules yourself
@@ -13,4 +20,3 @@ before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init --recursive
     - npm install -g grunt-cli
-    - npm install
