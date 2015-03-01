@@ -12,3 +12,5 @@ before_install:
     - bower install
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init --recursive
+    - npm install -g grunt-cli
+    - npm install
