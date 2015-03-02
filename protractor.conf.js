@@ -1,4 +1,11 @@
 exports.config = {
-    seleniumAddress: 'http://localhost:4444/wd/hub',
-    specs: ['e2e/**/*.spec.js']
+    sauceUser: process.env.SAUCE_USERNAME,
+    sauceKey: process.env.SAUCE_ACCESS_KEY,
+    specs: ['e2e/**/*.spec.js'],
+    framework: 'jasmine',
+    multiCapabilities: [
+        {'browserName': 'chrome'},
+        {'browserName': 'firefox'},
+        {'name': 'diplomacy'}
+    ],
 }

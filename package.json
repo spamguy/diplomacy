@@ -49,6 +49,7 @@
     "grunt-preprocess": "^4.0.0",
     "grunt-protractor-runner": "^1.2.1",
     "grunt-rev": "~0.1.0",
+    "grunt-saucelabs": "^8.6.0",
     "grunt-svgmin": "~0.4.0",
     "grunt-usemin": "3.0.0",
     "grunt-wiredep": "~1.8.0",
