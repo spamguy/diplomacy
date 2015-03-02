@@ -224,13 +224,9 @@ module.exports = function(grunt) {
             }
         },
         protractor: {
-            options: {
-                configFile: 'protractor.conf.js'
-            },
             e2e: {
-                options: {
-                    keepAlive: false
-                }
+                configFile: 'protractor.conf.js',
+                keepAlive: true
             }
         }
     });
@@ -255,5 +251,5 @@ module.exports = function(grunt) {
         'clean:after'
     ]);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
-    grunt.registerTask('test', ['karma']);
+    grunt.registerTask('test', ['karma', 'protractor:e2e']);
 };
