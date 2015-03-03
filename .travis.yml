@@ -2,9 +2,9 @@ language: node_js
 node_js:
   - '0.12'
 addons:
-    sauce_connect: true,
-    hosts: 'diplio'
-
+    sauce_connect: true
+    hosts:
+        - 'diplio'
 env:
   global:
     - secure: ioYHs4gjuL9iuwxamtKCkERvvSiBlAgxhLZ1Ry4xrZhNWe3e4pett3249hWovDYzG/eEHTA20/NDvZ1JIMYODFzY4gURVHNtUkoYNokLSDguTH1OPXGMmtQzJGersxYQOjRj3gSss7Z0joUrcfPQJsG1Vt0eHR/ewN7Qbm8NBn0=
