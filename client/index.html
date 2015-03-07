@@ -22,10 +22,11 @@
 
             <span flex></span>
 
+            <!-- TODO: Replace with something cleverer once Angular Material adds more components -->
             <div class="fill-height">
-                <md-button md-no-ink class="md-accent md-raised md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.signup">Sign up</md-button>
-                <md-button md-no-ink class="md-accent md-raised md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.login">Log in</md-button>
-                <md-button md-no-ink class="md-accent md-raised md-toolbar-item" ng-if="isAuthenticated" ng-click="logOut()">Log out</md-button>
+                <md-button md-no-ink class="md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.signup">Sign up</md-button>
+                <md-button md-no-ink class="md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.login">Log in</md-button>
+                <md-button md-no-ink class="md-toolbar-item" ng-if="isAuthenticated" ng-click="logOut()">Log out</md-button>
             </div>
         </div>
     </md-toolbar>

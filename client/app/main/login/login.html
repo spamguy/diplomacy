@@ -1,12 +1,16 @@
-<form name="loginForm" ng-submit="user.login()">
-    <md-input-container>
-        <label>Username</label>
-        <input type="text" name="username" ng-model="user.username" required />
-    </md-input-container>
-    <md-input-container>
-        <label>Password</label>
-        <input type="password" name="password" ng-model="user.password" required />
-    </md-input-container>
+<div layout="row" layout-align="center center" layout-padding>
+    <md-whiteframe class="md-whiteframe-z2" flex="33" flex-sm="100">
+        <form name="loginForm" ng-submit="user.login()">
+            <md-input-container>
+                <label>Username</label>
+                <input type="text" name="username" ng-model="user.username" />
+            </md-input-container>
+            <md-input-container>
+                <label>Password</label>
+                <input type="password" name="password" ng-model="user.password" />
+            </md-input-container>
 
-    <p><md-button ng-disabled="loginForm.$invalid" class="md-raised md-primary">Submit</md-button></p>
-</form>
+            <p style="text-align:center"><md-button ng-disabled="loginForm.$invalid" class="md-raised md-primary">Submit</md-button></p>
+        </form>
+    </md-whiteframe>
+</div>
