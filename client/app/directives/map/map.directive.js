@@ -2,6 +2,8 @@ angular.module('map.directives', ['SVGService'])
 .directive('sgMap', ['$location', 'SVGService', function($location, SVGService) {
     'use strict';
 
+    var regionDictionary = {};
+
     var absURL = "";
 
     var regionClicked = function() {
@@ -17,11 +19,11 @@ angular.module('map.directives', ['SVGService'])
     };
 
     var generateCurvedArrow = function(d) {
-        var dx = d.target.x - d.source.x,
-            dy = d.target.y - d.source.y,
+        var dx = regionDictionary[d.target.r].x - regionDictionary[d.source.r].x,
+            dy = regionDictionary[d.target.r].y - regionDictionary[d.source.r].y,
             dr = Math.sqrt(dx * dx + dy * dy);
 
-        return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+        return "M" + regionDictionary[d.source.r].x + "," + regionDictionary[d.source.r].y + "A" + dr + "," + dr + " 0 0,1 " + regionDictionary[d.target.r].x + "," + regionDictionary[d.target.r].y;
     };
 
     var generateMarkerEnd = function(d) { return 'url(' + absURL + '#' + d.target.action + ')'; };
@@ -34,6 +36,7 @@ angular.module('map.directives', ['SVGService'])
 
         variant = variant.data;
         season = season[0];
+        regionDictionary = _.indexBy(variant.regions, 'r');
 
         d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
             // STEP 1: build root <svg> -------------------
@@ -94,7 +97,8 @@ angular.module('map.directives', ['SVGService'])
             scGroup.append('use')
                 .attr('xlink:href', absURL + '#sc')
                 .attr('class', 'sc')
-                .attr('transform', function(d) { return 'translate(' + d.sc.x + ',' + d.sc.y + ') scale(0.03)'; })
+                .attr('transform', function(d) {
+                    return 'translate(' + regionDictionary[d.r].sc.x + ',' + regionDictionary[d.r].sc.y + ') scale(0.03)'; })
                 .attr('fill', function(d) {
                     return d.sc && d.sc.ownedBy ? variant.powers[d.sc.ownedBy].colour : '#bbbbbb';
                 });
@@ -108,8 +112,8 @@ angular.module('map.directives', ['SVGService'])
                 .data(_.filter(season.regions, function(r) { return r.unit && r.unit.type === 1; }))
                 .enter()
                 .append('circle')
-                .attr('cx', function(d) { return d.x; })
-                .attr('cy', function(d) { return d.y; })
+                .attr('cx', function(d) { return regionDictionary[d.r].x; })
+                .attr('cy', function(d) { return regionDictionary[d.r].y; })
                 .attr('r', 10)
                 .attr('stroke-width', '1px')
                 .attr('stroke', '#000')
@@ -121,8 +125,8 @@ angular.module('map.directives', ['SVGService'])
                 .data(_.filter(season.regions, function(r) { return r.unit && r.unit.type === 2; }))
                 .enter()
                 .append('rect')
-                .attr('x', function(d) { return d.x - 10; })
-                .attr('y', function(d) { return d.y - 5; })
+                .attr('x', function(d) { return regionDictionary[d.r].x - 10; })
+                .attr('y', function(d) { return regionDictionary[d.r].y - 5; })
                 .attr('height', 10)
                 .attr('width', 20)
                 .attr('stroke-width', '1px')
@@ -147,7 +151,7 @@ angular.module('map.directives', ['SVGService'])
 
             if (links.length > 0) {
                 var force = d3.layout.force()
-                    .nodes(season.regions)
+                    .nodes(regionDictionary)
                     .links(links);
 
                 var moveGroup = svg.append('g')
