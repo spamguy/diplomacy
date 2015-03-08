@@ -1,9 +1,3 @@
-// RL colour scheme defs
-$rl-red: #703030;
-$rl-dark-grey: #2f343b;
-$rl-light-grey: #7e827a;
-$rl-tan: #e3cda4;
-
 $am-light-blue-grey: #ECEFF1;
 
 //@import 'bootstrap-sass/assets/stylesheets/bootstrap';
@@ -23,11 +17,16 @@ html, body
     background-color: $am-light-blue-grey;
 }
 
+footer
+{
+    text-align: center;
+    padding: 20px;
+}
+
 .headline
 {
     font-size: 48pt;
     font-family: 'Josefin Sans';
-    color: $rl-red;
     display: block;
 }
 
@@ -54,7 +53,6 @@ md-whiteframe
 
 .tab-pane
 {
-    background-color: $rl-light-grey;
     padding: 0 10px 10px 10px;
 }
 
@@ -99,11 +97,4 @@ marker#support
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
-}
-
-// consistent validation error appearance
-form .CustomValidationError
-{
-	color: red;
-	padding: 10px;
 }

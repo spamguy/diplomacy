@@ -8,6 +8,9 @@ module.exports = function(grunt) {
 
     // Project configuration.
     grunt.initConfig({
+        // environment variable pkg
+        pkg: grunt.file.readJSON("package.json"),
+
         express: {
             dev: {
                 options: {
@@ -163,6 +166,17 @@ module.exports = function(grunt) {
                 dest: '.tmp/templates.js'
             }
         },
+        replace: {
+            footer: {
+                src: ['dist/client/*.html'],
+                overwrite: true,
+                replacements: [{
+                        from: '{{VERSION}}',
+                        to: '<%= pkg.version %>'
+                    }
+                ]
+            }
+        },
         copy: {
             dist: {
                 files: [{
@@ -216,6 +230,9 @@ module.exports = function(grunt) {
                 dest: '.tmp/concat/app.min.js'
             }
         },
+        changelog: {
+            repository: 'https://github.com/spamguy/diplomacy'
+        },
         karma: {
             unit: {
                 configFile: 'karma.conf.js'
@@ -245,7 +262,9 @@ module.exports = function(grunt) {
         'usemin',
         'htmlmin',
         'cssmin',
+        'replace:footer',
         'uglify',
+        'changelog',
         'clean:after'
     ]);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
