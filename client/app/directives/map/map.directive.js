@@ -36,17 +36,19 @@ angular.module('map.directives', ['SVGService'])
         season = season[0];
 
         d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
-            // STEP 1: build base SVG
-
+            // STEP 1: build root <svg> -------------------
             var svg = d3.select(el)
                 .append('svg')
-                .attr("viewBox", '0 0 ' + xml.rootElement.getAttribute('width') + ' ' + xml.rootElement.getAttribute('height'))
-                .attr('preserveAspectRatio', 'xMaxYMax slice');
+                .attr("viewBox", '0 0 ' + xml.rootElement.getAttribute('width') + ' ' + xml.rootElement.getAttribute('height'));
+            // --------------------------------------------
 
+            // STEP 2: build templated items --------------
             var defs = svg.append("svg:defs");
+
+            // generic curved arrow
             defs.selectAll("marker")
-                .data(['move', 'support'])      // Different link/path types can be defined here
-                .enter().append("svg:marker")    // This section adds in the arrows
+                .data(['move', 'support'])      // mapping movement types to CSS classes
+                .enter().append("svg:marker")
                 .attr("id", String)
                 .attr("viewBox", "0 -5 10 10")
                 .attr("markerWidth", 6)
@@ -54,30 +56,34 @@ angular.module('map.directives', ['SVGService'])
                 .attr("orient", "auto")
                 .append("svg:path")
                 .attr("d", "M0,-5L10,0L0,5");
+
+            // supply centre star
             SVGService.getStar(function(star) {
                 defs.append(function() { return star; })
                     .attr('id', 'sc');
             });
+            // --------------------------------------------
 
+            // STEP 3: add background image layer ---------
             svg.append('g')
                 .append('svg:image')
                 .attr('xlink:href', 'variants/' + variant.name + '/' + variant.name + '.png')
                 .attr('width', '100%')
                 .attr('height', '100%');
+            // --------------------------------------------
 
+            // STEP 4: add clickable region layer ---------
             var mouseLayer = svg.append(function() {
                 return xml.documentElement.firstElementChild; })
                 .selectAll('path')
                 .attr('fill', 'transparent');
 
-            // STEP 2: if not readonly, apply UI events
-
+            // add events to clickable layer if readonly disabled
             if (!readonly && xml)
                 mouseLayer.on('click', regionClicked);
+            // --------------------------------------------
 
-            // STEP 3: apply SC dots
-
-            // append SC group and one SC dot per collection item
+            // STEP 5: apply supply centre (SC) dot layer -
             var scGroup = svg.append('g')
                 .attr('id', 'scGroup')
                 .selectAll('path')
@@ -92,8 +98,9 @@ angular.module('map.directives', ['SVGService'])
                 .attr('fill', function(d) {
                     return d.sc && d.sc.ownedBy ? variant.powers[d.sc.ownedBy].colour : '#bbbbbb';
                 });
+            // --------------------------------------------
 
-            // STEP 4: apply unit markers
+            // STEP 6: apply unit marker layer ------------
             var unitGroup = svg.append('g')
                 .attr('id', 'unitGroup');
             unitGroup
@@ -123,9 +130,7 @@ angular.module('map.directives', ['SVGService'])
                 .attr('fill', function(d) {
                     return variant.powers[d.unit.power].colour;
                 });
-
-            // this will be useful
-            var regionDictionary = _.indexBy(season.regions, 'r');
+            // --------------------------------------------
 
             var links = [];
             var baseNode = { fixed: true };
