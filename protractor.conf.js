@@ -12,6 +12,7 @@ exports.config = {
     framework: 'jasmine',
     maxSessions: 1,
     allScriptsTimeout: 30000,
+    rootElement: 'html',
     multiCapabilities: [
         {'browserName': 'chrome'},
         {'browserName': 'firefox'},
