@@ -26,30 +26,4 @@ angular.module('diplomacy.main')
         $scope.onWizardFinished = function() {
             $scope.user.save();
         };
-
-        // $scope.processForm = function() {
-        //
-        // };
-
-        // $scope.getNextState = function() {
-        //     switch ($state.current.name) {
-        //         case 'main.signup.username':
-        //             $state.go('main.signup.password');
-        //             break;
-        //         case 'main.signup.password':
-        //             $state.go('main.signup.email');
-        //             break;
-        //     }
-        // };
-
-        // $scope.getPrevState = function() {
-        //     switch ($state.current.name) {
-        //         case 'main.signup.email':
-        //             $state.go('main.signup.password');
-        //             break;
-        //         case 'main.signup.password':
-        //             $state.go('main.signup.username');
-        //             break;
-        //     }
-        // };
     }]);
