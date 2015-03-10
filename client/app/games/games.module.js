@@ -17,5 +17,13 @@ angular.module('games', [
         data: {
             restricted: true
         }
+    })
+    .state('games.new', {
+        url: '/new',
+        controller: 'NewGameController',
+        templateUrl: 'app/games/new/new.html',
+        data: {
+            restricted: true
+        }
     });
 }]);

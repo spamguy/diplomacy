@@ -36,9 +36,10 @@ angular.module('map.directives', ['SVGService'])
 
         variant = variant.data;
         season = season[0];
-        regionDictionary = _.indexBy(variant.regions, 'r');
 
         d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
+            regionDictionary = _.indexBy(variant.regions, 'r');
+            
             // STEP 1: build root <svg> -------------------
             var svg = d3.select(el)
                 .append('svg')
