@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('diplomacy.main')
-    .controller('SignupController', ['$scope', '$http', '$state', 'WizardHandler', function ($scope, $http, $state, WizardHandler) {
+    .controller('SignupController', ['$scope', '$http', function ($scope, $http) {
         angular.extend($scope, {
             user: {
                 username: null,

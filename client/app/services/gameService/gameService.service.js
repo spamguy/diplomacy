@@ -2,14 +2,9 @@
 
 angular.module('gameService', ['userService', 'restangular'])
 .factory('gameService', ['$http', 'userService', 'Restangular', function($http, userService, Restangular) {
-    // promises, promises
-    var getAllForCurrentUserPromise;
-
     return {
         getAllForCurrentUser: function() {
-            if (!getAllForCurrentUserPromise)
-                getAllForCurrentUserPromise = Restangular.one('users', userService.getCurrentUser()).getList('games');
-            return getAllForCurrentUserPromise;
+            return Restangular.one('users', userService.getCurrentUser()).getList('games');
         },
 
         getVariant: function(variantName) {
@@ -45,6 +40,10 @@ angular.module('gameService', ['userService', 'restangular'])
                 options.season = season;
 
             return Restangular.one('users', userService.getCurrentUser()).one('games', gameID).getList('moves', options);
+        },
+
+        createNewGame: function(game) {
+            Restangular.all('games').post(game);
         }
     };
 }]);

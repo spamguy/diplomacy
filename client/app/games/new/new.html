@@ -1,0 +1,18 @@
+<form name="newGameForm">
+    <wizard on-finish="onWizardFinished()">
+        <wz-step title="New Game" canexit="canExitStep1">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
+                    <p>What will your game be called?</p>
+
+                    <md-input-container>
+                        <label>Name</label>
+                        <input type="text" name="name" ng-model="game.name" required />
+                    </md-input-container>
+
+                    <p style="text-align:center"><md-button wz-next class="md-raised md-accent">Continue</md-button></p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+    </wizard>
+</form>

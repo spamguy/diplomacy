@@ -98,5 +98,13 @@ module.exports = (function() {
             });
     });
 
+    /**
+     * @description Saves new game.
+     * @return {string} The ID of the new game.
+     */
+    app.post('/games', function(req, res) {
+        return res.send({});
+    });
+
     return app;
 }());
