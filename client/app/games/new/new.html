@@ -1,4 +1,4 @@
-<form name="newGameForm">
+<form name="newGameForm" ng-if="hasDecentScore()">
     <wizard on-finish="onWizardFinished()">
         <wz-step title="New Game" canexit="canExitStep1">
             <div layout="row" layout-align="center center" layout-padding>
@@ -16,3 +16,11 @@
         </wz-step>
     </wizard>
 </form>
+
+<div layout="row" layout-align="center center" layout-padding ng-if="!hasDecentScore()">
+    <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
+        <h1>Sorry!</h1>
+
+        You haven't earned enough good standing to create and oversee games. {{minimumPointsToGM}} points are required; you have {{getCurrentScore()}}. Keep at it!
+    </md-whiteframe>
+</div>

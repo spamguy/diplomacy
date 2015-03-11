@@ -5,6 +5,7 @@ angular.module('diplomacy')
     $rootScope.isAuthenticated = userService.isAuthenticated();
 
     $rootScope.logOut = function() {
+        // TODO: delete user from local storage
         userService.unsetToken();
         $state.go('main.home');
     };
