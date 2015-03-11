@@ -6,11 +6,16 @@ module.exports = (function() {
     var mongoose = require('mongoose');
 
     var _ = require('lodash');
-    // var morgan = require('morgan');
-    // var compression = require('compression');
-    // var bodyParser = require('body-parser');
-    // var errorHandler = require('errorhandler');
     var jwt = require('jsonwebtoken');
+
+    app.get('/users/:id', function(req, res) {
+        var id = mongoose.Types.ObjectId(req.param('id'));
+
+        return require('../models/user').User
+            .findOne({ '_id': id }, function(err, user) {
+                return res.send(user);
+            });
+    });
 
     app.get('/users/:id/games', function(req, res) {
         var id = mongoose.Types.ObjectId(req.param('id'));

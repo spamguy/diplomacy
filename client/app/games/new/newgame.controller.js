@@ -11,12 +11,13 @@ angular.module('games')
 
     $scope.minimumPointsToGM = 10;
 
-    $scope.getCurrentScore = function() {
-        return userService.getCurrentUser().points;
-    };
+    userService.getUser(userService.getCurrentUser())
+        .then(function(user) {
+            $scope.points = user.points;
+        });
 
     $scope.hasDecentScore = function() {
-        return $scope.getCurrentScore() >= $scope.minimumPointsToGM;
+        return $scope.points >= $scope.minimumPointsToGM;
     };
 
     $scope.canExitStep1 = function() {
