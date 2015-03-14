@@ -1,16 +1,34 @@
-<form name="newGameForm" ng-if="hasDecentScore()">
+<form name="forms.newGameForm" ng-if="hasDecentScore()">
     <wizard on-finish="onWizardFinished()">
-        <wz-step title="New Game" canexit="canExitStep1">
+        <wz-step title="Name" canexit="canExitStep1">
             <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
                     <p>What will your game be called?</p>
 
                     <md-input-container>
                         <label>Name</label>
-                        <input type="text" name="name" ng-model="game.name" required />
+                        <input type="text" name="gamename" ng-model="game.name" required />
                     </md-input-container>
 
                     <p style="text-align:center"><md-button wz-next class="md-raised md-accent">Continue</md-button></p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Variant">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p>Choose a variant, if applicable.</p>
+
+                    <div layout="row" layout-padding>
+                        <div flex="33">
+                            <md-list>
+                                <md-item ng-repeat="variant in variants">
+                                    <md-item-content ng-click="loadVariant(variant)">{{variant}}</md-item-content>
+                                </md-item>
+                            </md-list>
+                        </div>
+                        <div flex="66">there</div>
+                    </div>
                 </md-whiteframe>
             </div>
         </wz-step>
@@ -21,6 +39,6 @@
     <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
         <h1>Sorry!</h1>
 
-        You haven't earned enough good standing to create and oversee games. {{minimumPointsToGM}} points are required; you have {{getCurrentScore()}}. Keep at it!
+        You haven't earned enough good standing to create and oversee games. {{minimumPointsToGM}} points are required; you have {{points}}. Keep at it!
     </md-whiteframe>
 </div>

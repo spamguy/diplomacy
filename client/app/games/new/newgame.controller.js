@@ -2,12 +2,21 @@
 
 angular.module('games')
 .controller('NewGameController', ['$scope', 'gameService', 'userService', function ($scope, gameService, userService) {
+    $scope.forms = {
+        newGameForm: { }
+    };
+
     angular.extend($scope, {
         game: {
             name: null,
             variant: null
         }
     });
+
+    gameService.getAllVariantNames()
+        .then(function(variants) {
+            $scope.variants = variants;
+        });
 
     $scope.minimumPointsToGM = 10;
 
@@ -21,10 +30,15 @@ angular.module('games')
     };
 
     $scope.canExitStep1 = function() {
-        return $scope.newGameForm.name.$valid;
+        return $scope.forms.newGameForm.gamename.$valid;
     };
 
     $scope.onWizardFinished = function() {
         gameService.createNewGame($scope.game);
+    };
+
+    $scope.loadVariant = function(variant) {
+        // TODO: This should probably be a directive
+        var variant = gameService.getVariant(variant.toLowerCase().replace(/\s/g,''));
     };
 }]);

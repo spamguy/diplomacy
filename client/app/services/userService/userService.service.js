@@ -33,7 +33,8 @@ angular.module('userService', ['LocalStorageModule', 'restangular'])
         },
 
         getUser: function(userID) {
-            Restangular.one('users', userID).get();
+            Restangular.setBaseUrl('/api'); // FIXME: there's gotta be a better way to bounce between /api and /publicapi...
+            return Restangular.one('users', userID).get();
         }
     };
 }]);

@@ -9,7 +9,7 @@ module.exports = (function() {
     var jwt = require('jsonwebtoken');
 
     app.get('/users/:id', function(req, res) {
-        var id = mongoose.Types.ObjectId(req.param('id'));
+        var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/user').User
             .findOne({ '_id': id }, function(err, user) {
@@ -18,7 +18,7 @@ module.exports = (function() {
     });
 
     app.get('/users/:id/games', function(req, res) {
-        var id = mongoose.Types.ObjectId(req.param('id'));
+        var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/game')(id).Game
             .find({ 'players.player_id': id }, function(err, players) {
@@ -27,8 +27,8 @@ module.exports = (function() {
     });
 
     app.get('/users/:id/games/:gid', function(req, res) {
-        var id = mongoose.Types.ObjectId(req.param('id')),
-            gid = mongoose.Types.ObjectId(req.param('gid'));
+        var id = mongoose.Types.ObjectId(req.params.id),
+            gid = mongoose.Types.ObjectId(req.params.gid);
 
         return require('../models/game')(gid).Game
             .findOne({ '_id': gid }, function(err, game) {

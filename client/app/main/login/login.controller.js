@@ -12,7 +12,6 @@ angular.module('diplomacy.main')
                         .success(function(data, status) {
                             userService.setCurrentUser(data.id);
                             userService.setToken(data.token);
-                            userService.setRefreshToken(data.refreshtoken);
 
                             // redirect to profile
                             $state.go('profile');

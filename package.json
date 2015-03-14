@@ -10,6 +10,7 @@
     "errorhandler": "^1.1.1",
     "express": "^4.11.2",
     "express-jwt": "~1.0.0",
+    "glob": "^5.0.3",
     "jsonwebtoken": "^1.1.2",
     "knex": "^0.7.3",
     "lodash": "^3.0.0",

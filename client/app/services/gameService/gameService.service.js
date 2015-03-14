@@ -11,11 +11,9 @@ angular.module('gameService', ['userService', 'restangular'])
             return $http.get('variants/' + variantName + '/' + variantName + '.json');
         },
 
-        // TODO: figure out constraints (not too early, not too late) and hook up to DB
-        getRandomStandardGame: function() {
-            return {
-
-            };
+        getAllVariantNames: function() {
+            Restangular.setBaseUrl('/publicapi');
+            return Restangular.all('variants').getList();
         },
 
         getGame: function(gameID) {
