@@ -16,8 +16,3 @@ The application as a whole consists of three parts:
  * The website. Developed using AngularJS and MongoDB.
  * The adjudicator, responsible for taking a set of moves and resolving them. Developed in raw JavaScript.
  * The server, responsible for scheduling adjudication events and dispensing the website. Developed with NodeJS/Express.
-
-# Installation
-
-1. Install NodeJS and MongoDB.
-2. Run `npm install` inside the directory, then `grunt serve`.
