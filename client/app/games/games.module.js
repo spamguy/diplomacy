@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('games', [
-    'ui.router'
+    'ui.router',
+    'ngMaterial'
 ])
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider

@@ -37,8 +37,7 @@ angular.module('games')
         gameService.createNewGame($scope.game);
     };
 
-    $scope.loadVariant = function(variant) {
-        // TODO: This should probably be a directive
-        var variant = gameService.getVariant(variant.toLowerCase().replace(/\s/g,''));
-    };
+    // $scope.loadVariant = function(variant) {
+    //     var variant = gameService.getVariant(variant.toLowerCase().replace(/\s/g,''));
+    // };
 }]);

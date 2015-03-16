@@ -19,18 +19,20 @@
                 <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
                     <p>Choose a variant, if applicable.</p>
 
-                    <div layout="row" layout-padding>
-                        <div flex="33">
-                            <md-list>
-                                <md-item ng-repeat="variant in variants">
-                                    <md-item-content ng-click="loadVariant(variant)">{{variant}}</md-item-content>
-                                </md-item>
-                            </md-list>
-                        </div>
-                        <div flex="66">there</div>
-                    </div>
+                    <!-- TODO: This is totally impractical. Maybe an iOS-like icon view? -->
+                    <md-radio-group ng-model="game.variant">
+                        <md-radio-button ng-repeat="variant in variants" ng-value="variant">{{variant}}</md-radio-group>
+                    </md-radio-group>
+
+                    <p style="text-align:center"><md-button wz-next class="md-raised md-accent">Continue</md-button></p>
                 </md-whiteframe>
             </div>
+        </wz-step>
+        <wz-step title="Movements">
+        </wz-step>
+        <wz-step title="Retreats">
+        </wz-step>
+        <wz-step title="Builds">
         </wz-step>
     </wizard>
 </form>
