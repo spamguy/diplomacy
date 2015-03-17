@@ -14,15 +14,26 @@ exports.config = {
     allScriptsTimeout: 30000,
     rootElement: 'html',
     multiCapabilities: [
-        {'browserName': 'chrome'},
-        {'browserName': 'firefox'},
-        {'name': 'diplomacy'},
-        {'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER ? process.env.TRAVIS_JOB_NUMBER : null},
-        {'build': process.env.TRAVIS_BUILD_NUMBER ? process.env.TRAVIS_BUILD_NUMBER : null}
+        capabilitiesForBrowser('chrome', '41'),
+        capabilitiesForBrowser('firefox'),
+        capabilitiesForBrowser('safari')
     ],
     jasmineNodeOpts: {
         showColors: true,
         defaultTimeoutInterval: 360000,
         includeStackTrace: true
     }
+};
+
+function capabilitiesForBrowser(browserName, browserVersion) {
+    var capabilities = {
+        'browserName': browserName,
+        'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+        'build': process.env.TRAVIS_BUILD_NUMBER,
+        'name': 'dipl.io'
+    };
+    if (browserVersion)
+        capabilities.version = browserVersion;
+
+    return capabilities;
 }
