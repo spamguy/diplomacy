@@ -239,11 +239,26 @@ module.exports = function(grunt) {
             }
         },
         protractor: {
-            e2e: {
-                configFile: 'protractor.conf.js',
-                keepAlive: true
+            travis: {
+                options: {
+                    configFile: 'protractor-travis.conf.js'
+                }
             }
         }
+    });
+
+    grunt.registerTask('sauce-connect', 'Launch Sauce Connect', function () {
+        var done = this.async();
+        require('sauce-connect-launcher')({
+            username: sauceUser,
+            accessKey: sauceKey
+        }, function (err, sauceConnectProcess) {
+            if (err) {
+                console.error(err.message);
+            } else {
+                done();
+            }
+        });
     });
 
     grunt.registerTask('build', [
@@ -269,5 +284,9 @@ module.exports = function(grunt) {
     ]);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
     grunt.registerTask('test', ['karma', 'express:dev', 'protractor:e2e']);
-    grunt.registerTask('travis', []);
+    grunt.registerTask('test:protractor-travis', [
+        'express:dev',
+        'sauce-connect',
+        'protractor:travis'
+    ]);
 };

@@ -11,18 +11,18 @@ exports.config = {
     specs: ['e2e/**/*.spec.js'],
     framework: 'jasmine',
     maxSessions: 1,
-    allScriptsTimeout: 30000,
+    allScriptsTimeout: 60000,
+    getPageTimeout: 60000,
     rootElement: 'html',
-    multiCapabilities: [
-        {'browserName': 'chrome'},
-        {'browserName': 'firefox'},
-        {'name': 'diplomacy'},
-        {'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER ? process.env.TRAVIS_JOB_NUMBER : null},
-        {'build': process.env.TRAVIS_BUILD_NUMBER ? process.env.TRAVIS_BUILD_NUMBER : null}
-    ],
+    multiCapabilities: [{
+        'browserName': 'chrome',
+        'version': '41',
+        'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+        'build': process.env.TRAVIS_BUILD_NUMBER
+    }],
     jasmineNodeOpts: {
         showColors: true,
         defaultTimeoutInterval: 360000,
         includeStackTrace: true
     }
-}
+};
