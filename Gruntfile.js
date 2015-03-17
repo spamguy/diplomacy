@@ -1,12 +1,9 @@
-// Generated on 2014-10-02 using generator-angular-fullstack 2.0.13
 'use strict';
 
 module.exports = function(grunt) {
-
     // load all grunt tasks
     require('load-grunt-tasks')(grunt);
 
-    // Project configuration.
     grunt.initConfig({
         // environment variable pkg
         pkg: grunt.file.readJSON("package.json"),
@@ -241,7 +238,11 @@ module.exports = function(grunt) {
         protractor: {
             travis: {
                 options: {
-                    configFile: 'protractor-travis.conf.js'
+                    configFile: 'protractor-travis.conf.js',
+                    args: {
+                        sauceUser: process.env.SAUCE_USERNAME,
+                        sauceKey: process.env.SAUCE_ACCESS_KEY
+                    }
                 }
             }
         }
@@ -250,8 +251,8 @@ module.exports = function(grunt) {
     grunt.registerTask('sauce-connect', 'Launch Sauce Connect', function () {
         var done = this.async();
         require('sauce-connect-launcher')({
-            username: sauceUser,
-            accessKey: sauceKey
+            username: process.env.SAUCE_USERNAME,
+            accessKey: process.env.SAUCE_ACCESS_KEY
         }, function (err, sauceConnectProcess) {
             if (err) {
                 console.error(err.message);
