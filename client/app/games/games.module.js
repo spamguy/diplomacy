@@ -2,7 +2,8 @@
 
 angular.module('games', [
     'ui.router',
-    'ngMaterial'
+    'ngMaterial',
+    'mdDateTime'
 ])
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider

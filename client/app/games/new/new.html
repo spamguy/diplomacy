@@ -1,5 +1,5 @@
 <form name="forms.newGameForm" ng-if="hasDecentScore()">
-    <wizard on-finish="onWizardFinished()">
+    <wizard on-finish="onWizardFinished()" hide-indicators="true"> <!-- This baby is so long the steps are squishing together! -->
         <wz-step title="Name" canexit="canExitStep1">
             <div layout="row" layout-align="center center" layout-padding>
                 <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
@@ -29,6 +29,22 @@
             </div>
         </wz-step>
         <wz-step title="Movements">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p>Choose when and how movement phases are processed.</p>
+
+                    <md-radio-group ng-model="game.movementTiming" class="clockRadioLine">
+                        <div layout="row" class="clockOption">
+                            <md-radio-button value="clock"></md-radio-button>
+                            <label>Every</label>
+                            <md-input-container>
+                                <input type="number" name="movementClockHours" ng-model="game.movementClockHours" />
+                            </md-input-container>
+                            <label>hours</label>
+                        </div>
+                    </md-radio-group>
+                </md-whiteframe>
+            </div>
         </wz-step>
         <wz-step title="Retreats">
         </wz-step>

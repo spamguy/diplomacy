@@ -9,7 +9,9 @@ angular.module('games')
     angular.extend($scope, {
         game: {
             name: null,
-            variant: null
+            variant: null,
+            movementTiming: null,
+            movementClockHours: 24
         }
     });
 
