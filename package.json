@@ -38,6 +38,7 @@
     "grunt-contrib-uglify": "~0.7.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-env": "~0.4.1",
+    "grunt-express-middleware": "^1.0.1",
     "grunt-express-server": "~0.4.17",
     "grunt-karma": "~0.8.2",
     "grunt-mocha-test": "~0.10.2",
