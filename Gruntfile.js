@@ -320,7 +320,7 @@ module.exports = function(grunt) {
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'express-keepalive']);
     grunt.registerTask('test', ['karma', 'webdriver', 'connect:e2e', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
-        'connect:e2e',
+        'express:dev',
         'sauce-connect',
         'protractor:travis'
     ]);
