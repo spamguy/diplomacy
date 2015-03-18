@@ -4,9 +4,27 @@ module.exports = function(grunt) {
     // load all grunt tasks
     require('load-grunt-tasks')(grunt);
 
+    grunt.registerTask('default', ['connect:server:keepalive']);
+
     grunt.initConfig({
         // environment variable pkg
         pkg: grunt.file.readJSON("package.json"),
+
+        connect: {
+            e2e: {
+                options: {
+                    port: 9000,
+                    hostname: '0.0.0.0',
+                    middleware: function (connect, options) {
+                        console.log('options.base', options.base);
+                        var base = Array.isArray(options.base) ? options.base[options.base.length - 1] : options.base;
+                        return [
+                            connect.static(base)
+                        ];
+                    }
+                }
+            }
+        },
 
         express: {
             dev: {
@@ -286,9 +304,8 @@ module.exports = function(grunt) {
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'express-keepalive']);
     grunt.registerTask('test', ['karma', 'express:dev', 'protractor:e2e']);
     grunt.registerTask('test:protractor-travis', [
-        'express:dev',
+        'connect:e2e',
         'sauce-connect',
-        'protractor:travis',
-        'express-keepalive'
+        'protractor:travis'
     ]);
 };

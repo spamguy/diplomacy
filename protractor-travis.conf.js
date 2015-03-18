@@ -11,8 +11,8 @@ exports.config = {
     specs: ['e2e/**/*.spec.js'],
     framework: 'jasmine',
     maxSessions: 1,
-    allScriptsTimeout: 60000,
-    getPageTimeout: 60000,
+    allScriptsTimeout: 40000,
+    getPageTimeout: 40000,
     rootElement: 'html',
     multiCapabilities: [{
         'browserName': 'chrome',
