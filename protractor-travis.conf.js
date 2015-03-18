@@ -17,7 +17,6 @@ exports.config = {
     multiCapabilities: [{
         'browserName': 'chrome',
         'version': '41',
-        'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
         'build': process.env.TRAVIS_BUILD_NUMBER
     }],
     jasmineNodeOpts: {
