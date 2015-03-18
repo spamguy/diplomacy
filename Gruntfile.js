@@ -11,7 +11,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         connect: {
-            testserver: {
+            e2e: {
                 options: {
                     port: 9002,
                     hostname: '0.0.0.0',
@@ -317,8 +317,8 @@ module.exports = function(grunt) {
         'changelog',
         'clean:after'
     ]);
-    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'connect:e2e']);//'express:dev', 'open', 'express-keepalive']);
-    grunt.registerTask('test', ['karma', 'webdriver', 'connect:testserver', 'protractor:local']);
+    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'express-keepalive']);
+    grunt.registerTask('test', ['karma', 'webdriver', 'connect:e2e', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'connect:e2e',
         'sauce-connect',
