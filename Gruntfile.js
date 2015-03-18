@@ -283,11 +283,11 @@ module.exports = function(grunt) {
         'changelog',
         'clean:after'
     ]);
-    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
+    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'express-keepalive']);
     grunt.registerTask('test', ['karma', 'express:dev', 'protractor:e2e']);
     grunt.registerTask('test:protractor-travis', [
         'express:dev',
-        'watch',
+        'express-keepalive',
         'sauce-connect',
         'protractor:travis'
     ]);
