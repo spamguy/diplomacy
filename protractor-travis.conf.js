@@ -14,14 +14,26 @@ exports.config = {
     allScriptsTimeout: 40000,
     getPageTimeout: 40000,
     rootElement: 'html',
-    multiCapabilities: [{
-        'browserName': 'chrome',
-        'version': '41',
-        'build': process.env.TRAVIS_BUILD_NUMBER
-    }],
+    multiCapabilities: [
+        capabilitiesForBrowser('chrome', '41'),
+        capabilitiesForBrowser('firefox'),
+        capabilitiesForBrowser('safari')
+    ],
     jasmineNodeOpts: {
         showColors: true,
         defaultTimeoutInterval: 360000,
         includeStackTrace: true
     }
 };
+
+function capabilitiesForBrowser(browserName, browserVersion) {
+    var capabilities = {
+        'browserName': browserName,
+        'build': process.env.TRAVIS_BUILD_NUMBER,
+        'name': 'dipl.io'
+    };
+    if (browserVersion)
+        capabilities.version = browserVersion;
+
+    return capabilities;
+}
