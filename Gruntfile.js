@@ -287,6 +287,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['karma', 'express:dev', 'protractor:e2e']);
     grunt.registerTask('test:protractor-travis', [
         'express:dev',
+        'watch',
         'sauce-connect',
         'protractor:travis'
     ]);
