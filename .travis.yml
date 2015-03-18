@@ -16,6 +16,9 @@ git:
     submodules: false
 # Use sed to replace the SSH URL with the public URL, then initialize submodules
 before_install:
+    - sudo apt-get install nginx
+    - cat nginx.travis.conf >> /etc/nginx/nginx.conf
+    - /etc/init.d/nginx restart
     - npm install -g bower
     - bower install
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules

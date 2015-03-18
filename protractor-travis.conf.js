@@ -6,7 +6,7 @@ exports.config = {
     // sauce plz
     sauceUser: process.env.SAUCE_USERNAME,
     sauceKey: process.env.SAUCE_ACCESS_KEY,
-    baseUrl: 'http://localhost:9000',
+    baseUrl: 'http://localhost',
 
     specs: ['e2e/**/*.spec.js'],
     framework: 'jasmine',

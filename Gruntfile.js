@@ -11,9 +11,9 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         connect: {
-            e2e: {
+            testserver: {
                 options: {
-                    port: 9000,
+                    port: 9002,
                     hostname: '0.0.0.0',
                     middleware: function (connect, options) {
                         console.log('options.base', options.base);
@@ -262,6 +262,11 @@ module.exports = function(grunt) {
                         sauceKey: process.env.SAUCE_ACCESS_KEY
                     }
                 }
+            },
+            local: {
+                options: {
+                    configFile: 'protractor-local.conf.js'
+                }
             }
         }
     });
@@ -312,8 +317,8 @@ module.exports = function(grunt) {
         'changelog',
         'clean:after'
     ]);
-    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'express-keepalive']);
-    grunt.registerTask('test', ['karma', 'express:dev', 'protractor:e2e']);
+    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'connect:e2e']);//'express:dev', 'open', 'express-keepalive']);
+    grunt.registerTask('test', ['karma', 'webdriver', 'connect:testserver', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'connect:e2e',
         'sauce-connect',
