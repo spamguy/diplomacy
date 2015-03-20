@@ -36,9 +36,9 @@ angular.module('map.directives', ['SVGService'])
 
         variant = variant.data;
         season = season[0];
-        regionDictionary = _.indexBy(variant.regions, 'r');
-
         d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
+            regionDictionary = _.indexBy(variant.regions, 'r');
+
             // STEP 1: build root <svg> -------------------
             var svg = d3.select(el)
                 .append('svg')
@@ -78,8 +78,7 @@ angular.module('map.directives', ['SVGService'])
             // STEP 4: add clickable region layer ---------
             var mouseLayer = svg.append(function() {
                 return xml.documentElement.firstElementChild; })
-                .selectAll('path')
-                .attr('fill', 'transparent');
+                .selectAll('path');
 
             // add events to clickable layer if readonly disabled
             if (!readonly && xml)

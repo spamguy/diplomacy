@@ -1,0 +1,42 @@
+.sc
+{
+    stroke: #000;
+    stroke-width: 30px;
+}
+
+path.link
+{
+    fill: none;
+    stroke: #000;
+    stroke-width: 3px;
+
+    .fail
+    {
+        stroke: #f00;
+    }
+}
+
+marker#move
+{
+    fill: #000;
+
+    .fail
+    {
+        fill: #f00;
+    }
+}
+
+marker#support
+{
+    stroke-dasharray: '10, 5';
+}
+
+g.mouseLayer path
+{
+    fill: #000;
+    fill-opacity: 0.0;
+    &:hover
+    {
+        fill-opacity: 0.1;
+    }
+}
