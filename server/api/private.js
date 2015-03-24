@@ -51,9 +51,8 @@ module.exports = (function() {
             season = req.params.season,
             year = req.params.year;
 
-        // The user calling this method should match the token to prevent API exploitation.
-        if (token_player_id !== player_id.toString())
-            return res.send(401, 'Token does not match the supplied player.');
+        if (!playerIDMatchesLoggedInPlayer(player_id, token_player_id))
+            res.send(401, 'Token does not match the supplied player.')
 
         require('../models/game')(player_id).Game.findOne({ '_id': game_id }, function(err, game) {
             var isComplete = game.isComplete,
@@ -108,8 +107,24 @@ module.exports = (function() {
      * @return {string} The ID of the new game.
      */
     app.post('/games', function(req, res) {
-        return res.send({});
+        var game = new require('../models/game').Game({
+            variant: req.body.variant,
+            name: req.body.name
+        });
+
+        return res.send(201);
     });
+
+    /**
+     * @description Verify the logged-in user (i.e., the ID embedded in the JWT) matches the user ID parameter.
+     * @param  {String} playerID The player ID parameter.
+     * @param  {String} tokenPlayerID    The player ID embedded in the JWT.
+     * @return {Boolean}         Whether the users are the same.
+     */
+    var playerIDMatchesLoggedInPlayer = function(playerID, tokenPlayerID) {
+        if (tokenPlayerID !== playerID.toString())
+            return false;
+    };
 
     return app;
 }());
