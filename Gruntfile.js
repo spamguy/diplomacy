@@ -227,9 +227,6 @@ module.exports = function(grunt) {
                 dest: '.tmp/concat/app.min.js'
             }
         },
-        changelog: {
-            repository: 'https://github.com/spamguy/diplomacy'
-        },
         karma: {
             unit: {
                 configFile: 'karma.conf.js'
@@ -296,7 +293,6 @@ module.exports = function(grunt) {
         'cssmin',
         'replace:footer',
         'uglify',
-        'changelog',
         'clean:after'
     ]);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
