@@ -71,7 +71,7 @@ module.exports = (function() {
         })(req, res, next);
     });
 
-    app.put('/new', function(req, res, next) {
+    app.post('/new', function(req, res, next) {
         var salt = pbkdf2.generateSalt();
         pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
             var user = new require('../models/user').User({
@@ -83,7 +83,7 @@ module.exports = (function() {
             });
 
             user.save();
-            return res.send({ username: user.username });
+            return res.send(201);
         });
     });
 

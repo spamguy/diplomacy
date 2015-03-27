@@ -1,12 +1,9 @@
-// Generated on 2014-10-02 using generator-angular-fullstack 2.0.13
 'use strict';
 
 module.exports = function(grunt) {
-
     // load all grunt tasks
     require('load-grunt-tasks')(grunt);
 
-    // Project configuration.
     grunt.initConfig({
         // environment variable pkg
         pkg: grunt.file.readJSON("package.json"),
@@ -230,20 +227,52 @@ module.exports = function(grunt) {
                 dest: '.tmp/concat/app.min.js'
             }
         },
-        changelog: {
-            repository: 'https://github.com/spamguy/diplomacy'
-        },
         karma: {
             unit: {
                 configFile: 'karma.conf.js'
             }
         },
         protractor: {
-            e2e: {
-                configFile: 'protractor.conf.js',
-                keepAlive: true
+            travis: {
+                options: {
+                    configFile: 'protractor-travis.conf.js',
+                    args: {
+                        sauceUser: process.env.SAUCE_USERNAME,
+                        sauceKey: process.env.SAUCE_ACCESS_KEY
+                    }
+                }
+            },
+            local: {
+                options: {
+                    configFile: 'protractor-local.conf.js'
+                }
             }
         }
+    });
+
+    grunt.registerTask('webdriver', 'Update webdriver', function() {
+    var done = this.async();
+    var p = require('child_process').spawn('node', ['node_modules/protractor/bin/webdriver-manager', 'update']);
+    p.stdout.pipe(process.stdout);
+    p.stderr.pipe(process.stderr);
+    p.on('exit', function(code){
+      if(code !== 0) grunt.fail.warn('Webdriver failed to update');
+      done();
+    });
+  });
+
+    grunt.registerTask('sauce-connect', 'Launch Sauce Connect', function () {
+        var done = this.async();
+        require('sauce-connect-launcher')({
+            username: process.env.SAUCE_USERNAME,
+            accessKey: process.env.SAUCE_ACCESS_KEY
+        }, function (err, sauceConnectProcess) {
+            if (err) {
+                console.error(err.message);
+            } else {
+                done();
+            }
+        });
     });
 
     grunt.registerTask('build', [
@@ -264,10 +293,13 @@ module.exports = function(grunt) {
         'cssmin',
         'replace:footer',
         'uglify',
-        'changelog',
         'clean:after'
     ]);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
-    grunt.registerTask('test', ['karma', 'express:dev', 'protractor:e2e']);
-    grunt.registerTask('travis', []);
+    grunt.registerTask('test', ['karma', 'webdriver', 'express:dev', 'protractor:local']);
+    grunt.registerTask('test:protractor-travis', [
+        'express:dev',
+        'sauce-connect',
+        'protractor:travis'
+    ]);
 };

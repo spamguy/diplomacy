@@ -1,21 +1,132 @@
-<div class="container container-md-height">
-    <div class="row row-md-height">
-        <div class="col-md-1 col-md-height col-middle animatedFormArrows">
-            <button ng-click="getPrevState()" data-ng-disabled="signupForm.$invalid">
-                <i class="fa fa-arrow-circle-o-left fa-3x"></i>
-            </button>
-        </div>
-        <div class="col-md-8 col-md-height">
-            <form id="signupForm" name="signupForm" ng-submit="processForm()">
-                <div class="row">
-                    <div id="form-views" ui-view />
-                </div>
-            </form>
-        </div>
-        <div class="col-md-1 col-md-height col-middle animatedFormArrows">
-            <button ng-click="getNextState()" data-ng-disabled="signupForm.$invalid">
-                <i class="fa fa-arrow-circle-o-right fa-3x"></i>
-            </button>
-        </div>
-    </div>
+<form name="forms.newGameForm" ng-if="hasDecentScore()">
+    <wizard on-finish="onWizardFinished()" hide-indicators="true"> <!-- This baby is so long the steps are squishing together! -->
+        <wz-step title="Name" canexit="canExitStep1">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p class="subheader">What will your game be called?</p>
+
+                    <md-input-container>
+                        <label>Name</label>
+                        <input type="text" name="gamename" ng-model="game.name" required />
+                    </md-input-container>
+
+                    <p style="text-align:center"><md-button wz-next class="md-raised md-accent">Continue</md-button></p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Variant">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p class="subheader">Choose a variant.</p>
+
+                    <!-- TODO: This is totally impractical. Maybe an iOS-like icon view? -->
+                    <md-radio-group ng-model="game.variant">
+                        <md-radio-button ng-repeat="variant in variants" ng-value="variant">{{variant}}</md-radio-group>
+                    </md-radio-group>
+
+                    <p style="text-align:center">
+                        <md-button wz-previous class="md-raised">Back</md-button>
+                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
+                    </p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Movements">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p class="subheader">Choose when and how movement phases are processed.</p>
+
+                    <md-radio-group ng-model="game.movementType" class="clockRadioLine">
+                        <div layout="row" class="clockOption">
+                            <md-radio-button value="clock"></md-radio-button>
+                            <label>Every</label>
+                            <md-input-container>
+                                <input type="number" name="movementClock" ng-model="game.movementClock" />
+                            </md-input-container>
+                            <label>minutes</label>
+                        </div>
+                        <div layout="row" class="calendarOption">
+                            <md-radio-button value="calendar"></md-radio-button>
+                        </div>
+                    </md-radio-group>
+
+                    <p style="text-align:center">
+                        <md-button wz-previous class="md-raised">Back</md-button>
+                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
+                    </p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Retreats">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p style="text-align:center">
+                        <md-button wz-previous class="md-raised">Back</md-button>
+                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
+                    </p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Builds">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p style="text-align:center">
+                        <md-button wz-previous class="md-raised">Back</md-button>
+                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
+                    </p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Press">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p class="subheader">What type of press can players use?</p>
+
+                    <md-radio-group ng-model="game.press">
+                        <md-radio-button value="white">White</md-radio-button>
+                        <md-radio-button value="grey">Grey</md-radio-button>
+                        <md-radio-button value="black">Black</md-radio-button>
+                        <md-radio-button value="none">None (Gunboat)</md-radio-button>
+                    </md-radio-group>
+
+                    <p style="text-align:center">
+                        <md-button wz-previous class="md-raised">Back</md-button>
+                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
+                    </p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Press">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p class="subheader">Set this game's visibility.</p>
+
+                    <md-radio-group ng-model="game.visibility">
+                        <md-radio-button value="public">Public</md-radio-button>
+                        <md-radio-button value="private">Private</md-radio-button>
+                    </md-radio-group>
+
+                    <div ng-if="game.visibility == 'private'">
+                        <md-input-container>
+                            <label>Password</label>
+                            <input type="password" name="gamepassword" ng-model="game.password" required />
+                        </md-input-container>
+                    </div>
+
+                    <p style="text-align:center">
+                        <md-button wz-previous class="md-raised">Back</md-button>
+                        <md-button wz-finish class="md-raised md-accent">Complete</md-button>
+                    </p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+    </wizard>
+</form>
+
+<div layout="row" layout-align="center center" layout-padding ng-if="!hasDecentScore()">
+    <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
+        <h1>Sorry!</h1>
+
+        You haven't earned enough good standing to create and oversee games. {{minimumPointsToGM}} points are required; you have {{points}}. Keep at it!
+    </md-whiteframe>
 </div>

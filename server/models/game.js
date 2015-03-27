@@ -14,7 +14,10 @@ module.exports = function(id) {
                     player_id: mongoose.Schema.Types.ObjectId,
                     power: String
                 }
-            ]
+            ],
+            minimumScoreToJoin: Number,
+            password: String,
+            passwordsalt: String
         });
         GameSchema.virtual('isAdmin')
             .get(function() {

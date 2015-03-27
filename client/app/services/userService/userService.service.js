@@ -3,7 +3,6 @@
 angular.module('userService', ['LocalStorageModule', 'restangular'])
 .factory('userService', ['localStorageService', 'Restangular', function(localStorageService, Restangular) {
     return {
-        // no promise desired, because cached data is of limited use here
         userExists: function(username) {
             Restangular.setBaseUrl('/publicapi');
             return Restangular.one('users', username).customGET('exists');
@@ -25,20 +24,17 @@ angular.module('userService', ['LocalStorageModule', 'restangular'])
             localStorageService.remove('token');
         },
 
-        getRefreshToken: function() {
-            return localStorageService.get('refreshtoken');
-        },
-
-        setRefreshToken: function(token) {
-            localStorageService.set('refreshtoken', token);
-        },
-
         getCurrentUser: function() {
             return localStorageService.get('currentUser');
         },
 
         setCurrentUser: function(userID) {
             localStorageService.set('currentUser', userID);
+        },
+
+        getUser: function(userID) {
+            Restangular.setBaseUrl('/api'); // FIXME: there's gotta be a better way to bounce between /api and /publicapi...
+            return Restangular.one('users', userID).get();
         }
     };
 }]);

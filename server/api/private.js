@@ -6,14 +6,19 @@ module.exports = (function() {
     var mongoose = require('mongoose');
 
     var _ = require('lodash');
-    // var morgan = require('morgan');
-    // var compression = require('compression');
-    // var bodyParser = require('body-parser');
-    // var errorHandler = require('errorhandler');
     var jwt = require('jsonwebtoken');
 
+    app.get('/users/:id', function(req, res) {
+        var id = mongoose.Types.ObjectId(req.params.id);
+
+        return require('../models/user').User
+            .findOne({ '_id': id }, function(err, user) {
+                return res.send(user);
+            });
+    });
+
     app.get('/users/:id/games', function(req, res) {
-        var id = mongoose.Types.ObjectId(req.param('id'));
+        var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/game')(id).Game
             .find({ 'players.player_id': id }, function(err, players) {
@@ -22,8 +27,8 @@ module.exports = (function() {
     });
 
     app.get('/users/:id/games/:gid', function(req, res) {
-        var id = mongoose.Types.ObjectId(req.param('id')),
-            gid = mongoose.Types.ObjectId(req.param('gid'));
+        var id = mongoose.Types.ObjectId(req.params.id),
+            gid = mongoose.Types.ObjectId(req.params.gid);
 
         return require('../models/game')(gid).Game
             .findOne({ '_id': gid }, function(err, game) {
@@ -49,6 +54,7 @@ module.exports = (function() {
         // The user calling this method should match the token to prevent API exploitation.
         if (token_player_id !== player_id.toString())
             return res.send(401, 'Token does not match the supplied player.');
+
 
         require('../models/game')(player_id).Game.findOne({ '_id': game_id }, function(err, game) {
             var isComplete = game.isComplete,
@@ -96,6 +102,38 @@ module.exports = (function() {
             .find({ 'game_id': id }, function(err, moves) {
                 return res.send(moves);
             });
+    });
+
+    /**
+     * @description Saves new game.
+     * @return {string} The ID of the new game.
+     */
+    app.post('/games', function(req, res) {
+        var game = require('../models/game')().Game({
+            variant: req.body.variant.toLowerCase(),
+            name: req.body.name,
+            visibility: req.body.visibility,
+            movementType: req.body.movementType,
+            players: [{
+                    player_id: req.body.playerID,
+                    power: '*'
+                }
+            ]
+        });
+
+        if (game.movementType === 'clock')
+            game.movementClock = req.body.movementClock;
+
+        // generate password hash
+        if (game.visibility === 'private') {
+            // TODO: hash password as found in /auth/new
+            game.passwordsalt = '';
+            game.password = '';
+        }
+
+        game.save();
+
+        return res.send(201);
     });
 
     return app;

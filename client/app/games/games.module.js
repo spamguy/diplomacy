@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('games', [
-    'ui.router'
+    'ui.router',
+    'ngMaterial'
 ])
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider
@@ -9,6 +10,14 @@ angular.module('games', [
         abstract: true,
         url: '/games',
         template: '<ui-view />'
+    })
+    .state('games.new', {
+        url: '/new',
+        controller: 'NewGameController',
+        templateUrl: 'app/games/new/new.html',
+        data: {
+            restricted: true
+        }
     })
     .state('games.view', {
         url: '/:id',

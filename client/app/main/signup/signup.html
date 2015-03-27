@@ -1,7 +1,9 @@
-    <form name="signupForm">
-        <wizard on-finish="onWizardFinished()">
-            <wz-step title="Welcome" canexit="canExitUsernameStep">
-                <div class="wizardContainer">
+
+<form name="signupForm">
+    <wizard on-finish="onWizardFinished()">
+        <wz-step title="Welcome" canexit="canExitUsernameStep">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
                     <span class="headline">Welcome!</span>
 
                     <p class="text">Glad to <del>stab</del> meet you. Please set up an account to start playing.</p>
@@ -17,11 +19,13 @@
                         </div>
                     </md-input-container>
 
-                    <p><md-button wz-next class="md-raised md-primary">Continue</md-button></p>
-                </div>
-            </wz-step>
-            <wz-step title="Password" canexit="canExitPasswordStep">
-                <div class="wizardContainer">
+                    <p style="text-align:center"><md-button wz-next class="md-raised md-accent">Continue</md-button></p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Password" canexit="canExitPasswordStep">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
                     <p class="text">Now choose a good password:</p>
 
                     <md-input-container>
@@ -40,11 +44,13 @@
                         </div>
                     </md-input-container>
 
-                    <p><md-button wz-next class="md-raised md-primary">Continue</md-button></p>
-                </div>
-            </wz-step>
-            <wz-step title="Email">
-                <div class="wizardContainer">
+                    <p style="text-align:center"><md-button wz-next class="md-raised md-accent">Continue</md-button></p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+        <wz-step title="Email">
+            <div layout="row" layout-align="center center" layout-padding>
+                <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
                     <p class="text">Finally, provide your email address:</p>
 
                     <md-input-container>
@@ -55,9 +61,9 @@
                         </div>
                     </md-input-container>
 
-                    <p><md-button ng-disabled="signupForm.$invalid" wz-finish class="md-raised md-primary">Submit</md-button></p>
-                </div>
-            </wz-step>
-        </wizard>
-    </form>
-</div>
+                    <p style="text-align:center"><md-button ng-disabled="signupForm.$invalid" wz-finish class="md-raised md-accent">Submit</md-button></p>
+                </md-whiteframe>
+            </div>
+        </wz-step>
+    </wizard>
+</form>
