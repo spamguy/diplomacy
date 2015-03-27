@@ -8,6 +8,8 @@ angular.module('diplomacy.main')
                 password: null,
                 password2: null,
                 email: null,
+                points: 0,
+                timezone: 0,
                 save: function() {
                     $http.put('/auth/new', this);
                 }

@@ -10,9 +10,12 @@ angular.module('games')
         game: {
             name: null,
             variant: 'Standard',
-            movementTiming: null,
-            movementClockMinutes: 1440,
-            privacy: 'public'
+            movementType: 'clock',
+            movementClock: 1440,
+            visibility: 'public',
+            press: 'white',
+            minimumScoreToJoin: 0,
+            playerID: userService.getCurrentUser()
         }
     });
 

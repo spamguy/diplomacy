@@ -6,7 +6,8 @@ var UserSchema = new mongoose.Schema({
     passwordsalt: String,
     refreshtoken: String,
     email: String,
-    points: Number
+    points: Number,
+    timezone: Number
 });
 
 var User = mongoose.model('User', UserSchema);

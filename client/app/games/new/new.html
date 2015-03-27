@@ -36,14 +36,17 @@
                 <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
                     <p class="subheader">Choose when and how movement phases are processed.</p>
 
-                    <md-radio-group ng-model="game.movementTiming" class="clockRadioLine">
+                    <md-radio-group ng-model="game.movementType" class="clockRadioLine">
                         <div layout="row" class="clockOption">
                             <md-radio-button value="clock"></md-radio-button>
                             <label>Every</label>
                             <md-input-container>
-                                <input type="number" name="movementClockHours" ng-model="game.movementClockMinutes" />
+                                <input type="number" name="movementClock" ng-model="game.movementClock" />
                             </md-input-container>
                             <label>minutes</label>
+                        </div>
+                        <div layout="row" class="calendarOption">
+                            <md-radio-button value="calendar"></md-radio-button>
                         </div>
                     </md-radio-group>
 
@@ -112,7 +115,7 @@
 
                     <p style="text-align:center">
                         <md-button wz-previous class="md-raised">Back</md-button>
-                        <md-button wz-next class="md-raised md-accent">Complete</md-button>
+                        <md-button wz-finish class="md-raised md-accent">Complete</md-button>
                     </p>
                 </md-whiteframe>
             </div>
