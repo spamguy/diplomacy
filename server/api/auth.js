@@ -79,7 +79,8 @@ module.exports = (function() {
                 password: hash,
                 passwordsalt: salt,
                 refreshtoken: pbkdf2.random(10).toString('hex'),
-                email: req.body.email
+                email: req.body.email,
+                points: 0
             });
 
             user.save();
