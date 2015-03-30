@@ -7,30 +7,36 @@
 path.link
 {
     fill: none;
-    stroke: #000;
     stroke-width: 3px;
-
-    .fail
-    {
-        stroke: #f00;
-    }
 }
 
-marker#move
+.ok
+{
+    stroke: #000;
+}
+
+.failed
+{
+    stroke: #f00;
+    stroke-dasharray: 10, 5;
+}
+
+/* ARROWHEADS
+ *
+ * SVG 1.x lameness: CSS must be defined on a per-marker basis. See http://stackoverflow.com/a/16665510/260460.
+ * Supposedly made easier by SVG 2, but browser support is low to nil.
+ */
+marker#move, marker#support
 {
     fill: #000;
-
-    .fail
-    {
-        fill: #f00;
-    }
 }
 
-marker#support
+marker#failedmove, marker#failedsupport
 {
-    stroke-dasharray: '10, 5';
+    fill: #f00;
 }
 
+/* HOVER */
 g.mouseLayer path
 {
     fill: #000;
