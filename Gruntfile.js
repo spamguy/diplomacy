@@ -4,6 +4,13 @@ module.exports = function(grunt) {
     // load all grunt tasks
     require('load-grunt-tasks')(grunt);
 
+    // for smarter date formatting
+    var moment = require('moment');
+
+    var formatDate = function() {
+        return moment().format('YYYYMMDD');
+    };
+
     grunt.initConfig({
         // environment variable pkg
         pkg: grunt.file.readJSON("package.json"),
@@ -170,6 +177,9 @@ module.exports = function(grunt) {
                 replacements: [{
                         from: '{{VERSION}}',
                         to: '<%= pkg.version %>'
+                    }, {
+                        from: '{{TIMESTAMP}}',
+                        to: formatDate()
                     }
                 ]
             }
@@ -299,6 +309,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['karma', 'webdriver', 'express:dev', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'express:dev',
+        'karma',
         'sauce-connect',
         'protractor:travis'
     ]);
