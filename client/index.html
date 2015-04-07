@@ -10,6 +10,7 @@
     <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
     <link href="http://fonts.googleapis.com/css?family=Josefin+Sans:700" rel="stylesheet" type="text/css" />
     <!-- build:css app.min.css -->
+    <link href="../bower_components/ng-mfb/mfb/src/mfb.css" rel="stylesheet" type="text/css" />
     <link href="../bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/angular-wizard.min.css" rel="stylesheet" type="text/css" /> <!-- Don't use factory CSS: https://github.com/mgonto/angular-wizard/issues/34 -->
     <link rel="stylesheet" href="temp/app.css" />
@@ -21,15 +22,12 @@
             <span class="logo">dipl.io</span>
 
             <span flex></span>
-
-            <!-- TODO: Replace with something cleverer once Angular Material adds more components -->
-            <div class="fill-height">
-                <md-button md-no-ink class="md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.signup">Sign up</md-button>
-                <md-button md-no-ink class="md-toolbar-item" ng-if="!isAuthenticated" ui-sref="main.login">Log in</md-button>
-                <md-button md-no-ink class="md-toolbar-item" ng-if="isAuthenticated" ng-click="logOut()">Log out</md-button>
-            </div>
         </div>
     </md-toolbar>
+    <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed">
+        <button mfb-button icon="notes" ui-sref="main.signup" label="Register" template-url="ng-mfb-button-md.tpl.html"></button>
+        <button mfb-button icon="power" ui-sref="main.login" label="Log in" template-url="ng-mfb-button-md.tpl.html"></button>
+    </mfb-menu>
 
     <div layout="column" layout-fill>
         <div style="margin-top:50px;">
@@ -63,6 +61,7 @@
     <script src="../bower_components/angular-material/angular-material.js"></script>
     <script src="../bower_components/lodash/lodash.js"></script>
     <script src="../bower_components/hammerjs/hammer.js"></script>
+    <script src="../bower_components/ng-mfb/src/mfb-directive.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

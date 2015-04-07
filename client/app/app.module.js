@@ -10,16 +10,23 @@ angular.module('diplomacy', [
     'diplomacy.main',
     'profile',
     'map.directives',
-    'ngMaterial'
+    'ngMaterial',
+    'ng-mfb'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider',
-function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider',
+function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider) {
     // material design theme definitions
     $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
         .accentPalette('red', {
             default: '900'
         });
+
+    // icon definitions
+    $mdIconProvider
+        .icon('menu', '../assets/images/menu48.svg', 24)
+        .icon('power', '../assets/images/power.svg', 24)
+        .icon('notes', '../assets/images/notes26.svg', 24);
 
     // local storage config
     localStorageServiceProvider.setPrefix('diplomacy');
@@ -38,9 +45,6 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
         }
     }];
     $httpProvider.interceptors.push('jwtInterceptor');
-
-    //$urlRouterProvider
-    //    .otherwise('/main/home');
 
     $locationProvider.html5Mode(true);
 }])
