@@ -21,8 +21,8 @@ module.exports = function(id) {
         });
         GameSchema.virtual('isAdmin')
             .get(function() {
-                for (var p = 0; p < this.length; p++) {
-                    if (p.power === '*' && p._id === id)
+                for (var p = 0; p < this.players.length; p++) {
+                    if (this.players[p].power === '*' && this.players[p].player_id.toString() === id.toString())
                         return true;
                 }
 
