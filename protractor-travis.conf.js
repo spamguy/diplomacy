@@ -23,6 +23,11 @@ exports.config = {
         showColors: true,
         defaultTimeoutInterval: 360000,
         includeStackTrace: true
+    },
+    onPrepare: function() {
+        require('protractor-http-mock').config = {
+            protractorConfig: 'protractor-travis.conf'
+        };
     }
 };
 

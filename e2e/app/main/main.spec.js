@@ -1,14 +1,13 @@
-'use strict';
-
 describe('Home page', function() {
-  var page;
+    'use strict';
+    var page;
 
-  beforeEach(function() {
-    browser.get(browser.baseUrl);
+    beforeEach(function() {
+        browser.get(browser.baseUrl);
     //page = require('./main.po');
-  });
+    });
 
-  it('should pass', function() {
-      expect(true).toBe(true);
-  });
+    it('should pass', function() {
+        expect(true).toBe(true);
+    });
 });

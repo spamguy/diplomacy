@@ -3,14 +3,16 @@
         <form name="loginForm" ng-submit="user.login()">
             <md-input-container>
                 <label>Username</label>
-                <input type="text" name="username" ng-model="user.username" />
+                <input type="text" name="username" ng-model="user.username" required="true" />
             </md-input-container>
             <md-input-container>
                 <label>Password</label>
-                <input type="password" name="password" ng-model="user.password" />
+                <input type="password" name="password" ng-model="user.password" required="true" />
             </md-input-container>
 
-            <p style="text-align:center"><md-button ng-disabled="loginForm.$invalid" class="md-raised md-accent">Submit</md-button></p>
+            <p style="text-align:center">
+                <md-button id="loginButton" ng-disabled="loginForm.$invalid" class="md-raised md-accent">Log In</md-button>
+            </p>
         </form>
     </md-whiteframe>
 </div>

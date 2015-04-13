@@ -35,7 +35,7 @@ module.exports = function(grunt) {
         watch: {
             main: {
                 options: {
-                    livereload: true,
+                    livereload: false,
                     livereloadOnError: false,
                     spawn: false
                 },
@@ -255,21 +255,11 @@ module.exports = function(grunt) {
             local: {
                 options: {
                     configFile: 'protractor-local.conf.js'
+                    //,debug: true
                 }
             }
         }
     });
-
-    grunt.registerTask('webdriver', 'Update webdriver', function() {
-    var done = this.async();
-    var p = require('child_process').spawn('node', ['node_modules/protractor/bin/webdriver-manager', 'update']);
-    p.stdout.pipe(process.stdout);
-    p.stderr.pipe(process.stderr);
-    p.on('exit', function(code){
-      if(code !== 0) grunt.fail.warn('Webdriver failed to update');
-      done();
-    });
-  });
 
     grunt.registerTask('sauce-connect', 'Launch Sauce Connect', function () {
         var done = this.async();
@@ -306,7 +296,7 @@ module.exports = function(grunt) {
         'clean:after'
     ]);
     grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
-    grunt.registerTask('test', ['karma', 'webdriver', 'express:dev', 'protractor:local']);
+    grunt.registerTask('test', ['karma', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'express:dev',
         'karma',
