@@ -14,14 +14,14 @@
     "jsonwebtoken": "^1.1.2",
     "lodash": "^3.0.0",
     "moment": "^2.8.4",
-    "mongoose": "^3.8.18",
+    "mongoose": "^4.0.1",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "socket.io": "^1.3.3",
     "socket.io-client": "^1.3.3"
   },
   "devDependencies": {
-    "angular-mocks": "^1.3.0",
+    "angular-mocks": "^1.3.15",
     "grunt": "~0.4.5",
     "grunt-angular-templates": "^0.5.7",
     "grunt-contrib-clean": "~0.5.0",
@@ -56,7 +56,6 @@
     "karma-firefox-launcher": "~0.1.3",
     "karma-jasmine": "~0.2.0",
     "karma-mocha-reporter": "^0.3.1",
-    "karma-ng-scenario": "~0.1.0",
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-script-launcher": "~0.1.0",
     "load-grunt-tasks": "~0.6.0",
@@ -64,6 +63,7 @@
     "protractor-http-mock": "^0.1.7",
     "sauce-connect-launcher": "^0.10.1",
     "should": "~3.3.1",
+    "sinon": "^1.14.1",
     "supertest": "~0.11.0",
     "time-grunt": "~0.3.1"
   },

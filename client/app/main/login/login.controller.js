@@ -8,6 +8,7 @@ angular.module('diplomacy.main')
                 password: null,
 
                 login: function() {
+                    $scope.loginForm.password.$setValidity('validLogin', true);
                     $http.post('/auth/login', this)
                         .success(function(data, status) {
                             userService.setCurrentUser(data.id);
@@ -20,7 +21,7 @@ angular.module('diplomacy.main')
                             // clear token
                             delete $window.sessionStorage.token;
 
-                            // TODO: handle errors
+                            $scope.loginForm.password.$setValidity('validLogin', false);
                         });
                 }
             }

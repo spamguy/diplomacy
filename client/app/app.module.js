@@ -10,6 +10,7 @@ angular.module('diplomacy', [
     'diplomacy.main',
     'profile',
     'map.directives',
+    'gamelistitem.directive',
     'ngMaterial',
     'ng-mfb'
 ])

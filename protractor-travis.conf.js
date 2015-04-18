@@ -8,7 +8,7 @@ exports.config = {
     sauceKey: process.env.SAUCE_ACCESS_KEY,
     baseUrl: 'http://localhost',
 
-    specs: ['e2e/**/*.spec.js'],
+    specs: ['e2e/**/*.po.js', 'e2e/**/*.spec.js'],
     framework: 'jasmine',
     maxSessions: 1,
     allScriptsTimeout: 40000,

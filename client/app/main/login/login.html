@@ -1,6 +1,9 @@
 <div layout="row" layout-align="center center" layout-padding>
     <md-whiteframe class="md-whiteframe-z2" flex="33" flex-sm="100">
         <form name="loginForm" ng-submit="user.login()">
+            <div ng-messages="loginForm.password.$error">
+                <div id="validLoginMessage" ng-message="validLogin">Your username or password is incorrect.</div>
+            </div>
             <md-input-container>
                 <label>Username</label>
                 <input type="text" name="username" ng-model="user.username" required="true" />
@@ -11,7 +14,7 @@
             </md-input-container>
 
             <p style="text-align:center">
-                <md-button id="loginButton" ng-disabled="loginForm.$invalid" class="md-raised md-accent">Log In</md-button>
+                <md-button id="loginButton" class="md-raised md-accent">Log In</md-button>
             </p>
         </form>
     </md-whiteframe>
