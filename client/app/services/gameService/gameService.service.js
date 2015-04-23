@@ -20,6 +20,10 @@ angular.module('gameService', ['userService', 'restangular'])
             return Restangular.one('users', userService.getCurrentUser()).one('games', gameID).get();
         },
 
+        getAllOpenGames: function() {
+            return Restangular.all('games').getList();
+        },
+
         getMoveData: function(gameID, year, season) {
             var options = { };
             if (year)

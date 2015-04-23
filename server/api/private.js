@@ -136,5 +136,11 @@ module.exports = (function() {
         return res.send(201);
     });
 
+    app.get('/games', function(req, res) {
+        return require('../models/game')().Game.find({ }, function(err, games) {
+            return res.send(games);
+        });
+    });
+
     return app;
 }());

@@ -7,9 +7,12 @@ angular.module('games', [
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider
     .state('games', {
-        abstract: true,
         url: '/games',
-        template: '<ui-view />'
+        controller: 'GameListController',
+        templateUrl: 'app/games/games.html',
+        data: {
+            restricted: true
+        }
     })
     .state('games.new', {
         url: '/new',

@@ -1,5 +1,7 @@
 'use strict';
 
 angular.module('games')
-.controller('GamesController', function ($scope) {
-});
+.controller('GameListController', ['$scope', 'gameService', function ($scope, gameService) {
+    $scope.games = gameService.getAllOpenGames();
+    $scope.variants = gameService.getAllVariantNames();
+}]);

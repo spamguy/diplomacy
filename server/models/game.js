@@ -22,12 +22,16 @@ module.exports = function(id) {
         GameSchema.virtual('isAdmin')
             .get(function() {
                 for (var p = 0; p < this.players.length; p++) {
-                    if (this.players[p].power === '*' && this.players[p].player_id.toString() === id.toString())
+                    if (id && this.players[p].power === '*' && this.players[p].player_id.toString() === id.toString())
                         return true;
                 }
 
                 // no admin found with id pairing
                 return false;
+            });
+        GameSchema.virtual('playerCount')
+            .get(function() {
+                return this.players.length - 1; // the GM is not a player
             });
         GameSchema.set('toJSON', { virtuals: true });
     }
