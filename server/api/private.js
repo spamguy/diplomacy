@@ -7,8 +7,18 @@ module.exports = (function() {
 
     var _ = require('lodash');
     var jwt = require('jsonwebtoken');
+    var expressJwt = require('express-jwt');
 
-    app.get('/users/:id', function(req, res) {
+    var seekrits;
+    try {
+        seekrits = require('../config/local.env');
+    }
+    catch (ex) {
+        if (ex.code === 'MODULE_NOT_FOUND')
+            seekrits = require('../config/local.env.sample');
+    }
+
+    app.get('/users/:id', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
         var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/user').User
@@ -17,7 +27,7 @@ module.exports = (function() {
             });
     });
 
-    app.get('/users/:id/games', function(req, res) {
+    app.get('/users/:id/games', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
         var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/game')(id).Game
@@ -26,7 +36,7 @@ module.exports = (function() {
             });
     });
 
-    app.get('/users/:id/games/:gid', function(req, res) {
+    app.get('/users/:id/games/:gid', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
         var id = mongoose.Types.ObjectId(req.params.id),
             gid = mongoose.Types.ObjectId(req.params.gid);
 
@@ -44,7 +54,7 @@ module.exports = (function() {
      * @param  {number} [year] The year to fetch.
      * @return {Array} An array of arrays, one for each season requested.
      */
-    app.get('/users/:pid/games/:id/moves', function(req, res) {
+    app.get('/users/:pid/games/:id/moves', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
         var player_id = mongoose.Types.ObjectId(req.params.pid),
             game_id = mongoose.Types.ObjectId(req.params.id),
             token_player_id = jwt.decode(req.headers.authorization.split(' ')[1]).id,
@@ -95,7 +105,7 @@ module.exports = (function() {
      * @param  {number} [year] The year to fetch.
      * @return {Array} An array of arrays, one for each season requested.
      */
-    app.get('/games/:id/moves', function(req, res) {
+    app.get('/games/:id/moves', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
         var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/season').Season
@@ -108,7 +118,7 @@ module.exports = (function() {
      * @description Saves new game.
      * @return {string} The ID of the new game.
      */
-    app.post('/games', function(req, res) {
+    app.post('/games', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
         var game = require('../models/game')().Game({
             variant: req.body.variant.toLowerCase(),
             name: req.body.name,
@@ -136,7 +146,8 @@ module.exports = (function() {
         return res.send(201);
     });
 
-    app.get('/games', function(req, res) {
+    // TODO: Let non-users see this list to show what they're missing out on?
+    app.get('/games', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
         return require('../models/game')().Game.find({ }, function(err, games) {
             return res.send(games);
         });

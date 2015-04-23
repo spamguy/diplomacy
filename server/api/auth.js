@@ -66,12 +66,12 @@ module.exports = (function() {
                 id: user._id
             };
 
-            token = jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH });console.log(token);
+            token = jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH });
             res.json({ id: user._id, token: token, refreshtoken: user.refreshtoken });
         })(req, res, next);
     });
 
-    app.post('/new', function(req, res, next) {
+    app.post('/users', function(req, res, next) {
         var salt = pbkdf2.generateSalt();
         pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
             var user = new require('../models/user').User({
@@ -84,7 +84,7 @@ module.exports = (function() {
             });
 
             user.save();
-            return res.send(201);
+            return res.sendStatus(201);
         });
     });
 
