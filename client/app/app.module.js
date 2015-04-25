@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('diplomacy', [
+    'diplomacy.constants',
     'ui.router',
     'LocalStorageModule',
     'angular-jwt',
@@ -14,8 +15,8 @@ angular.module('diplomacy', [
     'ngMaterial',
     'ng-mfb'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider',
-function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider', 'RestangularProvider', 'CONST',
+function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, RestangularProvider, CONST) {
     // material design theme definitions
     $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
@@ -47,6 +48,10 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
     }];
     $httpProvider.interceptors.push('jwtInterceptor');
 
+    // set API base URL as declared by constants file
+    RestangularProvider.setBaseUrl(CONST.apiEndpoint);
+
+    // hide ugly # in URL
     $locationProvider.html5Mode(true);
 }])
 .run(['$rootScope', 'userService', function ($rootScope, userService) {

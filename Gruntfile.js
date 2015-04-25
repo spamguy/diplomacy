@@ -43,15 +43,24 @@ module.exports = function(grunt) {
                 tasks: [] //all the tasks are run dynamically during the watch event handler
             }
         },
-        env: {
+        ngconstant: {
             options: {
-
+                name: 'diplomacy.constants',
+                dest: 'client/temp/constants.js'
             },
-            dev: {
-                NODE_ENV: 'DEVELOPMENT'
+            mock: {
+                constants: {
+                    CONST: {
+                        apiEndpoint: 'http://private-182900-diplio.apiary-mock.com'
+                    }
+                }
             },
-            prod: {
-                NODE_ENV: 'PRODUCTION'
+            mongo: {
+                constants: {
+                    CONST: {
+                        apiEndpoint: 'http://localhost/api'
+                    }
+                }
             }
         },
         preprocess: {
@@ -295,9 +304,10 @@ module.exports = function(grunt) {
         'uglify',
         'clean:after'
     ]);
-    grunt.registerTask('serve', ['jshint', 'env:dev', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
-    grunt.registerTask('test', ['karma', 'protractor:local']);
+    grunt.registerTask('serve', ['jshint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
+    grunt.registerTask('test', ['ngconstant:mock', 'karma', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
+        'ngconstant:mock',
         'express:dev',
         'karma',
         'sauce-connect',

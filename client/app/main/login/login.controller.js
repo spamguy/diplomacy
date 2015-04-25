@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('diplomacy.main')
-    .controller('LoginController', ['$scope', '$http', '$window', '$state', 'userService', function ($scope, $http, $window, $state, userService) {
+    .controller('LoginController', ['$scope', '$http', '$window', '$state', 'userService', 'CONST', function ($scope, $http, $window, $state, userService, CONST) {
         angular.extend($scope, {
             user: {
                 username: null,
@@ -9,7 +9,7 @@ angular.module('diplomacy.main')
 
                 login: function() {
                     $scope.loginForm.password.$setValidity('validLogin', true);
-                    $http.post('/auth/login', this)
+                    $http.post(CONST.apiEndpoint + '/login', this)
                         .success(function(data, status) {
                             userService.setCurrentUser(data.id);
                             userService.setToken(data.token);

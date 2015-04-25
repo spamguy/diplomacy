@@ -4,7 +4,6 @@ angular.module('userService', ['LocalStorageModule', 'restangular'])
 .factory('userService', ['localStorageService', 'Restangular', function(localStorageService, Restangular) {
     return {
         userExists: function(username) {
-            Restangular.setBaseUrl('/publicapi');
             return Restangular.one('users', username).customGET('exists');
         },
 
@@ -33,7 +32,6 @@ angular.module('userService', ['LocalStorageModule', 'restangular'])
         },
 
         getUser: function(userID) {
-            Restangular.setBaseUrl('/api'); // FIXME: there's gotta be a better way to bounce between /api and /publicapi...
             return Restangular.one('users', userID).get();
         }
     };

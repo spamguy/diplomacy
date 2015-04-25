@@ -12,7 +12,6 @@ angular.module('gameService', ['userService', 'restangular'])
         },
 
         getAllVariantNames: function() {
-            Restangular.setBaseUrl('/publicapi');
             return Restangular.all('variants').getList();
         },
 

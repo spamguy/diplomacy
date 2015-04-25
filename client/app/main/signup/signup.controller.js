@@ -11,7 +11,7 @@ angular.module('diplomacy.main')
                 points: 0,
                 timezone: 0,
                 save: function() {
-                    $http.post('/auth/new', this);
+                    $http.post('/api/users', this);
                     // FIXME: After success, authenticate and redirect to profile page
                 }
             }
