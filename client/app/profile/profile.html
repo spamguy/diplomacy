@@ -2,12 +2,12 @@
     <md-tabs md-dynamic-height md-border-bottom>
         <md-tab label="Playing">
             <div layout="column" layout-margin>
-                <sg-game-list-item ng-repeat="game in playingList = (playing | gmStatus:false)" />
+                <sg-game-list-item ng-repeat="game in playingList = (playing | gmStatus:false)" game="game" variant="variants[game.variant]" />
             </div>
         </md-tab>
         <md-tab label="Mastering">
             <div layout="column" layout-margin>
-                <sg-game-list-item ng-repeat="game in playingList = (playing | gmStatus:true)" />
+                <sg-game-list-item ng-repeat="game in playingList = (playing | gmStatus:true)" game="game" variant="variants[game.variant]" />
             </div>
         </md-tab>
         <md-tab label="Completed">

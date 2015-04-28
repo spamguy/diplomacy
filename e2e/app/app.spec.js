@@ -1,21 +1,17 @@
-var AppPage = function() {
-    this.get = function() {
-        browser.get(browser.baseUrl);
-    };
-
-    this.header = by.css('md-toolbar');
-};
+var page;
 
 describe('Page base', function() {
-    var page;
-
     beforeEach(function() {
-        page = new AppPage();
+        page = require('./app.po');
+
+        page.get();
     });
 
     it('has a header', function() {
-        page.get();
-
         expect(browser.driver.isElementPresent(page.header)).toBe(true);
+    });
+
+    it('has a floating button', function() {
+        expect(browser.driver.isElementPresent(page.floatingButton)).toBe(true);
     });
 });

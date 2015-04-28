@@ -7,12 +7,9 @@ angular.module('games', [
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider
     .state('games', {
+        abstract: true,
         url: '/games',
-        controller: 'GameListController',
-        templateUrl: 'app/games/games.html',
-        data: {
-            restricted: true
-        }
+        template: '<ui-view />'
     })
     .state('games.new', {
         url: '/new',
@@ -26,6 +23,14 @@ angular.module('games', [
         url: '/:id',
         controller: 'ViewController',
         templateUrl: 'app/games/view/view.html',
+        data: {
+            restricted: true
+        }
+    })
+    .state('games.list', {
+        url: '/games',
+        controller: 'GameListController',
+        templateUrl: 'app/games/games.html',
         data: {
             restricted: true
         }

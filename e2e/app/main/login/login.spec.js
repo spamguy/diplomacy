@@ -1,12 +1,12 @@
 var page;
 
-describe('Good logins', function() {
+describe('Login', function() {
     beforeEach(function() {
-        page = require('./login.po.js');
+        page = require('./login.po');
         page.get();
     });
 
-    it('redirect to the profile page on success', function() {
+    it('redirects to the profile page on success', function() {
         page.username.sendKeys('gooduser');
         page.password.sendKeys('goodpassw0rd');
         page.submitButton.click();

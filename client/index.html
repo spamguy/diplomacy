@@ -31,7 +31,7 @@
         </md-button> -->
         </div>
     </md-toolbar>
-    <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed">
+    <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed" id="floatingMenuButton">
         <button mfb-button icon="notes" ui-sref="main.signup" label="Register" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="notes" ui-sref="games.new" label="Create a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="notes" ui-sref="games" label="Join a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
@@ -43,7 +43,11 @@
         <div style="margin-top:50px;">
             <ui-view />
         </div>
-            <footer>v{{VERSION}}-{{TIMESTAMP}} | <a href="https://github.com/spamguy/diplomacy">dipl.io on GitHub</a></footer>
+            <footer>
+                v{{VERSION}}-{{TIMESTAMP}} |
+                <a href="https://github.com/spamguy/diplomacy">dipl.io on GitHub</a> |
+                <a href="http://blog.dipl.io">dipl.io Blog</a>
+            </footer>
     </div>
 
     <script>
