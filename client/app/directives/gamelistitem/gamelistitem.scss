@@ -18,8 +18,13 @@
     max-height: 500px;
 }
 
-.gameItem button.md-icon-button
+.gameItem
 {
-    padding-top: 10px;
-    padding-bottom: 0;
+    cursor: pointer;
+
+    button.md-icon-button
+    {
+        padding-top: 10px;
+        padding-bottom: 0;
+    }
 }

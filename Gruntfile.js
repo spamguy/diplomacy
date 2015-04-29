@@ -287,7 +287,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', [
         'jshint',
         'clean:before',
-        'env:prod',
+        'ngconstant:mongo',
         'preprocess',
         'wiredep',
         'useminPrepare',

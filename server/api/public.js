@@ -15,7 +15,7 @@ module.exports = (function() {
     });
 
     app.get('/variants', function(req, res) {
-        glob('/variants/**/*.json', function(err, files) {
+        glob('variants/**/*.json', function(err, files) {
             var nameList = [];
             for (var v = 0; v < files.length; v++)
                 nameList.push(JSON.parse(fs.readFileSync(path.join(__dirname, '../..', files[v]))).name);
