@@ -1,11 +1,11 @@
-<div layout="column" layout-align="space-between" layout-margin class="md-whiteframe-z2 gameItem" style="background-color: white;">
+<div layout="column" layout-align="space-between" layout-margin class="md-whiteframe-z2 gameItem">
     <div layout="row" flex layout-margin>
         <div flex flex-sm="80">
             <h3 class="md-title" style="margin: 0 auto" ui-sref="games.view({ id: '{{game._id}}' })">{{game.name}}</h3>
             <span class="statusMessage"></span>
         </div>
         <div flex flex-sm="10">
-            <md-button class="md-icon-button" ng-click="toggleGameDetails(game._id)">
+            <md-button class="md-icon-button" ng-click="toggleGameDetails(game._id)" aria-label="Expand game listing">
                 <md-icon md-svg-icon="power" />
             <bd-button>
         </div>

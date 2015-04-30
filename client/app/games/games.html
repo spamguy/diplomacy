@@ -1,1 +1,3 @@
-<!-- <md-select ng-model="variants"> -->
+<div layout="column" layout-margin>
+    <sg-game-list-item ng-repeat="game in gameList" game="game" variant="variants[game.variant]" />
+</div>

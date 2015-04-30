@@ -21,10 +21,10 @@
 .gameItem
 {
     cursor: pointer;
+    background-color: #fff;
 
-    button.md-icon-button
+    &:hover
     {
-        padding-top: 10px;
-        padding-bottom: 0;
+        background-color: #eee;
     }
 }

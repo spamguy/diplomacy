@@ -2,6 +2,18 @@
 
 angular.module('games')
 .controller('GameListController', ['$scope', 'gameService', function ($scope, gameService) {
+    $scope.variants = { };
     $scope.games = gameService.getAllOpenGames();
-    $scope.variants = gameService.getAllVariantNames();
+
+    for (var i = 0; i < $scope.games.length; i++) {
+        var theGame = $scope.games[i];
+
+        // identify what variants need fetching
+        var variantName = theGame.variant;
+        if (!$scope.variants[variantName])
+            $scope.variants[variantName] = { };
+    }
+
+    for (var key in $scope.variants)
+        $scope.variants[key] = gameService.getVariant(key);
 }]);

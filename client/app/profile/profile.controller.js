@@ -2,11 +2,6 @@
 
 angular.module('profile')
     .controller('ProfileController', ['$scope', '$state', '$http', 'userService', 'gameService', 'games', function ($scope, $state, $http, userService, gameService, games) {
-        $scope.tabs = [
-            { heading: 'Games I\'m Playing', disabled: false },
-            { heading: 'Games I\'m Mastering', disabled: false },
-            { heading: 'Completed', disabled: false }
-        ];
         $scope.selectedIndex = 0;
 
         $scope.variants = { };

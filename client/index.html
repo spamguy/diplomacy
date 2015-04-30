@@ -34,13 +34,13 @@
     <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed" id="floatingMenuButton">
         <button mfb-button icon="notes" ui-sref="main.signup" label="Register" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="notes" ui-sref="games.new" label="Create a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="notes" ui-sref="games" label="Join a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
+        <button mfb-button icon="notes" ui-sref="games.list" label="Join a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="power" ui-sref="main.login" label="Log in" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="power" ui-sref="main.logout" label="Log out" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
     </mfb-menu>
 
     <div layout="column" layout-fill>
-        <div style="margin-top:50px;">
+        <div style="margin-top:10px;">
             <ui-view />
         </div>
             <footer>
