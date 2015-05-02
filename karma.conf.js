@@ -29,7 +29,7 @@ module.exports = function (config) {
             'client/app/**/*.spec.js'
         ],
         logLevel:'ERROR',
-        reporters:['mocha'],
+        reporters:['spec'],
         autoWatch: false,
         singleRun: true,
         browsers: ['PhantomJS'],

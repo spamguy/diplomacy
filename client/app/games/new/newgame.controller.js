@@ -10,8 +10,18 @@ angular.module('games')
         game: {
             name: null,
             variant: 'Standard',
-            movementType: 'clock',
-            movementClock: 1440,
+            movement: {
+                type: 'clock',
+                clock: 1440
+            },
+            retreat: {
+                type: 'clock',
+                clock: 1440
+            },
+            adjust: {
+                type: 'clock',
+                clock: 1440
+            },
             visibility: 'public',
             press: 'white',
             minimumScoreToJoin: 0,
@@ -43,7 +53,8 @@ angular.module('games')
         gameService.createNewGame($scope.game);
     };
 
-    // $scope.loadVariant = function(variant) {
-    //     var variant = gameService.getVariant(variant.toLowerCase().replace(/\s/g,''));
-    // };
+    $scope.humaniseTime = function(clock) {
+        // minutes -> seconds -> milliseconds
+        return humanizeDuration(clock * 60 * 1000);
+    };
 }]);

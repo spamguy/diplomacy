@@ -7,7 +7,7 @@
 
                     <md-input-container>
                         <label>Name</label>
-                        <input type="text" name="gamename" ng-model="game.name" required />
+                        <input type="text" name="gamename" ng-model="game.name" aria-label="Game Name" required />
                     </md-input-container>
 
                     <p style="text-align:center"><md-button wz-next class="md-raised md-accent">Continue</md-button></p>
@@ -21,7 +21,7 @@
 
                     <!-- TODO: This is totally impractical. Maybe an iOS-like icon view? -->
                     <md-radio-group ng-model="game.variant">
-                        <md-radio-button ng-repeat="variant in variants" ng-value="variant">{{variant}}</md-radio-group>
+                        <md-radio-button ng-repeat="variant in variants" ng-value="variant" aria-label="{{variant}}">{{variant}}</md-radio-group>
                     </md-radio-group>
 
                     <p style="text-align:center">
@@ -36,14 +36,14 @@
                 <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
                     <p class="subheader">Choose when and how movement phases are processed.</p>
 
-                    <md-radio-group ng-model="game.movementType" class="clockRadioLine">
+                    <md-radio-group ng-model="game.movement.type" class="clockRadioLine">
                         <div layout="row" class="clockOption">
-                            <md-radio-button value="clock"></md-radio-button>
+                            <md-radio-button value="clock" aria-label="Every X minutes"></md-radio-button>
                             <label>Every</label>
                             <md-input-container>
-                                <input type="number" name="movementClock" ng-model="game.movementClock" />
+                                <input type="number" name="movementClock" ng-model="game.movement.clock" aria-label="Movement Clock" />
                             </md-input-container>
-                            <label>minutes</label>
+                            <label>minutes ({{humaniseTime(game.movement.clock)}})</label>
                         </div>
                         <div layout="row" class="calendarOption">
                             <md-radio-button value="calendar"></md-radio-button>

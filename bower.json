@@ -14,10 +14,10 @@
   "dependencies": {
     "angular-animate": "1.3.x",
     "angular-material": "0.9.0-rc3",
-    "lodash": "~3.1.0",
+    "lodash": "3.8.0",
     "hammerjs": "~2.0.2",
     "angular": "~1.3.13",
-    "restangular": "~1.4.0",
+    "restangular": "~1.5.0",
     "angular-local-storage": "~0.1.5",
     "angular-jwt": "~0.0.6",
     "angular-ui-router": "~0.2.13",
@@ -25,12 +25,13 @@
     "angular-mocks": "~1.3.14",
     "angular-wizard": "~0.4.2",
     "momentjs": "~2.9.0",
-    "humanize-duration": "~2.5.0",
-    "ng-mfb": "~0.4.0"
+    "humanize-duration": "~2.6.0",
+    "ng-mfb": "~0.4.0",
+    "angular-timer": "~1.3.1",
+    "d3": "~3.5.5"
   },
   "resolutions": {
     "angular": "~1.3.13",
-    "lodash": "~3.1.0",
-    "angular-material": "0.9.0-rc3"
+    "lodash": "~3.8.0"
   }
 }
