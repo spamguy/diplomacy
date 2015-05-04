@@ -123,7 +123,7 @@ module.exports = (function() {
             variant: req.body.variant.toLowerCase(),
             name: req.body.name,
             visibility: req.body.visibility,
-            movementType: req.body.movementType,
+            movementClock: req.body.movement.clock,
             players: [{
                     player_id: req.body.playerID,
                     power: '*'
@@ -131,8 +131,7 @@ module.exports = (function() {
             ]
         });
 
-        if (game.movementType === 'clock')
-            game.movementClock = req.body.movementClock;
+        // TODO: if clock is chosen, delete calendar properties (and vice-versa) to guarantee one scheduling mode
 
         // generate password hash
         if (game.visibility === 'private') {
@@ -148,9 +147,12 @@ module.exports = (function() {
 
     // TODO: Let non-users see this list to show what they're missing out on?
     app.get('/games', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
-        return require('../models/game')().Game.find({ }, function(err, games) {
-            return res.send(games);
-        });
+        var query = require('../models/game')().Game
+            .find({ })
+            .where('this.players.length - 1 < this.maxPlayers')
+            .exec(function(err, games) {
+                return res.send(games);
+            });
     });
 
     return app;

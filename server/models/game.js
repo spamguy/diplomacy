@@ -7,9 +7,11 @@ module.exports = function(id) {
     if (!GameSchema) {
         GameSchema = new mongoose.Schema({
             name: String,
+            description: String,
             variant: String,
             year: Number,
             season: Number,
+            maxPlayers: Number,
             players: [{
                     player_id: mongoose.Schema.Types.ObjectId,
                     power: String
@@ -17,7 +19,8 @@ module.exports = function(id) {
             ],
             minimumScoreToJoin: Number,
             password: String,
-            passwordsalt: String
+            passwordsalt: String,
+            movementClock: Number
         });
         GameSchema.virtual('isAdmin')
             .get(function() {

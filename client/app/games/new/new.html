@@ -60,6 +60,22 @@
         <wz-step title="Retreats">
             <div layout="row" layout-align="center center" layout-padding>
                 <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p class="subheader">Choose when and how retreat phases are processed.</p>
+
+                    <md-radio-group ng-model="game.retreat.type" class="clockRadioLine">
+                        <div layout="row" class="clockOption">
+                            <md-radio-button value="clock" aria-label="Every X minutes"></md-radio-button>
+                            <label>Every</label>
+                            <md-input-container>
+                                <input type="number" name="retreatClock" ng-model="game.retreat.clock" aria-label="Retreat Clock" />
+                            </md-input-container>
+                            <label>minutes ({{humaniseTime(game.retreat.clock)}})</label>
+                        </div>
+                        <div layout="row" class="calendarOption">
+                            <md-radio-button value="calendar"></md-radio-button>
+                        </div>
+                    </md-radio-group>
+
                     <p style="text-align:center">
                         <md-button wz-previous class="md-raised">Back</md-button>
                         <md-button wz-next class="md-raised md-accent">Continue</md-button>
@@ -70,6 +86,22 @@
         <wz-step title="Builds">
             <div layout="row" layout-align="center center" layout-padding>
                 <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                    <p class="subheader">Choose when and how adjustment (build) phases are processed.</p>
+
+                    <md-radio-group ng-model="game.adjust.type" class="clockRadioLine">
+                        <div layout="row" class="clockOption">
+                            <md-radio-button value="clock" aria-label="Every X minutes"></md-radio-button>
+                            <label>Every</label>
+                            <md-input-container>
+                                <input type="number" name="adjustClock" ng-model="game.adjust.clock" aria-label="Adjustment Clock" />
+                            </md-input-container>
+                            <label>minutes ({{humaniseTime(game.adjust.clock)}})</label>
+                        </div>
+                        <div layout="row" class="calendarOption">
+                            <md-radio-button value="calendar"></md-radio-button>
+                        </div>
+                    </md-radio-group>
+
                     <p style="text-align:center">
                         <md-button wz-previous class="md-raised">Back</md-button>
                         <md-button wz-next class="md-raised md-accent">Continue</md-button>

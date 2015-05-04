@@ -15,6 +15,7 @@
     "globals": {
         "d3": true,
         "angular": true,
+        "humanizeDuration": true,
         "console": true,
         "$": true,
         "_": true,
