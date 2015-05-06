@@ -10,5 +10,14 @@
             <bd-button>
         </div>
     </div>
-    <div layout="row" flex class="detailViewTransformation" ng-class="{'minified':!expandState[game._id], 'maxified':expandState[game._id]}">there</div>
+    <md-divider></md-divider>
+    <div layout="row" layout-align="space-between" flex class="detailViewTransformation" ng-class="{'minified':!expandState[game._id], 'maxified':expandState[game._id]}">
+        <div layout="column">
+            <div><strong>Variant:</strong> {{game.variant}}</div>
+            <div><strong>Movement phases:</strong> {{movementDescription}}</div>
+        </div>
+        <div>
+            <!-- TODO: Minimap here -->
+        </div>
+    </div>
 </div>

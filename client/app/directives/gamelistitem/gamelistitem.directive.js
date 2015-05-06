@@ -2,6 +2,14 @@ angular.module('gamelistitem.directive', [])
 .directive('sgGameListItem', [function() {
     'use strict';
 
+    var renderClockDescription = function(clock) {
+        return 'Every ' + humanizeDuration(clock * 60 * 1000);
+    };
+
+    var renderCalendarDescription = function() {
+        return '';
+    }
+
     return {
         replace: true,
         restrict: 'E',
@@ -16,6 +24,8 @@ angular.module('gamelistitem.directive', [])
             scope.toggleGameDetails = function(id) {
                 scope.expandState[id] = !scope.expandState[id];
             };
+
+            scope.movementDescription = scope.game.movementClock ? renderClockDescription(scope.game.movementClock) : renderCalendarDescription();
 
             scope.$watch('variantPromise', function(variantPromise) {
                 if (variantPromise) {
