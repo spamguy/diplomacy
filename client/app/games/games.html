@@ -1,3 +1,11 @@
-<div layout="column" layout-margin>
-    <sg-game-list-item ng-repeat="game in games" game="game" variant="variants[game.variant]" />
+<div layout="row">
+    <div flex="80" flex-sm="100">
+        <div layout="column" layout-margin>
+            <sg-game-list-item ng-repeat="game in games" game="game" variant="variants[game.variant]" />
+        </div>
+    </div>
+    <div flex="20">
+        <md-select placeholder="Variant" ng-model="variantFilter">
+        </md-select>
+    </div>
 </div>
