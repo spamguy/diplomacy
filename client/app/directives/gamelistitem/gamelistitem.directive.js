@@ -8,7 +8,7 @@ angular.module('gamelistitem.directive', [])
 
     var renderCalendarDescription = function() {
         return '';
-    }
+    };
 
     return {
         replace: true,
