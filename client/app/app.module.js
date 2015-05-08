@@ -13,10 +13,13 @@ angular.module('diplomacy', [
     'map.directives',
     'gamelistitem.directive',
     'ngMaterial',
-    'ng-mfb'
+    'ng-mfb',
+    'socketService'
 ])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider', 'RestangularProvider', 'CONST',
 function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, RestangularProvider, CONST) {
+    // socket.io client
+    var socket =
     // material design theme definitions
     $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
