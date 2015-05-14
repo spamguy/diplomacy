@@ -1,13 +1,12 @@
-module.exports = (function() {
+module.exports = function() {
     'use strict';
 
-    var express = require('express');
-    var app = express();
-    var mongoose = require('mongoose');
-
-    var _ = require('lodash');
-    var jwt = require('jsonwebtoken');
-    var expressJwt = require('express-jwt');
+    var express = require('express.oi'),
+        app = express(),
+        mongoose = require('mongoose'),
+        _ = require('lodash'),
+        jwt = require('jsonwebtoken'),
+        expressJwt = require('express-jwt');
 
     var seekrits;
     try {
@@ -67,6 +66,9 @@ module.exports = (function() {
 
 
         require('../models/game')(player_id).Game.findOne({ '_id': game_id }, function(err, game) {
+            if (!game)
+                return res.json([]);
+
             var isComplete = game.isComplete,
                 currentSeason = game.season,
                 currentYear = game.year,
@@ -156,4 +158,4 @@ module.exports = (function() {
     });
 
     return app;
-}());
+};

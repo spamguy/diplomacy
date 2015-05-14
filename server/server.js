@@ -1,27 +1,22 @@
-var http = require('http');
-var express = require('express');
-var socketio = require('socket.io');
-var bodyParser = require('body-parser');
+var express = require('express.oi'),
+    bodyParser = require('body-parser'), // for crying out loud, STOP REMOVING THIS
+    app = express();
 
-// Express stuff
-var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// socket.io stuff
-var io = socketio();
-app.io = io;
+app.use('/api', require('./api/auth')());
+app.use('/api', require('./api/public')());
+app.use('/api', require('./api/private')());
 
-io.on('connection', function(socket) {
-    console.log('Connected!');
-});
+app.http().io();
 
-app.use('/api', require('./api/auth'));
+app.io.route('login', {
+    success: function(req, res) {
+        console.log('login:success');
+    }
+})
 
-// API routes
-app.use('/api', require('./api/public'));
-app.use('/api', require('./api/private'));
-
-app.listen(9000, function () {
+app.listen(9000, function() {
   console.log('Express server listening on %d', 9000);
 });

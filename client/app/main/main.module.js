@@ -7,7 +7,8 @@ angular.module('diplomacy.main', [
     'ngAnimate',
     'userService',
     'gameService',
-    'mgo-angular-wizard'
+    'mgo-angular-wizard',
+    'socketService'
 ])
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider

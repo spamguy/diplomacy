@@ -1,4 +1,4 @@
-module.exports = (function() {
+module.exports = function() {
     var hashOptions = {
         'DEFAULT_HASH_ITERATIONS': 32000,
         'SALT_SIZE': 64,
@@ -6,14 +6,13 @@ module.exports = (function() {
     };
     var SESSION_LENGTH = 60 * 4;
 
-    var express = require('express');
-    var app = express();
-    //var models = require('../models');
-    var pbkdf2 = require('easy-pbkdf2')(hashOptions);
-    var passport = require('passport');
-    var LocalStrategy = require('passport-local').Strategy;
-    var jwt = require('jsonwebtoken');
-    var mongoose = require('mongoose');
+    var express = require('express.oi'),
+        app = express(),
+        pbkdf2 = require('easy-pbkdf2')(hashOptions),
+        passport = require('passport'),
+        LocalStrategy = require('passport-local').Strategy,
+        jwt = require('jsonwebtoken'),
+        mongoose = require('mongoose');
 
     var seekrits;
     try {
@@ -89,4 +88,4 @@ module.exports = (function() {
     });
 
     return app;
-}());
+};

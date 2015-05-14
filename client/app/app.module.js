@@ -18,8 +18,6 @@ angular.module('diplomacy', [
 ])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider', 'RestangularProvider', 'CONST',
 function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, RestangularProvider, CONST) {
-    // socket.io client
-    var socket =
     // material design theme definitions
     $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')

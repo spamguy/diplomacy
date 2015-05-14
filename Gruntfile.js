@@ -2,7 +2,6 @@
 
 module.exports = function(grunt) {
     // load all grunt tasks
-    require('time-grunt')(grunt);
     require('load-grunt-tasks')(grunt);
 
     // for smarter date formatting
@@ -16,16 +15,23 @@ module.exports = function(grunt) {
         // environment variable pkg
         pkg: grunt.file.readJSON("package.json"),
 
-        express: {
+        concurrent: {
             dev: {
+                tasks: ['nodemon:dev', 'open', 'watch'],
                 options: {
-                    script: 'server/server.js'
+                    logConcurrentOutput: true
                 }
             },
-            prod: {
+            travis: {
+                tasks: ['nodemon:dev', 'watch', 'karma', 'sauce-connect', 'protractor:travis'],
                 options: {
-                    script: 'dist/server/server.js'
+                    logConcurrentOutput: true
                 }
+            }
+        },
+        nodemon: {
+            dev: {
+                script: 'server/server.js'
             }
         },
         open: {
@@ -305,13 +311,10 @@ module.exports = function(grunt) {
         'uglify',
         'clean:after'
     ]);
-    grunt.registerTask('serve', ['jshint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
+    grunt.registerTask('serve', ['jshint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'concurrent:dev']);
     grunt.registerTask('test', ['ngconstant:mock', 'karma', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'ngconstant:mock',
-        'express:dev',
-        'karma',
-        'sauce-connect',
-        'protractor:travis'
+        'concurrent:travis'
     ]);
 };

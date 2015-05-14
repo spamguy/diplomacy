@@ -1,9 +1,9 @@
-module.exports = (function() {
-    var express = require('express');
-    var app = express();
-    var glob = require('glob');
-    var fs = require('fs');
-    var path = require('path');
+module.exports = function() {
+    var express = require('express'),
+        app = express(),
+        glob = require('glob'),
+        fs = require('fs'),
+        path = require('path');
 
     app.get('/users/:username/exists', function(req, res) {
         var username = req.params.username;
@@ -25,4 +25,4 @@ module.exports = (function() {
     });
 
     return app;
-}());
+};
