@@ -15,7 +15,7 @@ app.io.route('login', {
     success: function(req, res) {
         //console.log('login:success');
     }
-})
+});
 
 app.listen(9000, function() {
   console.log('Express server listening on %d', 9000);

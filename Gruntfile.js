@@ -15,23 +15,11 @@ module.exports = function(grunt) {
         // environment variable pkg
         pkg: grunt.file.readJSON("package.json"),
 
-        concurrent: {
+        express: {
             dev: {
-                tasks: ['startserver', 'open'],
                 options: {
-                    logConcurrentOutput: true
+                    script: 'server/server.js'
                 }
-            },
-            travis: {
-                tasks: ['nodemon:dev', 'sauce-travis'],
-                options: {
-                    logConcurrentOutput: true
-                }
-            }
-        },
-        nodemon: {
-            dev: {
-                script: 'server/server.js'
             }
         },
         open: {
@@ -311,13 +299,14 @@ module.exports = function(grunt) {
         'uglify',
         'clean:after'
     ]);
-    grunt.registerTask('startserver', ['nodemon:dev', 'watch']);
-    grunt.registerTask('sauce-travis', ['sauce-connect', 'protractor:travis']);
-    grunt.registerTask('serve', ['jshint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'concurrent:dev']);
+
+    grunt.registerTask('serve', ['jshint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
     grunt.registerTask('test', ['ngconstant:mock', 'karma', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'ngconstant:mock',
         'karma',
-        'concurrent:travis'
+        'express:dev',
+        'sauce-connect',
+        'protractor:travis'
     ]);
 };
