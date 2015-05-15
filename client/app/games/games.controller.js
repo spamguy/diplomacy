@@ -1,8 +1,10 @@
 'use strict';
 
 angular.module('games')
-.controller('GameListController', ['$scope', 'gameService', function ($scope, gameService) {
+.controller('GameListController', ['$scope', 'user', 'gameService', function ($scope, user, gameService) {
     $scope.variants = { };
+    $scope.user = user; // 'user' has been resolved already; see games.module.js
+
     gameService.getAllOpenGames().then(function(games) {
         $scope.games = games;
 

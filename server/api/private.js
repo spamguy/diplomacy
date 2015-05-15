@@ -22,7 +22,13 @@ module.exports = function() {
 
         return require('../models/user').User
             .findOne({ '_id': id }, function(err, user) {
-                return res.send(user);
+                // send highly sanitised version of user
+                return res.json({
+                    '_id': user._id,
+                    points: user.points,
+                    username: user.username,
+                    email: user.email
+                });
             });
     });
 

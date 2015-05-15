@@ -17,6 +17,12 @@ angular.module('games', [
         templateUrl: 'app/games/games.html',
         data: {
             restricted: true
+        },
+        resolve: {
+            userService: 'userService',
+            user: function(userService) {
+                return userService.getUser(userService.getCurrentUser());
+            }
         }
     })
     .state('games.new', {

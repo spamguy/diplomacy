@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('profile')
-    .controller('ProfileController', ['$scope', '$state', '$http', 'userService', 'gameService', 'games', function ($scope, $state, $http, userService, gameService, games) {
+    .controller('ProfileController', ['$scope', '$state', '$http', 'gameService', 'games', function ($scope, $state, $http, gameService, games) {
         $scope.selectedIndex = 0;
 
         $scope.variants = { };

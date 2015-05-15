@@ -2,7 +2,7 @@
     <div layout="row" layout-align="space-between" flex layout-margin>
         <div>
             <h3 class="md-title" style="margin: 0 auto" ui-sref="games.view({ id: '{{game._id}}' })">{{game.name}}</h3>
-            <span class="statusMessage"></span>
+            <span class="statusMessage" ng-class="{'alert':joinable && !canJoinGame()}">{{statusMessage}}</span>
         </div>
         <div>
             <md-button class="md-icon-button" ng-click="toggleGameDetails(game._id)" aria-label="Expand game listing">
@@ -11,13 +11,18 @@
         </div>
     </div>
     <md-divider></md-divider>
-    <div layout="row" layout-align="space-between" flex class="detailViewTransformation" ng-class="{'minified':!expandState[game._id], 'maxified':expandState[game._id]}">
-        <div layout="column">
-            <div><strong>Variant:</strong> {{game.variant}}</div>
-            <div><strong>Movement phases:</strong> {{movementDescription}}</div>
-        </div>
+    <div layout="column" layout-align="space-between" flex class="detailViewTransformation" ng-class="{'minified':!expandState, 'maxified':expandState}">
         <div>
-            <!-- TODO: Minimap here -->
+            <div layout="column">
+                <div><strong>Variant:</strong> {{game.variant}}</div>
+                <div><strong>Movement phases:</strong> {{movementDescription}}</div>
+            </div>
+            <div>
+                <!-- TODO: Minimap here -->
+            </div>
+        </div>
+        <div ng-if="joinable" layout="row" layout-align="center center">
+            <md-button class="md-raised md-primary" aria-label="getJoinLabel()" ng-disabled="!canJoinGame()">{{getJoinLabel()}}</md-button>
         </div>
     </div>
 </div>
