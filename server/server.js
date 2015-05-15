@@ -13,7 +13,7 @@ app.http().io();
 
 app.io.route('login', {
     success: function(req, res) {
-        console.log('login:success');
+        //console.log('login:success');
     }
 })
 

@@ -21,12 +21,6 @@ module.exports = function(grunt) {
                 options: {
                     logConcurrentOutput: true
                 }
-            },
-            travis: {
-                tasks: ['startserver', 'sauce-travis'],
-                options: {
-                    logConcurrentOutput: true
-                }
             }
         },
         nodemon: {
@@ -312,12 +306,13 @@ module.exports = function(grunt) {
         'clean:after'
     ]);
     grunt.registerTask('startserver', ['nodemon:dev', 'watch']);
-    grunt.registerTask('sauce-travis', ['sauce-connect', 'protractor:travis'])
     grunt.registerTask('serve', ['jshint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'concurrent:dev']);
     grunt.registerTask('test', ['ngconstant:mock', 'karma', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'ngconstant:mock',
         'karma',
-        'concurrent:travis'
+        'nodemon:dev',
+        'sauce-connect',
+        'protractor:travis'
     ]);
 };
