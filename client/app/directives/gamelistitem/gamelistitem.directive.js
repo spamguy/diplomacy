@@ -1,5 +1,5 @@
-angular.module('gamelistitem.directive', [])
-.directive('sgGameListItem', [function() {
+angular.module('gamelistitem.directive', ['ngMaterial'])
+.directive('sgGameListItem', ['$mdDialog', function($mdDialog) {
     'use strict';
 
     var renderClockDescription = function(clock) {
@@ -73,6 +73,14 @@ angular.module('gamelistitem.directive', [])
                 else {
                     return getResolutionStatusMessage(playersForFullGame, foundPlayers);
                 }
+            };
+
+            scope.showJoinDialog = function($event) {
+                $mdDialog.show({
+                    targetEvent: $event,
+                    templateUrl: 'app/directives/gamelistitem/joindialog.tmpl.html',
+                    controller: 'JoinDialogController'
+                });
             };
 
             scope.movementDescription = scope.game.movementClock ? renderClockDescription(scope.game.movementClock) : renderCalendarDescription();

@@ -5,9 +5,9 @@
             <span class="statusMessage" ng-class="{'alert':joinable && !canJoinGame()}">{{statusMessage}}</span>
         </div>
         <div>
-            <md-button class="md-icon-button" ng-click="toggleGameDetails(game._id)" aria-label="Expand game listing">
-                <md-icon md-svg-icon="power" />
-            <bd-button>
+            <md-button class="md-icon-button" md-no-ink ng-click="toggleGameDetails(game._id)" aria-label="Toggle game listing">
+                <md-icon md-svg-icon="fold-out" /> <!-- TODO: Toggle icon to fold-in on click -->
+            <md-button>
         </div>
     </div>
     <md-divider></md-divider>

@@ -22,7 +22,7 @@ function ($scope, $http, $window, $state, userService, CONST, socketService) {
                     })
                     .error(function(data, status) {
                         // clear token
-                        delete $window.sessionStorage.token;
+                        userService.unsetToken();
 
                         $scope.loginForm.password.$setValidity('validLogin', false);
                     });

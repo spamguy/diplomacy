@@ -27,9 +27,14 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
 
     // icon definitions
     $mdIconProvider
-        .icon('menu', '../assets/images/menu48.svg', 24)
-        .icon('power', '../assets/images/power.svg', 24)
-        .icon('notes', '../assets/images/notes26.svg', 24);
+        .icon('menu', '/bower_components/material-design-icons/navigation/svg/production/ic_more_vert_24px.svg', 24)
+        .icon('addperson', '/bower_components/material-design-icons/social/svg/production/ic_person_add_24px.svg', 24)
+        .icon('play', '/bower_components/material-design-icons/av/svg/production/ic_play_arrow_24px.svg', 24)
+        .icon('eject', '/bower_components/material-design-icons/action/svg/production/ic_eject_24px.svg', 24)
+        .icon('join', '/bower_components/material-design-icons/communication/svg/production/ic_call_merge_24px.svg', 24)
+        .icon('new', '/bower_components/material-design-icons/content/svg/production/ic_add_24px.svg', 24)
+        .icon('fold-out', '/bower_components/material-design-icons/navigation/svg/production/ic_unfold_more_24px.svg', 24)
+        .icon('fold-in', '/bower_components/material-design-icons/navigation/svg/production/ic_unfold_less_24px.svg', 24);
 
     // local storage config
     localStorageServiceProvider.setPrefix('diplomacy');

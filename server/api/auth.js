@@ -58,7 +58,7 @@ module.exports = function() {
         // basic authentication
         passport.authenticate('local', function(err, user) {
             if (err) { return next(err); }
-            if (!user) { return res.json(401, { error: 'Incorrect username and/or password.' }); }
+            if (!user) { return res.status(401).json({ error: 'Incorrect username and/or password.' }); }
 
             var safeUser = {
                 username: user.username,

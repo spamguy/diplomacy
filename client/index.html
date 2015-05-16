@@ -31,12 +31,12 @@
         </md-button> -->
         </div>
     </md-toolbar>
-    <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed" id="floatingMenuButton">
-        <button mfb-button icon="notes" ui-sref="main.signup" label="Register" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="notes" ui-sref="games.new" label="Create a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="notes" ui-sref="games.list" label="Join a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="power" ui-sref="main.login" label="Log in" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="power" ui-sref="main.logout" label="Log out" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
+    <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" active-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed" id="floatingMenuButton">
+        <button mfb-button icon="addperson" ui-sref="main.signup" label="Register" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
+        <button mfb-button icon="new" ui-sref="games.new" label="Create a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
+        <button mfb-button icon="join" ui-sref="games.list" label="Join a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
+        <button mfb-button icon="play" ui-sref="main.login" label="Log in" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
+        <button mfb-button icon="eject" ui-sref="main.logout" label="Log out" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
     </mfb-menu>
 
     <div layout="column" layout-fill>
@@ -102,6 +102,7 @@
     <script src="app/main/home/home.controller.js"></script>
     <script src="app/directives/map/map.directive.js"></script>
     <script src="app/directives/gamelistitem/gamelistitem.directive.js"></script>
+    <script src="app/directives/gamelistitem/joindialog.controller.js"></script>
     <script src="app/games/view/filters/variant.filter.js"></script>
     <script src="app/games/games.controller.js"></script>
     <script src="app/games/view/view.controller.js"></script>
