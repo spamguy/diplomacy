@@ -22,7 +22,7 @@
             </div>
         </div>
         <div ng-if="joinable" layout="row" layout-align="center center">
-            <md-button class="md-raised md-primary" aria-label="getJoinLabel()" ng-disabled="!canJoinGame()">{{getJoinLabel()}}</md-button>
+            <md-button class="md-raised md-primary" ng-click="showJoinDialog()" aria-label="getJoinLabel()" ng-disabled="!canJoinGame()">{{getJoinLabel()}}</md-button>
         </div>
     </div>
 </div>

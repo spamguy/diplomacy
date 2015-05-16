@@ -1,4 +1,8 @@
 angular.module('games')
-.controller('JoinDialogController', [function() {
+.controller('JoinDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog) {
     'use strict';
+
+    $scope.closeDialog = function() {
+        $mdDialog.hide();
+    };
 }]);

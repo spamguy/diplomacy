@@ -17,7 +17,11 @@ module.exports = function() {
             seekrits = require('../config/local.env.sample');
     }
 
-    app.get('/users/:id', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
+    var jwtConfig = expressJwt({
+        secret: seekrits.SESSION_SECRET
+    });
+
+    app.get('/users/:id', jwtConfig, function(req, res) {
         var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/user').User
@@ -32,7 +36,7 @@ module.exports = function() {
             });
     });
 
-    app.get('/users/:id/games', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
+    app.get('/users/:id/games', jwtConfig, function(req, res) {
         var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/game')(id).Game
@@ -41,14 +45,11 @@ module.exports = function() {
             });
     });
 
-    app.get('/users/:id/games/:gid', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
+    app.get('/users/:id/games/:gid', jwtConfig, function(req, res) {
         var id = mongoose.Types.ObjectId(req.params.id),
             gid = mongoose.Types.ObjectId(req.params.gid);
 
-        return require('../models/game')(gid).Game
-            .findOne({ '_id': gid }, function(err, game) {
-                return res.send(game);
-            });
+        return getGameByID(gid);
     });
 
     /**
@@ -59,7 +60,7 @@ module.exports = function() {
      * @param  {number} [year] The year to fetch.
      * @return {Array} An array of arrays, one for each season requested.
      */
-    app.get('/users/:pid/games/:id/moves', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
+    app.get('/users/:pid/games/:id/moves', jwtConfig, function(req, res) {
         var player_id = mongoose.Types.ObjectId(req.params.pid),
             game_id = mongoose.Types.ObjectId(req.params.id),
             token_player_id = jwt.decode(req.headers.authorization.split(' ')[1]).id,
@@ -113,7 +114,7 @@ module.exports = function() {
      * @param  {number} [year] The year to fetch.
      * @return {Array} An array of arrays, one for each season requested.
      */
-    app.get('/games/:id/moves', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
+    app.get('/games/:id/moves', jwtConfig, function(req, res) {
         var id = mongoose.Types.ObjectId(req.params.id);
 
         return require('../models/season').Season
@@ -126,7 +127,7 @@ module.exports = function() {
      * @description Saves new game.
      * @return {string} The ID of the new game.
      */
-    app.post('/games', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
+    app.post('/games', jwtConfig, function(req, res) {
         var game = require('../models/game')().Game({
             variant: req.body.variant.toLowerCase(),
             name: req.body.name,
@@ -154,7 +155,7 @@ module.exports = function() {
     });
 
     // TODO: Let non-users see this list to show what they're missing out on?
-    app.get('/games', expressJwt({ secret: seekrits.SESSION_SECRET }), function(req, res) {
+    app.get('/games', jwtConfig, function(req, res) {
         var query = require('../models/game')().Game
             .find({ })
             .where('this.players.length - 1 < this.maxPlayers')
@@ -162,6 +163,41 @@ module.exports = function() {
                 return res.send(games);
             });
     });
+
+    app.post('/users/{:pid}/games', jwtConfig, function(req, res) {
+        var player_id = mongoose.Types.ObjectId(req.params.pid),
+            gid = mongoose.Types.ObjectId(req.body.gameID),
+            token_player_id = jwt.decode(req.headers.authorization.split(' ')[1]).id,
+            game = getGameByID(gid);
+
+            if (!game)
+                return res.status(500).json({ error: 'The game provided does not exist.'});
+
+            // if user already belongs, do not join
+            if (_.find(game.players, _.matchesProperty('player_id', player_id.toString())))
+                return res.status(500).json({ error: 'This user already belongs to this game.'});
+
+            var newPlayerObject = { player_id: player_id };
+            if (req.body.prefs)
+                newPlayerObject.prefs = req.body.prefs;
+
+            // append new player to game's player list
+            require('../models/game')(gid).Game.update(
+                { _id: gid },
+                { $push: { 'players': newPlayerObject } },
+                { upsert: true },
+                function(err, data) {
+                }
+            );
+    });
+
+    // PRIVATE FUNCTIONS
+    var getGameByID = function(gid) {
+        require('../models/game')(gid).Game
+            .findOne({ '_id': gid }, function(err, game) {
+                return game;
+            });
+    };
 
     return app;
 };
