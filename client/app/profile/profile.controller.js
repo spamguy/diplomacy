@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('profile')
-    .controller('ProfileController', ['$scope', '$state', '$http', 'gameService', 'games', function ($scope, $state, $http, gameService, games) {
+    .controller('ProfileController', ['$scope', '$http', 'gameService', 'games', function ($scope, $http, gameService, games) {
         $scope.selectedIndex = 0;
 
         $scope.variants = { };
@@ -32,8 +32,4 @@ angular.module('profile')
         // populate keys
         for (var key in $scope.variants)
             $scope.variants[key] = gameService.getVariant(key);
-
-        $scope.goToGame = function(game, variant, moves) {
-            $state.go('games.view', { id: game._id });
-        };
     }]);

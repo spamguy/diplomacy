@@ -49,7 +49,10 @@ module.exports = function() {
         var id = mongoose.Types.ObjectId(req.params.id),
             gid = mongoose.Types.ObjectId(req.params.gid);
 
-        return getGameByID(gid);
+        return require('../models/game')(gid).Game
+            .findOne({ '_id': gid }, function(err, game) {
+                return res.send(game);
+            });
     });
 
     /**
@@ -70,7 +73,6 @@ module.exports = function() {
         // The user calling this method should match the token to prevent API exploitation.
         if (token_player_id !== player_id.toString())
             return res.send(401, 'Token does not match the supplied player.');
-
 
         require('../models/game')(player_id).Game.findOne({ '_id': game_id }, function(err, game) {
             if (!game)

@@ -1,5 +1,5 @@
 angular.module('gamelistitem.directive', ['ngMaterial'])
-.directive('sgGameListItem', ['$mdDialog', function($mdDialog) {
+.directive('sgGameListItem', ['$mdDialog', '$state', function($mdDialog, $state) {
     'use strict';
 
     var renderClockDescription = function(clock) {
@@ -51,6 +51,12 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                     return false;
 
                 return true;
+            };
+
+            scope.goToGame = function() {
+                // don't warp to games if you don't already belong
+                if (!scope.joinable)
+                    $state.go('games.view', { id: scope.game._id });
             };
 
             scope.getJoinLabel = function() {

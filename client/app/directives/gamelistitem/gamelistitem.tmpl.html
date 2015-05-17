@@ -1,7 +1,7 @@
-<div layout="column" layout-margin class="md-whiteframe-z2 gameItem">
+<div layout="column" layout-margin class="md-whiteframe-z2 gameItem" ng-click="goToGame()">
     <div layout="row" layout-align="space-between" flex layout-margin>
         <div>
-            <h3 class="md-title" style="margin: 0 auto" ui-sref="games.view({ id: '{{game._id}}' })">{{game.name}}</h3>
+            <h3 class="md-title" style="margin: 0 auto">{{game.name}}</h3>
             <span class="statusMessage" ng-class="{'alert':joinable && !canJoinGame()}">{{statusMessage}}</span>
         </div>
         <div>
