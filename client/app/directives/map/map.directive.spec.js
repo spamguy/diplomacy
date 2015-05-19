@@ -1,11 +1,13 @@
 'use strict';
 
-describe('map.directives', function () {
+describe('Map directive', function () {
     var scope,
         el,
         mockService,
         deferred,
-        q;
+        deferred2,
+        q,
+        httpBackend;
 
     beforeEach(function() {
         module('map.directives');
@@ -21,39 +23,56 @@ describe('map.directives', function () {
                     }
                 });
                 return deferred.promise;
+            },
+            getSeasonData: function() {
+                deferred2 = q.defer();
+                deferred2.resolve([]);
+                return deferred2.promise;
             }
         };
         spyOn(mockService, 'getVariantData').and.callThrough();
     });
 
     beforeEach(function() {
-        inject(function ($injector, $rootScope, $compile, $q, _$timeout_) {
+        inject(function ($injector, $rootScope, $compile, $q, _$httpBackend_) {
+            httpBackend = _$httpBackend_;
+            httpBackend.whenGET(/variants\/.+?\.svg/).respond(200, '<svg></svg>');
+            
             scope = $rootScope.$new();
             q = $q;
 
             scope.variant = mockService.getVariantData('standard');
+            scope.season = mockService.getSeasonData();
             scope.readonly = true;
 
-            el = $compile('<sg-map variant="variant" readonly="readonly" />')(scope);
+            el = $compile('<sg-map variant="variant" season="season" readonly="readonly" />')(scope);
         });
+    });
+    
+    afterEach(function() {
+        httpBackend.verifyNoOutstandingExpectation();
+        httpBackend.verifyNoOutstandingRequest();
     });
 
     it('gets variant data', function() {
-        scope.readonly = true;
         scope.$digest();
 
         expect(mockService.getVariantData).toHaveBeenCalled();
-
+        
         deferred.promise.then(function(variant) {
-            expect(variant.name).toBe('standard');
+            expect(variant.data.name).toBe('standard');
         });
     });
 
     it('picks up the readonly flag', function() {
-        scope.readonly = true;
         scope.$digest();
 
         var isolated = el.isolateScope();
         expect(isolated.readonly).toBe(true);
     });
+    
+    /* fit('gets the SVG map', function() {
+        scope.$digest();
+        httpBackend.flush();
+    }); */
 });
