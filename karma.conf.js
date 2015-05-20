@@ -2,10 +2,17 @@
 
 module.exports = function (config) {
     config.set({
+        preprocessors: {
+            'client/app/**/*.tmpl.html': ['ng-html2js']
+        },
         frameworks: ['jasmine'],
         files: [
+            'bower_components/jquery/dist/jquery.js',
+            'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
             'bower_components/d3/d3.js',
             'bower_components/lodash/lodash.js',
+            'bower_components/humanize-duration/humanize-duration.js',
+            
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js', // for the love of god, stop deleting this!
             'bower_components/angular-ui-router/release/angular-ui-router.js',
@@ -27,19 +34,19 @@ module.exports = function (config) {
             'client/app/**/*.filter.js',
             'client/app/**/*.controller.js',
             'client/app/**/*.html',
-            'client/app/**/*.spec.js'
+            'client/app/**/*.spec.js',
+
+            // HTML files and templates
+            'client/app/**/*.tmpl.html'
         ],
         logLevel:'ERROR',
         reporters:['spec'],
         autoWatch: false,
         singleRun: true,
         browsers: ['PhantomJS'],
-        preprocessors: {
-            'app/**/*.html': 'html2js'
-        },
         ngHtml2JsPreprocessor: {
-            // strip app from the file path
-            stripPrefix: 'app/'
+            stripPrefix: 'client/',
+            moduleName: 'templates'
         }
     });
 };

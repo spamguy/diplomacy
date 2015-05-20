@@ -3,24 +3,53 @@ describe('Map directive', function() {
 
     var el,
         scope,
-        $state;
+        mockService,
+        deferred,
+        deferred2,
+        q;
 
     beforeEach(function() {
+        module('templates');
+        module('ui.router');
         module('gamelistitem.directive');
     });
 
     beforeEach(function() {
-        inject(function($injector, $compile, $rootScope, _$state_) {
-            $state = _$state_;
-            scope = $rootScope.$new();
+        mockService = {
+            getVariantData: function(name) {
+                deferred = q.defer();
+                deferred.resolve({
+                    data: {
+                        name: 'standard'
+                    }
+                });
+                return deferred.promise;
+            }
+        };
+        spyOn(mockService, 'getVariantData').and.callThrough();
+    });
 
-            el = $compile('<sg-game-list-item></sg-game-list-item>')(scope);
+    beforeEach(function() {
+        inject(function($injector, $compile, $rootScope, $q) {
+            q = $q;
+            scope = $rootScope;
+
+            scope.game = {
+                variant: 'Standard',
+                movementClock: 1440
+            };
+            scope.variant = mockService.getVariantData();
+            el = $compile('<sg-game-list-item game="game" variant="variant" joinable="false"></sg-game-list-item>')(scope);
+
+            scope.$digest();
         });
     });
 
-    // fit('has a shaded container', function() {
-    //     scope.$digest();
-    //
-    //     expect(el).toBe(1);
-    // });
+    it('loads variant info', function() {
+        expect(mockService.getVariantData).toHaveBeenCalled();
+    });
+
+    it('lists the game\'s variant', function() {
+        expect($('#variantDescription', $(el))).toContainText('Standard');
+    });
 });
