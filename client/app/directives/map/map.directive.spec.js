@@ -6,8 +6,7 @@ describe('Map directive', function () {
         mockService,
         deferred,
         deferred2,
-        q,
-        httpBackend;
+        q;
 
     beforeEach(function() {
         module('map.directives');
@@ -34,11 +33,11 @@ describe('Map directive', function () {
     });
 
     beforeEach(function() {
-        inject(function ($injector, $rootScope, $compile, $q, _$httpBackend_) {
-            httpBackend = _$httpBackend_;
-            httpBackend.whenGET(/variants\/.+?\.svg/).respond(200, '<svg></svg>');
-            
-            scope = $rootScope.$new();
+        inject(function ($injector, $rootScope, $compile, $q) {
+            //httpBackend = _$httpBackend_;
+            //httpBackend.whenGET(/variants\/.+?\.svg/).respond(200, '<svg></svg>');
+
+            scope = $rootScope;
             q = $q;
 
             scope.variant = mockService.getVariantData('standard');
@@ -46,31 +45,24 @@ describe('Map directive', function () {
             scope.readonly = true;
 
             el = $compile('<sg-map variant="variant" season="season" readonly="readonly" />')(scope);
+
+            scope.$digest();
         });
-    });
-    
-    afterEach(function() {
-        httpBackend.verifyNoOutstandingExpectation();
-        httpBackend.verifyNoOutstandingRequest();
     });
 
     it('gets variant data', function() {
-        scope.$digest();
-
         expect(mockService.getVariantData).toHaveBeenCalled();
-        
+
         deferred.promise.then(function(variant) {
             expect(variant.data.name).toBe('standard');
         });
     });
 
     it('picks up the readonly flag', function() {
-        scope.$digest();
-
         var isolated = el.isolateScope();
         expect(isolated.readonly).toBe(true);
     });
-    
+
     /* fit('gets the SVG map', function() {
         scope.$digest();
         httpBackend.flush();

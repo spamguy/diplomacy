@@ -36,7 +36,7 @@ describe('Map directive', function() {
 
             scope.game = {
                 variant: 'Standard',
-                movementClock: 1440
+                movementClock: 2880
             };
             scope.variant = mockService.getVariantData();
             el = $compile('<sg-game-list-item game="game" variant="variant" joinable="false"></sg-game-list-item>')(scope);
@@ -51,5 +51,9 @@ describe('Map directive', function() {
 
     it('lists the game\'s variant', function() {
         expect($('#variantDescription', $(el))).toContainText('Standard');
+    });
+
+    it('describes movement adjudication with readable text', function() {
+        expect($('#movementDescription', $(el))).toContainText('Every 2 days');
     });
 });
