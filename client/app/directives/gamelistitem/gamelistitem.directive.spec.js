@@ -1,4 +1,4 @@
-describe('Map directive', function() {
+describe('Game list item directive', function() {
     'use strict';
 
     var el,
