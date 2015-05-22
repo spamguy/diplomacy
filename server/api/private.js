@@ -166,12 +166,14 @@ module.exports = function() {
             });
     });
 
-    app.post('/users/{:pid}/games', jwtConfig, function(req, res) {
+    app.post('/users/:pid/games', jwtConfig, function(req, res) {
         var player_id = mongoose.Types.ObjectId(req.params.pid),
             gid = mongoose.Types.ObjectId(req.body.gameID),
             token_player_id = jwt.decode(req.headers.authorization.split(' ')[1]).id,
-            game = getGameByID(gid);
+            game;
 
+        require('../models/game')(gid).Game
+        .findOne({ '_id': gid }, function(err, game) {
             if (!game)
                 return res.status(500).json({ error: 'The game provided does not exist.'});
 
@@ -189,17 +191,11 @@ module.exports = function() {
                 { $push: { 'players': newPlayerObject } },
                 { upsert: true },
                 function(err, data) {
+                    res.sendStatus(200);
                 }
             );
+        });
     });
-
-    // PRIVATE FUNCTIONS
-    var getGameByID = function(gid) {
-        require('../models/game')(gid).Game
-            .findOne({ '_id': gid }, function(err, game) {
-                return game;
-            });
-    };
 
     return app;
 };
