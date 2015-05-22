@@ -51,10 +51,11 @@ angular.module('games')
 
     $scope.onWizardFinished = function() {
         // apply variant data DB will need occasionally, like max player count
-        var variant = gameService.getVariant($scope.game.variant);
-
-        $scope.game.maxPlayers = variant.powers.length;
-        gameService.createNewGame($scope.game);
+        gameService.getVariant($scope.game.variant)
+        .then(function(variant) {
+            $scope.game.maxPlayers = variant.data.powers.length;
+            gameService.createNewGame($scope.game);
+        });
     };
 
     $scope.humaniseTime = function(clock) {

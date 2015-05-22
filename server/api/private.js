@@ -153,7 +153,7 @@ module.exports = function() {
 
         game.save();
 
-        return res.send(201);
+        return res.sendStatus(201);
     });
 
     // TODO: Let non-users see this list to show what they're missing out on?

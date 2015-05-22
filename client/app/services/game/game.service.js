@@ -18,6 +18,8 @@ angular.module('gameService', ['userService', 'restangular'])
         },
 
         getVariant: function(variantName) {
+            // strip spaces
+            variantName = _.camelCase(variantName);
             return $http.get('variants/' + variantName + '/' + variantName + '.json');
         },
 

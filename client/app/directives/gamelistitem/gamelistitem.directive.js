@@ -85,7 +85,10 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 $mdDialog.show({
                     targetEvent: $event,
                     templateUrl: 'app/directives/gamelistitem/joindialog.tmpl.html',
-                    controller: 'JoinDialogController'
+                    controller: 'JoinDialogController',
+                    locals: {
+                        game: scope.game
+                    }
                 });
             };
 
