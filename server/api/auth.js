@@ -22,8 +22,7 @@ module.exports = function() {
         if (ex.code === 'MODULE_NOT_FOUND')
             seekrits = require('../config/local.env.sample');
     }
-    mongoose.connect(seekrits.mongoURI);
-    mongoose.set('debug', true);
+    
 
     // passport config
     passport.use(new LocalStrategy(

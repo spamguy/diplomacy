@@ -15,7 +15,7 @@ function ($scope, $http, $window, $state, userService, CONST, socketService) {
                         userService.setCurrentUser(data.id);
                         userService.setToken(data.token);
 
-                        socketService.emit('login:success');
+                        socketService.emit('login:success', { id: data.id });
 
                         // redirect to profile
                         $state.go('profile');
