@@ -22,6 +22,7 @@ angular.module('profile', [
             gameService: 'gameService',
 
             games: function(gameService) {
+                //socketService.emit('user:games');
                 return gameService.getAllForCurrentUser();
             }
         }
