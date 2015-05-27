@@ -19,11 +19,11 @@ angular.module('profile', [
             restricted: true
         },
         resolve: {
-            gameService: 'gameService',
+            socketService: 'socketService',
 
-            games: function(gameService) {
-                //socketService.emit('user:games');
-                return gameService.getAllForCurrentUser();
+            games: function(socketService) {
+                socketService.emit('user:games');
+                //return gameService.getAllForCurrentUser();
             }
         }
     });

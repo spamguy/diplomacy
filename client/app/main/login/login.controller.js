@@ -1,12 +1,8 @@
 'use strict';
 
 angular.module('diplomacy.main')
-.controller('LoginController', ['$scope', '$http', '$window', '$state', 'userService', 'CONST', 'socketService',
-function ($scope, $http, $window, $state, userService, CONST, socketService) {
-    socketService.on('connect', function() {
-        socketService.emit('authenticate', { token: userService.getToken() });
-    });
-
+.controller('LoginController', ['$scope', '$http', '$window', '$state', 'userService', 'CONST',
+function ($scope, $http, $window, $state, userService, CONST) {
     angular.extend($scope, {
         user: {
             username: null,
