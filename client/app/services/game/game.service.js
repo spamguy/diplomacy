@@ -74,6 +74,16 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
             options = options || { };
             options.gameID = game._id;
             Restangular.one('users', userService.getCurrentUser()).all('games').post(options);
+        },
+
+        isAdmin: function(game) {
+            for (var p = 0; p < game.players.length; p++) {
+                if (game.players[p].power === '*' && game.players[p].player_id === userService.getCurrentUser())
+                    return true;
+            }
+
+            // no admin found with ID pairing
+            return false;
         }
     };
 }]);

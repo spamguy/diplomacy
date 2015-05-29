@@ -1,7 +1,7 @@
 describe('Profile games filter', function () {
     'use strict';
 
-    var filter;
+    var filter, mockService;
 
     beforeEach(function() {
         module('profile');
@@ -17,16 +17,50 @@ describe('Profile games filter', function () {
 
     it('filters out admin games when flag is false', function() {
         expect(
-            filter([
-                { isAdmin: true }, { isAdmin: true }, { isAdmin: false }
+            filter([{
+                    players: [{
+                            player_id: null,
+                            power: '*'
+                        }
+                    ]
+                }, {
+                    players: [{
+                            player_id: null,
+                            power: '*'
+                        }
+                    ]
+                }, {
+                    players: [{
+                            player_id: '666fff',
+                            power: 'A'
+                        }
+                    ]
+                }
             ], false).length)
         .toEqual(1);
     });
 
     it('filters out non-admin games when flag is true', function() {
         expect(
-            filter([
-                { isAdmin: true }, { isAdmin: false }, { isAdmin: false }
+            filter([{
+                    players: [{
+                            player_id: null,
+                            power: '*'
+                        }
+                    ]
+                }, {
+                    players: [{
+                            player_id: '666fff',
+                            power: 'A'
+                        }
+                    ]
+                }, {
+                    players: [{
+                            player_id: '777aaa',
+                            power: 'B'
+                        }
+                    ]
+                }
             ], true).length)
         .toEqual(1);
     });

@@ -19,16 +19,7 @@ var GameSchema = new mongoose.Schema({
     passwordsalt: String,
     movementClock: Number
 });
-// GameSchema.virtual('isAdmin')
-//     .get(function() {
-//         for (var p = 0; p < this.players.length; p++) {
-//             if (id && this.players[p].power === '*' && this.players[p].player_id.toString() === id.toString())
-//                 return true;
-//         }
-//
-//         // no admin found with id pairing
-//         return false;
-//     });
+
 GameSchema.virtual('playerCount')
     .get(function() {
         return this.players.length - 1; // the GM is not a player

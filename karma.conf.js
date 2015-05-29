@@ -12,7 +12,7 @@ module.exports = function (config) {
             'bower_components/d3/d3.js',
             'bower_components/lodash/lodash.js',
             'bower_components/humanize-duration/humanize-duration.js',
-            
+            'bower_components/socket.io-client/socket.io.js',
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js', // for the love of god, stop deleting this!
             'bower_components/angular-ui-router/release/angular-ui-router.js',
@@ -23,6 +23,7 @@ module.exports = function (config) {
             'bower_components/restangular/dist/restangular.js',
             'bower_components/angular-material/angular-material.js',
             'bower_components/angular-aria/angular-aria.js',
+            'bower_components/angular-socket-io/socket.js',
 
             // client files
             'client/app/app.module.js',
