@@ -13,7 +13,12 @@ module.exports = function() {
     var app = this.app,
         core = this.core;
 
-    app.get('/api/users/:id/games', function(req) {
-
-    });
+    app.io.route('game', {
+        userlist: function(req, res) {
+            var options = { playerID: req.data.playerID };
+            var games = core.game.list(options, function(err, games) {
+                return res.json(games);
+            });
+        }
+    })
 };

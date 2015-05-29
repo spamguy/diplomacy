@@ -22,11 +22,11 @@ angular.module('profile')
              *     2) Current seasons expose old positions.
              *     3) Players see their own orders in current seasons.
              *     4) GMs see everything in current seasons.
-             */
             if (theGame.isAdmin)
                 $scope.moves[theGame._id] = gameService.getMoveData(theGame._id);//.then(movesToScopeCallback);
             else
                 $scope.moves[theGame._id] = gameService.getMoveDataForCurrentUser(theGame._id, theGame.year, theGame.season);//.then(movesToScopeCallback);
+                */
         }
 
         // populate keys

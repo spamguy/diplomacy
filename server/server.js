@@ -52,6 +52,9 @@ app.io.on('connection', function(socket) {
                 console.log('Authenticated socket ' + socket.id);
                 socket.auth = true;
             }
+            else {
+                console.log(err);
+            }
         });
     });
 
@@ -68,12 +71,6 @@ app.io.on('connection', function(socket) {
             return callback(err, decoded);
         });
     };
-});
-
-app.io.route('login', {
-    success: function(req, res) {
-        //console.log('login:success');
-    }
 });
 
 mongoose.connect(seekrits.mongoURI);

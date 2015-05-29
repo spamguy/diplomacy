@@ -7,7 +7,7 @@ var UserCore = require('./user.core'),
 function Core() {
     EventEmitter.call(this);
 
-    this.account = new GameCore({
+    this.account = new UserCore({
         core: this
     });
 
