@@ -28,6 +28,10 @@ module.exports = function() {
         req.io.route('user:login');
     });
 
+    app.get('/api/users/:username/exists', function(req) {
+        req.io.route('user:exists');
+    });
+
     // SOCKETS
     app.io.route('user', {
         login: function(req, res) {
@@ -55,6 +59,13 @@ module.exports = function() {
                     id: user._id,
                     token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
                 });
+            });
+        },
+        exists: function(req, res) {
+            var options = { username: req.params.username };
+
+            var users = core.user.list(options, function(err, users) {
+                return res.json({ exists: users.length === 1 });
             });
         }
     });

@@ -46,6 +46,7 @@ _.each(controllers, function(controller) {
 app.io.on('connection', function(socket) {
     console.log('Attempting to connect socket ' + socket.id);
     socket.auth = false;
+
     socket.on('authenticate', function(data) {
         validateToken(data.token, function(err, success) {
             if (!err && success) {

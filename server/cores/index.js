@@ -7,7 +7,7 @@ var UserCore = require('./user.core'),
 function Core() {
     EventEmitter.call(this);
 
-    this.account = new UserCore({
+    this.user = new UserCore({
         core: this
     });
 

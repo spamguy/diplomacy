@@ -13,4 +13,19 @@ UserCore.prototype.create = function(provider, options, cb) {
     user.save(cb);
 };
 
+UserCore.prototype.list = function(options, cb) {
+    options = options || { };
+    var User = mongoose.model('User');
+    var query = User.find(options);
+
+    query.exec(function(err, users) {
+        if (err) {
+            console.error(err);
+            return cb(err);
+        }
+
+        cb(null, users);
+    });
+};
+
 module.exports = UserCore;
