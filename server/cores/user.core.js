@@ -6,9 +6,9 @@ function UserCore(options) {
     this.core = options.core;
 }
 
-UserCore.prototype.create = function(provider, options, cb) {
+UserCore.prototype.create = function(options, cb) {
     var User = mongoose.model('User');
-    var user = new User({ provider: provider });
+    var user = new User(options);
 
     user.save(cb);
 };

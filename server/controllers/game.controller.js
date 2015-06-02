@@ -19,6 +19,9 @@ module.exports = function() {
             var games = core.game.list(options, function(err, games) {
                 return res.json(games);
             });
+        },
+
+        moves: function(req, res) {
         }
-    })
+    });
 };

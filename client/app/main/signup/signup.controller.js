@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('diplomacy.main')
-    .controller('SignupController', ['$scope', '$http', function ($scope, $http) {
+    .controller('SignupController', ['$scope', '$http', '$state', function ($scope, $http, $state) {
         angular.extend($scope, {
             user: {
                 username: null,
@@ -11,8 +11,7 @@ angular.module('diplomacy.main')
                 points: 0,
                 timezone: 0,
                 save: function() {
-                    $http.post('/api/users', this);
-                    // FIXME: After success, authenticate and redirect to profile page
+                    $http.post('/api/users', this).then(function() { $state.go('profile'); });
                 }
             }
         });

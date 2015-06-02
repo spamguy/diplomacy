@@ -3,7 +3,7 @@
 module.exports = function (config) {
     config.set({
         preprocessors: {
-            'client/app/**/*.tmpl.html': ['ng-html2js']
+            'client/app/**/*.html': ['ng-html2js']
         },
         frameworks: ['jasmine'],
         files: [

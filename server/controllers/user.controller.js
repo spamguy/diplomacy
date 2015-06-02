@@ -19,6 +19,8 @@ catch (ex) {
         seekrits = require('../config/local.env.sample');
 }
 
+var pbkdf2 = require('easy-pbkdf2')(hashOptions);
+
 module.exports = function() {
     var app = this.app,
         core = this.core;
@@ -30,6 +32,10 @@ module.exports = function() {
 
     app.get('/api/users/:username/exists', function(req) {
         req.io.route('user:exists');
+    });
+
+    app.post('/api/users', function(req) {
+        req.io.route('user:create');
     });
 
     // SOCKETS
@@ -66,6 +72,21 @@ module.exports = function() {
 
             var users = core.user.list(options, function(err, users) {
                 return res.json({ exists: users.length === 1 });
+            });
+        },
+        create: function(req, res, next) {
+            var salt = pbkdf2.generateSalt();
+            pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
+                core.user.create({
+                    username: req.body.username,
+                    password: hash,
+                    passwordsalt: salt,
+                    email: req.body.email,
+                    points: 0
+                }, function(err) {
+                    if (!err)
+                        return res.sendStatus(201);
+                });
             });
         }
     });

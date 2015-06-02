@@ -7,7 +7,7 @@ describe('ProfileController', function () {
         deferred,
         deferred2,
         deferred3,
-        httpBackend,
+        //httpBackend,
         $state,
         $injector,
         games,
@@ -21,7 +21,7 @@ describe('ProfileController', function () {
 
     variant = { name: 'something' };
 
-    // Load the module that the controller you are testing is in
+    beforeEach(module('templates'));
     beforeEach(module('profile'));
 
     beforeEach(inject(function(_$q_, _$rootScope_, _$state_, _$injector_) {
@@ -53,22 +53,22 @@ describe('ProfileController', function () {
         spyOn(mockService, 'getVariant').and.callThrough();
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, _$httpBackend_) {
-        httpBackend = _$httpBackend_;
+    beforeEach(inject(function ($rootScope, $controller, $q) {
+        //httpBackend = _$httpBackend_;
 
         // HACK: https://github.com/angular-ui/ui-router/issues/212
-        httpBackend.whenGET('app/profile/profile.html').respond(200, '');
+        //httpBackend.whenGET('app/profile/profile.html').respond(200, '');
         //httpBackend.whenGET('/api/users/games').respond(200, games);
 
         $scope = $rootScope.$new();
         $controller('ProfileController', { $scope: $scope, gameService: mockService, games: games });
     }));
 
-    afterEach(function() {
-        httpBackend.flush();
-        httpBackend.verifyNoOutstandingExpectation();
-        httpBackend.verifyNoOutstandingRequest();
-    });
+    // afterEach(function() {
+    //     httpBackend.flush();
+    //     httpBackend.verifyNoOutstandingExpectation();
+    //     httpBackend.verifyNoOutstandingRequest();
+    // });
 
     it('resolves game data', function() {
         $state.go('profile');
