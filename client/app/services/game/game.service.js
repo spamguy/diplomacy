@@ -38,7 +38,11 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
         },
 
         getAllOpenGames: function() {
-            return Restangular.all('games').getList();
+            return $q(function(resolve) {
+                socketService.emit('game:list', function(games) {
+                    resolve(games);
+                });
+            });
         },
 
         getMoveData: function(gameID, year, season) {

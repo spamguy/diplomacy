@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('userService', ['LocalStorageModule', 'restangular'])
-.factory('userService', ['localStorageService', 'Restangular', function(localStorageService, Restangular) {
+.factory('userService', ['localStorageService', 'Restangular', 'socketService', '$q',
+function(localStorageService, Restangular, socketService, $q) {
     return {
         userExists: function(username) {
             return Restangular.one('users', username).customGET('exists');
@@ -32,7 +33,13 @@ angular.module('userService', ['LocalStorageModule', 'restangular'])
         },
 
         getUser: function(userID) {
-            return Restangular.one('users', userID).get();
+            return $q(function(resolve) {
+                socketService.emit('user:list', {
+                    ID: userID
+                }, function(users) {
+                    resolve(users[0]);
+                });
+            });
         }
     };
 }]);

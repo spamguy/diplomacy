@@ -67,6 +67,7 @@ module.exports = function() {
                 });
             });
         },
+
         exists: function(req, res) {
             var options = { username: req.params.username };
 
@@ -74,6 +75,7 @@ module.exports = function() {
                 return res.json({ exists: users.length === 1 });
             });
         },
+
         create: function(req, res, next) {
             var salt = pbkdf2.generateSalt();
             pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
@@ -88,6 +90,13 @@ module.exports = function() {
                         return res.sendStatus(201);
                 });
             });
-        }
+        },
+
+        list: function(req, res) {
+            var options = { ID: req.data.ID };
+            var user = core.user.list(options, function(err, users) {
+                return res.json(users);
+            });
+        },
     });
 };

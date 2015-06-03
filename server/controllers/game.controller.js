@@ -21,6 +21,12 @@ module.exports = function() {
             });
         },
 
+        list: function(req, res) {
+            var games = core.game.list({ }, function(err, games) {
+                return res.json(games);
+            });
+        },
+
         moves: function(req, res) {
         }
     });

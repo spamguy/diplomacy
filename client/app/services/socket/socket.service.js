@@ -1,5 +1,5 @@
-angular.module('socketService', ['btford.socket-io', 'userService'])
-.factory('socketService', ['socketFactory', 'userService', function(socketFactory, userService) {
+angular.module('socketService', ['btford.socket-io', 'LocalStorageModule'])
+.factory('socketService', ['socketFactory', 'localStorageService', function(socketFactory, localStorageService) {
     'use strict';
 
     var socket = socketFactory({
@@ -9,7 +9,8 @@ angular.module('socketService', ['btford.socket-io', 'userService'])
 
     // authenticate with JWT before sending actual socket command
     socket.on('connect', function() {
-        socket.emit('authenticate', { token: userService.getToken() });
+        // userService.getToken() would be better, but that would create a circular dependency
+        socket.emit('authenticate', { token: localStorageService.get('token') });
     });
 
     return socket;
