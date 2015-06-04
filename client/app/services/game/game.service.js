@@ -39,7 +39,7 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
 
         getAllOpenGames: function() {
             return $q(function(resolve) {
-                socketService.emit('game:list', function(games) {
+                socketService.emit('game:listopen', function(games) {
                     resolve(games);
                 });
             });

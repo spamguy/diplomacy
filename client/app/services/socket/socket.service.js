@@ -10,7 +10,9 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule'])
     // authenticate with JWT before sending actual socket command
     socket.on('connect', function() {
         // userService.getToken() would be better, but that would create a circular dependency
-        socket.emit('authenticate', { token: localStorageService.get('token') });
+        var token = localStorageService.get('token');
+        if (token)
+            socket.emit('authenticate', { token: token });
     });
 
     return socket;

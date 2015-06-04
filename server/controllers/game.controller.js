@@ -27,7 +27,22 @@ module.exports = function() {
             });
         },
 
+        listopen: function(req, res) {
+            var games = core.game.listOpen({ }, function(err, games) {
+                return res.json(games);
+            });
+        },
+
         moves: function(req, res) {
+        },
+
+        join: function(req, res) {
+            // make sure this person is actually allowed to join
+
+            // join
+
+            // broadcast join to others subscribed to game
+
         }
     });
 };

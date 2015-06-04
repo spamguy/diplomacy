@@ -31,4 +31,20 @@ GameCore.prototype.list = function(options, cb) {
     });
 };
 
+GameCore.prototype.listOpen = function(options, cb) {
+    options = options || { };
+    var Game = mongoose.model('Game');
+    var query = Game.find({ })
+        .where('this.players.length - 1 < this.maxPlayers');
+
+    query.exec(function(err, games) {
+        if (err) {
+            console.error(err);
+            return cb(err);
+        }
+
+        cb(null, games);
+    });
+};
+
 module.exports = GameCore;
