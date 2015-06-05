@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('diplomacy.main')
-.controller('LoginController', ['$scope', '$http', '$window', '$state', 'userService', 'CONST',
-function ($scope, $http, $window, $state, userService, CONST) {
+.controller('LoginController', ['$scope', '$http', '$window', '$state', 'userService', 'socketService', 'CONST',
+function ($scope, $http, $window, $state, userService, socketService, CONST) {
     angular.extend($scope, {
         user: {
             username: null,
@@ -14,6 +14,8 @@ function ($scope, $http, $window, $state, userService, CONST) {
                     .success(function(data, status) {
                         userService.setCurrentUser(data.id);
                         userService.setToken(data.token);
+
+                        socketService.emit('game:watch', { token: userService.getToken() });
 
                         // redirect to profile
                         $state.go('profile');

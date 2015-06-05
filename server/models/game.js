@@ -17,7 +17,8 @@ var GameSchema = new mongoose.Schema({
     minimumScoreToJoin: Number,
     password: String,
     passwordsalt: String,
-    movementClock: Number
+    movementClock: Number,
+    isActive: Boolean
 });
 
 GameSchema.virtual('playerCount')

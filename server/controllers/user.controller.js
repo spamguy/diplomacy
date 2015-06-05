@@ -97,6 +97,6 @@ module.exports = function() {
             var user = core.user.list(options, function(err, users) {
                 return res.json(users);
             });
-        },
+        }
     });
 };

@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose'),
     passport = require('passport'),
+    jwt = require('jsonwebtoken'),
     LocalStrategy = require('passport-local').Strategy;
 
 var tokenAuth = function(username, password, done) {
@@ -19,6 +20,11 @@ function authenticate(req, cb) {
     passport.authenticate('local', cb)(req);
 }
 
+function getIDFromToken(req) {
+    return jwt.decode(req.data.token).id;
+}
+
 module.exports = {
-    authenticate: authenticate
+    authenticate: authenticate,
+    getIDFromToken: getIDFromToken
 };

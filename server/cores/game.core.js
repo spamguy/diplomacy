@@ -18,7 +18,8 @@ GameCore.prototype.list = function(options, cb) {
     options = options || { };
     var Game = mongoose.model('Game');
     var query = Game.find(_.pick({
-        'players.player_id': options.playerID
+        'players.player_id': options.playerID,
+        'isActive': options.isActive
     }, _.identity));
 
     query.exec(function(err, games) {
@@ -34,7 +35,7 @@ GameCore.prototype.list = function(options, cb) {
 GameCore.prototype.listOpen = function(options, cb) {
     options = options || { };
     var Game = mongoose.model('Game');
-    var query = Game.find({ })
+    var query = Game.find({ isActive: true })
         .where('this.players.length - 1 < this.maxPlayers');
 
     query.exec(function(err, games) {

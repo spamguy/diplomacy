@@ -9,6 +9,7 @@ describe('SignupForm directives', function () {
         deferred;
 
     beforeEach(function() {
+        module('socketService');
         module('signupform.directives');
     });
 
