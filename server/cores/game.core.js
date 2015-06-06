@@ -18,6 +18,7 @@ GameCore.prototype.list = function(options, cb) {
     options = options || { };
     var Game = mongoose.model('Game');
     var query = Game.find(_.pick({
+        '_id': options.ID,
         'players.player_id': options.playerID,
         'isActive': options.isActive
     }, _.identity));

@@ -43,28 +43,29 @@ _.each(controllers, function(controller) {
     });
 });
 
+// many thanks to http://wmyers.github.io/technical/nodejs/Simple-JWT-auth-for-SocketIO/
 app.io.on('connection', function(socket) {
     console.log('Attempting to connect socket ' + socket.id);
-    socket.auth = false;
+    delete app.io.sockets.connected[socket.id];
+
+    var authTimeout = setTimeout(function() {
+        console.log("Disconnecting socket ", socket.id);
+        socket.disconnect('unauthorized');
+    }, 2000);
 
     socket.on('authenticate', function(data) {
-        validateToken(data.token, function(err, success) {
-            if (!err && success) {
+        clearTimeout(authTimeout);
+        validateToken(data.token, function(err, data) {
+            if (!err && data) {
                 console.log('Authenticated socket ' + socket.id);
-                socket.auth = true;
+                app.io.sockets.connected[socket.id] = socket;
+                socket.tokenData = data;
             }
             else {
                 console.log(err);
             }
         });
     });
-
-    setTimeout(function() {
-        if (!socket.auth) {
-          console.log("Disconnecting socket ", socket.id);
-          socket.disconnect('unauthorized');
-        }
-    }, 1000);
 
     var validateToken = function(token, callback) {
         console.log('Token = ' + token);

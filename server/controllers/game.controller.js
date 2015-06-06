@@ -39,7 +39,8 @@ module.exports = function() {
         },
 
         join: function(req, res) {
-            var gameID = req.data.gameID;
+            var gameID = req.data.gameID,
+                game = core.game.list({ ID: gameID });
             // make sure this person is actually allowed to join
 
             // join
@@ -48,12 +49,13 @@ module.exports = function() {
             req.socket.broadcast.to(gameID).emit('user:join:success', { gamename: game.name });
 
             // if everyone is here, signal the game can (re)start
-            if (game.players.length = game.maxPlayers + 1)
+            if (game.players.length === game.maxPlayers + 1)
                 req.socket.emit('game:start', { gameID: gameID });
         },
 
         leave: function(req, res) {
-            var gameID = req.data.gameID;
+            var gameID = req.data.gameID,
+                game = core.game.list({ ID: gameID });
 
             // mete out punishment to players leaving mid-game
 
@@ -62,7 +64,7 @@ module.exports = function() {
 
             // signal the game should handle the situation
             req.socket.emit('game:stop', { gameID: gameID });
-        }
+        },
 
         watch: function(req, res) {
             var userID = auth.getIDFromToken(req);
