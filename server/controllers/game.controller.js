@@ -39,18 +39,22 @@ module.exports = function() {
         },
 
         join: function(req, res) {
-            var gameID = req.data.gameID,
-                game = core.game.list({ ID: gameID });
-            // make sure this person is actually allowed to join
+            var gameID = req.data.gameID;
 
-            // join
+            core.game.list({ ID: gameID }, function(err, games) {
+                var game = games[0];
+                // make sure this person is actually allowed to join
 
-            // broadcast join to others subscribed to game
-            req.socket.broadcast.to(gameID).emit('user:join:success', { gamename: game.name });
+                // join
 
-            // if everyone is here, signal the game can (re)start
-            if (game.players.length === game.maxPlayers + 1)
-                req.socket.emit('game:start', { gameID: gameID });
+                // broadcast join to others subscribed to game
+                var gameData = { gamename: game.name };
+                req.socket.broadcast.to(gameID).emit('game:join:success', gameData);
+
+                // if everyone is here, signal the game can (re)start
+                if (game.playerCount === game.maxPlayers)
+                    req.socket.emit('game:start', { gameID: gameID });
+            });
         },
 
         leave: function(req, res) {
@@ -67,7 +71,7 @@ module.exports = function() {
         },
 
         watch: function(req, res) {
-            var userID = auth.getIDFromToken(req);
+            var userID = req.socket.tokenData.id;
 
             // get list of subscribed games and join them as socket.io rooms
             core.game.list({

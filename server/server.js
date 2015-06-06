@@ -31,8 +31,6 @@ catch (ex) {
     if (ex.code === 'MODULE_NOT_FOUND')
         seekrits = require('./config/local.env.sample');
 }
-// app.use('/api', require('./api/public')());
-// app.use('/api', require('./api/private')());
 
 app.http().io();
 
@@ -60,6 +58,7 @@ app.io.on('connection', function(socket) {
                 console.log('Authenticated socket ' + socket.id);
                 app.io.sockets.connected[socket.id] = socket;
                 socket.tokenData = data;
+                socket.emit('authenticated');
             }
             else {
                 console.log(err);

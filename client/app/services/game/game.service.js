@@ -77,7 +77,8 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
         joinGame: function(game, options) {
             options = options || { };
             options.gameID = game._id;
-            Restangular.one('users', userService.getCurrentUser()).all('games').post(options);
+            socketService.emit('game:join', options);
+            //Restangular.one('users', userService.getCurrentUser()).all('games').post(options);
         },
 
         isAdmin: function(game) {

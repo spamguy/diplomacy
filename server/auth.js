@@ -20,11 +20,6 @@ function authenticate(req, cb) {
     passport.authenticate('local', cb)(req);
 }
 
-function getIDFromToken(req) {
-    return jwt.decode(req.data.token).id;
-}
-
 module.exports = {
-    authenticate: authenticate,
-    getIDFromToken: getIDFromToken
+    authenticate: authenticate
 };

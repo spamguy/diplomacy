@@ -18,8 +18,6 @@ function ($scope, $http, $window, $state, userService, socketService, CONST) {
                         // now that we have a token, authenticate with socket.io
                         socketService.connect();
 
-                        socketService.emit('game:watch', { token: userService.getToken() });
-
                         // redirect to profile
                         $state.go('profile');
                     })
