@@ -35,9 +35,6 @@ module.exports = function() {
             });
         },
 
-        moves: function(req, res) {
-        },
-
         join: function(req, res) {
             var gameID = req.data.gameID;
 

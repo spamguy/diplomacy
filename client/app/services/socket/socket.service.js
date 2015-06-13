@@ -1,5 +1,5 @@
-angular.module('socketService', ['btford.socket-io', 'LocalStorageModule'])
-.factory('socketService', ['socketFactory', 'localStorageService', function(socketFactory, localStorageService) {
+angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMaterial'])
+.factory('socketService', ['socketFactory', 'localStorageService', '$mdToast', function(socketFactory, localStorageService, $mdToast) {
     'use strict';
 
     var socket = socketFactory({
@@ -21,7 +21,11 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule'])
 
     // app-specific things for which the socket should always listen
     socket.on('game:join:success', function(data) {
-        console.log('A new player has joined game ' + data.gamename);
+        $mdToast.show(
+            $mdToast.simple()
+                .content('A new player has joined game ' + data.gamename + '.')
+                .hideDelay(5000)
+        );
     });
 
     return socket;

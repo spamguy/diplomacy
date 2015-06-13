@@ -13,7 +13,7 @@
   "private": true,
   "dependencies": {
     "angular-animate": "~1.4.0",
-    "angular-material": "~0.9.7",
+    "angular-material": "0.10.0-rc4",
     "lodash": "3.8.0",
     "hammerjs": "~2.0.2",
     "angular": "~1.4.0",
