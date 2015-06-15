@@ -54,21 +54,9 @@ describe('ProfileController', function () {
     }));
 
     beforeEach(inject(function ($rootScope, $controller, $q) {
-        //httpBackend = _$httpBackend_;
-
-        // HACK: https://github.com/angular-ui/ui-router/issues/212
-        //httpBackend.whenGET('app/profile/profile.html').respond(200, '');
-        //httpBackend.whenGET('/api/users/games').respond(200, games);
-
         $scope = $rootScope.$new();
         $controller('ProfileController', { $scope: $scope, gameService: mockService, games: games });
     }));
-
-    // afterEach(function() {
-    //     httpBackend.flush();
-    //     httpBackend.verifyNoOutstandingExpectation();
-    //     httpBackend.verifyNoOutstandingRequest();
-    // });
 
     it('resolves game data', function() {
         $state.go('profile');

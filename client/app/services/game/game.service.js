@@ -15,7 +15,7 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
          */
         getAllForCurrentUser: function() {
             return $q(function(resolve) {
-                socketService.emit('game:userlist', {
+                socketService.socket.emit('game:userlist', {
                     playerID: userService.getCurrentUser()
                 }, function(games) {
                     resolve(games);
@@ -34,12 +34,17 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
         },
 
         getGame: function(gameID) {
-            return Restangular.one('users', userService.getCurrentUser()).one('games', gameID).get();
+            return $q(function(resolve) {
+                socketService.socket.emit('game:list', { gameID: gameID }, function(games) {
+                    resolve(games[0]);
+                });
+            });
+            //return Restangular.one('users', userService.getCurrentUser()).one('games', gameID).get();
         },
 
         getAllOpenGames: function() {
             return $q(function(resolve) {
-                socketService.emit('game:listopen', function(games) {
+                socketService.socket.emit('game:listopen', function(games) {
                     resolve(games);
                 });
             });
@@ -52,17 +57,26 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
             if (season)
                 options.season = season;
 
-            return Restangular.one('games', gameID).getList('moves', options);
+            return $q(function(resolve) {
+                socketService.socket.emit('season:list', options, function(seasons) {
+                    resolve(seasons);
+                });
+            });
+            //return Restangular.one('games', gameID).getList('moves', options);
         },
 
         getMoveDataForCurrentUser: function(gameID, year, season) {
-            var options = { };
+            var options = { gameID: gameID };
             if (year)
                 options.year = year;
             if (season)
                 options.season = season;
 
-            return Restangular.one('users', userService.getCurrentUser()).one('games', gameID).getList('moves', options);
+            return $q(function(resolve) {
+                socketService.socket.emit('season:list', options, function(seasons) {
+                    resolve(seasons);
+                });
+            });
         },
 
         createNewGame: function(game) {
@@ -77,7 +91,7 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
         joinGame: function(game, options) {
             options = options || { };
             options.gameID = game._id;
-            socketService.emit('game:join', options);
+            socketService.socket.emit('game:join', options);
             //Restangular.one('users', userService.getCurrentUser()).all('games').post(options);
         },
 

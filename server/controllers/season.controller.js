@@ -1,16 +1,41 @@
 'use strict';
 
+var _ = require('lodash')
+
 module.exports = function() {
     var app = this.app,
         core = this.core;
 
     app.io.route('season', {
         list: function(req, res) {
-            var options = { gameID: req.data.gameID };
+            var gameID = req.data.gameID,
+                options = { gameID: gameID },
+                userID = req.socket.tokenData.id;
 
-            var seasons = core.season.list(options, function(err, seasons) {
-                return res.json(seasons);
-            });
+                core.game.list({ ID: gameID }, function(err, games) {
+                    var game = games[0],
+                        isComplete = game.isComplete,
+                        currentSeason = game.season,
+                        currentYear = game.year,
+                        playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
+                        powerShortName = playerPower.power,
+                        seasons = core.season.list(options, function(err, seasons) {
+                        for (var s = 0; s < seasons.length; s++) {
+                            var season = seasons[s];
+
+                            // incomplete games and active seasons are sanitised for your protection
+                            if (!isComplete && (season.year === currentYear && season.season === currentSeason)) {
+                                for (var r = 0; r < season.regions.length; r++) {
+                                    var region = season.regions[r];
+                                    if (region.unit && region.unit.power !== powerShortName)
+                                        delete region.unit.order;
+                                }
+                            }
+                        }
+
+                        return res.json(seasons);
+                    });
+                });
         }
     });
 };

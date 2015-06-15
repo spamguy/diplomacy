@@ -3,6 +3,8 @@
 angular.module('diplomacy.main')
 .controller('LoginController', ['$scope', '$http', '$window', '$state', 'userService', 'socketService', 'CONST',
 function ($scope, $http, $window, $state, userService, socketService, CONST) {
+    socketService.initialize();
+    
     angular.extend($scope, {
         user: {
             username: null,
@@ -16,7 +18,7 @@ function ($scope, $http, $window, $state, userService, socketService, CONST) {
                         userService.setToken(data.token);
 
                         // now that we have a token, authenticate with socket.io
-                        socketService.connect();
+                        socketService.socket.connect();
 
                         // redirect to profile
                         $state.go('profile');

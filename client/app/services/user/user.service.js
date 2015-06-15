@@ -34,7 +34,7 @@ function(localStorageService, Restangular, socketService, $q) {
 
         getUser: function(userID) {
             return $q(function(resolve) {
-                socketService.emit('user:list', {
+                socketService.socket.emit('user:list', {
                     ID: userID
                 }, function(users) {
                     resolve(users[0]);

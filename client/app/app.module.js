@@ -14,7 +14,8 @@ angular.module('diplomacy', [
     'gamelistitem.directive',
     'ngMaterial',
     'ng-mfb',
-    'socketService'
+    'socketService',
+    'socketAuthService'
 ])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider', 'RestangularProvider', 'CONST',
 function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, RestangularProvider, CONST) {
@@ -60,8 +61,11 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
     // hide ugly # in URL
     $locationProvider.html5Mode(true);
 }])
-.run(['$rootScope', 'userService', function ($rootScope, userService) {
+.run(['$rootScope', 'userService', 'socketService', function ($rootScope, userService, socketService) {
     $rootScope.$on('$stateChangeStart', function (event, next) {
+        if (!socketService.socket)
+            socketService.initialize();
+            
         var isRestricted = !!(next.data && next.data.restricted);
 
         $rootScope.isAuthenticated = userService.isAuthenticated();
