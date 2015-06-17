@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('games')
-.controller('NewGameController', ['$scope', 'gameService', 'userService', function ($scope, gameService, userService) {
+.controller('NewGameController', ['$scope', 'gameService', 'userService', 'variants', function ($scope, gameService, userService, variants) {
     $scope.forms = {
         newGameForm: { }
     };
@@ -12,15 +12,15 @@ angular.module('games')
             variant: 'Standard',
             movement: {
                 type: 'clock',
-                clock: 1440
+                clock: 24
             },
             retreat: {
                 type: 'clock',
-                clock: 1440
+                clock: 24
             },
             adjust: {
                 type: 'clock',
-                clock: 1440
+                clock: 24
             },
             visibility: 'public',
             press: 'white',
@@ -29,10 +29,7 @@ angular.module('games')
         }
     });
 
-    gameService.getAllVariantNames()
-        .then(function(variants) {
-            $scope.variants = variants;
-        });
+    $scope.variants = variants;
 
     $scope.minimumPointsToGM = 10;
 
@@ -59,7 +56,7 @@ angular.module('games')
     };
 
     $scope.humaniseTime = function(clock) {
-        // minutes -> seconds -> milliseconds
-        return humanizeDuration(clock * 60 * 1000);
+        // hours -> minutes -> seconds -> milliseconds
+        return humanizeDuration(clock * 60 * 60 * 1000);
     };
 }]);

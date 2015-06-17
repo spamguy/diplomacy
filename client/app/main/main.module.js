@@ -18,9 +18,9 @@ angular.module('diplomacy.main', [
         abstract: true
     })
     .state('main.home', {
-      url: '/home',
-      templateUrl: 'app/main/home/home.html',
-      controller: 'HomeController'
+        url: '/home',
+        templateUrl: 'app/main/home/home.html',
+        controller: 'HomeController'
     })
     .state('main.signup', {
         url: '/signup',

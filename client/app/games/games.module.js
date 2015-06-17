@@ -22,7 +22,10 @@ angular.module('games', [
             userService: 'userService',
             user: function(userService) {
                 return userService.getUser(userService.getCurrentUser());
-            }
+            },
+            auth: ['socketAuthService', function(socketAuthService) {
+                return socketAuthService.getAuthenticatedAsPromise();
+            }]
         }
     })
     .state('games.new', {
@@ -31,6 +34,14 @@ angular.module('games', [
         templateUrl: 'app/games/new/new.html',
         data: {
             restricted: true
+        },
+        resolve: {
+            auth: ['socketAuthService', function(socketAuthService) {
+                return socketAuthService.getAuthenticatedAsPromise();
+            }],
+            variants: ['gameService', function(gameService) {
+                return gameService.getAllVariantNames();
+            }]
         }
     })
     .state('games.view', {
@@ -39,6 +50,9 @@ angular.module('games', [
         templateUrl: 'app/games/view/view.html',
         data: {
             restricted: true
-        }
+        },
+        auth: ['socketAuthService', function(socketAuthService) {
+            return socketAuthService.getAuthenticatedAsPromise();
+        }]
     });
 }]);

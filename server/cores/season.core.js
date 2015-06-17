@@ -11,6 +11,7 @@ SeasonCore.prototype.list = function(options, cb) {
     options = options || { };
     var Season = mongoose.model('Season');
     var query = Season.find(_.pick({
+        'game_id': options.gameID
     }, _.identity));
 
     query.exec(function(err, seasons) {

@@ -30,7 +30,11 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
         },
 
         getAllVariantNames: function() {
-            return Restangular.all('variants').getList();
+            return $q(function(resolve) {
+                socketService.socket.emit('variant:list', { }, function(variants) {
+                    resolve(variants);
+                });
+            });
         },
 
         getGame: function(gameID) {

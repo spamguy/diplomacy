@@ -52,18 +52,20 @@ app.io.on('connection', function(socket) {
     }, 2000);
 
     socket.on('authenticate', function(data) {
-        clearTimeout(authTimeout);
-        validateToken(data.token, function(err, data) {
-            if (!err && data) {
-                console.log('Authenticated socket ' + socket.id);
-                app.io.sockets.connected[socket.id] = socket;
-                socket.tokenData = data;
-                socket.emit('authenticated');
-            }
-            else {
-                console.log(err);
-            }
-        });
+        if (data.token) {
+            clearTimeout(authTimeout);
+            validateToken(data.token, function(err, data) {
+                if (!err && data) {
+                    console.log('Authenticated socket ' + socket.id);
+                    app.io.sockets.connected[socket.id] = socket;
+                    socket.tokenData = data;
+                    socket.emit('authenticated');
+                }
+                else {
+                    console.log(err);
+                }
+            });
+        }
     });
 
     var validateToken = function(token, callback) {

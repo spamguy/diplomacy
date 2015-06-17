@@ -36,19 +36,19 @@
                 <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
                     <p class="subheader">Choose when and how movement phases are processed.</p>
 
-                    <md-radio-group ng-model="game.movement.type" class="clockRadioLine">
+                    <!-- <md-radio-group ng-model="game.movement.type" class="clockRadioLine"> -->
                         <div layout="row" class="clockOption">
-                            <md-radio-button value="clock" aria-label="Every X minutes"></md-radio-button>
-                            <label>Every</label>
+                            <!-- <md-radio-button value="clock" aria-label="Every X minutes"></md-radio-button> -->
+                            <span>Every</span>
                             <md-input-container>
                                 <input type="number" name="movementClock" ng-model="game.movement.clock" aria-label="Movement Clock" />
                             </md-input-container>
-                            <label>minutes ({{humaniseTime(game.movement.clock)}})</label>
+                            <span>hours ({{humaniseTime(game.movement.clock)}})</span>
                         </div>
-                        <div layout="row" class="calendarOption">
-                            <md-radio-button value="calendar"></md-radio-button>
-                        </div>
-                    </md-radio-group>
+                        <!-- <div layout="row" class="calendarOption">
+                            <md-radio-button value="calendar" ng-disabled>Coming soon: </md-radio-button>
+                        </div> -->
+                    <!-- </md-radio-group> -->
 
                     <p style="text-align:center">
                         <md-button wz-previous class="md-raised">Back</md-button>
@@ -62,18 +62,18 @@
                 <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
                     <p class="subheader">Choose when and how retreat phases are processed.</p>
 
-                    <md-radio-group ng-model="game.retreat.type" class="clockRadioLine">
-                        <div layout="row" class="clockOption">
-                            <md-radio-button value="clock" aria-label="Every X minutes"></md-radio-button>
-                            <label>Every</label>
+                    <!-- <md-radio-group ng-model="game.retreat.type" class="clockRadioLine"> -->
+                        <!-- <div layout="row" class="clockOption"> -->
+                            <!-- <md-radio-button value="clock" aria-label="Every X minutes"></md-radio-button> -->
+                            Every
                             <md-input-container>
                                 <input type="number" name="retreatClock" ng-model="game.retreat.clock" aria-label="Retreat Clock" />
                             </md-input-container>
-                            <label>minutes ({{humaniseTime(game.retreat.clock)}})</label>
-                        </div>
-                        <div layout="row" class="calendarOption">
+                            hours ({{humaniseTime(game.retreat.clock)}})
+                        <!-- </div> -->
+                        <!-- <div layout="row" class="calendarOption">
                             <md-radio-button value="calendar"></md-radio-button>
-                        </div>
+                        </div> -->
                     </md-radio-group>
 
                     <p style="text-align:center">
@@ -95,7 +95,7 @@
                             <md-input-container>
                                 <input type="number" name="adjustClock" ng-model="game.adjust.clock" aria-label="Adjustment Clock" />
                             </md-input-container>
-                            <label>minutes ({{humaniseTime(game.adjust.clock)}})</label>
+                            <label>hours ({{humaniseTime(game.adjust.clock)}})</label>
                         </div>
                         <div layout="row" class="calendarOption">
                             <md-radio-button value="calendar"></md-radio-button>

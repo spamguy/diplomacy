@@ -63,9 +63,9 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
 }])
 .run(['$rootScope', 'userService', 'socketService', function ($rootScope, userService, socketService) {
     $rootScope.$on('$stateChangeStart', function (event, next) {
-        if (!socketService.socket)
-            socketService.initialize();
-            
+        // if (!socketService.socket)
+        //     socketService.initialize();
+
         var isRestricted = !!(next.data && next.data.restricted);
 
         $rootScope.isAuthenticated = userService.isAuthenticated();
