@@ -1,7 +1,9 @@
 'use strict';
 
 angular.module('diplomacy.main')
-    .controller('SignupController', ['$scope', '$http', '$state', function ($scope, $http, $state) {
+    .controller('SignupController', ['$scope', '$http', 'loginService', function ($scope, $http, loginService) {
+        // TODO: force logged-in users out of this page
+
         angular.extend($scope, {
             user: {
                 username: null,
@@ -11,7 +13,7 @@ angular.module('diplomacy.main')
                 points: 0,
                 timezone: 0,
                 save: function() {
-                    $http.post('/api/users', this).then(function() { $state.go('profile'); });
+                    $http.post('/api/users', this).then(loginService.validLoginCallback);
                 }
             }
         });

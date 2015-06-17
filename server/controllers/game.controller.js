@@ -38,7 +38,7 @@ module.exports = function() {
         join: function(req, res) {
             var gameID = req.data.gameID;
 
-            core.game.list({ ID: gameID }, function(err, games) {
+            core.game.list({ gameID: gameID }, function(err, games) {
                 var game = games[0];
                 // make sure this person is actually allowed to join
 
@@ -56,7 +56,7 @@ module.exports = function() {
 
         leave: function(req, res) {
             var gameID = req.data.gameID,
-                game = core.game.list({ ID: gameID });
+                game = core.game.list({ gameID: gameID });
 
             // mete out punishment to players leaving mid-game
 
@@ -68,16 +68,34 @@ module.exports = function() {
         },
 
         watch: function(req, res) {
-            var userID = req.socket.tokenData.id;
+            var userID = req.socket.tokenData.id,
+                gameID = req.data ? req.data.gameID : null;
 
             // get list of subscribed games and join them as socket.io rooms
             core.game.list({
+                gameID: gameID,
                 playerID: userID,
                 isActive: true
             }, function(err, games) {
                 for (var g = 0; g < games.length; g++) {
                     req.socket.join(games[g]._id);
                     console.log(userID + ' joined game room ' + games[g]._id);
+                }
+            });
+        },
+
+        create: function(req, res) {
+            var game = req.data.game;
+            if (!game)
+                throw new Error('No game data found.');
+
+            core.game.create(game, function(err, savedGame) {
+                if (err)
+                    console.error(err);
+                else {
+                    console.log(req.socket.tokenData.id + ' joined game room ' + savedGame._id);
+                    req.socket.join(savedGame._id);
+                    app.io.in(savedGame._id).emit('game:create:success', { gamename: savedGame.name });
                 }
             });
         },

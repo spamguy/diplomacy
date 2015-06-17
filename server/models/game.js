@@ -17,7 +17,9 @@ var GameSchema = new mongoose.Schema({
     minimumScoreToJoin: Number,
     password: String,
     passwordsalt: String,
-    movementClock: Number,
+    moveClock: Number,
+    retreatClock: Number,
+    adjustClock: Number,
     isActive: Boolean
 });
 

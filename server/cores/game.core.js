@@ -18,7 +18,7 @@ GameCore.prototype.list = function(options, cb) {
     options = options || { };
     var Game = mongoose.model('Game');
     var query = Game.find(_.pick({
-        '_id': options.ID,
+        'gameID': options.gameID,
         'players.player_id': options.playerID,
         'isActive': options.isActive
     }, _.identity));
@@ -47,6 +47,32 @@ GameCore.prototype.listOpen = function(options, cb) {
 
         cb(null, games);
     });
+};
+
+GameCore.prototype.create = function(options, cb) {
+    options = options || { };
+    var newGame = mongoose.model('Game')({
+        variant: options.variant,
+        name: options.name,
+        visibility: options.visibility,
+        moveClock: options.move.clock,
+        retreatClock: options.retreat.clock,
+        adjustClock: options.adjust.clock,
+        players: [{
+                player_id: options.playerID,
+                power: '*'
+            }
+        ]
+    });
+
+    // generate password hash
+    if (newGame.visibility === 'private') {
+        // TODO: hash password as found in user:create
+        newGame.passwordsalt = '';
+        newGame.password = '';
+    }
+
+    newGame.save(function(err, data) { cb(err, data); });
 };
 
 module.exports = GameCore;

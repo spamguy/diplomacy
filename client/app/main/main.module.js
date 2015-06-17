@@ -6,6 +6,7 @@ angular.module('diplomacy.main', [
     'signupform.directives',
     'ngAnimate',
     'userService',
+    'loginService',
     'gameService',
     'mgo-angular-wizard',
     'socketService'

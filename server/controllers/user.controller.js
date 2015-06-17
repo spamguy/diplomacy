@@ -85,9 +85,17 @@ module.exports = function() {
                     passwordsalt: salt,
                     email: req.body.email,
                     points: 0
-                }, function(err) {
+                }, function(err, newUser) {
+                    var safeUser = {
+                        username: newUser.username,
+                        id: newUser._id
+                    };
+
                     if (!err)
-                        return res.sendStatus(201);
+                        return res.json({
+                            id: newUser._id,
+                            token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
+                        });
                 });
             });
         },

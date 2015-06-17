@@ -35,11 +35,19 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
             socket.emit('game:watch');
         });
 
-        // app-specific things for which the socket should always listen
+        // TODO: move to GameService
         socket.on('game:join:success', function(data) {
             $mdToast.show(
                 $mdToast.simple()
                     .content('A new player has joined game ' + data.gamename + '.')
+                    .hideDelay(5000)
+            );
+        });
+
+        socket.on('game:create:success', function(data) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('The game ' + data.gamename + ' has been created.')
                     .hideDelay(5000)
             );
         });

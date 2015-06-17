@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('diplomacy.main')
-.controller('LoginController', ['$scope', '$http', '$window', '$state', 'userService', 'socketService', 'CONST',
-function ($scope, $http, $window, $state, userService, socketService, CONST) {
+.controller('LoginController', ['$scope', '$http', 'userService', 'loginService', 'CONST',
+function ($scope, $http, userService, loginService, CONST) {
     angular.extend($scope, {
         user: {
             username: null,
@@ -11,16 +11,7 @@ function ($scope, $http, $window, $state, userService, socketService, CONST) {
             login: function() {
                 $scope.loginForm.password.$setValidity('validLogin', true);
                 $http.post(CONST.apiEndpoint + '/login', this)
-                    .success(function(data, status) {
-                        userService.setCurrentUser(data.id);
-                        userService.setToken(data.token);
-
-                        // now that we have a token, authenticate with socket.io
-                        socketService.initialize();
-
-                        // redirect to profile
-                        $state.go('profile');
-                    })
+                    .success(loginService.validLoginCallback)
                     .error(function(data, status) {
                         // clear token
                         userService.unsetToken();

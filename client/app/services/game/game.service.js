@@ -84,7 +84,7 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
         },
 
         createNewGame: function(game) {
-            Restangular.all('games').post(game);
+            socketService.socket.emit('game:create', { game: game });
         },
 
         /**
