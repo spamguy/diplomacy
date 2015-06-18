@@ -5,8 +5,8 @@ var express = require('express.oi'),
     _ = require('lodash'),
     mongoose = require('mongoose');
 
-var models = all('./models'),
-    controllers = all('./controllers'),
+var models = all(__dirname + '/models'),
+    controllers = all(__dirname + '/controllers'),
     core = require('./cores/index'),
     app = express();
 

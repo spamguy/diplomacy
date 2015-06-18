@@ -18,7 +18,7 @@ GameCore.prototype.list = function(options, cb) {
     options = options || { };
     var Game = mongoose.model('Game');
     var query = Game.find(_.pick({
-        'gameID': options.gameID,
+        '_id': options.gameID,
         'players.player_id': options.playerID,
         'isActive': options.isActive
     }, _.identity));
@@ -73,6 +73,15 @@ GameCore.prototype.create = function(options, cb) {
     }
 
     newGame.save(function(err, data) { cb(err, data); });
+};
+
+GameCore.prototype.addPlayer = function(game, player, cb) {
+    mongoose.model('Game').update(
+        { _id: game._id },
+        { $push: { 'players': player } },
+        { upsert: true },
+        cb
+    );
 };
 
 module.exports = GameCore;

@@ -1,5 +1,7 @@
 'use strict';
 
+var _ = require('lodash');
+
 var seekrits;
 try {
     seekrits = require('../config/local.env');
@@ -24,7 +26,8 @@ module.exports = function() {
         },
 
         list: function(req, res) {
-            var games = core.game.list({ }, function(err, games) {
+            var options = { gameID: req.data.gameID },
+                games = core.game.list(options, function(err, games) {
                 return res.json(games);
             });
         },
@@ -36,21 +39,42 @@ module.exports = function() {
         },
 
         join: function(req, res) {
-            var gameID = req.data.gameID;
+            var gameID = req.data.gameID,
+                playerID = req.socket.tokenData.id,
+                prefs = req.data.prefs;
 
-            core.game.list({ gameID: gameID }, function(err, games) {
-                var game = games[0];
-                // make sure this person is actually allowed to join
+            core.user.list({ ID: playerID }, function(err, players) {
+                var player = players[0];
+                core.game.list({ gameID: gameID }, function(err, games) {
+                    var game = games[0];
+                    // make sure this person is actually allowed to join
+                    if (game.minimumScoreToJoin > player.points)
+                        req.socket.emit('game:join:error', {
+                            error: 'Your dedication score of ' + player.points + ' does not meet this game\'s minimum requirement of ' + game.minimumScoreToJoin + ' to join.'
+                        });
+                    else if (_.find(game.players, _.matchesProperty('player_id', playerID.toString())))
+                        req.socket.emit('game:join:error', {
+                            error: 'You already are participating in this game.'
+                        });
 
-                // join
+                    // join
+                    var newPlayer = { player_id: playerID };
+                    if (prefs)
+                        newPlayer.prefs = prefs;
+                    core.game.addPlayer(game, newPlayer, function(err) {
+                        // subscribe to game
+                        req.socket.join(gameID);
 
-                // broadcast join to others subscribed to game
-                var gameData = { gamename: game.name };
-                req.socket.broadcast.to(gameID).emit('game:join:success', gameData);
+                        // broadcast join to others subscribed to game
+                        var gameData = { gamename: game.name };
+                        req.socket.emit('game:join:success', gameData);
+                        req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
 
-                // if everyone is here, signal the game can (re)start
-                if (game.playerCount === game.maxPlayers)
-                    req.socket.emit('game:start', { gameID: gameID });
+                        // if everyone is here, signal the game can (re)start
+                        if (game.playerCount === game.maxPlayers)
+                            req.socket.emit('game:start', { gameID: gameID });
+                    });
+                });
             });
         },
 

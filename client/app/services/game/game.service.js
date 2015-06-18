@@ -55,7 +55,7 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
         },
 
         getMoveData: function(gameID, year, season) {
-            var options = { };
+            var options = { gameID: gameID };
             if (year)
                 options.year = year;
             if (season)

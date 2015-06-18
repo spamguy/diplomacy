@@ -8,6 +8,7 @@ angular.module('diplomacy.main')
     // disconnect socket
     if (socketService.socket)
         socketService.socket.disconnect();
+    socketService.socket = null;
 
     $state.go('main.home');
 }]);

@@ -11,13 +11,13 @@ function ($scope, $http, userService, loginService, CONST) {
             login: function() {
                 $scope.loginForm.password.$setValidity('validLogin', true);
                 $http.post(CONST.apiEndpoint + '/login', this)
-                    .success(loginService.validLoginCallback)
-                    .error(function(data, status) {
-                        // clear token
-                        userService.unsetToken();
+                .error(function(data, status) {
+                    // clear token
+                    userService.unsetToken();
 
-                        $scope.loginForm.password.$setValidity('validLogin', false);
-                    });
+                    $scope.loginForm.password.$setValidity('validLogin', false);
+                })
+                .then(loginService.validLoginCallback);
             }
         }
     });

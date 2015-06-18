@@ -51,8 +51,13 @@ angular.module('games', [
         data: {
             restricted: true
         },
-        auth: ['socketAuthService', function(socketAuthService) {
-            return socketAuthService.getAuthenticatedAsPromise();
-        }]
+        resolve: {
+            auth: ['socketAuthService', function(socketAuthService) {
+                return socketAuthService.getAuthenticatedAsPromise();
+            }],
+            game: ['gameService', '$stateParams', function(gameService, $stateParams) {
+                return gameService.getGame($stateParams.id);
+            }]
+        }
     });
 }]);

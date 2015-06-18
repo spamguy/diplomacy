@@ -28,14 +28,14 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
 
     // icon definitions
     $mdIconProvider
-        .icon('menu', '/bower_components/material-design-icons/navigation/svg/production/ic_more_vert_24px.svg', 24)
-        .icon('addperson', '/bower_components/material-design-icons/social/svg/production/ic_person_add_24px.svg', 24)
-        .icon('play', '/bower_components/material-design-icons/av/svg/production/ic_play_arrow_24px.svg', 24)
-        .icon('eject', '/bower_components/material-design-icons/action/svg/production/ic_eject_24px.svg', 24)
-        .icon('join', '/bower_components/material-design-icons/communication/svg/production/ic_call_merge_24px.svg', 24)
-        .icon('new', '/bower_components/material-design-icons/content/svg/production/ic_add_24px.svg', 24)
-        .icon('fold-out', '/bower_components/material-design-icons/navigation/svg/production/ic_unfold_more_24px.svg', 24)
-        .icon('fold-in', '/bower_components/material-design-icons/navigation/svg/production/ic_unfold_less_24px.svg', 24);
+        .icon('menu', '/assets/icons/ic_more_vert_24px.svg', 24)
+        .icon('addperson', '/assets/icons/ic_person_add_24px.svg', 24)
+        .icon('play', '/assets/icons/ic_play_arrow_24px.svg', 24)
+        .icon('eject', '/assets/icons/ic_eject_24px.svg', 24)
+        .icon('join', '/assets/icons/ic_call_merge_24px.svg', 24)
+        .icon('new', '/assets/icons/ic_add_24px.svg', 24)
+        .icon('fold-out', '/assets/icons/ic_unfold_more_24px.svg', 24)
+        .icon('fold-in', '/assets/icons/ic_unfold_less_24px.svg', 24);
 
     // local storage config
     localStorageServiceProvider.setPrefix('diplomacy');

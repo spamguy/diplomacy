@@ -12,14 +12,14 @@ module.exports = function() {
                 options = { gameID: gameID },
                 userID = req.socket.tokenData.id;
 
-                core.game.list({ ID: gameID }, function(err, games) {
-                    var game = games[0],
-                        isComplete = game.isComplete,
-                        currentSeason = game.season,
-                        currentYear = game.year,
-                        playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
-                        powerShortName = playerPower.power,
-                        seasons = core.season.list(options, function(err, seasons) {
+            core.game.list(options, function(err, games) {
+                var game = games[0],
+                    isComplete = game.isComplete,
+                    currentSeason = game.season,
+                    currentYear = game.year,
+                    playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
+                    powerShortName = playerPower.power,
+                    seasons = core.season.list(options, function(err, seasons) {
                         for (var s = 0; s < seasons.length; s++) {
                             var season = seasons[s];
 
@@ -34,8 +34,8 @@ module.exports = function() {
                         }
 
                         return res.json(seasons);
-                    });
                 });
+            });
         }
     });
 };

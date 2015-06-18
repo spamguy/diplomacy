@@ -30,13 +30,10 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
 
         socket.on('authenticated', function() {
             isAuthenticated = true;
-
-            // subscribe to all associated games after authenticating
-            socket.emit('game:watch');
         });
 
         // TODO: move to GameService
-        socket.on('game:join:success', function(data) {
+        socket.on('game:join:announce', function(data) {
             $mdToast.show(
                 $mdToast.simple()
                     .content('A new player has joined game ' + data.gamename + '.')
@@ -48,6 +45,14 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
             $mdToast.show(
                 $mdToast.simple()
                     .content('The game ' + data.gamename + ' has been created.')
+                    .hideDelay(5000)
+            );
+        });
+
+        socket.on('game:join:success', function(data) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content('You have joined the game ' + data.gamename + '.')
                     .hideDelay(5000)
             );
         });

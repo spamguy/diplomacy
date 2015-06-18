@@ -1,5 +1,5 @@
 angular.module('games')
-.controller('JoinDialogController', ['$scope', 'game', '$mdDialog', 'gameService', function($scope, game, $mdDialog, gameService) {
+.controller('JoinDialogController', ['$scope', 'game', '$mdDialog', 'gameService', '$state', function($scope, game, $mdDialog, gameService, $state) {
     'use strict';
 
     $scope.closeDialog = function() {
@@ -8,5 +8,7 @@ angular.module('games')
 
     $scope.joinGame = function() {
         gameService.joinGame(game);
+        $mdDialog.hide();
+        $state.go('profile');
     };
 }]);
