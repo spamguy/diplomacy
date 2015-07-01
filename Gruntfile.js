@@ -202,7 +202,8 @@ module.exports = function(grunt) {
                         src: [
                             'server/**/*',
                             'variants/**/*',
-                            '!server/config/local.env.js'
+                            '!server/config/local.env.js',
+                            '!server/judge/node_modules/**/*'
                         ]
                     }, {
                         expand: true,

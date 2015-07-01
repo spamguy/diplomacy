@@ -7,13 +7,6 @@ function GameCore(options) {
     this.core = options.core;
 }
 
-GameCore.prototype.create = function(options, cb) {
-    var Game = mongoose.model('Game');
-    var game = new Game();
-
-    game.save(cb);
-};
-
 GameCore.prototype.list = function(options, cb) {
     options = options || { };
     var Game = mongoose.model('Game');
@@ -62,7 +55,8 @@ GameCore.prototype.create = function(options, cb) {
                 player_id: options.playerID,
                 power: '*'
             }
-        ]
+        ],
+        isActive: true
     });
 
     // generate password hash
