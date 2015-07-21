@@ -14,12 +14,18 @@ UserCore.prototype.create = function(options, cb) {
     user.save(cb);
 };
 
+UserCore.prototype.update = function(existingUser, cb) {
+    var User = mongoose.model('User');
+    existingUser.save(cb);
+};
+
 UserCore.prototype.list = function(options, cb) {
     options = options || { };
     var User = mongoose.model('User');
     var query = User.find(_.pick({
         '_id': options.ID,
-        'username': options.username
+        'username': options.username,
+        'email': options.email
     }, _.identity));
 
     query.exec(function(err, users) {
@@ -29,6 +35,19 @@ UserCore.prototype.list = function(options, cb) {
         }
 
         cb(null, users);
+    });
+};
+
+UserCore.prototype.getStubByEmail = function(email) {
+    this.list({
+        email: email,
+        username: '{ $exists: false }',
+        password: '{ $exists: false }'
+    }, function(users) {
+        if (users.length > 0)
+            return users[0];
+        else
+            return null;
     });
 };
 

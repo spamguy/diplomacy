@@ -21,6 +21,10 @@ catch (ex) {
 
 var pbkdf2 = require('easy-pbkdf2')(hashOptions);
 
+var sendVerifyEmail = function(user) {
+
+};
+
 module.exports = function() {
     var app = this.app,
         core = this.core;
@@ -76,24 +80,52 @@ module.exports = function() {
             });
         },
 
+        // Creates new (or recycles existing) stub user. Contains only email address until extended by user:verify event.
         create: function(req, res, next) {
-            var salt = pbkdf2.generateSalt();
-            pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
+            var email = req.body.email,
+                stubUser = core.user.getStubByEmail(email);
+
+            if (stubUser) {
+                sendVerifyEmail(stubUser);
+            }
+            else {
                 core.user.create({
+                    email: email
+                }, function(err, newUser) {
+                    if (!err)
+                        sendVerifyEmail(newUser);
+                });
+            }
+        },
+
+        /*
+         * Fired after user visits validation page and clicks 'Save' button. Extends stub user object with:
+         * - username
+         * - password/salt
+         */
+        verify: function(req, res, next) {
+            var verifyToken = req.body.token,
+                email = req.body.email,
+                user = core.user.getStubByEmail(email),
+                salt = pbkdf2.generateSalt();
+
+            // validate token here
+
+            pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
+                core.user.update({
                     username: req.body.username,
                     password: hash,
                     passwordsalt: salt,
-                    email: req.body.email,
                     points: 0
-                }, function(err, newUser) {
+                }, function(err, updatedUser) {
                     var safeUser = {
-                        username: newUser.username,
-                        id: newUser._id
+                        username: updatedUser.username,
+                        id: updatedUser._id
                     };
 
                     if (!err)
                         return res.json({
-                            id: newUser._id,
+                            id: updatedUser._id,
                             token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
                         });
                 });
