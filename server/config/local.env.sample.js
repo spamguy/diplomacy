@@ -1,5 +1,5 @@
 module.exports = {
-    DOMAIN: 'http://localhost:9000',
+    DOMAIN: 'http://localhost',
     SESSION_SECRET: 'stuff goes here',
     mongoURI: 'mongodb://localhost/diplomacy',
     mail: {

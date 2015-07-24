@@ -2,7 +2,8 @@
 
 var jwt = require('jsonwebtoken');
 
-var auth = require('../auth');
+var auth = require('../auth'),
+    mailer = require('../mailer/mailer');
 
 var hashOptions = {
     'DEFAULT_HASH_ITERATIONS': 32000,
@@ -22,7 +23,16 @@ catch (ex) {
 var pbkdf2 = require('easy-pbkdf2')(hashOptions);
 
 var sendVerifyEmail = function(user) {
-
+    var options = {
+        email: user.email,
+        token: jwt.sign(user.email, seekrits.SESSION_SECRET, { expiresInMinutes: 24 * 60 }),
+        baseURL: seekrits.DOMAIN,
+        subject: 'You\'re almost there: verify your email address with dipl.io'
+    };
+    mailer.sendOne('verify', options, function(err) {
+        if (err)
+            console.error(err);
+    });
 };
 
 module.exports = function() {
