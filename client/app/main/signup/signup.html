@@ -1,18 +1,33 @@
+<div layout="row" layout-align="center center" layout-padding>
+    <section class="md-whiteframe-z2" flex="60">
+        <h1 class="md-display-1">Glad to <del>stab</del> meet you.</h1>
+        <h1 class="md-subhead">All you need to start off is your email address. Check your inbox for a confirmation after submitting.</h1>
+        <form>
+            <md-input-container>
+                <label>Email</label>
+                <input type="email" name="email" ng-model="user.email" required />
+                <div ng-messages="signupForm.email.$error">
+                    <div ng-message="email">Not a valid email address.</div>
+                </div>
+            </md-input-container>
 
-<form name="signupForm">
-    <wizard on-finish="onWizardFinished()">
+            <p style="text-align:center">
+                <md-button ng-disabled="signupForm.$invalid" class="md-raised md-accent" ng-click="user.save()">Register</md-button>
+            </p>
+        </form>
+    </section>
+</div>
+    <!-- <wizard on-finish="onWizardFinished()">
         <wz-step title="Welcome" canexit="canExitUsernameStep">
             <div layout="row" layout-align="center center" layout-padding>
                 <md-whiteframe class="md-whiteframe-z2" flex="50" flex-sm="100">
-                    <!-- <span class="headline">Welcome!</span> -->
-
                     <p class="text">Glad to <del>stab</del> meet you. Please set up an account to start playing.</p>
 
                     <md-input-container>
-                        <label>Username</label>
+                        <label>Username</label> -->
 
                         <!-- TODO: Debounce and/or use updateOn. See ng-model-options. -->
-                        <input type="text" name="username" ng-model="user.username" sg-valid-username required />
+                        <!--<input type="text" name="username" ng-model="user.username" sg-valid-username required />
 
                         <div ng-messages="signupForm.username.$error">
                             <div ng-message="unique">This username is taken. :(</div>
@@ -65,5 +80,4 @@
                 </md-whiteframe>
             </div>
         </wz-step>
-    </wizard>
-</form>
+    </wizard> -->

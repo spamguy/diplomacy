@@ -43,9 +43,9 @@ md-toolbar
     }
 }
 
-md-whiteframe
+section.md-whiteframe-z2
 {
-    background: #fff;
+    background-color: #fff;
 }
 
 .tab-pane
@@ -56,10 +56,11 @@ md-whiteframe
 md-toolbar.miniToolbar
 {
     min-height: 30px;
+    border-radius: 3px 3px 0 0;
 
     h1, h2, h3, h4, h5, h6
     {
-        margin-top: 8px;
+        line-height: 4px;
     }
 }
 
