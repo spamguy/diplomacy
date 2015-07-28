@@ -23,6 +23,7 @@ catch (ex) {
 var pbkdf2 = require('easy-pbkdf2')(hashOptions);
 
 var sendVerifyEmail = function(user) {
+    console.log('Sending verify email to ' + user.email);
     var options = {
         email: user.email,
         token: jwt.sign(user.email, seekrits.SESSION_SECRET, { expiresInMinutes: 24 * 60 }),
@@ -92,20 +93,28 @@ module.exports = function() {
 
         // Creates new (or recycles existing) stub user. Contains only email address until extended by user:verify event.
         create: function(req, res, next) {
-            var email = req.body.email,
-                stubUser = core.user.getStubByEmail(email);
+            var email = req.body.email;
+            core.user.getStubByEmail(email, function(err, users) {
+                var stubUser;
+                if (users.length > 0)
+                    stubUser = users[0];
+                else if (err)
+                    throw new Error(err);
+                else
+                    stubUser = null;
 
-            if (stubUser) {
-                sendVerifyEmail(stubUser);
-            }
-            else {
-                core.user.create({
-                    email: email
-                }, function(err, newUser) {
-                    if (!err)
-                        sendVerifyEmail(newUser);
-                });
-            }
+                if (stubUser) {
+                    sendVerifyEmail(stubUser);
+                }
+                else {
+                    core.user.create({
+                        email: email
+                    }, function(err, newUser) {
+                        if (!err)
+                            sendVerifyEmail(newUser);
+                    });
+                }
+            });
         },
 
         /*

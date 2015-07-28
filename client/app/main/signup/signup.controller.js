@@ -13,7 +13,7 @@ angular.module('diplomacy.main')
             points: 0,
             timezone: 0,
             save: function() {
-                //$http.post('/api/users', this).then(loginService.validLoginCallback);
+                $http.post('/api/users', this);//.then(loginService.validLoginCallback);
             }
         }
     });

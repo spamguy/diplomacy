@@ -25,6 +25,7 @@ UserCore.prototype.list = function(options, cb) {
     var query = User.find(_.pick({
         '_id': options.ID,
         'username': options.username,
+        'password': options.password,
         'email': options.email
     }, _.identity));
 
@@ -38,17 +39,12 @@ UserCore.prototype.list = function(options, cb) {
     });
 };
 
-UserCore.prototype.getStubByEmail = function(email) {
+UserCore.prototype.getStubByEmail = function(email, cb) {
     this.list({
         email: email,
-        username: '{ $exists: false }',
-        password: '{ $exists: false }'
-    }, function(users) {
-        if (users.length > 0)
-            return users[0];
-        else
-            return null;
-    });
+        username: { '$exists': false },
+        password: { '$exists': false }
+    }, cb);
 };
 
 module.exports = UserCore;
