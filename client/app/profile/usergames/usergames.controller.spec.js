@@ -1,4 +1,4 @@
-describe('ProfileController', function () {
+describe('UserGamesController', function () {
     'use strict';
     var $q,
         $rootScope,
@@ -55,7 +55,7 @@ describe('ProfileController', function () {
 
     beforeEach(inject(function ($rootScope, $controller, $q) {
         $scope = $rootScope.$new();
-        $controller('ProfileController', { $scope: $scope, gameService: mockService, games: games });
+        $controller('UserGamesController', { $scope: $scope, gameService: mockService, games: games });
     }));
 
     it('resolves game data', function() {

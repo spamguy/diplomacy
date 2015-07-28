@@ -12,13 +12,12 @@ angular.module('loginService', [ ])
             // with a token in hand now, authenticate with socket.io
             //socketService.initialize();
 
-
             // redirect to profile
             socketAuthService.getAuthenticatedAsPromise().then(function() {
                 // subscribe to all associated games after authenticating
                 socketService.socket.emit('game:watch');
 
-                $state.go('profile');
+                $state.go('profile.games');
             });
         }
     };

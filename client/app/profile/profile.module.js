@@ -2,19 +2,20 @@
 
 angular.module('profile', [
     'ui.router',
-    'restangular',
     'gameService',
     'ngMaterial'
 ])
-.config(['$stateProvider', '$urlRouterProvider', 'RestangularProvider', function ($stateProvider, $urlRouterProvider, RestangularProvider) {
-    RestangularProvider.setBaseUrl('/api');
-
-    //$urlRouterProvider.otherwise("/profile/playing");
+.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
     $stateProvider
     .state('profile', {
         url: '/profile',
-        templateUrl: 'app/profile/profile.html',
-        controller: 'ProfileController',
+        abstract: true,
+        template: '<ui-view />'
+    })
+    .state('profile.games', {
+        url: '/games',
+        templateUrl: 'app/profile/usergames/usergames.html',
+        controller: 'UserGamesController',
         data: {
             restricted: true
         },
@@ -27,6 +28,27 @@ angular.module('profile', [
             auth: ['socketAuthService', function(socketAuthService) {
                 return socketAuthService.getAuthenticatedAsPromise();
             }]
+        }
+    })
+    .state('profile.verify', {
+        url: '/verify/{id}',
+        controller: 'VerifyController',
+        templateUrl: 'app/profile/verify/verify.html'
+    })
+    .state('profile.view', {
+        url: '/{id:[0-9a-fA-F]{24}}',
+        templateUrl: 'app/profile/view/view.html',
+        controller: 'ProfileViewController',
+        data: {
+            restricted: true
+        }
+    })
+    .state('profile.edit', {
+        url: '/edit',
+        templateUrl: 'app/profile/edit/edit.html',
+        controller: 'ProfileEditController',
+        data: {
+            restricted: true
         }
     });
 }]);

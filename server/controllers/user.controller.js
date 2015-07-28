@@ -24,11 +24,16 @@ var pbkdf2 = require('easy-pbkdf2')(hashOptions);
 
 var sendVerifyEmail = function(user) {
     console.log('Sending verify email to ' + user.email);
+
+    var safeUser = {
+        email: user.email,
+        id: user._id
+    };
     var options = {
         email: user.email,
-        token: jwt.sign(user.email, seekrits.SESSION_SECRET, { expiresInMinutes: 24 * 60 }),
+        token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: 24 * 60 }),
         baseURL: seekrits.DOMAIN,
-        subject: 'You\'re almost there: verify your email address with dipl.io'
+        subject: 'Verify your email address with dipl.io'
     };
     mailer.sendOne('verify', options, function(err) {
         if (err)
@@ -45,12 +50,16 @@ module.exports = function() {
         req.io.route('user:login');
     });
 
-    app.get('/api/users/:username/exists', function(req) {
-        req.io.route('user:exists');
-    });
+    // app.get('/api/users/:username/exists', function(req) {
+    //     req.io.route('user:exists');
+    // });
 
     app.post('/api/users', function(req) {
         req.io.route('user:create');
+    });
+
+    app.post('/api/users/verify', function(req) {
+        req.io.route('user:verify');
     });
 
     // SOCKETS
@@ -71,12 +80,11 @@ module.exports = function() {
                 }
 
                 var safeUser = {
-                    username: user.username,
+                    email: user.email,
                     id: user._id
                 };
 
                 return res.json({
-                    username: user.username,
                     id: user._id,
                     token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
                 });
@@ -119,8 +127,8 @@ module.exports = function() {
 
         /*
          * Fired after user visits validation page and clicks 'Save' button. Extends stub user object with:
-         * - username
          * - password/salt
+         * - base points (0)
          */
         verify: function(req, res, next) {
             var verifyToken = req.body.token,
@@ -128,25 +136,27 @@ module.exports = function() {
                 user = core.user.getStubByEmail(email),
                 salt = pbkdf2.generateSalt();
 
-            // validate token here
+            jwt.verify(verifyToken, seekrits.SESSION_SECRET, function(err, payload) {
+                if (err)
+                    return new Error(err);
+                    
+                pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
+                    core.user.update({
+                        password: hash,
+                        passwordsalt: salt,
+                        points: 0
+                    }, function(err, updatedUser) {
+                        var safeUser = {
+                            email: updatedUser.email,
+                            id: updatedUser._id
+                        };
 
-            pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
-                core.user.update({
-                    username: req.body.username,
-                    password: hash,
-                    passwordsalt: salt,
-                    points: 0
-                }, function(err, updatedUser) {
-                    var safeUser = {
-                        username: updatedUser.username,
-                        id: updatedUser._id
-                    };
-
-                    if (!err)
-                        return res.json({
-                            id: updatedUser._id,
-                            token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
-                        });
+                        if (!err)
+                            return res.json({
+                                id: updatedUser._id,
+                                token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
+                            });
+                    });
                 });
             });
         },
