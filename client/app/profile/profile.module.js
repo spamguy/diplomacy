@@ -31,7 +31,7 @@ angular.module('profile', [
         }
     })
     .state('profile.verify', {
-        url: '/verify/{id}',
+        url: '/verify/{token}',
         controller: 'VerifyController',
         templateUrl: 'app/profile/verify/verify.html'
     })
