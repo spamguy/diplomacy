@@ -1,10 +1,5 @@
 'use strict';
 
-var jwt = require('jsonwebtoken');
-
-var auth = require('../auth'),
-    mailer = require('../mailer/mailer');
-
 var hashOptions = {
     'DEFAULT_HASH_ITERATIONS': 32000,
     'SALT_SIZE': 64,
@@ -20,7 +15,11 @@ catch (ex) {
         seekrits = require('../config/local.env.sample');
 }
 
-var pbkdf2 = require('easy-pbkdf2')(hashOptions);
+var jwt = require('jsonwebtoken'),
+    pbkdf2 = require('easy-pbkdf2')(hashOptions);
+
+var auth = require('../auth'),
+    mailer = require('../mailer/mailer');
 
 var sendVerifyEmail = function(user) {
     console.log('Sending verify email to ' + user.email);
@@ -58,7 +57,7 @@ module.exports = function() {
         req.io.route('user:create');
     });
 
-    app.post('/api/users/verify', function(req) {
+    app.post('/api/verify', function(req) {
         req.io.route('user:verify');
     });
 
@@ -132,30 +131,30 @@ module.exports = function() {
          */
         verify: function(req, res, next) {
             var verifyToken = req.body.token,
-                email = req.body.email,
-                user = core.user.getStubByEmail(email),
                 salt = pbkdf2.generateSalt();
 
             jwt.verify(verifyToken, seekrits.SESSION_SECRET, function(err, payload) {
-                if (err)
-                    return new Error(err);
-                    
-                pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
-                    core.user.update({
-                        password: hash,
-                        passwordsalt: salt,
-                        points: 0
-                    }, function(err, updatedUser) {
-                        var safeUser = {
-                            email: updatedUser.email,
-                            id: updatedUser._id
-                        };
+                core.user.getStubByEmail(payload.email, function(err, users) {
+                    if (err)
+                        return new Error(err);
+                    var user = users[0];
+                    pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
+                        user.password = hash;
+                        user.passwordsalt = salt;
+                        user.points = 0;
 
-                        if (!err)
-                            return res.json({
-                                id: updatedUser._id,
-                                token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
-                            });
+                        core.user.update(user, function(err, updatedUser) {
+                            var safeUser = {
+                                email: updatedUser.email,
+                                id: updatedUser._id
+                            };
+
+                            if (!err)
+                                return res.json({
+                                    id: updatedUser._id,
+                                    token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
+                                });
+                        });
                     });
                 });
             });

@@ -5,7 +5,7 @@ angular.module('diplomacy.main')
 function ($scope, $http, userService, loginService, CONST) {
     angular.extend($scope, {
         user: {
-            username: null,
+            email: null,
             password: null,
 
             login: function() {

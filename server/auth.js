@@ -5,9 +5,9 @@ var mongoose = require('mongoose'),
     jwt = require('jsonwebtoken'),
     LocalStrategy = require('passport-local').Strategy;
 
-var tokenAuth = function(username, password, done) {
+var tokenAuth = function(email, password, done) {
     var User = mongoose.model('User');
-    User.findByUsernameAndToken(username, password, function(err, user) {
+    User.findByEmailAndToken(email, password, function(err, user) {
         if (err) { return done(err); }
         if (!user) { return done(null, false); }
         return done(null, user);
