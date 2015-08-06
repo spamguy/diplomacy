@@ -8,7 +8,6 @@ angular.module('diplomacy.main', [
     'userService',
     'loginService',
     'gameService',
-    'mgo-angular-wizard',
     'socketService'
 ])
 .config(['$stateProvider', function ($stateProvider) {

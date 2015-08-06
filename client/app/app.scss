@@ -64,6 +64,13 @@ md-toolbar.miniToolbar
     }
 }
 
+// Material Design's line height for headlines is comically large.
+h1.md-display-1
+{
+    line-height: 12px;
+    text-align: center;
+}
+
 // mixins
 %vertical-align {
   position: relative;

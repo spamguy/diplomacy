@@ -39,8 +39,8 @@ angular.module('games', [
             auth: ['socketAuthService', function(socketAuthService) {
                 return socketAuthService.getAuthenticatedAsPromise();
             }],
-            variants: ['gameService', function(gameService) {
-                return gameService.getAllVariantNames();
+            currentUser: ['userService', function(userService) {
+                return userService.getUser(userService.getCurrentUser());
             }]
         }
     })

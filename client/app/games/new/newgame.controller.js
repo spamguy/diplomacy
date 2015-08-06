@@ -1,11 +1,7 @@
 'use strict';
 
 angular.module('games')
-.controller('NewGameController', ['$scope', 'gameService', 'userService', 'variants', '$state', function ($scope, gameService, userService, variants, $state) {
-    $scope.forms = {
-        newGameForm: { }
-    };
-
+.controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'currentUser', function ($scope, gameService, userService, $state, currentUser) {
     angular.extend($scope, {
         game: {
             name: null,
@@ -22,39 +18,38 @@ angular.module('games')
             visibility: 'public',
             press: 'white',
             minimumScoreToJoin: 0,
-            playerID: userService.getCurrentUser()
+            playerID: currentUser._id
         }
     });
 
-    $scope.variants = variants;
-
     $scope.minimumPointsToGM = 10;
-
-    userService.getUser(userService.getCurrentUser())
-        .then(function(user) {
-            $scope.points = user.points;
-        });
-
     $scope.hasDecentScore = function() {
-        return $scope.points >= $scope.minimumPointsToGM;
+        return currentUser.points >= $scope.minimumPointsToGM;
     };
 
-    $scope.canExitStep1 = function() {
-        return $scope.forms.newGameForm.gamename.$valid;
-    };
-
-    $scope.onWizardFinished = function() {
-        // apply variant data DB will need occasionally, like max player count
-        gameService.getVariant($scope.game.variant)
-        .then(function(variant) {
-            $scope.game.maxPlayers = variant.data.powers.length;
-            gameService.createNewGame($scope.game);
-            $state.go('profile');
+    $scope.loadVariants = function() {
+        gameService.getAllVariantNames()
+        .then(function(variants) {
+            $scope.variants = variants;
         });
     };
-
-    $scope.humaniseTime = function(clock) {
-        // hours -> milliseconds
-        return humanizeDuration(moment.duration({ hours: clock }).asMilliseconds());
-    };
+    //
+    // $scope.canExitStep1 = function() {
+    //     return $scope.forms.newGameForm.gamename.$valid;
+    // };
+    //
+    // $scope.onWizardFinished = function() {
+    //     // apply variant data DB will need occasionally, like max player count
+    //     gameService.getVariant($scope.game.variant)
+    //     .then(function(variant) {
+    //         $scope.game.maxPlayers = variant.data.powers.length;
+    //         gameService.createNewGame($scope.game);
+    //         $state.go('profile');
+    //     });
+    // };
+    //
+    // $scope.humaniseTime = function(clock) {
+    //     // hours -> milliseconds
+    //     return humanizeDuration(moment.duration({ hours: clock }).asMilliseconds());
+    // };
 }]);

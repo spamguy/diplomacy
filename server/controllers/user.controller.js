@@ -162,8 +162,16 @@ module.exports = function() {
 
         list: function(req, res) {
             var options = { ID: req.data.ID };
-            var user = core.user.list(options, function(err, users) {
-                return res.json(users);
+            core.user.list(options, function(err, users) {
+                var safeUsers = [];
+                for (var u = 0; u < users.length; u++) {
+                    safeUsers.push({
+                        '_id': users[u]._id,
+                        'email': users[u].email,
+                        'points': users[u].points
+                    });
+                }
+                return res.json(safeUsers);
             });
         }
     });
