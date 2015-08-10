@@ -41,6 +41,9 @@ angular.module('games', [
             }],
             currentUser: ['userService', function(userService) {
                 return userService.getUser(userService.getCurrentUser());
+            }],
+            variants: ['gameService', function(gameService) {
+                return gameService.getAllVariantNames();
             }]
         }
     })

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('games')
-.controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'currentUser', function ($scope, gameService, userService, $state, currentUser) {
+.controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'currentUser', 'variants', function ($scope, gameService, userService, $state, currentUser, variants) {
     angular.extend($scope, {
         game: {
             name: null,
@@ -18,20 +18,19 @@ angular.module('games')
             visibility: 'public',
             press: 'white',
             minimumScoreToJoin: 0,
-            playerID: currentUser._id
+            playerID: currentUser._id,
+
+            save: function() {
+                gameService.createNewGame(this);
+            }
         }
     });
+
+    $scope.variants = variants;
 
     $scope.minimumPointsToGM = 10;
     $scope.hasDecentScore = function() {
         return currentUser.points >= $scope.minimumPointsToGM;
-    };
-
-    $scope.loadVariants = function() {
-        gameService.getAllVariantNames()
-        .then(function(variants) {
-            $scope.variants = variants;
-        });
     };
     //
     // $scope.canExitStep1 = function() {

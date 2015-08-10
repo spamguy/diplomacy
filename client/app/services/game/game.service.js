@@ -3,8 +3,8 @@
  * @name gameService
  * @description Interacts with game, variant, and move data.
  */
-angular.module('gameService', ['userService', 'restangular', 'socketService'])
-.factory('gameService', ['$http', 'userService', 'Restangular', 'socketService', '$q', function($http, userService, Restangular, socketService, $q) {
+angular.module('gameService', ['userService', 'socketService'])
+.factory('gameService', ['$http', 'userService', 'socketService', '$q', function($http, userService, socketService, $q) {
     'use strict';
 
     return {
@@ -43,7 +43,6 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
                     resolve(games[0]);
                 });
             });
-            //return Restangular.one('users', userService.getCurrentUser()).one('games', gameID).get();
         },
 
         getAllOpenGames: function() {
@@ -66,7 +65,6 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
                     resolve(seasons);
                 });
             });
-            //return Restangular.one('games', gameID).getList('moves', options);
         },
 
         getMoveDataForCurrentUser: function(gameID, year, season) {
@@ -96,7 +94,6 @@ angular.module('gameService', ['userService', 'restangular', 'socketService'])
             options = options || { };
             options.gameID = game._id;
             socketService.socket.emit('game:join', options);
-            //Restangular.one('users', userService.getCurrentUser()).all('games').post(options);
         },
 
         isAdmin: function(game) {
