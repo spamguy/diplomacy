@@ -1,53 +1,53 @@
 <form name="newGameForm" ng-submit="game.save()">
     <div layout="row" layout-align="center center">
         <div layout="column" ng-if="hasDecentScore()" flex="80" flex-sm="100" layout-margin layout-padding>
-                <section class="md-whiteframe-z2" flex>
-                    <h1 class="md-title">Important Stuff</h1>
+            <section class="md-whiteframe-z2" flex>
+                <h1 class="md-title">Important Stuff</h1>
 
-                    <h1 class="md-subhead">Everything in this box is required.</h1>
+                <h1 class="md-subhead">Everything in this box is required.</h1>
 
-                    <div layout="column">
-                        <md-input-container flex>
-                            <label>Game Name</label>
-                            <input type="text" name="gamename" ng-model="game.name" aria-label="Game Name" required />
-                        </md-input-container>
+                <div layout="column">
+                    <md-input-container flex>
+                        <label>Game Name</label>
+                        <input type="text" name="gamename" ng-model="game.name" aria-label="Game Name" required />
+                    </md-input-container>
 
-                        <div layout="row" layout-sm="column" flex>
-                            <md-select flex placeholder="Variant" ng-model="game.variant" md-on-open="loadVariants()">
-                                <!-- <md-select-label>{{ variant ? variant : 'Variant' }}</md-select-label> -->
-                                <md-option ng-value="variant" ng-repeat="variant in variants">{{variant}}</md-option>
-                            </md-select>
-                            <div style="padding-left:10px" flex>
-                                <h1 class="md-subhead">Learn more about variants here.</h1>
-                            </div>
+                    <div layout="row" layout-sm="column" flex>
+                        <md-select flex placeholder="Variant" ng-model="game.variant" md-on-open="loadVariants()">
+                            <!-- <md-select-label>{{ variant ? variant : 'Variant' }}</md-select-label> -->
+                            <md-option ng-value="variant" ng-repeat="variant in variants">{{variant}}</md-option>
+                        </md-select>
+                        <div style="padding-left:10px" flex>
+                            <h1 class="md-subhead">Learn more about variants here.</h1>
                         </div>
                     </div>
-                </section>
-
-                <section class="md-whiteframe-z2" flex>
-                    <h1 class="md-title">Movement Deadlines</h1>
-                </section>
-
-                <section class="md-whiteframe-z2" flex>
-                    <h1 class="md-title">Retreat Deadlines</h1>
-                </section>
-
-                <section class="md-whiteframe-z2" flex>
-                    <h1 class="md-title">Build Deadlines</h1>
-                </section>
-
-                <section class="md-whiteframe-z2" flex>
-                    <h1 class="md-title">Visibility</h1>
-                </section>
-
-                <section class="md-whiteframe-z2" flex>
-                    <h1 class="md-title">More options</h1>
-                </section>
-
-                <div style="text-align:center;margin-top:15px">
-                    <md-button class="md-raised">Cancel</md-button>
-                    <md-button class="md-raised md-accent">Complete</md-button>
                 </div>
+            </section>
+
+            <section class="md-whiteframe-z2" flex>
+                <h1 class="md-title">Movement Deadlines</h1>
+            </section>
+
+            <section class="md-whiteframe-z2" flex>
+                <h1 class="md-title">Retreat Deadlines</h1>
+            </section>
+
+            <section class="md-whiteframe-z2" flex>
+                <h1 class="md-title">Build Deadlines</h1>
+            </section>
+
+            <section class="md-whiteframe-z2" flex>
+                <h1 class="md-title">Visibility</h1>
+            </section>
+
+            <section class="md-whiteframe-z2" flex>
+                <h1 class="md-title">More options</h1>
+            </section>
+
+            <div style="text-align:center;margin-top:15px">
+                <md-button class="md-raised">Cancel</md-button>
+                <md-button class="md-raised md-accent">Complete</md-button>
+            </div>
         </div>
     </div>
 </form>
