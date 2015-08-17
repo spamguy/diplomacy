@@ -42,7 +42,7 @@ UserCore.prototype.list = function(options, cb) {
 UserCore.prototype.getStubByEmail = function(email, cb) {
     this.list({
         email: email,
-        username: { '$exists': false },
+        //username: { '$exists': false },
         password: { '$exists': false }
     }, cb);
 };

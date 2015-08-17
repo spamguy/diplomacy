@@ -21,7 +21,11 @@ angular.module('games')
             playerID: currentUser._id,
 
             save: function() {
-                gameService.createNewGame(this);
+                gameService.getVariant($scope.game.variant).then(function(variant) {
+                    $scope.game.maxPlayers = _.keys(variant.data.powers).length;
+                    gameService.createNewGame($scope.game);
+                    $state.go('profile.games');
+                });
             }
         }
     });

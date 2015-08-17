@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('lodash');
+var _ = require('lodash'),
+    pluralize = require('pluralize');
 
 var seekrits;
 try {
@@ -11,7 +12,8 @@ catch (ex) {
         seekrits = require('../config/local.env.sample');
 }
 
-var auth = require('../auth');
+var auth = require('../auth'),
+    mailer = require('../mailer/mailer');
 
 module.exports = function() {
     var app = this.app,
@@ -65,14 +67,39 @@ module.exports = function() {
                         // subscribe to game
                         req.socket.join(gameID);
 
-                        // broadcast join to others subscribed to game
-                        var gameData = { gamename: game.name };
-                        req.socket.emit('game:join:success', gameData);
-                        req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
-
                         // if everyone is here, signal the game can (re)start
-                        if (game.playerCount === game.maxPlayers)
+                        if (game.playerCount === game.maxPlayers) {
                             req.socket.emit('game:start', { gameID: gameID });
+                        }
+                        else {
+                            // send join alert email to other subscribers
+                            var emailOptions = {
+                                subject: '[' + game.name + '] A new player has joined',
+                                gameName: game.name,
+                                personInflection: pluralize('person', game.maxPlayers - game.playerCount),
+                                playerCount: game.playerCount,
+                                remainingSlots: game.maxPlayers - game.playerCount
+                            };
+
+                            // TODO: Rewrite with async()
+                            var playerFetchCallback = function(user) {
+                                emailOptions.email = user.email;
+                                mailer.sendOne('join', emailOptions, function(err) {
+                                    if (err)
+                                        console.error(err);
+                                });
+                            };
+                            for (var p = 0; p < game.players.length; p++) {
+                                core.game.list({
+                                    '_id': game.players[p].player_id
+                                }, playerFetchCallback);
+                            }
+
+                            // broadcast join to other subscribers
+                            var gameData = { gamename: game.name };
+                            req.socket.emit('game:join:success', gameData);
+                            req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
+                        }
                     });
                 });
             });
@@ -114,8 +141,9 @@ module.exports = function() {
                 throw new Error('No game data found.');
 
             core.game.create(game, function(err, savedGame) {
-                if (err)
+                if (err) {
                     console.error(err);
+                }
                 else {
                     console.log(req.socket.tokenData.id + ' joined game room ' + savedGame._id);
                     req.socket.join(savedGame._id);
@@ -125,6 +153,7 @@ module.exports = function() {
         },
 
         start: function(req, res) {
+            console.log('game:start triggered');
             // new games only: create first season
 
             // all games: schedule next adjudication

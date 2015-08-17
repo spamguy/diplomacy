@@ -2,7 +2,8 @@
 
 angular.module('games', [
     'ui.router',
-    'ngMaterial'
+    'ngMaterial',
+    'vAccordion'
 ])
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider

@@ -90,13 +90,13 @@ module.exports = function() {
             });
         },
 
-        exists: function(req, res) {
-            var options = { username: req.params.username };
-
-            var users = core.user.list(options, function(err, users) {
-                return res.json({ exists: users.length === 1 });
-            });
-        },
+        // exists: function(req, res) {
+        //     var options = { username: req.params.username };
+        //
+        //     var users = core.user.list(options, function(err, users) {
+        //         return res.json({ exists: users.length === 1 });
+        //     });
+        // },
 
         // Creates new (or recycles existing) stub user. Contains only email address until extended by user:verify event.
         create: function(req, res, next) {
@@ -119,6 +119,8 @@ module.exports = function() {
                     }, function(err, newUser) {
                         if (!err)
                             sendVerifyEmail(newUser);
+                        else
+                            console.log(err);
                     });
                 }
             });

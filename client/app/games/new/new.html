@@ -2,10 +2,6 @@
     <div layout="row" layout-align="center center">
         <div layout="column" ng-if="hasDecentScore()" flex="80" flex-sm="100" layout-margin layout-padding>
             <section class="md-whiteframe-z2" flex>
-                <h1 class="md-title">Important Stuff</h1>
-
-                <h1 class="md-subhead">Everything in this box is required.</h1>
-
                 <div layout="column">
                     <md-input-container flex>
                         <label>Game Name</label>
@@ -24,30 +20,48 @@
                 </div>
             </section>
 
-            <section class="md-whiteframe-z2" flex>
-                <h1 class="md-title">Movement Deadlines</h1>
-            </section>
+            <v-accordion class="vAccordion--default md-whiteframe-z2" style="background-color:#fff" multiple layout="column" ng-if="hasDecentScore()" flex="80" flex-sm="100" layout-margin layout-padding>
+                <v-pane>
+                    <v-pane-header>Movement Deadlines</v-pane-header>
+                    <v-pane-content>
+                    </v-pane-content>
+                </v-pane>
 
-            <section class="md-whiteframe-z2" flex>
-                <h1 class="md-title">Retreat Deadlines</h1>
-            </section>
+                <v-pane>
+                    <v-pane-header>Retreat Deadlines</v-pane-header>
+                    <v-pane-content>
+                    </v-pane-content>
+                </v-pane>
 
-            <section class="md-whiteframe-z2" flex>
-                <h1 class="md-title">Build Deadlines</h1>
-            </section>
+                <v-pane>
+                    <v-pane-header>Build Deadlines</v-pane-header>
+                    <v-pane-content>
+                    </v-pane-content>
+                </v-pane>
 
-            <section class="md-whiteframe-z2" flex>
-                <h1 class="md-title">Visibility</h1>
-            </section>
+                <v-pane>
+                    <v-pane-header>Visibility</v-pane-header>
+                    <v-pane-content>
+                    </v-pane-content>
+                </v-pane>
 
-            <section class="md-whiteframe-z2" flex>
-                <h1 class="md-title">More options</h1>
-            </section>
+                <v-pane>
+                    <v-pane-header>Press</v-pane-header>
+                    <v-pane-content>
+                    </v-pane-content>
+                </v-pane>
 
-            <div style="text-align:center;margin-top:15px">
-                <md-button class="md-raised">Cancel</md-button>
-                <md-button class="md-raised md-accent">Complete</md-button>
-            </div>
+                <v-pane>
+                    <v-pane-header>Everything Else</v-pane-header>
+                    <v-pane-content>
+                    </v-pane-content>
+                </v-pane>
+
+                <div style="text-align:center;margin-top:15px">
+                    <md-button class="md-raised">Cancel</md-button>
+                    <md-button class="md-raised md-accent">Complete</md-button>
+                </div>
+            </v-accordion>
         </div>
     </div>
 </form>

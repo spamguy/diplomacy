@@ -7,36 +7,41 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <!-- <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" /> -->
-    <!-- <link href="http://fonts.googleapis.com/css?family=Josefin+Sans:700" rel="stylesheet" type="text/css" /> -->
     <!-- build:css app.min.css -->
     <link href="../bower_components/ng-mfb/mfb/src/mfb.css" rel="stylesheet" type="text/css" />
+    <link href="../bower_components/v-accordion/dist/v-accordion.css" rel="stylesheet" type="text/css" />
     <link href="../bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="temp/app.css" />
     <!-- endbuild -->
 </head>
 <body ng-controller="AppController" layout="column">
     <md-toolbar>
-        <div layout="row" layout-align="center center">
+        <div class="md-toolbar-tools">
             <span class="logo">dipl.io</span>
 
             <span flex></span>
 
-            <!-- <md-button class="md-icon-button" aria-label="Log In">
-          <md-icon md-svg-icon="power" style="color: greenyellow;"></md-icon>
-        </md-button>
-        <md-button class="md-icon-button" aria-label="Sign Up">
-          <md-icon md-svg-icon="power" style="color: greenyellow;"></md-icon>
-        </md-button> -->
+            <md-menu md-position-mode="target-right target" md-offset="0 -50">
+                <md-button aria-label="Options" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                    <md-icon md-menu-origin md-svg-icon="settings" style="height:36px;width:36px;"></md-icon>
+                </md-button>
+                <md-menu-content>
+                    <md-menu-item ng-repeat="item in menuItems">
+                        <md-button ng-click="goSomewhere(item.sref)">
+                            <span md-menu-align-target>{{item.text}}</span>
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
         </div>
     </md-toolbar>
-    <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" active-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed" id="floatingMenuButton">
+    <!-- <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" active-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed" id="floatingMenuButton">
         <button mfb-button icon="addperson" ui-sref="main.signup" label="Register" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="new" ui-sref="games.new" label="Create a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="join" ui-sref="games.list" label="Join a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="play" ui-sref="main.login" label="Log in" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
         <button mfb-button icon="eject" ui-sref="main.logout" label="Log out" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-    </mfb-menu>
+    </mfb-menu> -->
 
     <div layout="column" layout-fill>
         <div style="margin-top:10px;">
@@ -82,6 +87,7 @@
     <script src="../bower_components/angular-timer/dist/angular-timer.js"></script>
     <script src="../bower_components/socket.io-client/socket.io.js"></script>
     <script src="../bower_components/angular-socket-io/socket.js"></script>
+    <script src="../bower_components/v-accordion/dist/v-accordion.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

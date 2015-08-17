@@ -6,7 +6,7 @@ angular.module('diplomacy.main')
 
     angular.extend($scope, {
         user: {
-            username: null,
+            //username: null,
             password: null,
             password2: null,
             email: null,

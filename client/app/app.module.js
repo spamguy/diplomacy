@@ -35,7 +35,8 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
         .icon('join', '/assets/icons/ic_call_merge_24px.svg', 24)
         .icon('new', '/assets/icons/ic_add_24px.svg', 24)
         .icon('fold-out', '/assets/icons/ic_unfold_more_24px.svg', 24)
-        .icon('fold-in', '/assets/icons/ic_unfold_less_24px.svg', 24);
+        .icon('fold-in', '/assets/icons/ic_unfold_less_24px.svg', 24)
+        .icon('settings', '/assets/icons/ic_settings_48px.svg', 48);
 
     // local storage config
     localStorageServiceProvider.setPrefix('diplomacy');
@@ -63,12 +64,23 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
 }])
 .run(['$rootScope', 'userService', 'socketService', function ($rootScope, userService, socketService) {
     $rootScope.$on('$stateChangeStart', function (event, next) {
-        // if (!socketService.socket)
-        //     socketService.initialize();
-
         var isRestricted = !!(next.data && next.data.restricted);
 
         $rootScope.isAuthenticated = userService.isAuthenticated();
+
+        // FIXME: this could probably go somewhere better
+        if ($rootScope.isAuthenticated) {
+            $rootScope.menuItems = [
+                { sref: 'profile.gamelist', text: 'My Games' },
+                { sref: 'main.logout', text: 'Log Out' }
+            ];
+        }
+        else {
+            $rootScope.menuItems = [
+                { sref: 'main.login', text: 'Log In' },
+                { sref: 'main.signup', text: 'Register' }
+            ];
+        }
 
         // if page is restricted and auth is bad, block entry to route
         if (isRestricted && !userService.isAuthenticated()) {
