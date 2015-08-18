@@ -26,7 +26,8 @@ UserCore.prototype.list = function(options, cb) {
         '_id': options.ID,
         'username': options.username,
         'password': options.password,
-        'email': options.email
+        'email': options.email,
+        'tempEmail': options.tempEmail
     }, _.identity));
 
     query.exec(function(err, users) {
@@ -41,7 +42,7 @@ UserCore.prototype.list = function(options, cb) {
 
 UserCore.prototype.getStubByEmail = function(email, cb) {
     this.list({
-        email: email,
+        tempEmail: email,
         //username: { '$exists': false },
         password: { '$exists': false }
     }, cb);

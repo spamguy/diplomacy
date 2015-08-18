@@ -11,6 +11,7 @@ var UserSchema = new mongoose.Schema({
     password: String,
     passwordsalt: String,
     email: String,
+    tempEmail: String,
     points: Number,
     timezone: Number
 });

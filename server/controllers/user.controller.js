@@ -25,11 +25,11 @@ var sendVerifyEmail = function(user) {
     console.log('Sending verify email to ' + user.email);
 
     var safeUser = {
-        email: user.email,
+        email: user.tempEmail,
         id: user._id
     };
     var options = {
-        email: user.email,
+        email: user.tempEmail,
         token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: 24 * 60 }),
         baseURL: seekrits.DOMAIN,
         subject: 'Verify your email address with dipl.io'
@@ -115,7 +115,7 @@ module.exports = function() {
                 }
                 else {
                     core.user.create({
-                        email: email
+                        tempEmail: email
                     }, function(err, newUser) {
                         if (!err)
                             sendVerifyEmail(newUser);
@@ -144,6 +144,8 @@ module.exports = function() {
                         user.password = hash;
                         user.passwordsalt = salt;
                         user.points = 0;
+                        user.email = user.tempEmail; // promote tempEmail to email
+                        delete user.tempEmail;
 
                         core.user.update(user, function(err, updatedUser) {
                             var safeUser = {

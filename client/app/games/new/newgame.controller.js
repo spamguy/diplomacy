@@ -33,6 +33,7 @@ angular.module('games')
     $scope.variants = variants;
 
     $scope.minimumPointsToGM = 10;
+    $scope.currentPoints = currentUser.points;
     $scope.hasDecentScore = function() {
         return currentUser.points >= $scope.minimumPointsToGM;
     };

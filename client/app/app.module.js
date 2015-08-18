@@ -13,7 +13,6 @@ angular.module('diplomacy', [
     'map.directives',
     'gamelistitem.directive',
     'ngMaterial',
-    'ng-mfb',
     'socketService',
     'socketAuthService'
 ])
@@ -71,13 +70,15 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
         // FIXME: this could probably go somewhere better
         if ($rootScope.isAuthenticated) {
             $rootScope.menuItems = [
-                { sref: 'profile.gamelist', text: 'My Games' },
-                { sref: 'main.logout', text: 'Log Out' }
+                { sref: 'profile.gamelist', text: 'My games' },
+                { sref: 'games.new', text: 'Start a new game' },
+                { sref: 'games.list', text: 'Join a game' },
+                { sref: 'main.logout', text: 'Log out' }
             ];
         }
         else {
             $rootScope.menuItems = [
-                { sref: 'main.login', text: 'Log In' },
+                { sref: 'main.login', text: 'Log in' },
                 { sref: 'main.signup', text: 'Register' }
             ];
         }

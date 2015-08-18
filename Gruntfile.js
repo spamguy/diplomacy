@@ -56,6 +56,13 @@ module.exports = function(grunt) {
                         apiEndpoint: 'http://localhost/api'
                     }
                 }
+            },
+            prod: {
+                constants: {
+                    CONST: {
+                        apiEndpoint: 'http://dipl.io/api'
+                    }
+                }
             }
         },
         preprocess: {
@@ -284,7 +291,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', [
         'jshint',
         'clean:before',
-        'ngconstant:mongo',
+        'ngconstant:prod',
         'preprocess',
         'wiredep',
         'useminPrepare',

@@ -47,6 +47,7 @@ GameCore.prototype.create = function(options, cb) {
     var newGame = mongoose.model('Game')({
         variant: options.variant,
         name: options.name,
+        maxPlayers: options.maxPlayers,
         visibility: options.visibility,
         moveClock: options.move.clock,
         retreatClock: options.retreat.clock,

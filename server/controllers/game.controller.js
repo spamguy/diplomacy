@@ -68,30 +68,34 @@ module.exports = function() {
                         req.socket.join(gameID);
 
                         // if everyone is here, signal the game can (re)start
-                        if (game.playerCount === game.maxPlayers) {
+                        if (game.playerCount + 1 === game.maxPlayers) {
                             req.socket.emit('game:start', { gameID: gameID });
                         }
                         else {
-                            // send join alert email to other subscribers
+                            /*
+                             * Send join alert email to other subscribers.
+                             * game.playerCount hasn't been updated yet, so manually add 1.
+                             */
                             var emailOptions = {
                                 subject: '[' + game.name + '] A new player has joined',
                                 gameName: game.name,
                                 personInflection: pluralize('person', game.maxPlayers - game.playerCount),
-                                playerCount: game.playerCount,
-                                remainingSlots: game.maxPlayers - game.playerCount
+                                playerCount: game.playerCount + 1,
+                                remainingSlots: game.maxPlayers - game.playerCount + 1
                             };
 
-                            // TODO: Rewrite with async()
-                            var playerFetchCallback = function(user) {
-                                emailOptions.email = user.email;
+                            // fetch email addresses of subscribed players
+                            // TODO: rewrite with async()
+                            var playerFetchCallback = function(err, user) {
+                                emailOptions.email = user[0].email;
                                 mailer.sendOne('join', emailOptions, function(err) {
                                     if (err)
                                         console.error(err);
                                 });
                             };
                             for (var p = 0; p < game.players.length; p++) {
-                                core.game.list({
-                                    '_id': game.players[p].player_id
+                                core.user.list({
+                                    ID: game.players[p].player_id
                                 }, playerFetchCallback);
                             }
 
