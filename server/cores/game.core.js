@@ -70,6 +70,15 @@ GameCore.prototype.create = function(options, cb) {
     newGame.save(function(err, data) { cb(err, data); });
 };
 
+/**
+ * Updates an existing game.
+ * @param  {Object}   game The game.
+ * @param  {Function} cb   The callback after execution.
+ */
+GameCore.prototype.update = function(game, cb) {
+    game.save(function(err, data) { cb(err, data); });
+};
+
 GameCore.prototype.addPlayer = function(game, player, cb) {
     mongoose.model('Game').update(
         { _id: game._id },

@@ -3,6 +3,7 @@
 var UserCore = require('./user.core'),
     GameCore = require('./game.core'),
     SeasonCore = require('./season.core'),
+    VariantCore = require('./variant.core'),
     EventEmitter = require('events').EventEmitter;
 
 function Core() {
@@ -17,6 +18,10 @@ function Core() {
     });
 
     this.season = new SeasonCore({
+        core: this
+    });
+
+    this.variant = new VariantCore({
         core: this
     });
 }

@@ -22,7 +22,7 @@ var auth = require('../auth'),
     mailer = require('../mailer/mailer');
 
 var sendVerifyEmail = function(user) {
-    console.log('Sending verify email to ' + user.email);
+    console.log('Sending verify email to ' + user.tempEmail);
 
     var safeUser = {
         email: user.tempEmail,

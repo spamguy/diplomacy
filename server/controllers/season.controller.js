@@ -23,7 +23,7 @@ module.exports = function() {
                         for (var s = 0; s < seasons.length; s++) {
                             var season = seasons[s];
 
-                            // incomplete games and active seasons are sanitised for your protection
+                            // Incomplete games and active seasons are sanitised for your protection.
                             if (!isComplete && (season.year === currentYear && season.season === currentSeason)) {
                                 for (var r = 0; r < season.regions.length; r++) {
                                     var region = season.regions[r];
@@ -36,6 +36,15 @@ module.exports = function() {
                         return res.json(seasons);
                 });
             });
+        },
+
+        create: function(req, res) {
+            var season = req.data.season;
+
+            core.season.create(season, function(err, savedSeason) {
+                if (err)
+                    console.log(err);
+            })
         }
     });
 };

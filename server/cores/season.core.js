@@ -11,7 +11,9 @@ SeasonCore.prototype.list = function(options, cb) {
     options = options || { };
     var Season = mongoose.model('Season');
     var query = Season.find(_.pick({
-        'game_id': options.gameID
+        'game_id': options.gameID,
+        'year': options.year,
+        'season': options.season
     }, _.identity));
 
     query.exec(function(err, seasons) {
@@ -22,6 +24,13 @@ SeasonCore.prototype.list = function(options, cb) {
 
         cb(null, seasons);
     });
+};
+
+SeasonCore.prototype.create = function(season, cb) {
+    // FIXME: strip coord junk
+    var newSeason = mongoose.model('Season')(season);
+
+    newSeason.save(function(err, data) { cb(err, data); });
 };
 
 module.exports = SeasonCore;

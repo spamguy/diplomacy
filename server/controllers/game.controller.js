@@ -69,7 +69,7 @@ module.exports = function() {
 
                         // if everyone is here, signal the game can (re)start
                         if (game.playerCount + 1 === game.maxPlayers) {
-                            req.socket.emit('game:start', { gameID: gameID });
+                            req.io.route('game:start', { gameID: gameID });
                         }
                         else {
                             /*
@@ -126,7 +126,7 @@ module.exports = function() {
             var userID = req.socket.tokenData.id,
                 gameID = req.data ? req.data.gameID : null;
 
-            // get list of subscribed games and join them as socket.io rooms
+            // Get list of subscribed games and join them as socket.io rooms.
             core.game.list({
                 gameID: gameID,
                 playerID: userID,
@@ -157,10 +157,70 @@ module.exports = function() {
         },
 
         start: function(req, res) {
-            console.log('game:start triggered');
-            // new games only: create first season
+            console.log('Starting game ' + req.data.gameID);
 
-            // all games: schedule next adjudication
+            var isNew = false;
+
+            core.game.list({
+                gameID: req.data.gameID
+            }, function(err, games) {
+                var game = games[0],
+                    variant = core.variant.get(game.variant);
+
+                // Get most recent season, or create one if there isn't one.
+                core.season.list({
+                    gameID: req.data.gameID
+                }, function(err, seasons) {
+                    if (!seasons || seasons.length === 0) {
+                        isNew = true;
+
+                        /*
+                         * Assign variant powers to player.
+                         *
+                         * TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
+                         */
+                        var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
+                            shuffledSetIndex = 0;
+
+                        for (var p = 0; p < game.players.length; p++) {
+                            var player = game.players[p];
+
+                            // Skip the GM.
+                            if (player.power === '*')
+                                continue;
+
+                            player.power = shuffledSetOfPowers[shuffledSetIndex];
+                            console.log('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
+                            shuffledSetIndex++;
+
+                            // Notify player of power designation.
+                        }
+                    }
+                    else {
+                        // Notify everyone that game is restarting.
+                    }
+
+                    // Both new and old games: schedule adjudication.
+
+                    // Save game changes.
+                    console.log(game);
+                    core.game.update(game, function() {
+                        /*
+                         * Generate first season object.
+                         * This needs to be done last because we will not be returning to this event.
+                         */
+                        if (isNew) {
+                            var firstSeason = {
+                                year: variant.startYear,
+                                season: 1,
+                                game_id: req.data.gameID,
+                                regions: variant.regions
+                            };
+                            req.io.route('season:create', { season: firstSeason });
+                        }
+                    });
+                });
+            });
         },
 
         stop: function(req, res) {
