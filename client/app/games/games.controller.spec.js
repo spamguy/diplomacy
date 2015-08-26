@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Controller: GamesController', function () {
+describe('GameListController', function () {
 
   // load the controller's module
   beforeEach(module('games'));

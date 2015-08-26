@@ -24,6 +24,7 @@ module.exports = function (config) {
             'bower_components/angular-material/angular-material.js',
             'bower_components/angular-aria/angular-aria.js',
             'bower_components/angular-socket-io/socket.js',
+            'bower_components/v-accordion/dist/v-accordion.js',
 
             // client files
             'client/app/app.module.js',
