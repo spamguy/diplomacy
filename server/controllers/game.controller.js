@@ -159,65 +159,72 @@ module.exports = function() {
         start: function(req, res) {
             console.log('Starting game ' + req.data.gameID);
 
-            var isNew = false;
-
             core.game.list({
                 gameID: req.data.gameID
             }, function(err, games) {
                 var game = games[0],
                     variant = core.variant.get(game.variant);
 
+                // Both new and old games: schedule adjudication.
+
                 // Get most recent season, or create one if there isn't one.
                 core.season.list({
                     gameID: req.data.gameID
                 }, function(err, seasons) {
                     if (!seasons || seasons.length === 0) {
-                        isNew = true;
-
                         /*
                          * Assign variant powers to player.
                          *
                          * TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
                          */
                         var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
-                            shuffledSetIndex = 0;
+                            shuffledSetIndex = 0,
+                            emailOptions = {
+                                gameName: game.name,
+                                gameURL: seekrits.DOMAIN + '/games/' + game._id,
+                                subject: '[' + game.name + '] The game is starting!'
+                            },
+                            mailCallback = function(err) {
+                                if (err)
+                                    console.error(err);
+                            },
+                            seasonCallback = function(err, season) {
+
+                            };
 
                         for (var p = 0; p < game.players.length; p++) {
                             var player = game.players[p];
 
-                            // Skip the GM.
-                            if (player.power === '*')
+                            // Send the GM an email, but otherwise do not consider him in placement.
+                            if (player.power === '*') {
+                                emailOptions.email = player.email;
+                                mailer.sendOne('gm_gamestart', emailOptions, mailCallback);
                                 continue;
+                            }
 
                             player.power = shuffledSetOfPowers[shuffledSetIndex];
                             console.log('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
                             shuffledSetIndex++;
 
                             // Notify player of power designation.
-                        }
-                    }
-                    else {
-                        // Notify everyone that game is restarting.
-                    }
 
-                    // Both new and old games: schedule adjudication.
-
-                    // Save game changes.
-                    console.log(game);
-                    core.game.update(game, function() {
-                        /*
-                         * Generate first season object.
-                         * This needs to be done last because we will not be returning to this event.
-                         */
-                        if (isNew) {
+                            // Create first season.
                             var firstSeason = {
                                 year: variant.startYear,
                                 season: 1,
                                 game_id: req.data.gameID,
                                 regions: variant.regions
                             };
-                            req.io.route('season:create', { season: firstSeason });
+                            core.season.create(firstSeason, seasonCallback);
                         }
+                    }
+                    else {
+                        // Notify everyone that game is restarting.
+                    }
+
+                    // Save game changes.
+                    console.log(game);
+                    core.game.update(game, function() {
                     });
                 });
             });

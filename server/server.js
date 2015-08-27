@@ -3,7 +3,8 @@ var express = require('express.oi'),
     bodyParser = require('body-parser'), // for crying out loud, STOP REMOVING THIS
     all = require('require-tree'),
     _ = require('lodash'),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    agenda = require('agenda');
 
 var models = all(__dirname + '/models'),
     controllers = all(__dirname + '/controllers'),
@@ -21,6 +22,14 @@ catch (ex) {
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// Fire up scheduling.
+app.agenda = new agenda({
+    db: {
+        address: seekrits.mongoURI
+    }
+});
+app.agenda.start();
 
 //app.use('/api', require('./api/auth')());
 var seekrits;
