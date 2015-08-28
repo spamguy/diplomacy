@@ -59,15 +59,15 @@ module.exports = function() {
                             error: 'You already are participating in this game.'
                         });
 
-                    // join
+                    // Join.
                     var newPlayer = { player_id: playerID };
                     if (prefs)
                         newPlayer.prefs = prefs;
                     core.game.addPlayer(game, newPlayer, function(err) {
-                        // subscribe to game
+                        // Subscribe to game.
                         req.socket.join(gameID);
 
-                        // if everyone is here, signal the game can (re)start
+                        // If everyone is here, signal the game can (re)start.
                         if (game.playerCount + 1 === game.maxPlayers) {
                             req.io.route('game:start', { gameID: gameID });
                         }
@@ -163,9 +163,10 @@ module.exports = function() {
                 gameID: req.data.gameID
             }, function(err, games) {
                 var game = games[0],
-                    variant = core.variant.get(game.variant);
-
-                // Both new and old games: schedule adjudication.
+                    variant = core.variant.get(game.variant),
+                    seasonCallback = function(err, season) {
+                        // Schedule adjudication for this season.
+                    };
 
                 // Get most recent season, or create one if there isn't one.
                 core.season.list({
@@ -187,9 +188,6 @@ module.exports = function() {
                             mailCallback = function(err) {
                                 if (err)
                                     console.error(err);
-                            },
-                            seasonCallback = function(err, season) {
-
                             };
 
                         for (var p = 0; p < game.players.length; p++) {
@@ -207,25 +205,23 @@ module.exports = function() {
                             shuffledSetIndex++;
 
                             // Notify player of power designation.
-
-                            // Create first season.
-                            var firstSeason = {
-                                year: variant.startYear,
-                                season: 1,
-                                game_id: req.data.gameID,
-                                regions: variant.regions
-                            };
-                            core.season.create(firstSeason, seasonCallback);
                         }
+
+                        // Create first season.
+                        var firstSeason = {
+                            year: variant.startYear,
+                            season: 1,
+                            game_id: req.data.gameID,
+                            regions: variant.regions
+                        };
+                        core.season.create(firstSeason, seasonCallback);
                     }
                     else {
                         // Notify everyone that game is restarting.
                     }
 
                     // Save game changes.
-                    console.log(game);
-                    core.game.update(game, function() {
-                    });
+                    core.game.update(game, function() { });
                 });
             });
         },

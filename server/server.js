@@ -29,17 +29,8 @@ app.agenda = new agenda({
         address: seekrits.mongoURI
     }
 });
+all(__dirname + '/jobs', { each: function(obj) { obj(app.agenda, core); } });
 app.agenda.start();
-
-//app.use('/api', require('./api/auth')());
-var seekrits;
-try {
-    seekrits = require('./config/local.env');
-}
-catch (ex) {
-    if (ex.code === 'MODULE_NOT_FOUND')
-        seekrits = require('./config/local.env.sample');
-}
 
 app.http().io();
 
