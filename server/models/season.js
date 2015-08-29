@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var OrderSchema = new mongoose.Schema({
-}, { strict: false });
+}, { strict: false, _id: false });
 
 var SeasonSchema = new mongoose.Schema({
     game_id: mongoose.Schema.Types.ObjectId,

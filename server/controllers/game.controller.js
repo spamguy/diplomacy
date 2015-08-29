@@ -1,7 +1,8 @@
 'use strict';
 
 var _ = require('lodash'),
-    pluralize = require('pluralize');
+    pluralize = require('pluralize'),
+    async = require('async');
 
 var seekrits;
 try {
@@ -159,71 +160,100 @@ module.exports = function() {
         start: function(req, res) {
             console.log('Starting game ' + req.data.gameID);
 
-            core.game.list({
-                gameID: req.data.gameID
-            }, function(err, games) {
-                var game = games[0],
-                    variant = core.variant.get(game.variant),
-                    seasonCallback = function(err, season) {
-                        // Schedule adjudication for this season.
-                    };
+            async.waterfall([
+                // Fetches the game to start.
+                function(callback) {
+                    core.game.list({
+                        gameID: req.data.gameID
+                    }, function(err, games) { callback(err, games[0]); });
+                },
 
-                // Get most recent season, or create one if there isn't one.
-                core.season.list({
-                    gameID: req.data.gameID
-                }, function(err, seasons) {
-                    if (!seasons || seasons.length === 0) {
-                        /*
-                         * Assign variant powers to player.
-                         *
-                         * TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
-                         */
-                        var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
-                            shuffledSetIndex = 0,
-                            emailOptions = {
-                                gameName: game.name,
-                                gameURL: seekrits.DOMAIN + '/games/' + game._id,
-                                subject: '[' + game.name + '] The game is starting!'
-                            },
-                            mailCallback = function(err) {
-                                if (err)
-                                    console.error(err);
-                            };
+                // Fetches the game's most recent season, if there is one.
+                function(game, callback) {
+                    core.season.list({
+                        gameID: game._id
+                    }, function(err, seasons) { callback(null, game, seasons); });
+                },
 
-                        for (var p = 0; p < game.players.length; p++) {
-                            var player = game.players[p];
-
-                            // Send the GM an email, but otherwise do not consider him in placement.
-                            if (player.power === '*') {
-                                emailOptions.email = player.email;
-                                mailer.sendOne('gm_gamestart', emailOptions, mailCallback);
-                                continue;
-                            }
-
-                            player.power = shuffledSetOfPowers[shuffledSetIndex];
-                            console.log('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
-                            shuffledSetIndex++;
-
-                            // Notify player of power designation.
-                        }
-
+                // Creates first season if previous step pulled up nothing.
+                function(game, seasons, callback) {
+                    var variant = core.variant.get(game.variant);
+                    if (!seasons || !seasons.length) {
                         // Create first season.
                         var firstSeason = {
                             year: variant.startYear,
                             season: 1,
-                            game_id: req.data.gameID,
+                            game_id: game._id,
                             regions: variant.regions
                         };
-                        core.season.create(firstSeason, seasonCallback);
+                        core.season.create(firstSeason, function(err, newSeason) { callback(err, variant, game, newSeason); });
                     }
                     else {
-                        // Notify everyone that game is restarting.
+                        // Skip to next function.
+                        callback(null, variant, game, seasons[0]);
+                    }
+                },
+
+                // Assign powers to players.
+                function(variant, game, season, callback) {
+                    // TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
+                    var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
+                        shuffledSetIndex = 0;
+
+                    for (var p = 0; p < game.players.length; p++) {
+                        var player = game.players[p];
+
+                        if (player.power !== '*') {
+                            player.power = shuffledSetOfPowers[shuffledSetIndex];
+                            console.log('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
+                            shuffledSetIndex++;
+                        }
                     }
 
-                    // Save game changes.
-                    core.game.update(game, function() { });
-                });
-            });
+                    core.game.update(game, function(err, savedGame) { callback(err, variant, savedGame, season); });
+                },
+
+                // Schedule adjudication and send out emails.
+                function(variant, game, season, callback) {
+                    var clock;
+                    switch (season.season) {
+                        // (move)
+                        case 1:
+                        case 3:
+                            clock = game.moveClock;
+                            break;
+                        // (retreat)
+                        case 2:
+                        case 4:
+                            clock = game.retreatClock;
+                            break;
+                        // (build)
+                        case 5:
+                            clock = game.adjustClock;
+                            break;
+                    }
+                    var job = app.agenda.schedule(clock + ' minutes', 'adjudicate', { seasonID: season._id });
+
+                    var emailOptions = {
+                        gameName: game.name,
+                        gameURL: seekrits.DOMAIN + '/games/' + game._id,
+                        subject: '[' + game.name + '] The game is starting!',
+                        deadline: job.nextRunAt,
+                        season: variant.seasons[season.season - 1],
+                        year: season.year
+                    };
+
+                    for (var p = 0; p < game.players.length; p++) {
+                        var player = game.players[p];
+
+                        if (player.power === '*')
+                            emailOptions.powerDesignation = 'You are the GM for this game. You can watch the action at ';
+                        else
+                            emailOptions.powerDesignation = 'You have been selected to play ' + player.power + ' in the game ' + game.name;
+                        mailer.sendOne('gamestart', emailOptions, function() { });
+                    }
+                }
+            ]);
         },
 
         stop: function(req, res) {

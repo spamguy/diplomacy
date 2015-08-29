@@ -10,6 +10,7 @@ var GameSchema = new mongoose.Schema({
     season: Number,
     maxPlayers: Number,
     players: [{
+            _id: false,
             player_id: mongoose.Schema.Types.ObjectId,
             power: String
         }
