@@ -27,7 +27,9 @@ SeasonCore.prototype.list = function(options, cb) {
 };
 
 SeasonCore.prototype.create = function(season, cb) {
-    // FIXME: strip coord junk
+    // Strip coordinate junk not relevant to individual seasons.
+    season.regions = _.omit(season.regions, _.isNumber);
+    
     var newSeason = mongoose.model('Season')(season);
 
     newSeason.save(function(err, data) { cb(err, data); });

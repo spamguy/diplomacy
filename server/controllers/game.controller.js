@@ -232,26 +232,27 @@ module.exports = function() {
                             clock = game.adjustClock;
                             break;
                     }
-                    var job = app.agenda.schedule(clock + ' minutes', 'adjudicate', { seasonID: season._id });
+                    var job = app.agenda.schedule(clock + ' hours', 'adjudicate', { seasonID: season._id });
 
-                    var emailOptions = {
-                        gameName: game.name,
-                        gameURL: seekrits.DOMAIN + '/games/' + game._id,
-                        subject: '[' + game.name + '] The game is starting!',
-                        deadline: job.nextRunAt,
-                        season: variant.seasons[season.season - 1],
-                        year: season.year
-                    };
-
-                    for (var p = 0; p < game.players.length; p++) {
-                        var player = game.players[p];
-
-                        if (player.power === '*')
-                            emailOptions.powerDesignation = 'You are the GM for this game. You can watch the action at ';
-                        else
-                            emailOptions.powerDesignation = 'You have been selected to play ' + player.power + ' in the game ' + game.name;
-                        mailer.sendOne('gamestart', emailOptions, function() { });
-                    }
+                    async.each(game.players, function(player, err) {
+                        var emailOptions = {
+                            gameName: game.name,
+                            gameURL: seekrits.DOMAIN + '/games/' + game._id,
+                            subject: '[' + game.name + '] The game is starting!',
+                            deadline: job.nextRunAt,
+                            season: variant.seasons[season.season - 1],
+                            year: season.year
+                        };
+                        
+                        core.user.list({ ID: player.player_id }, function(err, users) {
+                            emailOptions.email = users[0].email;
+                            if (player.power === '*')
+                                emailOptions.powerDesignation = 'You are the GM for this game. You can watch the action at ';
+                            else
+                                emailOptions.powerDesignation = 'You have been selected to play ' + variant.powers[player.power].name + ' in the game ' + game.name + '. You can start playing right now by visiting the game page at ';
+                            mailer.sendOne('gamestart', emailOptions, function(err) { });
+                        });
+                    });
                 }
             ]);
         },
