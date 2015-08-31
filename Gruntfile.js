@@ -2,7 +2,10 @@
 
 module.exports = function(grunt) {
     // load all grunt tasks
-    require('load-grunt-tasks')(grunt);
+    require('jit-grunt')(grunt, {
+        ngconstant: 'grunt-ng-constant',
+        express: 'grunt-express-server'
+    });
 
     // for smarter date formatting
     var moment = require('moment');
