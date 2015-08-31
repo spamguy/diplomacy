@@ -11,7 +11,7 @@ describe('Page base', function() {
         expect(browser.driver.isElementPresent(page.header)).toBe(true);
     });
 
-    it('has a floating button', function() {
-        expect(browser.driver.isElementPresent(page.floatingButton)).toBe(true);
+    it('has a nav button in the header', function() {
+        expect(browser.driver.isElementPresent(page.navButton)).toBe(true);
     });
 });

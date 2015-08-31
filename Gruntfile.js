@@ -4,7 +4,8 @@ module.exports = function(grunt) {
     // load all grunt tasks
     require('jit-grunt')(grunt, {
         ngconstant: 'grunt-ng-constant',
-        express: 'grunt-express-server'
+        express: 'grunt-express-server',
+        protractor: 'grunt-protractor-runner'
     });
 
     // for smarter date formatting

@@ -20,7 +20,7 @@
 
             <span flex></span>
 
-            <md-menu md-position-mode="target-right target" md-offset="0 -50">
+            <md-menu id="navButton" md-position-mode="target-right target" md-offset="0 -50">
                 <md-button aria-label="Options" class="md-icon-button" ng-click="$mdOpenMenu($event)">
                     <md-icon md-menu-origin md-svg-icon="settings" style="height:36px;width:36px;"></md-icon>
                 </md-button>
@@ -34,13 +34,6 @@
             </md-menu>
         </div>
     </md-toolbar>
-    <!-- <mfb-menu position="tr" effect="zoomin" toggling-method="hover" resting-icon="menu" active-icon="menu" template-url="ng-mfb-menu-md.tpl.html" menu-state="closed" id="floatingMenuButton">
-        <button mfb-button icon="addperson" ui-sref="main.signup" label="Register" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="new" ui-sref="games.new" label="Create a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="join" ui-sref="games.list" label="Join a game" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="play" ui-sref="main.login" label="Log in" ng-if="!isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-        <button mfb-button icon="eject" ui-sref="main.logout" label="Log out" ng-if="isAuthenticated" template-url="ng-mfb-button-md.tpl.html"></button>
-    </mfb-menu> -->
 
     <div layout="column" layout-fill>
         <div style="margin-top:10px;">

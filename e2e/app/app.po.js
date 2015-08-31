@@ -4,7 +4,7 @@ var AppPage = function() {
     };
 
     this.header = by.css('md-toolbar');
-    this.floatingButton = by.id('floatingMenuButton');
+    this.navButton = by.id('navButton');
 };
 
 module.exports = new AppPage();
