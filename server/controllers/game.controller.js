@@ -18,7 +18,30 @@ var auth = require('../auth'),
 
 module.exports = function() {
     var app = this.app,
-        core = this.core;
+        core = this.core,
+        initRegions = function(variant) {
+            var regions = [];
+
+            for (var vr = 0; vr < variant.regions.length; vr++) {
+                var region = variant.regions[vr],
+                    baseRegion = { r: region.r };
+
+                if (region.default) { // Add a SC marker, colour it, and put the default unit there.
+                    baseRegion.sc = region.default.power;
+                    baseRegion.units = [{
+                        power: region.default.power,
+                        type: region.default.type
+                    }];
+                }
+                else if (region.sc) { // Add an uncoloured SC marker.
+                    baseRegion.sc = null;
+                }
+
+                regions.push(baseRegion);
+            }
+
+            return regions;
+        };
 
     app.io.route('game', {
         userlist: function(req, res) {
@@ -179,12 +202,15 @@ module.exports = function() {
                 function(game, seasons, callback) {
                     var variant = core.variant.get(game.variant);
                     if (!seasons || !seasons.length) {
+                        // Init regions.
+                        var defaultRegions = initRegions(variant);
+
                         // Create first season.
                         var firstSeason = {
                             year: variant.startYear,
                             season: 1,
                             game_id: game._id,
-                            regions: variant.regions
+                            regions: defaultRegions
                         };
                         core.season.create(firstSeason, function(err, newSeason) { callback(err, variant, game, newSeason); });
                     }
@@ -243,7 +269,7 @@ module.exports = function() {
                             season: variant.seasons[season.season - 1],
                             year: season.year
                         };
-                        
+
                         core.user.list({ ID: player.player_id }, function(err, users) {
                             emailOptions.email = users[0].email;
                             if (player.power === '*')

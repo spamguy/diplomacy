@@ -36,7 +36,7 @@ angular.module('map.directives', ['SVGService'])
         d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
             if (!xml)
                 return;
-                
+
             regionDictionary = _.indexBy(variant.regions, 'r');
 
             // STEP 1: build root <svg> -------------------
@@ -110,9 +110,10 @@ angular.module('map.directives', ['SVGService'])
             var unitGroup = svg.append('g')
                 .attr('id', 'unitGroup');
 
+            // FIXME: Consider and render multiple units in a region.
             unitGroup
                 .selectAll('circle')
-                .data(_.filter(season.regions, function(r) { return r.unit && r.unit.type === 1; }))
+                .data(_.filter(season.regions, function(r) { return r.units && r.units[0].type === 1; }))
                 .enter()
                 .append('circle')
                 .attr('cx', function(d) { return regionDictionary[d.r].x; })
@@ -121,13 +122,14 @@ angular.module('map.directives', ['SVGService'])
                 .attr('stroke-width', '1px')
                 .attr('stroke', '#000')
                 .attr('fill', function(d) {
-                    return variant.powers[d.unit.power].colour;
+                    return variant.powers[d.units[0].power].colour;
                 });
 
+            // FIXME: Consider and render multiple units in a region.
             unitGroup
                 .selectAll('rect')
                 .data(_.filter(season.regions, function(r) {
-                    return r.unit && r.unit.type === 2;
+                    return r.units && r.units[0].type === 2;
                 }))
                 .enter()
                 .append('rect')
@@ -142,7 +144,7 @@ angular.module('map.directives', ['SVGService'])
                 .attr('stroke-width', '1px')
                 .attr('stroke', '#000')
                 .attr('fill', function(d) {
-                    return variant.powers[d.unit.power].colour;
+                    return variant.powers[d.units[0].power].colour;
                 });
             // --------------------------------------------
 
@@ -156,8 +158,8 @@ angular.module('map.directives', ['SVGService'])
                         source: _.defaults(region, { fixed: true }),
                         target: _.defaults(regionDictionary[target], {
                             fixed: true, // to keep d3 from treating this map like a true force graph
-                            action: region.unit.order.action,
-                            failed: region.unit.order.failed
+                            action: region.units[0].order.action,
+                            failed: region.units[0].order.failed
                         })
                     });
                 }

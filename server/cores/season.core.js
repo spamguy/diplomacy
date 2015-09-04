@@ -26,10 +26,7 @@ SeasonCore.prototype.list = function(options, cb) {
     });
 };
 
-SeasonCore.prototype.create = function(season, cb) {
-    // Strip coordinate junk not relevant to individual seasons.
-    season.regions = _.omit(season.regions, _.isNumber);
-    
+SeasonCore.prototype.create = function(season, cb) {    
     var newSeason = mongoose.model('Season')(season);
 
     newSeason.save(function(err, data) { cb(err, data); });

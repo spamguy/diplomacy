@@ -16,7 +16,23 @@
         </div>
     </section>
 
-    <section class="md-whiteframe-z2" flex>
-        <sg-map variant="variant" season="season" arrows="true" readonly="false" />
-    </section>
+    <div layout="row" layout-sm="column">
+        <section class="md-whiteframe-z2" flex="80">
+            <sg-map variant="variant" season="season" arrows="true" readonly="false" />
+        </section>
+
+        <v-accordion class="vAccordion--default" flex="20">
+            <v-pane expanded>
+                <v-pane-header>Your Moves</v-pane-header>
+                <v-pane-content>
+                </v-pane-content>
+            </v-pane>
+
+            <v-pane>
+                <v-pane-header>Your Press</v-pane-header>
+                <v-pane-content>
+                </v-pane-content>
+            </v-pane>
+        </v-accordion>
+    </div>
 </div>

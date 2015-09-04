@@ -10,7 +10,7 @@ angular.module('SVGService', [])
 .factory('SVGService', [function() {
     return {
         getStar: function(callback) {
-            d3.xml('/assets/images/plain14.svg', function(xml) {
+            d3.xml('/assets/icons/plain14.svg', function(xml) {
                 callback(xml.documentElement.firstElementChild);
             });
         }
