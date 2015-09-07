@@ -59,8 +59,31 @@ angular.module('games', [
             auth: ['socketAuthService', function(socketAuthService) {
                 return socketAuthService.getAuthenticatedAsPromise();
             }],
+            user: function(userService) {
+                return userService.getUser(userService.getCurrentUser());
+            },
+            variant: ['gameService', 'game', function(gameService, game) {
+                return gameService.getVariant(game.variant);
+            }],
             game: ['gameService', '$stateParams', function(gameService, $stateParams) {
                 return gameService.getGame($stateParams.id);
+            }],
+            season: ['userService', 'gameService', 'game', function(userService, gameService, game) {
+                // FIXME: This approach is probably totally exploitable. This decision making needs to happen server-side.
+                // Identify whether current player is admin of this game.
+                var playerID = userService.getCurrentUser(),
+                    isAdmin = false;
+                for (var p = 0; p < game.players.length; p++) {
+                    if (game.players[p].power === '*' && game.players[p].player_id === playerID) {
+                        isAdmin = true;
+                        break;
+                    }
+                }
+
+                if (isAdmin)
+                    return gameService.getMoveData(game._id);
+                else
+                    return gameService.getMoveDataForCurrentUser(game._id);
             }]
         }
     });

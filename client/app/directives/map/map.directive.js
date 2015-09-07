@@ -195,30 +195,16 @@ angular.module('map.directives', ['SVGService'])
     return {
         replace: true,
         scope: {
-            variantPromise: '=variant',        // full variant data (JSON)
-            seasonPromise: '=season',          // promise resolving to movement data (JSON)
+            variant: '=variant',               // full variant data (JSON)
+            season: '=season',                 // movement data (JSON)
             readonly: '=readonly',             // whether to allow user interaction (bool)
             arrows: '=arrows'                  // whether to show movement arrows -- true implies season is defined (bool)
         },
         restrict: 'E',
         link: function(scope, element, attrs) {
             element = element[0];
-            var variant = null,
-                season = null;
 
-            scope.$watch('variantPromise', function(variantPromise) {
-                if (variantPromise) {
-                    variantPromise
-                    .then(function(response) {
-                        variant = response;
-                        return scope.seasonPromise;
-                    })
-                    .then(function(response) {
-                        season = response;
-                        generateSVG(variant, season, scope.readonly, element);
-                    });
-                }
-            });
+            generateSVG(scope.variant, scope.season, scope.readonly, element);
         }
     };
 }]);
