@@ -1,13 +1,9 @@
 'use strict';
 
-angular.module('userService', ['LocalStorageModule', 'restangular'])
-.factory('userService', ['localStorageService', 'Restangular', 'socketService', '$q',
-function(localStorageService, Restangular, socketService, $q) {
+angular.module('userService', ['LocalStorageModule'])
+.factory('userService', ['localStorageService', 'socketService', '$q',
+function(localStorageService, socketService, $q) {
     return {
-        userExists: function(username) {
-            return Restangular.one('users', username).customGET('exists');
-        },
-
         isAuthenticated: function() {
             return !!localStorageService.get('token');
         },

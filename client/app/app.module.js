@@ -16,16 +16,16 @@ angular.module('diplomacy', [
     'socketService',
     'socketAuthService'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider', 'RestangularProvider', 'CONST',
-function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, RestangularProvider, CONST) {
-    // material design theme definitions
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider', 'CONST',
+function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, CONST) {
+    // Material design theme definitions.
     $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
         .accentPalette('red', {
             default: '900'
         });
 
-    // icon definitions
+    // Icon definitions.
     $mdIconProvider
         .icon('menu', '/assets/icons/ic_more_vert_24px.svg', 24)
         .icon('addperson', '/assets/icons/ic_person_add_24px.svg', 24)
@@ -37,10 +37,10 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
         .icon('fold-in', '/assets/icons/ic_unfold_less_24px.svg', 24)
         .icon('settings', '/assets/icons/ic_settings_48px.svg', 48);
 
-    // local storage config
+    // Local storage setup.
     localStorageServiceProvider.setPrefix('diplomacy');
 
-    // JWT/auth setup
+    // JWT/auth setup.
     jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$state', '$http', 'userService', function(jwtHelper, $state, $http, userService) {
         var oldToken = userService.getToken();
 
@@ -55,10 +55,7 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
     }];
     $httpProvider.interceptors.push('jwtInterceptor');
 
-    // set API base URL as declared by constants file
-    RestangularProvider.setBaseUrl(CONST.apiEndpoint);
-
-    // hide ugly # in URL
+    // Hide ugly # in URL.
     $locationProvider.html5Mode(true);
 }])
 .run(['$rootScope', 'userService', 'socketService', function ($rootScope, userService, socketService) {
