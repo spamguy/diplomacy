@@ -45,6 +45,10 @@ module.exports = function() {
                 if (err)
                     console.log(err);
             })
+        },
+
+        setorder: function(req, res) {
+            var season = req.data.season;
         }
     });
 };
