@@ -9,6 +9,7 @@ var GameSchema = new mongoose.Schema({
     year: Number,
     season: Number,
     maxPlayers: Number,
+    status: Number,
     players: [{
             _id: false,
             player_id: mongoose.Schema.Types.ObjectId,
@@ -21,12 +22,16 @@ var GameSchema = new mongoose.Schema({
     moveClock: Number,
     retreatClock: Number,
     adjustClock: Number,
-    isActive: Boolean
+    isActive: Boolean,
+    ignoreLateOrders: {
+        type: Boolean,
+        default: false
+    }
 });
 
 GameSchema.virtual('playerCount')
     .get(function() {
-        return this.players.length - 1; // the GM is not a player
+        return this.players.length - 1; // The GM is not a player.
     });
 GameSchema.set('toJSON', { virtuals: true });
 

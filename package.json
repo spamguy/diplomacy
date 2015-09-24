@@ -3,7 +3,7 @@
   "version": "0.0.4",
   "main": "server/server.js",
   "dependencies": {
-    "agenda": "0.6.23",
+    "agenda": "0.6.28",
     "async": "1.4.2",
     "body-parser": "1.5.2",
     "easy-pbkdf2": "~0.1.1",
