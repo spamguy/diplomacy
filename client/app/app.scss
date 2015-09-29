@@ -5,6 +5,7 @@ $am-light-blue-grey: #ECEFF1;
 @import 'main/main.scss';
 @import 'profile/profile.scss';
 @import 'directives/map/map.scss';
+@import 'directives/mapheader/mapheader.scss';
 @import 'directives/gamelistitem/gamelistitem.scss';
 
 @font-face
@@ -23,7 +24,6 @@ html, body
 {
     min-height: 100%;
     height: 100%;
-    background-color: $am-light-blue-grey;
 }
 
 footer

@@ -5,7 +5,7 @@ describe('Map directive', function () {
         el;
 
     beforeEach(function() {
-        module('map.directives');
+        module('map.directive');
     });
 
     beforeEach(function() {
