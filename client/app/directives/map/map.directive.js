@@ -1,5 +1,5 @@
-angular.module('map.directives', ['SVGService'])
-.directive('sgMap', ['$location', 'SVGService', function($location, SVGService) {
+angular.module('map.directive', ['SVGService'])
+.directive('sgMap', ['$location', '$compile', 'SVGService', function($location, $compile, SVGService) {
     'use strict';
 
     var regionDictionary = {};
@@ -25,14 +25,18 @@ angular.module('map.directives', ['SVGService'])
         var failed = d.target.failed ? 'failed' : '';
         return 'url(' + absURL + '#' + failed + d.target.action + ')'; };
 
-    var generateSVG = function(variant, season, readonly, el) {
+    var generateSVG = function(variant, season, readonly, header, el) {
         if (!variant || !season)
             return;
+
+        if (header)
+            angular.element(el).append(header);
 
         absURL = $location.absUrl();
 
         variant = variant.data;
         season = season[0];
+
         d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
             if (!xml)
                 return;
@@ -194,17 +198,23 @@ angular.module('map.directives', ['SVGService'])
 
     return {
         replace: true,
+        template: '<section class="md-whitespace-2"></section>',
         scope: {
-            variant: '=variant',               // full variant data (JSON)
-            season: '=season',                 // movement data (JSON)
-            readonly: '=readonly',             // whether to allow user interaction (bool)
-            arrows: '=arrows'                  // whether to show movement arrows -- true implies season is defined (bool)
+            variant: '=variant',               // Full variant data. (JSON)
+            season: '=season',                 // Movement data. (JSON)
+            header: '=header',                 // Whether to show the header. (bool)
+            readonly: '=readonly',             // Whether to allow user interaction. (bool)
+            arrows: '=arrows'                  // Whether to show movement arrows -- true implies season is defined. (bool)
         },
         restrict: 'E',
         link: function(scope, element, attrs) {
             element = element[0];
+            var headerEl;
 
-            generateSVG(scope.variant, scope.season, scope.readonly, element);
+            if (scope.header)
+                headerEl = $compile('<sg-map-header></sg-map-header>')(scope);
+
+            generateSVG(scope.variant, scope.season, scope.readonly, headerEl, element);
         }
     };
 }]);

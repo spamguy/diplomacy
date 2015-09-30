@@ -1,6 +1,7 @@
 'use strict';
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    timestamp = require('mongoose-timestamp');
 
 var GameSchema = new mongoose.Schema({
     name: String,
@@ -36,6 +37,7 @@ var GameSchema = new mongoose.Schema({
         default: 24
     }
 });
+GameSchema.plugin(timestamp);
 
 GameSchema.virtual('playerCount')
     .get(function() {

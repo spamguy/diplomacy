@@ -5,7 +5,8 @@ var hashOptions = {
 };
 
 var mongoose = require('mongoose'),
-    pbkdf2 = require('easy-pbkdf2')(hashOptions);
+    pbkdf2 = require('easy-pbkdf2')(hashOptions),
+    timestamp = require('mongoose-timestamp');
 
 var UserSchema = new mongoose.Schema({
     password: String,
@@ -15,6 +16,7 @@ var UserSchema = new mongoose.Schema({
     points: Number,
     timezone: Number
 });
+UserSchema.plugin(timestamp);
 
 UserSchema.statics.findByEmailAndToken = function(email, plaintextPassword, cb) {
     if (!email)

@@ -4,48 +4,14 @@
 </div>
 
 <div layout="column" layout-margin>
-    <!-- <section class="md-whiteframe-z2" flex ng-if="isAdmin">
-        <div layout="row" layout-sm="column" flex layout-margin layout-align="center center">
-            <div flex>
-                <h1 class="md-title">You are this game's GM.</h1>
-            </div>
-            <div flex>
-                <md-input-container>
-                    <label>Choose an action...</label>
-                    <md-select>
-                        <md-option value="bootplayer">Boot a player</md-option>
-                        <md-option value="endgame">End this game</md-option>
-                    </md-select>
-                </md-input-container>
-            </div>
-        </div>
-    </section> -->
-
     <div layout="row" layout-sm="column">
-        <div layout="column" flex="75" flex-sm="100">
-            <div layout="row" layout-align="space-between center">
-                <span>My Power</span>
-                <md-button aria-label="Options" class="md-icon-button" ng-click="$mdOpenMenu($event)">
-                    <md-icon md-menu-origin md-svg-icon="settings" style="height:36px;width:36px;"></md-icon>
-                </md-button>
-            </div>
-            <section class="md-whiteframe-z2">
-                <sg-map variant="variant" season="season" arrows="true" readonly="false" />
-            </section>
+        <div layout="column" flex="60" flex-sm="100">
+            <sg-map variant="variant" season="season" arrows="true" header="true" readonly="false" />
         </div>
 
-        <v-accordion class="vAccordion--default" flex="25" flex-sm="100" layout-padding>
-            <v-pane expanded>
-                <v-pane-header>Your Moves</v-pane-header>
-                <v-pane-content>
-                </v-pane-content>
-            </v-pane>
-
-            <v-pane>
-                <v-pane-header>Your Press</v-pane-header>
-                <v-pane-content>
-                </v-pane-content>
-            </v-pane>
-        </v-accordion>
+        <md-tabs flex="40" flex-sm="100" layout-padding md-border-bottom style="border: 1px solid black;">
+            <md-tab label="Orders">
+            </md-tab>
+        </md-tabs>
     </div>
 </div>
