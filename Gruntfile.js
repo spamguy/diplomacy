@@ -5,7 +5,10 @@ module.exports = function(grunt) {
     require('jit-grunt')(grunt, {
         ngconstant: 'grunt-ng-constant',
         express: 'grunt-express-server',
-        protractor: 'grunt-protractor-runner'
+        protractor: 'grunt-protractor-runner',
+        useminPrepare: 'grunt-usemin',
+        ngtemplates: 'grunt-angular-templates',
+        replace: 'grunt-text-replace'
     });
 
     // for smarter date formatting
