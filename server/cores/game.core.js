@@ -88,4 +88,12 @@ GameCore.prototype.addPlayer = function(game, player, cb) {
     );
 };
 
+GameCore.prototype.resetReadyFlag = function(game, cb) {
+    mongoose.model('Game').update(
+        { _id: game._id },
+        { $set: { 'players.isReady': false } },
+        { },
+        cb
+    );
+};
 module.exports = GameCore;

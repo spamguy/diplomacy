@@ -15,7 +15,8 @@ var DiplomacyJudge = require('../judge/judge'),
 
 module.exports = function(agenda, core) {
     function handleLateSeason(game, season) {
-        // TODO: Handle late seasons. Some games
+        // TODO: Begin the grace period countdown.
+        // TODO: Penalize late players.
     }
 
     // Define custom error type.
@@ -49,15 +50,15 @@ module.exports = function(agenda, core) {
                 core.season.create(newSeason, function(err, s) { callback(err, variant, game, season); });
             },
 
-            // Schedules next adjudication and notifies participants.
+            // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.
             function(variant, game, season, callback) {
                 async.each(game.players, function(player, err) {
                     var emailOptions = {
                         gameName: game.name,
                         gameURL: seekrits.DOMAIN + '/games/' + game._id,
-                        subject: '[' + game.name + '] The game is starting!',
+                        subject: '[' + game.name + '] ' + season.season + ' ' + season.year + ' has been adjudicated',
                         deadline: job.nextRunAt,
-                        season: variant.seasons[season.season - 1],
+                        season: season.season,
                         year: season.year
                     };
 
@@ -65,6 +66,8 @@ module.exports = function(agenda, core) {
                         emailOptions.email = users[0].email;
                         mailer.sendOne('adjudication', emailOptions, function(err) { });
                     });
+
+                    core.game.resetReadyFlag(game, function(err, game) { callback(err, variant, game, season); });
                 });
             }
         ], function(err, game, season) {

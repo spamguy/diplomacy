@@ -13,7 +13,11 @@ var GameSchema = new mongoose.Schema({
     players: [{
             _id: false,
             player_id: mongoose.Schema.Types.ObjectId,
-            power: String
+            power: String,
+            isReady: {
+                type: Boolean,
+                default: false
+            }
         }
     ],
     minimumScoreToJoin: Number,
@@ -26,6 +30,10 @@ var GameSchema = new mongoose.Schema({
     ignoreLateOrders: {
         type: Boolean,
         default: false
+    },
+    gracePeriod: {
+        type: Number,
+        default: 24
     }
 });
 
