@@ -25,12 +25,9 @@ angular.module('map.directive', ['SVGService'])
         var failed = d.target.failed ? 'failed' : '';
         return 'url(' + absURL + '#' + failed + d.target.action + ')'; };
 
-    var generateSVG = function(variant, season, readonly, header, el) {
+    var generateSVG = function(variant, season, readonly, el) {
         if (!variant || !season)
             return;
-
-        if (header)
-            angular.element(el).append(header);
 
         absURL = $location.absUrl();
 
@@ -207,14 +204,21 @@ angular.module('map.directive', ['SVGService'])
             arrows: '=arrows'                  // Whether to show movement arrows -- true implies season is defined. (bool)
         },
         restrict: 'E',
+        controllerAs: 'mapController',
+        controller: [function() {
+            this.changeAction = function(action) {
+                console.log(action);
+            };
+        }],
         link: function(scope, element, attrs) {
-            element = element[0];
-            var headerEl;
+            // Add header?
+            if (scope.header) {
+                $compile('<sg-map-header></sg-map-header>')(scope, function(cloned, scope) {
+                    element.append(cloned);
+                });
+            }
 
-            if (scope.header)
-                headerEl = $compile('<sg-map-header></sg-map-header>')(scope);
-
-            generateSVG(scope.variant, scope.season, scope.readonly, headerEl, element);
+            generateSVG(scope.variant, scope.season, scope.readonly, element[0]);
         }
     };
 }]);

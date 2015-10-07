@@ -11,7 +11,6 @@ angular.module('diplomacy', [
     'diplomacy.main',
     'profile',
     'map.directive',
-    'mapheader.directive',
     'gamelistitem.directive',
     'ngMaterial',
     'socketService',

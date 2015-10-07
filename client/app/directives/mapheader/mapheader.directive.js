@@ -1,16 +1,12 @@
-angular.module('mapheader.directive', [])
+angular.module('map.directive')
 .directive('sgMapHeader', [function() {
     'use strict';
 
     return {
         replace: true,
         restrict: 'E',
-        templateUrl: 'app/directives/mapheader/mapheader.tmpl.html',
-        link: ['$scope', '$element', function($scope, $element) {
-
-        }],
-        controller: ['$scope', '$element', function($scope, $element) { // For exposing selected tool to map.directive.js
-
-        }]
+        require: '^sgMap',
+        scope: false,
+        templateUrl: 'app/directives/mapheader/mapheader.tmpl.html'
     };
 }]);
