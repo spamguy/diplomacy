@@ -205,7 +205,7 @@ angular.module('map.directive', ['SVGService'])
         },
         restrict: 'E',
         controllerAs: 'mapController',
-        controller: [function() {
+        controller: ['$scope', function($scope) {
             this.changeAction = function(action) {
                 console.log(action);
             };

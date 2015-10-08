@@ -3,7 +3,7 @@
 angular.module('games', [
     'ui.router',
     'ngMaterial',
-    'vAccordion'
+    'gametools.directive'
 ])
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider
