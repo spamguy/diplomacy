@@ -7,7 +7,8 @@ angular.module('gametools.directive', [])
         restrict: 'E',
         templateUrl: 'app/directives/gametools/gametools.tmpl.html',
         scope: {
-            season: '='
+            season: '=',
+            variant: '='
         },
         link: function(scope, element, attrs) {
             //element.html(scope.)

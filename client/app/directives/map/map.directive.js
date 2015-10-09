@@ -31,7 +31,6 @@ angular.module('map.directive', ['SVGService'])
 
         absURL = $location.absUrl();
 
-        variant = variant.data;
         season = season[0];
 
         d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
