@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('lodash')
+var _ = require('lodash'),
+    async = require('async');
 
 module.exports = function() {
     var app = this.app,
@@ -48,7 +49,7 @@ module.exports = function() {
         },
 
         setorder: function(req, res) {
-            var season = req.data.season;
+            console.log('Setting order for season ' + req.data.seasonID);
         }
     });
 };

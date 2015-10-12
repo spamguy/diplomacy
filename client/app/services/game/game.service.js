@@ -104,6 +104,11 @@ angular.module('gameService', ['userService', 'socketService'])
 
             // no admin found with ID pairing
             return false;
+        },
+
+        publishCommand: function(command, season) {
+            command.seasonID = season._id;
+            socketService.socket.emit('season:setorder', command);
         }
     };
 }]);
