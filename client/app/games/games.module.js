@@ -3,7 +3,8 @@
 angular.module('games', [
     'ui.router',
     'ngMaterial',
-    'gametools.directive'
+    'gametools.directive',
+    'gametoolsprovincelistitem.directive'
 ])
 .config(['$stateProvider', function ($stateProvider) {
     $stateProvider

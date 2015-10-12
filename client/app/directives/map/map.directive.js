@@ -110,10 +110,10 @@ angular.module('map.directive', ['SVGService'])
             var unitGroup = svg.append('g')
                 .attr('id', 'unitGroup');
 
-            // FIXME: Consider and render multiple units in a region.
+            // FIXME: Consider and render bounced units in a region.
             unitGroup
                 .selectAll('circle')
-                .data(_.filter(season.regions, function(r) { return r.units && r.units[0].type === 1; }))
+                .data(_.filter(season.regions, function(r) { return r.unit && r.unit.type === 1; }))
                 .enter()
                 .append('circle')
                 .attr('cx', function(d) { return regionDictionary[d.r].x; })
@@ -122,14 +122,14 @@ angular.module('map.directive', ['SVGService'])
                 .attr('stroke-width', '1px')
                 .attr('stroke', '#000')
                 .attr('fill', function(d) {
-                    return variant.powers[d.units[0].power].colour;
+                    return variant.powers[d.unit.power].colour;
                 });
 
-            // FIXME: Consider and render multiple units in a region.
+            // FIXME: Consider and render bounced units in a region.
             unitGroup
                 .selectAll('rect')
                 .data(_.filter(season.regions, function(r) {
-                    return r.units && r.units[0].type === 2;
+                    return r.unit && r.unit.type === 2;
                 }))
                 .enter()
                 .append('rect')
@@ -144,7 +144,7 @@ angular.module('map.directive', ['SVGService'])
                 .attr('stroke-width', '1px')
                 .attr('stroke', '#000')
                 .attr('fill', function(d) {
-                    return variant.powers[d.units[0].power].colour;
+                    return variant.powers[d.unit.power].colour;
                 });
             // --------------------------------------------
 
@@ -158,8 +158,8 @@ angular.module('map.directive', ['SVGService'])
                         source: _.defaults(region, { fixed: true }),
                         target: _.defaults(regionDictionary[target], {
                             fixed: true, // to keep d3 from treating this map like a true force graph
-                            action: region.units[0].order.action,
-                            failed: region.units[0].order.failed
+                            action: region.unit.order.action,
+                            failed: region.unit.order.failed
                         })
                     });
                 }

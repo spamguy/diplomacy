@@ -11,7 +11,9 @@ angular.module('gametools.directive', [])
             variant: '='
         },
         link: function(scope, element, attrs) {
-            //element.html(scope.)
+            scope.powerOwnsProvince = function(code, province) {
+                return province.unit && province.unit.power === code;
+            };
         }
     };
 }]);

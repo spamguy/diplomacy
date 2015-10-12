@@ -18,7 +18,7 @@
     "moment": "~2.10.2",
     "mongoose": "~4.0.2",
     "mongoose-timestamp": "0.4.0",
-    "nodemailer": "1.5.0",
+    "nodemailer": "1.8.0",
     "nodemailer-wellknown": "0.1.6",
     "passport": "~0.2.1",
     "passport-local": "~1.0.0",
