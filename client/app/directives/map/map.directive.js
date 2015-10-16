@@ -64,7 +64,9 @@ angular.module('map.directive', ['SVGService', 'gameService'])
 
             var season = scope.season[0],
                 variant = scope.variant,
-                readonly = scope.readonly;
+                readonly = scope.readonly,
+                PI = Math.PI,
+                unitWidth = 20;
 
             d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
                 if (!xml)
@@ -168,7 +170,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                     .append('circle')
                     .attr('cx', function(d) { return regionDictionary[d.r].x; })
                     .attr('cy', function(d) { return regionDictionary[d.r].y; })
-                    .attr('r', 10)
+                    .attr('r', unitWidth / 2)
                     .attr('stroke-width', '1px')
                     .attr('stroke', '#000')
                     .attr('fill', function(d) {
@@ -190,12 +192,35 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                         return regionDictionary[d.r].y - 5;
                     })
                     .attr('height', 10)
-                    .attr('width', 20)
+                    .attr('width', unitWidth)
                     .attr('stroke-width', '1px')
                     .attr('stroke', '#000')
                     .attr('fill', function(d) {
                         return variant.powers[d.unit.power].colour;
                     });
+
+                    var holdArc = d3.svg.arc()
+                        .innerRadius(unitWidth)
+                        .outerRadius(unitWidth + 3 + 3)
+                        .startAngle(0)
+                        .endAngle(2 * PI);
+
+                    // Append circles to holding units.
+                    unitGroup
+                        .selectAll('path.hold')
+                        .data(_.filter(season.regions, function(r) {
+                            return r.unit && r.unit.order && r.unit.order.action === 'hold';
+                        }))
+                        .enter()
+                        .append('path')
+                        .attr('class', 'hold')
+                        .attr('d', holdArc)
+                        .attr('transform', function(d) {
+                            var x = regionDictionary[d.r].x,
+                                y = regionDictionary[d.r].y;
+                            return 'translate(' + x + ', ' + y + ')';
+                        });
+
                 // --------------------------------------------
 
                 var links = [];
