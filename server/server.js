@@ -29,8 +29,10 @@ app.agenda = new agenda({
         address: seekrits.mongoURI
     }
 });
-all(__dirname + '/jobs', { each: function(obj) { obj(app.agenda, core); } });
-app.agenda.start();
+app.agenda.on('ready', function() {
+    all(__dirname + '/jobs', { each: function(obj) { obj(app.agenda, core); } });
+    app.agenda.start();
+});
 
 app.http().io();
 

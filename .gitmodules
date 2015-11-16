@@ -1,3 +1,6 @@
 [submodule "variants"]
 	path = variants
 	url = git@github.com:spamguy/diplomacy-variants.git
+[submodule "server/diplomacy-godip"]
+	path = server/diplomacy-godip
+	url = https://github.com/spamguy/diplomacy-godip.git

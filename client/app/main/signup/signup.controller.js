@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('diplomacy.main')
-.controller('SignupController', ['$scope', '$http', 'loginService', function ($scope, $http, loginService) {
+.controller('SignupController', ['$scope', '$http', 'loginService', '$mdToast', function ($scope, $http, loginService, $mdToast) {
     // TODO: force logged-in users out of this page
 
     angular.extend($scope, {
@@ -13,7 +13,16 @@ angular.module('diplomacy.main')
             points: 0,
             timezone: 0,
             save: function() {
-                $http.post('/api/users', this);//.then(loginService.validLoginCallback);
+                $http
+                    .post('/api/users', this)
+                    .then(function(response) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .content('A verification email has been sent.')
+                        );
+                    }, function(response) {
+
+                    });
             }
         }
     });

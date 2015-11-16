@@ -89,7 +89,7 @@ module.exports = function(grunt) {
                 src: [
                     'server/**/*.js',
                     '!server/**/*.spec.js',
-                    '!server/judge/**/*.js'
+                    '!server/diplomacy-godip/**/*.js'
                 ]
             },
             all: [

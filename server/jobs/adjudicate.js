@@ -10,7 +10,7 @@ catch (ex) {
     seekrits = require('../config/local.env.sample');
 }
 
-var DiplomacyJudge = require('../judge/judge'),
+var DiplomacyJudge = require('../diplomacy-godip/diplomacy-godip'),
     mailer = require('../mailer/mailer');
 
 module.exports = function(agenda, core) {
@@ -45,9 +45,9 @@ module.exports = function(agenda, core) {
                     throw new AllPlayersNotReadyError();
 
                 var variant = core.variant.get(game.variant),
-                    newSeason = new DiplomacyJudge(variant).process(season);
+                    nextState = global.state.NextFromJS(variant, season);
 
-                core.season.create(newSeason, function(err, s) { callback(err, variant, game, season); });
+                //core.season.create(newSeason, function(err, s) { callback(err, variant, game, season); });
             },
 
             // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.

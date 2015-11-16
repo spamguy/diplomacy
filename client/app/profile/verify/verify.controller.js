@@ -1,12 +1,19 @@
 'use strict';
 
 angular.module('profile')
-.controller('VerifyController', ['$scope', '$http', 'loginService', '$stateParams', '$state', 'jwtHelper', 'CONST',
-function ($scope, $http, loginService, $stateParams, $state, jwtHelper, CONST) {
+.controller('VerifyController', ['$scope', '$http', 'loginService', '$stateParams', '$state', 'jwtHelper', 'CONST', '$mdToast',
+function ($scope, $http, loginService, $stateParams, $state, jwtHelper, CONST, $mdToast) {
     var verifyToken = $stateParams.token;
 
-    if (jwtHelper.isTokenExpired(verifyToken))
-        $state.go('main.signup', { expired: 1 });
+    if (jwtHelper.isTokenExpired(verifyToken)) {
+        $state.go('main.signup');
+        $mdToast.show(
+            $mdToast.simple()
+                .content('The verification link is invalid or expired.')
+                .action('OK')
+                .hideDelay(false)
+        );
+    }
 
     angular.extend($scope, {
         user: {
