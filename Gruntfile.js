@@ -77,33 +77,14 @@ module.exports = function(grunt) {
 
             }
         },
-        jshint: {
+        eslint: {
             options: {
-                jshintrc: '.jshintrc',
-                reporter: require('jshint-stylish')
             },
-            server: {
-                options: {
-                    jshintrc: 'server/.jshintrc'
-                },
-                src: [
-                    'server/**/*.js',
-                    '!server/**/*.spec.js',
-                    '!server/diplomacy-godip/**/*.js'
-                ]
-            },
-            all: [
-                'client/{app,components}/**/*.js',
-                '!client/{app,components}/**/*.spec.js',
-                '!client/{app,components}/**/*.mock.js'
-            ],
-            test: {
-                src: [
-                    'client/{app,components}/**/*.spec.js',
-                    'client/{app,components}/**/*.mock.js'
-                ]
-            }
-
+            target: [
+                'server/**/*.js',
+                '!server/**/*.spec.js',
+                '!server/diplomacy-godip/**/*.js'
+            ]
         },
         clean: {
             before: {
@@ -296,7 +277,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('build', [
-        'jshint',
+        'eslint',
         'clean:before',
         'ngconstant:prod',
         'preprocess',
@@ -316,7 +297,7 @@ module.exports = function(grunt) {
         'clean:after'
     ]);
 
-    grunt.registerTask('serve', ['jshint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
+    grunt.registerTask('serve', ['eslint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
     grunt.registerTask('test', ['ngconstant:mock', 'karma', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'ngconstant:mock',

@@ -84,10 +84,14 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 var defs = svg.append('svg:defs');
 
                 // Create curved arrow template.
+                var markerDefs = [
+                    { name: 'move', path: 'M0,-5L10,0L0,5' }
+                ]
                 defs.selectAll('marker')
-                    .data(['move', 'support', 'failedmove', 'failedsupport'])      // mapping movement types to CSS classes
-                    .enter().append('svg:marker')
-                    .attr('id', String)
+                    .data(markerDefs)      // mapping movement types to CSS classes
+                    .enter()
+                    .append('svg:marker')
+                    .attr('id', function(d) { return d.name; })
                     .attr('viewBox', '0 -5 10 10')
                     .attr('markerWidth', 6)
                     .attr('markerHeight', 6)
@@ -96,7 +100,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                         return _.startsWith(d, 'failed') ? 'failed' : 'ok';
                     })
                     .append('svg:path')
-                    .attr('d', 'M0,-5L10,0L0,5');
+                    .attr('d', function(d) { return d.path; });
 
                 // Create supply centre template.
                 SVGService.getStar(function(star) {
