@@ -67,7 +67,7 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
         // FIXME: this could probably go somewhere better
         if ($rootScope.isAuthenticated) {
             $rootScope.menuItems = [
-                { sref: 'profile.gamelist', text: 'My games' },
+                { sref: 'profile.games', text: 'My games' },
                 { sref: 'games.new', text: 'Start a new game' },
                 { sref: 'games.list', text: 'Join a game' },
                 { sref: 'main.logout', text: 'Log out' }

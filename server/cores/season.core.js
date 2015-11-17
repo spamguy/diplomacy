@@ -33,4 +33,13 @@ SeasonCore.prototype.create = function(season, cb) {
     newSeason.save(function(err, data) { cb(err, data); });
 };
 
+SeasonCore.prototype.createFromState = function(variant, game, state, cb) {
+    var newSeason = mongoose.model('Season')();
+
+    newSeason.game_id = game._id;
+    newSeason.moves = variant.regions;
+
+    newSeason.save(function(err, data) { cb(err, data); });
+};
+
 module.exports = SeasonCore;

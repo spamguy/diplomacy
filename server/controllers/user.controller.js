@@ -117,8 +117,10 @@ module.exports = function() {
                     core.user.create({
                         tempEmail: email
                     }, function(err, newUser) {
-                        if (!err)
+                        if (!err) {
                             sendVerifyEmail(newUser);
+                            return res.status(201);
+                        }
                         else
                             console.log(err);
                     });

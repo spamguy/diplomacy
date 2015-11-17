@@ -47,7 +47,7 @@ module.exports = function(agenda, core) {
                 var variant = core.variant.get(game.variant),
                     nextState = global.state.NextFromJS(variant, season);
 
-                //core.season.create(newSeason, function(err, s) { callback(err, variant, game, season); });
+                core.season.createFromState(variant, game, nextState, function(err, s) { callback(err, variant, game, season); });
             },
 
             // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.
