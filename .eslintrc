@@ -1,0 +1,12 @@
+{
+    "globals": {
+        "angular": true
+    },
+    "extends": "semistandard",
+    "rules": {
+        "indent": [2, 4],
+        "space-before-function-paren": [2, "never"],
+        "one-var": [2, "always"],
+        "brace-style": [2, "stroustrup", { "allowSingleLine": true }]
+    }
+}

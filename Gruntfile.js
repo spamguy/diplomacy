@@ -256,7 +256,7 @@ module.exports = function(grunt) {
             local: {
                 options: {
                     configFile: 'protractor-local.conf.js'
-                    //,debug: true
+                    // ,debug: true
                 }
             }
         }
@@ -277,7 +277,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('build', [
-        'eslint',
+        //'eslint',
         'clean:before',
         'ngconstant:prod',
         'preprocess',
@@ -297,7 +297,16 @@ module.exports = function(grunt) {
         'clean:after'
     ]);
 
-    grunt.registerTask('serve', ['eslint', 'ngconstant:mongo', 'preprocess', 'wiredep', 'sass', 'express:dev', 'open', 'watch']);
+    grunt.registerTask('serve', [
+        // 'eslint',
+        'ngconstant:mongo',
+        'preprocess',
+        'wiredep',
+        'sass',
+        'express:dev',
+        'open',
+        'watch'
+    ]);
     grunt.registerTask('test', ['ngconstant:mock', 'karma', 'protractor:local']);
     grunt.registerTask('test:protractor-travis', [
         'ngconstant:mock',

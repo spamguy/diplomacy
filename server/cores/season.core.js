@@ -9,13 +9,13 @@ function SeasonCore(options) {
 
 SeasonCore.prototype.list = function(options, cb) {
     options = options || { };
-    var Season = mongoose.model('Season');
-    var query = Season.find(_.pick({
-        '_id': options.ID,
-        'game_id': options.gameID,
-        'year': options.year,
-        'season': options.season
-    }, _.identity));
+    var Season = mongoose.model('Season'),
+        query = Season.find(_.pick({
+            '_id': options.ID,
+            'game_id': options.gameID,
+            'year': options.year,
+            'season': options.season
+        }, _.identity));
 
     query.exec(function(err, seasons) {
         if (err) {

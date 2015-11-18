@@ -17,7 +17,7 @@ angular.module('diplomacy', [
     'socketAuthService'
 ])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider', 'CONST',
-function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, CONST) {
+function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, CONST) {
     // Material design theme definitions.
     $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
@@ -58,8 +58,8 @@ function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, 
     // Hide ugly # in URL.
     $locationProvider.html5Mode(true);
 }])
-.run(['$rootScope', 'userService', 'socketService', function ($rootScope, userService, socketService) {
-    $rootScope.$on('$stateChangeStart', function (event, next) {
+.run(['$rootScope', 'userService', 'socketService', function($rootScope, userService, socketService) {
+    $rootScope.$on('$stateChangeStart', function(event, next) {
         var isRestricted = !!(next.data && next.data.restricted);
 
         $rootScope.isAuthenticated = userService.isAuthenticated();
