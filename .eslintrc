@@ -3,7 +3,8 @@
         "angular": true,
         "inject": true,
         "_": true,
-        "d3": true
+        "d3": true,
+        "io": true
     },
     "extends": "semistandard",
     "env": {

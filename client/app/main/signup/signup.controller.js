@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('diplomacy.main')
-.controller('SignupController', ['$scope', '$http', 'loginService', '$mdToast', function($scope, $http, loginService, $mdToast) {
-    // TODO: force logged-in users out of this page
+.controller('SignupController', ['$scope', '$http', '$state', 'loginService', 'socketService', '$mdToast', function($scope, $http, $state, loginService, socketService, $mdToast) {
+    // Keep logged-in users out of this page.
+    if (socketService.getAuthenticated())
+        $state.go('profile.games');
 
     angular.extend($scope, {
         user: {
-            //username: null,
             password: null,
             password2: null,
             email: null,

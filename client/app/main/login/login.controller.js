@@ -1,23 +1,28 @@
 'use strict';
 
 angular.module('diplomacy.main')
-.controller('LoginController', ['$scope', '$http', 'userService', 'loginService', 'CONST',
-function($scope, $http, userService, loginService, CONST) {
+.controller('LoginController', ['$scope', '$http', 'userService', 'loginService', 'socketService', 'CONST', '$mdToast',
+function($scope, $http, userService, loginService, socketService, CONST, $mdToast) {
     angular.extend($scope, {
         user: {
             email: null,
             password: null,
 
             login: function() {
-                $scope.loginForm.password.$setValidity('validLogin', true);
-                $http.post(CONST.apiEndpoint + '/login', this)
-                .error(function(data, status) {
-                    // clear token
-                    userService.unsetToken();
+                socketService.initialize();
 
-                    $scope.loginForm.password.$setValidity('validLogin', false);
-                })
-                .then(loginService.validLoginCallback);
+                $http.post(CONST.apiEndpoint + '/login', this)
+                .then(
+                    loginService.validLoginCallback,
+                    function(response) {
+                        userService.unsetToken();
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .content(response.data.message)
+                                .action('OK')
+                                .hideDelay(false)
+                        );
+                    });
             }
         }
     });

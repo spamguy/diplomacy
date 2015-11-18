@@ -11,14 +11,15 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
             }
         };
 
-    self.socket = socket;
-
     self.initialize = function() {
         isAuthenticated = false;
 
         self.socket = socket = socketFactory({
             prefix: 'socket/',
-            ioSocket: io.connect(CONST.socketEndpoint, { secure: true })
+            ioSocket: io.connect(CONST.socketEndpoint, {
+                secure: true,
+                query: 'token=' + localStorageService.get('token')
+	    })
         });
 
         // authenticate with JWT before sending actual socket command

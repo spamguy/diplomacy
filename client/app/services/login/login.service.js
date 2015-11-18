@@ -8,14 +8,10 @@ angular.module('loginService', [ ])
 
             userService.setCurrentUser(data.id, data.email);
             userService.setToken(data.token);
+            // subscribe to all associated games after authenticating
+            socketService.socket.emit('game:watch');
 
-            // redirect to profile
-            socketAuthService.getAuthenticatedAsPromise().then(function() {
-                // subscribe to all associated games after authenticating
-                socketService.socket.emit('game:watch');
-
-                $state.go('profile.games');
-            });
+            $state.go('profile.games');
         }
     };
 }]);
