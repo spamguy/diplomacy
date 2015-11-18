@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('games')
-.controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'currentUser', 'variants', function ($scope, gameService, userService, $state, currentUser, variants) {
+.controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'currentUser', 'variants', function($scope, gameService, userService, $state, currentUser, variants) {
     angular.extend($scope, {
         game: {
             name: null,

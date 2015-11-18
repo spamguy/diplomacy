@@ -1,4 +1,4 @@
-describe('UserGamesController', function () {
+describe('UserGamesController', function() {
     'use strict';
     var $q,
         $rootScope,
@@ -53,7 +53,7 @@ describe('UserGamesController', function () {
         spyOn(mockService, 'getVariant').and.callThrough();
     }));
 
-    beforeEach(inject(function ($rootScope, $controller, $q) {
+    beforeEach(inject(function($rootScope, $controller, $q) {
         $scope = $rootScope.$new();
         $controller('UserGamesController', { $scope: $scope, gameService: mockService, games: games });
     }));

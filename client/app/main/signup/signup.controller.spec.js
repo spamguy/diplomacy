@@ -1,5 +1,5 @@
 'use strict';
 
-describe('signup.controller', function () {
+describe('signup.controller', function() {
 
 });

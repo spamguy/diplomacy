@@ -12,15 +12,14 @@ module.exports = function(grunt) {
     });
 
     // for smarter date formatting
-    var moment = require('moment');
-
-    var formatDate = function() {
-        return moment().format('YYYYMMDD');
-    };
+    var moment = require('moment'),
+        formatDate = function() {
+            return moment().format('YYYYMMDD');
+        };
 
     grunt.initConfig({
         // environment variable pkg
-        pkg: grunt.file.readJSON("package.json"),
+        pkg: grunt.file.readJSON('package.json'),
 
         express: {
             dev: {
@@ -42,7 +41,7 @@ module.exports = function(grunt) {
                     spawn: false
                 },
                 files: ['client/**/*.js', 'client/**/*.html'],
-                tasks: [] //all the tasks are run dynamically during the watch event handler
+                tasks: []
             }
         },
         ngconstant: {
@@ -110,7 +109,7 @@ module.exports = function(grunt) {
             }
         },
 
-        // Performs rewrites based on filerev and the useminPrepare configuration
+        // Performs rewrites based on filerev and the useminPrepare configuration.
         usemin: {
             html: ['dist/{,*/}*.html'],
             css: ['dist/styles/{,*/}*.css'],
@@ -175,38 +174,36 @@ module.exports = function(grunt) {
                 src: ['dist/client/*.html'],
                 overwrite: true,
                 replacements: [{
-                        from: '{{VERSION}}',
-                        to: '<%= pkg.version %>'
-                    }, {
-                        from: '{{TIMESTAMP}}',
-                        to: formatDate()
-                    }
-                ]
+                    from: '{{VERSION}}',
+                    to: '<%= pkg.version %>'
+                }, {
+                    from: '{{TIMESTAMP}}',
+                    to: formatDate()
+                }]
             }
         },
         copy: {
             dist: {
                 files: [{
-                        expand: true,
-                        cwd: 'client',
-                        dest: 'dist/client',
-                        src: ['index.html', 'robots.txt', 'assets/**']
-                    }, {
-                        expand: true,
-                        dest: 'dist',
-                        src: [
-                            'server/**/*',
-                            'variants/**/*',
-                            '!server/config/local.env.js',
-                            '!server/judge/node_modules/**/*'
-                        ]
-                    }, {
-                        expand: true,
-                        cwd: '.tmp/concat',
-                        dest: 'dist/client',
-                        src: ['*']
-                    }
-                ]
+                    expand: true,
+                    cwd: 'client',
+                    dest: 'dist/client',
+                    src: ['index.html', 'robots.txt', 'assets/**']
+                }, {
+                    expand: true,
+                    dest: 'dist',
+                    src: [
+                        'server/**/*',
+                        'variants/**/*',
+                        '!server/config/local.env.js',
+                        '!server/judge/node_modules/**/*'
+                    ]
+                }, {
+                    expand: true,
+                    cwd: '.tmp/concat',
+                    dest: 'dist/client',
+                    src: ['*']
+                }]
             }
         },
         htmlmin: {
@@ -262,22 +259,23 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('sauce-connect', 'Launch Sauce Connect', function () {
+    grunt.registerTask('sauce-connect', 'Launch Sauce Connect', function() {
         var done = this.async();
         require('sauce-connect-launcher')({
             username: process.env.SAUCE_USERNAME,
             accessKey: process.env.SAUCE_ACCESS_KEY
-        }, function (err, sauceConnectProcess) {
+        }, function(err, sauceConnectProcess) {
             if (err) {
                 console.error(err.message);
-            } else {
+            }
+            else {
                 done();
             }
         });
     });
 
     grunt.registerTask('build', [
-        //'eslint',
+        // 'eslint',
         'clean:before',
         'ngconstant:prod',
         'preprocess',

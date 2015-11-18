@@ -10,7 +10,7 @@ angular.module('diplomacy.main', [
     'gameService',
     'socketService'
 ])
-.config(['$stateProvider', function ($stateProvider) {
+.config(['$stateProvider', function($stateProvider) {
     $stateProvider
     .state('main', {
         url: '/main',

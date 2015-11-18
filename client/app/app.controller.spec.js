@@ -1,16 +1,17 @@
 'use strict';
 
-describe('AppController', function () {
-	var AppController, scope, httpBackend;
+describe('AppController', function() {
+    var AppController,
+        scope;
 
-	beforeEach(module('diplomacy'));
+    beforeEach(module('diplomacy'));
 
-	beforeEach(inject(function ($controller, $rootScope) {
-		scope = $rootScope.$new();
-		AppController = $controller('AppController', {
-			$scope: scope
-		});
+    beforeEach(inject(function($controller, $rootScope) {
+        scope = $rootScope.$new();
+        AppController = $controller('AppController', {
+            $scope: scope
+        });
 
-		scope.$digest();
-	}));
+        scope.$digest();
+    }));
 });

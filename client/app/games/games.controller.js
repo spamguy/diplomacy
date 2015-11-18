@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('games')
-.controller('GameListController', ['$scope', 'user', 'gameService', function ($scope, user, gameService) {
+.controller('GameListController', ['$scope', 'user', 'gameService', function($scope, user, gameService) {
     $scope.variants = { };
     $scope.user = user; // 'user' has been resolved already; see games.module.js
 

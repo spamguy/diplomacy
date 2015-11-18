@@ -2,7 +2,7 @@
 
 angular.module('diplomacy.main')
 .controller('LoginController', ['$scope', '$http', 'userService', 'loginService', 'CONST',
-function ($scope, $http, userService, loginService, CONST) {
+function($scope, $http, userService, loginService, CONST) {
     angular.extend($scope, {
         user: {
             email: null,

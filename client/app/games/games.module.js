@@ -6,7 +6,7 @@ angular.module('games', [
     'gametools.directive',
     'gametoolsprovincelistitem.directive'
 ])
-.config(['$stateProvider', function ($stateProvider) {
+.config(['$stateProvider', function($stateProvider) {
     $stateProvider
     .state('games', {
         abstract: true,

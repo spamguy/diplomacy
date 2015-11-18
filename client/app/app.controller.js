@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('diplomacy')
-.controller('AppController', ['$rootScope', 'userService', '$state', function ($rootScope, userService, $state) {
+.controller('AppController', ['$rootScope', 'userService', '$state', function($rootScope, userService, $state) {
     $rootScope.isAuthenticated = userService.isAuthenticated();
 
     $rootScope.goSomewhere = function(sref) {

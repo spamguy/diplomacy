@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (config) {
+module.exports = function(config) {
     config.set({
         preprocessors: {
             'client/app/**/*.html': ['ng-html2js']

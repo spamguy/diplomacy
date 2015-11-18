@@ -5,7 +5,7 @@ angular.module('profile', [
     'gameService',
     'ngMaterial'
 ])
-.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
     $stateProvider
     .state('profile', {
         url: '/profile',

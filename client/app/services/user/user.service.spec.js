@@ -1,6 +1,6 @@
 'use strict';
 
-describe('userService', function () {
+describe('userService', function() {
     var $scope,
         userService;
 
@@ -8,7 +8,7 @@ describe('userService', function () {
     beforeEach(module('socketService'));
 
     beforeEach(function() {
-        inject(function ($injector, $rootScope, $compile, $q, $timeout) {
+        inject(function($injector, $rootScope, $compile, $q, $timeout) {
             $scope = $rootScope;
             userService = $injector.get('userService');
         });

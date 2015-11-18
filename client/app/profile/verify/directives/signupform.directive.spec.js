@@ -1,4 +1,4 @@
 'use strict';
 
-describe('Password confirmation directive', function () {
+describe('Password confirmation directive', function() {
 });

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('diplomacy.main')
-.controller('SignupController', ['$scope', '$http', 'loginService', '$mdToast', function ($scope, $http, loginService, $mdToast) {
+.controller('SignupController', ['$scope', '$http', 'loginService', '$mdToast', function($scope, $http, loginService, $mdToast) {
     // TODO: force logged-in users out of this page
 
     angular.extend($scope, {

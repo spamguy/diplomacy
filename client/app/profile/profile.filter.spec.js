@@ -1,4 +1,4 @@
-describe('Profile games filter', function () {
+describe('Profile games filter', function() {
     'use strict';
 
     var filter, mockService;

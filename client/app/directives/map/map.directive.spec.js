@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Map directive', function () {
+describe('Map directive', function() {
     var scope,
         el;
 
@@ -9,7 +9,7 @@ describe('Map directive', function () {
     });
 
     beforeEach(function() {
-        inject(function ($injector, $rootScope, $compile, $q) {
+        inject(function($injector, $rootScope, $compile, $q) {
             scope = $rootScope;
 
             scope.variant = {

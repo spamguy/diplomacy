@@ -1,3 +1,3 @@
-describe('NewGameController', function () {
+describe('NewGameController', function() {
     'use strict';
 });

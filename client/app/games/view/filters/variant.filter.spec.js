@@ -1,4 +1,4 @@
-describe('Game list variant filter', function () {
+describe('Game list variant filter', function() {
     'use strict';
 
     var filter;

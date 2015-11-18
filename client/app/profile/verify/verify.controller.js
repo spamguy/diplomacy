@@ -2,7 +2,7 @@
 
 angular.module('profile')
 .controller('VerifyController', ['$scope', '$http', 'loginService', '$stateParams', '$state', 'jwtHelper', 'CONST', '$mdToast',
-function ($scope, $http, loginService, $stateParams, $state, jwtHelper, CONST, $mdToast) {
+function($scope, $http, loginService, $stateParams, $state, jwtHelper, CONST, $mdToast) {
     var verifyToken = $stateParams.token;
 
     if (jwtHelper.isTokenExpired(verifyToken)) {

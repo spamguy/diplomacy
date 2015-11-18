@@ -1,8 +1,14 @@
 {
     "globals": {
-        "angular": true
+        "angular": true,
+        "inject": true
     },
     "extends": "semistandard",
+    "env": {
+        "jasmine": true,
+        "browser": true,
+        "node": true
+    },
     "rules": {
         "indent": [2, 4],
         "space-before-function-paren": [2, "never"],
