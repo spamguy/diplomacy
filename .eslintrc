@@ -1,7 +1,9 @@
 {
     "globals": {
         "angular": true,
-        "inject": true
+        "inject": true,
+        "_": true,
+        "d3": true
     },
     "extends": "semistandard",
     "env": {

@@ -2,23 +2,31 @@ angular.module('map.directive', ['SVGService', 'gameService'])
 .directive('sgMap', ['$location', '$compile', 'SVGService', 'gameService', function($location, $compile, SVGService, gameService) {
     'use strict';
 
-    var regionDictionary = {};
-
-    var absURL = '';
-
-    var generateCurvedArrow = function(d) {
-        var dx = regionDictionary[d.target.r].x - regionDictionary[d.source.r].x,
-            dy = regionDictionary[d.target.r].y - regionDictionary[d.source.r].y,
-            dr = Math.sqrt(dx * dx + dy * dy);
-
-        return 'M' + regionDictionary[d.source.r].x + ',' + regionDictionary[d.source.r].y + 'A' + dr + ',' + dr + ' 0 0,1 ' + regionDictionary[d.target.r].x + ',' + regionDictionary[d.target.r].y;
-    };
-
-    var generateMarkerEnd = function(d) {
-        // see CSS file for why separate markers exist for failed orders
-        var failed = d.target.failed ? 'failed' : '';
-        return 'url(' + absURL + '#' + failed + d.target.action + ')';
-    };
+    var PI = Math.PI,
+        unitWidth = 20,
+        defs,
+        scGroup,
+        unitGroup,
+        regionDictionary = {},
+        links = [],
+        absURL = '',
+        force,
+        moveGroup,
+        generateMarkerEnd = function(d) {
+            // See CSS file for why separate markers exist for failed orders.
+            var failed = d.target.failed ? 'failed' : '';
+            return 'url(' + absURL + '#' + failed + d.target.action + ')';
+        },
+        tick, // Definition below.
+        markerDefs = [
+            { name: 'move', path: 'M0,-5L10,0L0,5', viewbox: '0 -5 10 10' },
+            { name: 'support', path: 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0', viewbox: '-6 -6 12 12' }
+        ],
+        holdArc = d3.svg.arc()
+            .innerRadius(unitWidth)
+            .outerRadius(unitWidth + 3 + 3)
+            .startAngle(0)
+            .endAngle(2 * PI);
 
     return {
         replace: true,
@@ -64,9 +72,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
 
             var season = scope.season[0],
                 variant = scope.variant,
-                readonly = scope.readonly,
-                PI = Math.PI,
-                unitWidth = 20;
+                readonly = scope.readonly;
 
             d3.xml('variants/' + variant.name + '/' + variant.name + '.svg', 'image/svg+xml', function(xml) {
                 if (!xml)
@@ -81,18 +87,15 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 // --------------------------------------------
 
                 // STEP 2: Build templated items. -------------
-                var defs = svg.append('svg:defs');
+                defs = svg.append('svg:defs');
 
                 // Create curved arrow template.
-                var markerDefs = [
-                    { name: 'move', path: 'M0,-5L10,0L0,5' }
-                ]
                 defs.selectAll('marker')
                     .data(markerDefs)      // mapping movement types to CSS classes
                     .enter()
                     .append('svg:marker')
                     .attr('id', function(d) { return d.name; })
-                    .attr('viewBox', '0 -5 10 10')
+                    .attr('viewBox', function(d) { return d.viewbox; })
                     .attr('markerWidth', 6)
                     .attr('markerHeight', 6)
                     .attr('orient', 'auto')
@@ -145,7 +148,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 // --------------------------------------------
 
                 // STEP 5: Apply supply centre (SC) dot layer.
-                var scGroup = svg.append('g')
+                scGroup = svg.append('g')
                     .attr('id', 'scGroup')
                     .selectAll('path')
                     .data(_.filter(season.regions, function(r) { return !_.isUndefined(r.sc); }))
@@ -156,14 +159,15 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                     .attr('xlink:href', absURL + '#sc')
                     .attr('class', 'sc')
                     .attr('transform', function(d) {
-                        return 'translate(' + regionDictionary[d.r].sc.x + ',' + regionDictionary[d.r].sc.y + ') scale(0.03)'; })
+                        return 'translate(' + regionDictionary[d.r].sc.x + ',' + regionDictionary[d.r].sc.y + ') scale(0.03)';
+                    })
                     .attr('fill', function(d) {
                         return d.sc ? variant.powers[d.sc].colour : '#bbbbbb';
                     });
                 // --------------------------------------------
 
                 // STEP 6: Apply unit marker layer. -----------
-                var unitGroup = svg.append('g')
+                unitGroup = svg.append('g')
                     .attr('id', 'unitGroup');
 
                 // FIXME: Consider and render bounced units in a region.
@@ -203,70 +207,89 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                         return variant.powers[d.unit.power].colour;
                     });
 
-                    var holdArc = d3.svg.arc()
-                        .innerRadius(unitWidth)
-                        .outerRadius(unitWidth + 3 + 3)
-                        .startAngle(0)
-                        .endAngle(2 * PI);
-
-                    // Append circles to holding units.
-                    unitGroup
-                        .selectAll('path.hold')
-                        .data(_.filter(season.regions, function(r) {
-                            return r.unit && r.unit.order && r.unit.order.action === 'hold';
-                        }))
-                        .enter()
-                        .append('path')
-                        .attr('class', 'hold')
-                        .attr('d', holdArc)
-                        .attr('transform', function(d) {
-                            var x = regionDictionary[d.r].x,
-                                y = regionDictionary[d.r].y;
-                            return 'translate(' + x + ', ' + y + ')';
-                        });
+                // Append circles to holding units.
+                unitGroup
+                    .selectAll('path.hold')
+                    .data(_.filter(season.regions, function(r) {
+                        return r.unit && r.unit.order && r.unit.order.action === 'hold';
+                    }))
+                    .enter()
+                    .append('path')
+                    .attr('class', 'hold')
+                    .attr('d', holdArc)
+                    .attr('transform', function(d) {
+                        var x = regionDictionary[d.r].x,
+                            y = regionDictionary[d.r].y;
+                        return 'translate(' + x + ', ' + y + ')';
+                    });
 
                 // --------------------------------------------
 
-                var links = [];
-                var baseNode = { fixed: true };
                 for (var s = 0; s < season.regions.length; s++) {
                     var region = season.regions[s];
                     if (region.unit && region.unit.order && region.unit.order.action) {
                         var target = region.unit.order.y1 || region.unit.order.y2;
-                        links.push({
-                            source: _.defaults(region, { fixed: true }),
-                            target: _.defaults(regionDictionary[target], {
-                                fixed: true, // to keep d3 from treating this map like a true force graph
-                                action: region.unit.order.action,
-                                failed: region.unit.order.failed
-                            })
-                        });
+
+                        if (target) {
+                            links.push({
+                                source: _.defaults(region, { fixed: true }),
+                                target: _.defaults(regionDictionary[target], {
+                                    fixed: true, // to keep d3 from treating this map like a true force graph
+                                    action: region.unit.order.action,
+                                    failed: region.unit.order.failed
+                                })
+                            });
+                        }
                     }
                 }
 
                 if (links.length > 0) {
-                    var force = d3.layout.force()
+                    force = d3.layout.force()
                         .nodes(regionDictionary)
-                        .links(links);
+                        .links(links)
+                        .on('tick', function() {
+                            moveGroup.attr('d', function(d) {
+                                /*
+                                 * Let T -> target, T' -> target of target, and S -> source.
+                                 *
+                                 * The endpoint of this path depends on a) what S intends to do, and b) what T intends to do.
+                                 * If S intends to complement T, and if T' exists, the endpoint should exist somewhere on the T - T' path to indicate the support.
+                                 * In all other cases the target as an endpoint is fine.
+                                 */
 
-                    var moveGroup = svg.append('g')
+                                // TODO: Conditionally add or subtract unitRadiusPlusPadding from tx/ty.
+                                var unitRadiusPlusPadding = (unitWidth / 2) + 5,
+                                    sx = regionDictionary[d.source.r].x,
+                                    sy = regionDictionary[d.source.r].y,
+                                    tx = regionDictionary[d.target.r].x - unitRadiusPlusPadding,
+                                    ty = regionDictionary[d.target.r].y - unitRadiusPlusPadding,
+                                    dx = tx - sx,
+                                    dy = ty - sy,
+                                    action = d.target.action,
+                                    actionOfTarget = 'hold',
+                                    dr;
+
+                                if (action !== 'support' || actionOfTarget !== 'move')
+                                    dr = Math.sqrt(dx * dx + dy * dy)
+
+                                return 'M' + sx + ',' + sy + 'A' + dr + ',' + dr + ' 0 0,1 ' + tx + ',' + ty;
+                            });
+                        });
+                    moveGroup = svg.append('g')
                         .attr('id', 'moveGroup')
                         .selectAll('path')
                         .data(force.links())
-                        .enter();
-
-                    force.start();
-                    for (var i = 20; i > 0; --i) force.tick();
-                    force.stop();
-
-                    moveGroup
+                        .enter()
                         .append('svg:path')
                         .attr('marker-end', generateMarkerEnd)
                         .attr('class', function(d) {
                             var failed = d.target.failed ? 'failed ' : 'ok ';
                             return failed + 'link move';
-                        })
-                        .attr('d', generateCurvedArrow);
+                        });
+
+                    force.start();
+                    for (var i = 20; i > 0; --i) force.tick();
+                    force.stop();
                 }
             });
         }
