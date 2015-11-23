@@ -3,7 +3,8 @@ angular.module('map.directive', ['SVGService', 'gameService'])
     'use strict';
 
     var PI = Math.PI,
-        unitWidth = 20,
+        unitRadius = 10,
+        unitRadiusPlusPadding = unitRadius + 6,
         defs,
         scGroup,
         unitGroup,
@@ -17,16 +18,10 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             var failed = d.target.failed ? 'failed' : '';
             return 'url(' + absURL + '#' + failed + d.target.action + ')';
         },
-        tick, // Definition below.
         markerDefs = [
             { name: 'move', path: 'M0,-5L10,0L0,5', viewbox: '0 -5 10 10' },
-            { name: 'support', path: 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0', viewbox: '-6 -6 12 12' }
-        ],
-        holdArc = d3.svg.arc()
-            .innerRadius(unitWidth)
-            .outerRadius(unitWidth + 3 + 3)
-            .startAngle(0)
-            .endAngle(2 * PI);
+            { name: 'support', path: 'M 0,0m -5,0a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0', viewbox: '-6 -6 12 12' }
+        ];
 
     return {
         replace: true,
@@ -178,7 +173,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                     .append('circle')
                     .attr('cx', function(d) { return regionDictionary[d.r].x; })
                     .attr('cy', function(d) { return regionDictionary[d.r].y; })
-                    .attr('r', unitWidth / 2)
+                    .attr('r', unitRadius)
                     .attr('stroke-width', '1px')
                     .attr('stroke', '#000')
                     .attr('fill', function(d) {
@@ -200,29 +195,12 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                         return regionDictionary[d.r].y - 5;
                     })
                     .attr('height', 10)
-                    .attr('width', unitWidth)
+                    .attr('width', unitRadius * 2)
                     .attr('stroke-width', '1px')
                     .attr('stroke', '#000')
                     .attr('fill', function(d) {
                         return variant.powers[d.unit.power].colour;
                     });
-
-                // Append circles to holding units.
-                unitGroup
-                    .selectAll('path.hold')
-                    .data(_.filter(season.regions, function(r) {
-                        return r.unit && r.unit.order && r.unit.order.action === 'hold';
-                    }))
-                    .enter()
-                    .append('path')
-                    .attr('class', 'hold')
-                    .attr('d', holdArc)
-                    .attr('transform', function(d) {
-                        var x = regionDictionary[d.r].x,
-                            y = regionDictionary[d.r].y;
-                        return 'translate(' + x + ', ' + y + ')';
-                    });
-
                 // --------------------------------------------
 
                 for (var s = 0; s < season.regions.length; s++) {
@@ -254,20 +232,32 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                                  *
                                  * The endpoint of this path depends on a) what S intends to do, and b) what T intends to do.
                                  * If S intends to complement T, and if T' exists, the endpoint should exist somewhere on the T - T' path to indicate the support.
-                                 * In all other cases the target as an endpoint is fine.
+                                 * In all other cases T as an endpoint is fine.
                                  */
 
-                                // TODO: Conditionally add or subtract unitRadiusPlusPadding from tx/ty.
-                                var unitRadiusPlusPadding = (unitWidth / 2) + 5,
-                                    sx = regionDictionary[d.source.r].x,
+                                var sx = regionDictionary[d.source.r].x,
                                     sy = regionDictionary[d.source.r].y,
-                                    tx = regionDictionary[d.target.r].x - unitRadiusPlusPadding,
-                                    ty = regionDictionary[d.target.r].y - unitRadiusPlusPadding,
-                                    dx = tx - sx,
-                                    dy = ty - sy,
+                                    tx = regionDictionary[d.target.r].x,
+                                    ty = regionDictionary[d.target.r].y,
+                                    dx,
+                                    dy,
                                     action = d.target.action,
                                     actionOfTarget = 'hold',
                                     dr;
+
+                                // Figure out a good corner to which to point.
+                                if (sx > tx)
+                                    tx += unitRadiusPlusPadding - 2;
+                                else
+                                    tx -= unitRadiusPlusPadding - 2;
+
+                                if (sy > ty)
+                                    ty -= unitRadiusPlusPadding;
+                                else
+                                    ty += unitRadiusPlusPadding;
+
+                                dx = tx - sx;
+                                dy = ty - sy;
 
                                 if (action !== 'support' || actionOfTarget !== 'move')
                                     dr = Math.sqrt(dx * dx + dy * dy)
@@ -286,6 +276,26 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                             var failed = d.target.failed ? 'failed ' : 'ok ';
                             return failed + 'link move';
                         });
+
+                    // Append circles to units perceived to or actually holding.
+                    moveGroup
+                        .select('circle')
+                        .data(_.filter(season.regions, function(r) {
+                            if (r.unit && r.unit.order) {
+                                if (r.unit.order.action === 'hold')
+                                    return true;
+                                else if (r.unit.order.action === 'support' && !r.unit.order.y2)
+                                    return true;
+                                else
+                                    return false;
+                            }
+                        }))
+                        .enter()
+                        .append('circle')
+                        .attr('class', 'hold')
+                        .attr('cx', function(d) { return regionDictionary[d.r].x; })
+                        .attr('cy', function(d) { return regionDictionary[d.r].y; })
+                        .attr('r', unitRadiusPlusPadding);
 
                     force.start();
                     for (var i = 20; i > 0; --i) force.tick();
