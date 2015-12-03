@@ -66,7 +66,7 @@ module.exports = function(grunt) {
             prod: {
                 constants: {
                     CONST: {
-                        apiEndpoint: 'http://dipl.io/api'
+                        apiEndpoint: 'https://dipl.io/api'
                     }
                 }
             }
@@ -196,7 +196,7 @@ module.exports = function(grunt) {
                         'server/**/*',
                         'variants/**/*',
                         '!server/config/local.env.js',
-                        '!server/judge/node_modules/**/*'
+                        '!server/diplomacy-godip/node_modules/**/*'
                     ]
                 }, {
                     expand: true,

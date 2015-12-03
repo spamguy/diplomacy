@@ -17,7 +17,7 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
 
         self.socket = socket = socketFactory({
             prefix: 'socket/',
-            ioSocket: io.connect('http://localhost:9000')
+            ioSocket: io.connect('https://localhost:9000')
         });
 
         // authenticate with JWT before sending actual socket command
