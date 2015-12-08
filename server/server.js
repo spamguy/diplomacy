@@ -4,10 +4,12 @@ var express = require('express.oi'),
     all = require('require-tree'),
     _ = require('lodash'),
     mongoose = require('mongoose'),
-    agenda = require('agenda');
+    agenda = require('agenda'),
+    fs = require('fs'),
+    path = require('path');
 
-var models = all(__dirname + '/models'),
-    controllers = all(__dirname + '/controllers'),
+var models = all(path.join(__dirname, 'models')),
+    controllers = all(path.join(__dirname, 'controllers')),
     core = require('./cores/index'),
     app = express();
 
@@ -34,7 +36,11 @@ app.agenda.on('ready', function() {
     app.agenda.start();
 });
 
-app.http().io();
+app.https({
+    key: fs.readFileSync(seekrits.certificates.keyPath),
+    cert: fs.readFileSync(seekrits.certificates.certificatePath),
+    ca: fs.readFileSync(seekrits.certificates.caPath)
+}).io();
 
 _.each(controllers, function(controller) {
     controller.apply({

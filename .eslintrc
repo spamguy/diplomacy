@@ -9,12 +9,14 @@
     "env": {
         "jasmine": true,
         "browser": true,
-        "node": true
+        "node": true,
+        "es6": false
     },
     "rules": {
         "indent": [2, 4],
         "space-before-function-paren": [2, "never"],
         "one-var": [2, "always"],
-        "brace-style": [2, "stroustrup", { "allowSingleLine": true }]
+        "brace-style": [2, "stroustrup", { "allowSingleLine": true }],
+        "curly": [2, "multi-or-nest"]
     }
 }
