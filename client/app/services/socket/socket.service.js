@@ -44,7 +44,7 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
         socket.on('game:create:success', function(data) {
             $mdToast.show(
                 $mdToast.simple()
-                    .content('The game ' + data.gamename + ' has been created.')
+                    .textContent('The game ' + data.gamename + ' has been created.')
                     .hideDelay(5000)
             );
         });
@@ -52,7 +52,7 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
         socket.on('game:join:success', function(data) {
             $mdToast.show(
                 $mdToast.simple()
-                    .content('You have joined the game ' + data.gamename + '.')
+                    .textContent('You have joined the game ' + data.gamename + '.')
                     .hideDelay(5000)
             );
         });

@@ -16,10 +16,7 @@ angular.module('diplomacy.main')
                 $http
                     .post('/api/users', this)
                     .then(function(response) {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .content('A verification email has been sent.')
-                        );
+                        $mdToast.showSimple('A verification email has been sent.');
                     }, function(response) {
 
                     });

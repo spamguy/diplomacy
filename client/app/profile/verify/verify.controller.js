@@ -9,7 +9,7 @@ function($scope, $http, loginService, $stateParams, $state, jwtHelper, CONST, $m
         $state.go('main.signup');
         $mdToast.show(
             $mdToast.simple()
-                .content('The verification link is invalid or expired.')
+                .textContent('The verification link is invalid or expired.')
                 .action('OK')
                 .hideDelay(false)
         );
