@@ -2,9 +2,9 @@ angular.module('map.directive', ['SVGService', 'gameService'])
 .directive('sgMap', ['$location', '$compile', 'SVGService', 'gameService', function($location, $compile, SVGService, gameService) {
     'use strict';
 
-    var PI = Math.PI,
-        unitRadius = 10,
+    var unitRadius = 10,
         unitRadiusPlusPadding = unitRadius + 6,
+        evenMorePadding,
         defs,
         scGroup,
         unitGroup,
@@ -13,6 +13,11 @@ angular.module('map.directive', ['SVGService', 'gameService'])
         absURL = '',
         force,
         moveGroup,
+        mouseLayer,
+        region,
+        target,
+        pathLength,
+        midpoint,
         generateMarkerEnd = function(d) {
             // See CSS file for why separate markers exist for failed orders.
             var failed = d.target.failed ? 'failed' : '';
@@ -21,7 +26,8 @@ angular.module('map.directive', ['SVGService', 'gameService'])
         markerDefs = [
             { name: 'move', path: 'M0,-5L10,0L0,5', viewbox: '0 -5 10 10' },
             { name: 'support', path: 'M 0,0m -5,0a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0', viewbox: '-6 -6 12 12' }
-        ];
+        ],
+        s;
 
     return {
         replace: true,
@@ -116,30 +122,32 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 // --------------------------------------------
 
                 // STEP 4: Add clickable region layer. ---------
-                var mouseLayer = svg.append(function() {
-                    return xml.documentElement.firstElementChild; })
-                    .selectAll('path');
+                mouseLayer = svg.append(function() {
+                    return xml.documentElement.firstElementChild;
+                })
+                .selectAll('path');
 
                 // Add events to clickable layer if readonly disabled AND season is unprocessed.
                 // FIXME: Check for processed state.
-                if (!readonly)
+                if (!readonly) {
                     mouseLayer.on('click', function() {
                         console.log(this.id);
                         console.log(scope.currentAction);
 
                         switch (scope.currentAction) {
-                            case 'hold':
-                                // Don't bother retaining clicks or such. Just send the command.
-                                gameService.publishCommand(scope.commandData, season);
+                        case 'hold':
+                            // Don't bother retaining clicks or such. Just send the command.
+                            gameService.publishCommand(scope.commandData, season);
                             break;
-                            case 'move':
+                        case 'move':
                             break;
-                            case 'support':
+                        case 'support':
                             break;
-                            case 'convoy':
+                        case 'convoy':
                             break;
                         }
                     });
+                }
                 // --------------------------------------------
 
                 // STEP 5: Apply supply centre (SC) dot layer.
@@ -203,10 +211,10 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                     });
                 // --------------------------------------------
 
-                for (var s = 0; s < season.regions.length; s++) {
-                    var region = season.regions[s];
+                for (s = 0; s < season.regions.length; s++) {
+                    region = season.regions[s];
                     if (region.unit && region.unit.order && region.unit.order.action) {
-                        var target = region.unit.order.y1 || region.unit.order.y2;
+                        target = region.unit.order.y1 || region.unit.order.y2;
 
                         if (target) {
                             links.push({
@@ -242,27 +250,47 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                                     dx,
                                     dy,
                                     action = d.target.action,
-                                    actionOfTarget = 'hold',
-                                    dr;
+                                    actionOfTarget,
+                                    pathOfTarget,
+                                    dr,
+                                    p;
+
+                                if (d.target) {
+                                    var targetUnit = _.find(season.regions, 'r', d.target.r);
+                                    if (targetUnit.unit && targetUnit.unit.order)
+                                        actionOfTarget = targetUnit.unit.order.action;
+                                }
+
+                                if (action === 'move')
+                                    evenMorePadding = 5;
+                                else
+                                    evenMorePadding = 0;
 
                                 // Figure out a good corner to which to point.
                                 if (sx > tx)
-                                    tx += unitRadiusPlusPadding - 2;
+                                    tx += unitRadiusPlusPadding + evenMorePadding;
                                 else
-                                    tx -= unitRadiusPlusPadding - 2;
+                                    tx -= unitRadiusPlusPadding + evenMorePadding;
 
                                 if (sy > ty)
-                                    ty -= unitRadiusPlusPadding;
+                                    ty -= unitRadiusPlusPadding + evenMorePadding;
                                 else
-                                    ty += unitRadiusPlusPadding;
+                                    ty += unitRadiusPlusPadding + evenMorePadding;
 
                                 dx = tx - sx;
                                 dy = ty - sy;
 
-                                if (action !== 'support' || actionOfTarget !== 'move')
-                                    dr = Math.sqrt(dx * dx + dy * dy)
+                                if (action !== 'support' || actionOfTarget !== 'move') {
+                                    dr = Math.sqrt(dx * dx + dy * dy);
+                                    return 'M' + sx + ',' + sy + 'A' + dr + ',' + dr + ' 0 0,1 ' + tx + ',' + ty;
+                                }
+                                else if (actionOfTarget === 'move') {
+                                    pathOfTarget = svg.select('path#' + d.target.r)[0][0];
+                                    pathLength = pathOfTarget.getTotalLength();
+                                    midpoint = pathOfTarget.getPointAtLength(pathLength / 2);
 
-                                return 'M' + sx + ',' + sy + 'A' + dr + ',' + dr + ' 0 0,1 ' + tx + ',' + ty;
+                                    return 'M' + sx + ',' + sy + 'L' + midpoint.x + ',' + midpoint.y;
+                                }
                             });
                         });
                     moveGroup = svg.append('g')
@@ -275,7 +303,8 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                         .attr('class', function(d) {
                             var failed = d.target.failed ? 'failed ' : 'ok ';
                             return failed + 'link move';
-                        });
+                        })
+                        .attr('id', function(d) { return d.source.r; });
 
                     // Append circles to units perceived to or actually holding.
                     moveGroup

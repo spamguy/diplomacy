@@ -1,4 +1,5 @@
 var async = require('async'),
+    path = require('path'),
     _ = require('lodash');
 
 var seekrits;
@@ -10,7 +11,7 @@ catch (ex) {
     seekrits = require('../config/local.env.sample');
 }
 
-var DiplomacyJudge = require('../diplomacy-godip/diplomacy-godip'),
+var DiplomacyJudge = require(path.join(seekrits.judgePath, 'diplomacy-godip')),
     mailer = require('../mailer/mailer');
 
 module.exports = function(agenda, core) {

@@ -59,7 +59,7 @@ module.exports = function(grunt) {
             mongo: {
                 constants: {
                     CONST: {
-                        apiEndpoint: 'http://localhost/api'
+                        apiEndpoint: 'https://localhost/api'
                     }
                 }
             },
