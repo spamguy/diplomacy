@@ -2,9 +2,10 @@
 
 var _ = require('lodash'),
     pluralize = require('pluralize'),
-    async = require('async');
+    async = require('async'),
+    mailer = require('../mailer/mailer'),
+    seekrits;
 
-var seekrits;
 try {
     seekrits = require('../config/local.env');
 }
@@ -13,18 +14,18 @@ catch (ex) {
         seekrits = require('../config/local.env.sample');
 }
 
-var auth = require('../auth'),
-    mailer = require('../mailer/mailer');
-
 module.exports = function() {
     var app = this.app,
         core = this.core,
         initRegions = function(variant) {
-            var regions = [];
+            var regions = [],
+                vr,
+                region,
+                baseRegion;
 
-            for (var vr = 0; vr < variant.regions.length; vr++) {
-                var region = variant.regions[vr],
-                    baseRegion = { r: region.r };
+            for (vr = 0; vr < variant.regions.length; vr++) {
+                region = variant.regions[vr];
+                baseRegion = { r: region.r };
 
                 if (region.default) { // Add a SC marker, colour it, and put the default unit there.
                     baseRegion.sc = region.default.power;
@@ -46,20 +47,26 @@ module.exports = function() {
     app.io.route('game', {
         userlist: function(req, res) {
             var options = { playerID: req.data.playerID };
-            var games = core.game.list(options, function(err, games) {
+            core.game.list(options, function(err, games) {
+                if (err)
+                    console.error(err);
                 return res.json(games);
             });
         },
 
         list: function(req, res) {
-            var options = { gameID: req.data.gameID },
-                games = core.game.list(options, function(err, games) {
+            var options = { gameID: req.data.gameID };
+            core.game.list(options, function(err, games) {
+                if (err)
+                    console.error(err);
                 return res.json(games);
             });
         },
 
         listopen: function(req, res) {
-            var games = core.game.listOpen({ }, function(err, games) {
+            core.game.listOpen({ }, function(err, games) {
+                if (err)
+                    console.error(err);
                 return res.json(games);
             });
         },
@@ -70,24 +77,36 @@ module.exports = function() {
                 prefs = req.data.prefs;
 
             core.user.list({ ID: playerID }, function(err, players) {
+                if (err)
+                    console.error(err);
                 var player = players[0];
+
                 core.game.list({ gameID: gameID }, function(err, games) {
-                    var game = games[0];
-                    // make sure this person is actually allowed to join
-                    if (game.minimumScoreToJoin > player.points)
+                    if (err)
+                        console.error(err);
+                    var game = games[0],
+                        newPlayer;
+
+                    // Make sure this person is actually allowed to join.
+                    if (game.minimumScoreToJoin > player.points) {
                         req.socket.emit('game:join:error', {
                             error: 'Your dedication score of ' + player.points + ' does not meet this game\'s minimum requirement of ' + game.minimumScoreToJoin + ' to join.'
                         });
-                    else if (_.find(game.players, _.matchesProperty('player_id', playerID.toString())))
+                    }
+                    else if (_.find(game.players, _.matchesProperty('player_id', playerID.toString()))) {
                         req.socket.emit('game:join:error', {
                             error: 'You already are participating in this game.'
                         });
+                    }
 
                     // Join.
-                    var newPlayer = { player_id: playerID };
+                    newPlayer = { player_id: playerID };
                     if (prefs)
                         newPlayer.prefs = prefs;
                     core.game.addPlayer(game, newPlayer, function(err) {
+                        if (err)
+                            console.log(err);
+
                         // Subscribe to game.
                         req.socket.join(gameID);
 
@@ -101,30 +120,32 @@ module.exports = function() {
                              * game.playerCount hasn't been updated yet, so manually add 1.
                              */
                             var emailOptions = {
-                                subject: '[' + game.name + '] A new player has joined',
-                                gameName: game.name,
-                                personInflection: pluralize('person', game.maxPlayers - game.playerCount),
-                                playerCount: game.playerCount + 1,
-                                remainingSlots: game.maxPlayers - game.playerCount + 1
-                            };
+                                    subject: '[' + game.name + '] A new player has joined',
+                                    gameName: game.name,
+                                    personInflection: pluralize('person', game.maxPlayers - game.playerCount),
+                                    playerCount: game.playerCount + 1,
+                                    remainingSlots: game.maxPlayers - game.playerCount + 1
+                                },
+                                playerFetchCallback = function(err, user) {
+                                    emailOptions.email = user[0].email;
+                                    mailer.sendOne('join', emailOptions, function(err) {
+                                        if (err)
+                                            console.error(err);
+                                    });
+                                },
+                                p,
+                                gameData;
 
-                            // fetch email addresses of subscribed players
-                            // TODO: rewrite with async()
-                            var playerFetchCallback = function(err, user) {
-                                emailOptions.email = user[0].email;
-                                mailer.sendOne('join', emailOptions, function(err) {
-                                    if (err)
-                                        console.error(err);
-                                });
-                            };
-                            for (var p = 0; p < game.players.length; p++) {
+                            // Fetch email addresses of subscribed players.
+                            // TODO: Rewrite with async.
+                            for (p = 0; p < game.players.length; p++) {
                                 core.user.list({
                                     ID: game.players[p].player_id
                                 }, playerFetchCallback);
                             }
 
-                            // broadcast join to other subscribers
-                            var gameData = { gamename: game.name };
+                            // Broadcast join to other subscribers.
+                            gameData = { gamename: game.name };
                             req.socket.emit('game:join:success', gameData);
                             req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
                         }
@@ -200,13 +221,15 @@ module.exports = function() {
 
                 // Creates first season if previous step pulled up nothing.
                 function(game, seasons, callback) {
-                    var variant = core.variant.get(game.variant);
+                    var variant = core.variant.get(game.variant),
+                        defaultRegions,
+                        firstSeason;
                     if (!seasons || !seasons.length) {
                         // Init regions.
-                        var defaultRegions = initRegions(variant);
+                        defaultRegions = initRegions(variant);
 
                         // Create first season.
-                        var firstSeason = {
+                        firstSeason = {
                             year: variant.startYear,
                             season: 1,
                             game_id: game._id,
@@ -224,10 +247,12 @@ module.exports = function() {
                 function(variant, game, season, callback) {
                     // TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
                     var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
-                        shuffledSetIndex = 0;
+                        shuffledSetIndex = 0,
+                        p,
+                        player;
 
-                    for (var p = 0; p < game.players.length; p++) {
-                        var player = game.players[p];
+                    for (p = 0; p < game.players.length; p++) {
+                        player = game.players[p];
 
                         if (player.power !== '*') {
                             player.power = shuffledSetOfPowers[shuffledSetIndex];
@@ -241,24 +266,26 @@ module.exports = function() {
 
                 // Schedule adjudication and send out emails.
                 function(variant, game, season, callback) {
-                    var clock;
+                    var clock,
+                        job;
+
                     switch (season.season) {
-                        // (move)
-                        case 1:
-                        case 3:
-                            clock = game.moveClock;
-                            break;
-                        // (retreat)
-                        case 2:
-                        case 4:
-                            clock = game.retreatClock;
-                            break;
-                        // (build)
-                        case 5:
-                            clock = game.adjustClock;
-                            break;
+                    // (move)
+                    case 1:
+                    case 3:
+                        clock = game.moveClock;
+                        break;
+                    // (retreat)
+                    case 2:
+                    case 4:
+                        clock = game.retreatClock;
+                        break;
+                    // (build)
+                    case 5:
+                        clock = game.adjustClock;
+                        break;
                     }
-                    var job = app.agenda.schedule(clock + ' hours', 'adjudicate', { seasonID: season._id });
+                    job = app.agenda.schedule(clock + ' hours', 'adjudicate', { seasonID: season._id });
 
                     async.each(game.players, function(player, err) {
                         var emailOptions = {
