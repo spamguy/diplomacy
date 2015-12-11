@@ -21,18 +21,37 @@ module.exports = function() {
             var regions = [],
                 vr,
                 region,
-                baseRegion;
+                baseRegion,
+                subregion,
+                sr;
 
             for (vr = 0; vr < variant.regions.length; vr++) {
                 region = variant.regions[vr];
                 baseRegion = { r: region.r };
 
+                // Add subregions.
+                if (region.sr) {
+                    baseRegion.sr = [];
+                    for (sr = 0; sr < region.sr.length; sr++)
+                        baseRegion.sr.push({ r: region.sr[sr].r });
+                }
+
                 if (region.default) { // Add a SC marker, colour it, and put the default unit there.
-                    baseRegion.sc = region.default.power;
-                    baseRegion.units = [{
-                        power: region.default.power,
-                        type: region.default.type
-                    }];
+                    if (region.default.sr) {
+                        subregion = _.find(region.sr, 'r', region.default.sr);
+                        subregion.sc = region.default.power;
+                        subregion.unit = {
+                            power: region.default.power,
+                            type: region.default.type
+                        };
+                    }
+                    else {
+                        baseRegion.sc = region.default.power;
+                        baseRegion.unit = {
+                            power: region.default.power,
+                            type: region.default.type
+                        };
+                    }
                 }
                 else if (region.sc) { // Add an uncoloured SC marker.
                     baseRegion.sc = null;
