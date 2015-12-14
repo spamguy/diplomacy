@@ -131,21 +131,28 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 // FIXME: Check for processed state.
                 if (!readonly) {
                     mouseLayer.on('click', function() {
-                        console.log(this.id);
-                        console.log(scope.currentAction);
+                        scope.commandData.push(this.id);
 
                         switch (scope.currentAction) {
                         case 'hold':
-                            // Don't bother retaining clicks or such. Just send the command.
-                            gameService.publishCommand(scope.commandData, season);
+                            // Don't bother retaining clicks or such. Just continue on to send the command.
                             break;
                         case 'move':
+                            // Source, target.
+                            if (scope.commandData.length < 2)
+                                return;
                             break;
                         case 'support':
+                            // Source, target, target of target.
+                            if (scope.commandData.length < 3)
+                                return;
                             break;
                         case 'convoy':
                             break;
                         }
+
+                        // Making it this far means there is a full set of commands to publish.
+                        gameService.publishCommand(scope.commandData, season);
                     });
                 }
                 // --------------------------------------------
@@ -252,8 +259,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                                     action = d.target.action,
                                     actionOfTarget,
                                     pathOfTarget,
-                                    dr,
-                                    p;
+                                    dr;
 
                                 if (d.target) {
                                     var targetUnit = _.find(season.regions, 'r', d.target.r);
