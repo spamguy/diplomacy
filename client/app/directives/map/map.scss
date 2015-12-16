@@ -54,3 +54,18 @@ g.mouseLayer path
         cursor: pointer;
     }
 }
+
+h1.notStarted
+{
+    
+}
+
+h1.started
+{
+    display: none;
+}
+
+section.notStarted
+{
+    opacity: 0.3;
+}

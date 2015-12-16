@@ -119,6 +119,10 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                     .attr('xlink:href', 'variants/' + variant.name + '/' + variant.name + '.png')
                     .attr('width', '100%')
                     .attr('height', '100%');
+
+                // If there is no season data (e.g., the game hasn't started yet), stop here.
+                if (!season)
+                    return;
                 // --------------------------------------------
 
                 // STEP 4: Add clickable region layer. ---------
