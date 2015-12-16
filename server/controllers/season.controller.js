@@ -45,11 +45,28 @@ module.exports = function() {
             core.season.create(season, function(err, savedSeason) {
                 if (err)
                     console.log(err);
-            })
+            });
         },
 
         setorder: function(req, res) {
             console.log('Setting order for season ' + req.data.seasonID);
+        },
+
+        toggleready: function(req, res) {
+            var isReady = req.data.isReady,
+                playerID = req.data.playerID,
+                gameID = req.data.gameID;
+            console.log('Player ' + playerID + ' has set ready flag to ' + isReady + ' in game ' + gameID);
+
+            core.season.setReadyState(playerID, isReady, gameID, function(err, isEverybodyReady) {
+                if (err)
+                    console.log(err);
+
+                // IS EVERYBODY READY?!
+                if (isEverybodyReady) {
+                    // TODO: Schedule near-immediate adjudication.
+                }
+            });
         }
     });
 };
