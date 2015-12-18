@@ -1,14 +1,25 @@
 <div layout="column" layout-margin>
     <md-tabs md-dynamic-height md-border-bottom>
-        <md-tab label="Playing">
-            <div layout="column" layout-margin>
-                <sg-game-list-item ng-repeat="game in playingList = (playing | gmStatus:false)" game="game" variant="variants[game.variant]" joinable="false" user="user" />
-            </div>
+        <md-tab label="Active Games">
+            <md-list>
+                <md-list-item ng-repeat="game in playingList = (playing | gmStatus:false)">
+                    <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+                </md-list-item>
+            </md-list>
+        </md-tab>
+        <md-tab label="Inactive Games">
+            <md-list>
+                <md-list-item ng-repeat="game in playingList = (playing | gmStatus:false)">
+                    <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+                </md-list-item>
+            </md-list>
         </md-tab>
         <md-tab label="Mastering">
-            <div layout="column" layout-margin>
-                <sg-game-list-item ng-repeat="game in playingList = (playing | gmStatus:true)" game="game" variant="variants[game.variant]" joinable="false" user="user" />
-            </div>
+            <md-list>
+                <md-list-item ng-repeat="game in playingList = (playing | gmStatus:true)">
+                    <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+                </md-list-item>
+            </md-list>
         </md-tab>
         <md-tab label="Completed">
             <div layout="column" layout-margin>

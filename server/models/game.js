@@ -1,17 +1,16 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    timestamp = require('mongoose-timestamp');
-
-var GameSchema = new mongoose.Schema({
-    name: String,
-    description: String,
-    variant: String,
-    year: Number,
-    season: Number,
-    maxPlayers: Number,
-    status: Number,
-    players: [{
+    timestamp = require('mongoose-timestamp'),
+    GameSchema = new mongoose.Schema({
+        name: String,
+        description: String,
+        variant: String,
+        year: Number,
+        season: Number,
+        maxPlayers: Number,
+        status: Number,
+        players: [{
             _id: false,
             player_id: mongoose.Schema.Types.ObjectId,
             power: String,
@@ -19,24 +18,23 @@ var GameSchema = new mongoose.Schema({
                 type: Boolean,
                 default: false
             }
+        }],
+        minimumScoreToJoin: Number,
+        password: String,
+        passwordsalt: String,
+        moveClock: Number,
+        retreatClock: Number,
+        adjustClock: Number,
+        ignoreLateOrders: {
+            type: Boolean,
+            default: false
+        },
+        gracePeriod: {
+            type: Number,
+            default: 24
         }
-    ],
-    minimumScoreToJoin: Number,
-    password: String,
-    passwordsalt: String,
-    moveClock: Number,
-    retreatClock: Number,
-    adjustClock: Number,
-    isActive: Boolean,
-    ignoreLateOrders: {
-        type: Boolean,
-        default: false
-    },
-    gracePeriod: {
-        type: Number,
-        default: 24
-    }
-});
+    });
+
 GameSchema.plugin(timestamp);
 
 GameSchema.virtual('playerCount')

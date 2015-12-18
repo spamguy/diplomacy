@@ -1,7 +1,9 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    NOT_STARTED = 0,
+    STOPPED = 2;
 
 function GameCore(options) {
     this.core = options.core;
@@ -9,12 +11,12 @@ function GameCore(options) {
 
 GameCore.prototype.list = function(options, cb) {
     options = options || { };
-    var Game = mongoose.model('Game');
-    var query = Game.find(_.pick({
-        '_id': options.gameID,
-        'players.player_id': options.playerID,
-        'isActive': options.isActive
-    }, _.identity));
+    var Game = mongoose.model('Game'),
+        query = Game.find(_.pick({
+            '_id': options.gameID,
+            'players.player_id': options.playerID,
+            'status': options.status
+        }, _.identity));
 
     query.exec(function(err, games) {
         if (err) {
@@ -28,9 +30,9 @@ GameCore.prototype.list = function(options, cb) {
 
 GameCore.prototype.listOpen = function(options, cb) {
     options = options || { };
-    var Game = mongoose.model('Game');
-    var query = Game.find({ isActive: true })
-        .where('this.players.length - 1 < this.maxPlayers');
+    var Game = mongoose.model('Game'),
+        query = Game.find({ status: { $in: ['0', STOPPED] } })
+                    .where('this.players.length - 1 < this.maxPlayers');
 
     query.exec(function(err, games) {
         if (err) {
@@ -53,11 +55,10 @@ GameCore.prototype.create = function(options, cb) {
         retreatClock: options.retreat.clock,
         adjustClock: options.adjust.clock,
         players: [{
-                player_id: options.playerID,
-                power: '*'
-            }
-        ],
-        isActive: true
+            player_id: options.playerID,
+            power: '*'
+        }],
+        status: 0
     });
 
     // generate password hash

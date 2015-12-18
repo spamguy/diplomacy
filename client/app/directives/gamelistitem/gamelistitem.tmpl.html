@@ -1,28 +1,4 @@
-<div layout="column" layout-margin class="md-whiteframe-z2 gameItem">
-    <div layout="row" layout-align="space-between" flex layout-margin>
-        <div flex="90" ng-click="goToGame()">
-            <h3 class="md-title" style="margin: 0 auto">{{game.name}}</h3>
-            <span class="statusMessage" ng-class="{'alert':joinable && !canJoinGame()}">{{statusMessage}}</span>
-        </div>
-        <div flex="5" layout="row" layout-align="end">
-            <md-button class="md-icon-button" md-no-ink ng-click="toggleGameDetails(game._id)" aria-label="Toggle game listing">
-                <md-icon md-svg-icon="fold-out" /> <!-- TODO: Toggle icon to fold-in on click -->
-            <md-button>
-        </div>
-    </div>
+<div>
+    <h3 class="md-title">{{game.name}}</h3>
     <md-divider></md-divider>
-    <div layout="column" layout-align="space-between" flex class="detailViewTransformation" ng-class="{'minified':!expandState, 'maxified':expandState}">
-        <div>
-            <div layout="column">
-                <div id="variantDescription"><strong>Variant:</strong> {{game.variant}}</div>
-                <div id="movementDescription"><strong>Movement phases:</strong> {{movementDescription}}</div>
-            </div>
-            <div>
-                <!-- TODO: Minimap here -->
-            </div>
-        </div>
-        <div ng-if="joinable" layout="row" layout-align="center center">
-            <md-button class="md-raised md-primary" ng-click="showJoinDialog()" aria-label="{{getJoinLabel()}}" ng-disabled="!canJoinGame()">{{getJoinLabel()}}</md-button>
-        </div>
-    </div>
 </div>

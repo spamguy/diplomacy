@@ -193,9 +193,11 @@ module.exports = function() {
             // Get list of subscribed games and join them as socket.io rooms.
             core.game.list({
                 gameID: gameID,
-                playerID: userID,
-                isActive: true
+                playerID: userID
             }, function(err, games) {
+                if (err)
+                    console.error(err);
+
                 for (var g = 0; g < games.length; g++) {
                     req.socket.join(games[g]._id);
                     console.log(userID + ' joined game room ' + games[g]._id);

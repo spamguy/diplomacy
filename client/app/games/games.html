@@ -1,8 +1,10 @@
-<div layout="row" layout-sm="column">
+<div layout="row" layout-sm="column" layout-margin>
     <div flex="80" flex-sm="100" flex-order-sm="2" flex-order="1">
-        <div layout="column" layout-margin>
-            <sg-game-list-item ng-repeat="game in games" game="game" variant="variants[game.variant]" joinable="true" user="user" />
-        </div>
+        <md-list>
+            <md-list-item ng-repeat="game in games">
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="true" user="user" />
+            </md-list-item>
+        </md-list>
     </div>
     <div flex="20" flex-order-sm="1" flex-order="2">
         <md-select placeholder="Variant" ng-model="variantFilter">
