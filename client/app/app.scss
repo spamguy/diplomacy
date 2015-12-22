@@ -24,6 +24,10 @@ html, body
 {
     min-height: 100%;
     height: 100%;
+    background-image: url('../assets/icons/background.png');
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: -130px -130px;
 }
 
 footer
@@ -39,25 +43,13 @@ footer
     display: block;
 }
 
-md-toolbar
+span.logo
 {
+    font-family: 'Sears Tower Regular';
+    text-transform: lowercase;
     padding-left: 10px;
-    padding-right: 10px;
-    span.logo
-    {
-        font-family: 'Sears Tower Regular';
-        text-transform: lowercase;
-        //background: -webkit-linear-gradient(top, $rl-tan, #794B52);
-        //background: linear-gradient(top, $rl-tan, $rl-red);
-        //-webkit-background-clip: text;
-        //-webkit-text-fill-color: transparent;
-        font-size: 36pt;
-    }
-}
-
-section.md-whiteframe-z2
-{
-    background-color: #fff;
+    font-size: 24pt;
+    color: #fff;
 }
 
 .tab-pane
