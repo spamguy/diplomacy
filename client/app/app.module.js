@@ -20,7 +20,9 @@ angular.module('diplomacy', [
 function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider, CONST) {
     // Material design theme definitions.
     $mdThemingProvider.theme('default')
-        .primaryPalette('blue-grey')
+        .primaryPalette('indigo', {
+            default: '400'
+        })
         .accentPalette('red', {
             default: '900'
         });
@@ -64,22 +66,6 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
         var isRestricted = !!(next.data && next.data.restricted);
 
         $rootScope.isAuthenticated = userService.isAuthenticated();
-
-        // FIXME: this could probably go somewhere better
-        if ($rootScope.isAuthenticated) {
-            $rootScope.menuItems = [
-                { sref: 'profile.games', text: 'My games' },
-                { sref: 'games.new', text: 'Start a new game' },
-                { sref: 'games.list', text: 'Join a game' },
-                { sref: 'main.logout', text: 'Log out' }
-            ];
-        }
-        else {
-            $rootScope.menuItems = [
-                { sref: 'main.login', text: 'Log in' },
-                { sref: 'main.signup', text: 'Register' }
-            ];
-        }
 
         // if page is restricted and auth is bad, block entry to route
         if (isRestricted && !userService.isAuthenticated()) {

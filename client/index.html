@@ -14,27 +14,14 @@
     <!-- endbuild -->
 </head>
 <body ng-controller="AppController" layout="column">
-    <span class="logo">dipl.io</span>
-    <!-- <md-toolbar>
+    <md-toolbar style="background-color: transparent">
         <div class="md-toolbar-tools">
             <span class="logo">dipl.io</span>
-
             <span flex></span>
-
-            <md-menu id="navButton" md-position-mode="target-right target" md-offset="0 -50">
-                <md-button aria-label="Options" class="md-icon-button" ng-click="$mdOpenMenu($event)">
-                    <md-icon md-menu-origin md-svg-icon="settings" style="height:36px;width:36px;"></md-icon>
-                </md-button>
-                <md-menu-content>
-                    <md-menu-item ng-repeat="item in menuItems">
-                        <md-button ng-click="goSomewhere(item.sref)">
-                            <span md-menu-align-target>{{item.text}}</span>
-                        </md-button>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
+            <md-button class="md-raised md-primary" aria-label="Log In" ui-sref="main.login" ng-if="!isAuthenticated">Log In</md-button>
+            <md-button class="md-raised md-primary" aria-label="Sign Up" ui-sref="main.signup" ng-if="!isAuthenticated">Sign Up</md-button>
         </div>
-    </md-toolbar> -->
+    </md-toolbar>
 
     <div layout="column" layout-fill>
         <div style="margin-top:10px;">
