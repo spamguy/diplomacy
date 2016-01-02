@@ -6,11 +6,8 @@ angular.module('loginService', [ ])
         validLoginCallback: function(data) {
             data = data.data; // data? data!
 
-            userService.setCurrentUser(data.id);
+            userService.setCurrentUser(data.id, data.email);
             userService.setToken(data.token);
-
-            // with a token in hand now, authenticate with socket.io
-            //socketService.initialize();
 
             // redirect to profile
             socketAuthService.getAuthenticatedAsPromise().then(function() {

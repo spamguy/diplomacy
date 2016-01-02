@@ -3,13 +3,10 @@
 angular.module('diplomacy')
 .controller('AppController', ['$rootScope', 'userService', '$state', function($rootScope, userService, $state) {
     $rootScope.isAuthenticated = userService.isAuthenticated();
-
-    $rootScope.goSomewhere = function(sref) {
-        $state.go(sref);
-    };
+    $rootScope.userEmail = userService.getCurrentUserEmail();
 
     $rootScope.logOut = function() {
-        // TODO: delete user from local storage
+        // TODO: Delete user/user email from local storage.
         userService.unsetToken();
         $state.go('main.home');
     };

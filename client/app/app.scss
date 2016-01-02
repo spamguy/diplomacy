@@ -51,6 +51,13 @@ span.logo
     color: #fff;
 }
 
+span.email
+{
+    font-family: 'Sears Tower Regular';
+    color: #000;
+    font-size: 14pt;
+}
+
 .tab-pane
 {
     padding: 0 10px 10px 10px;
@@ -73,11 +80,8 @@ h1.md-display-1, h1.md-display-2, h1.md-display-3
     line-height: 12px;
 }
 
-// mixins
-%vertical-align {
-  position: relative;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+button.svg48px md-icon
+{
+    height: 48px;
+    width: 48px;
 }

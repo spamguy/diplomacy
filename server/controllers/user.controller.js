@@ -85,6 +85,7 @@ module.exports = function() {
 
                 return res.json({
                     id: user._id,
+                    email: user.email,
                     token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
                 });
             });

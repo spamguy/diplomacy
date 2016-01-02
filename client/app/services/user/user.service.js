@@ -24,8 +24,13 @@ function(localStorageService, socketService, $q) {
             return localStorageService.get('currentUser');
         },
 
-        setCurrentUser: function(userID) {
+        getCurrentUserEmail: function() {
+            return localStorageService.get('currentUserEmail');
+        },
+
+        setCurrentUser: function(userID, userEmail) {
             localStorageService.set('currentUser', userID);
+            localStorageService.set('currentUserEmail', userEmail);
         },
 
         getUser: function(userID) {
@@ -36,6 +41,6 @@ function(localStorageService, socketService, $q) {
                     resolve(users[0]);
                 });
             });
-        },
+        }
     };
 }]);
