@@ -31,7 +31,7 @@ GameCore.prototype.list = function(options, cb) {
 GameCore.prototype.listOpen = function(options, cb) {
     options = options || { };
     var Game = mongoose.model('Game'),
-        query = Game.find({ status: { $in: ['0', STOPPED] } })
+        query = Game.find({ status: { $in: [NOT_STARTED, STOPPED] } })
                     .where('this.players.length - 1 < this.maxPlayers');
 
     query.exec(function(err, games) {

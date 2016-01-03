@@ -1,35 +1,42 @@
 'use strict';
 
 angular.module('profile')
-    .controller('UserGamesController', ['$scope', '$http', 'gameService', 'games', function($scope, $http, gameService, games) {
-        $scope.selectedIndex = 0;
+.controller('UserGamesController', ['$scope', '$http', 'gameService', 'games', 'currentUser', function($scope, $http, gameService, games, currentUser) {
+    var i,
+        theGame,
+        variantName,
+        key;
 
-        $scope.variants = { };
-        $scope.moves = { };
+    $scope.selectedIndex = 0;
 
-        $scope.playing = games;
+    $scope.variants = { };
+    $scope.moves = { };
 
-        for (var i = 0; i < games.length; i++) {
-            var theGame = games[i];
-            // identify what variants need fetching
-            var variantName = theGame.variant;
-            if (!$scope.variants[variantName])
-                $scope.variants[variantName] = { };
+    $scope.playing = games;
+    $scope.user = currentUser;
 
-            /*
-             * Identify the extent of each game's move data to get, given these rules:
-             *     1) Old seasons are fully exposed: old positions, moves, resolution.
-             *     2) Current seasons expose old positions.
-             *     3) Players see their own orders in current seasons.
-             *     4) GMs see everything in current seasons.
-            if (theGame.isAdmin)
-                $scope.moves[theGame._id] = gameService.getMoveData(theGame._id);//.then(movesToScopeCallback);
-            else
-                $scope.moves[theGame._id] = gameService.getMoveDataForCurrentUser(theGame._id, theGame.year, theGame.season);//.then(movesToScopeCallback);
-                */
-        }
+    for (i = 0; i < games.length; i++) {
+        theGame = games[i];
 
-        // populate keys
-        for (var key in $scope.variants)
-            $scope.variants[key] = gameService.getVariant(key);
-    }]);
+        // Identify what variants need fetching.
+        variantName = theGame.variant;
+        if (!$scope.variants[variantName])
+            $scope.variants[variantName] = { };
+
+        /*
+         * Identify the extent of each game's move data to get, given these rules:
+         *     1) Old seasons are fully exposed: old positions, moves, resolution.
+         *     2) Current seasons expose old positions.
+         *     3) Players see their own orders in current seasons.
+         *     4) GMs see everything in current seasons.
+        if (theGame.isAdmin)
+            $scope.moves[theGame._id] = gameService.getMoveData(theGame._id);//.then(movesToScopeCallback);
+        else
+            $scope.moves[theGame._id] = gameService.getMoveDataForCurrentUser(theGame._id, theGame.year, theGame.season);//.then(movesToScopeCallback);
+            */
+    }
+
+    // Populate keys.
+    for (key in $scope.variants)
+        $scope.variants[key] = gameService.getVariant(key);
+}]);

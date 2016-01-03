@@ -21,13 +21,17 @@ angular.module('profile', [
         },
         resolve: {
             gameService: 'gameService',
+            userService: 'userService',
 
             games: function(gameService) {
                 return gameService.getAllForCurrentUser();
             },
             auth: ['socketAuthService', function(socketAuthService) {
                 return socketAuthService.getAuthenticatedAsPromise();
-            }]
+            }],
+            currentUser: function(userService) {
+                return userService.getUser(userService.getCurrentUser());
+            }
         }
     })
     .state('profile.verify', {

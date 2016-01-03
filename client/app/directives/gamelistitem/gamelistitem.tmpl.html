@@ -1,4 +1,15 @@
-<div>
-    <h3 class="md-title">{{game.name}}</h3>
-    <md-divider></md-divider>
+<div ng-click="goToGame()" layout="column" layout-fill>
+    <div layout="row" flex layout-fill>
+        <div flex="85">
+            <span>{{game.name}}</span><br />
+        </div>
+        <div flex>
+            <md-tooltip ng-if="joinable && reasonForNoJoin()">{{reasonForNoJoin()}}</md-tooltip>
+            <md-button class="md-raised md-primary" ng-if="joinable" ng-disabled="!canJoinGame()">
+                <span>Join</span>
+            </md-button>
+        </div>
+    </div>
+
+    <md-divider flex></md-divider>
 </div>
