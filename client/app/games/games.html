@@ -1,12 +1,12 @@
 <div layout="row" layout-sm="column" layout-margin>
-    <div flex="80" flex-sm="100" flex-order-sm="2" flex-order="1">
+    <div class="md-whiteframe-2dp" flex="80" flex-sm="100" flex-order-sm="2" flex-order="1">
         <md-list>
             <md-list-item ng-repeat="game in games" class="gameItem">
                 <sg-game-list-item game="game" variant="variants[game.variant]" joinable="true" user="user" />
             </md-list-item>
         </md-list>
     </div>
-    <div flex="20" flex-order-sm="1" flex-order="2">
+    <div class="md-whiteframe-2dp" flex="20" flex-order-sm="1" flex-order="2" layout-padding>
         <md-select placeholder="Variant" ng-model="variantFilter">
         </md-select>
     </div>

@@ -26,8 +26,8 @@ html, body
     height: 100%;
     background-image: url('../assets/icons/background.png');
     background-repeat: no-repeat;
-    background-size: 50%;
-    background-position: -120px -120px;
+    background-size: 60vw;
+    background-position: -130px -130px;
 }
 
 footer
@@ -78,6 +78,11 @@ md-toolbar.miniToolbar
 h1.md-display-1, h1.md-display-2, h1.md-display-3
 {
     line-height: 12px;
+}
+
+.md-whiteframe-2dp
+{
+    background-color: #fff;
 }
 
 button.svg48px md-icon
