@@ -1,9 +1,10 @@
 // Service adapted from http://wmyers.github.io/technical/nodejs/Simple-JWT-auth-for-SocketIO/
 angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMaterial'])
-.factory('socketService', ['socketFactory', 'localStorageService', '$mdToast', function(socketFactory, localStorageService, $mdToast) {
+.factory('socketService', ['socketFactory', 'localStorageService', '$mdToast', 'CONST', function(socketFactory, localStorageService, $mdToast, CONST) {
     'use strict';
 
-    var socket, ioSocket, isAuthenticated,
+    var socket,
+        isAuthenticated,
         self = {
             getAuthenticated: function() {
                 return isAuthenticated;
@@ -17,7 +18,7 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
 
         self.socket = socket = socketFactory({
             prefix: 'socket/',
-            ioSocket: io.connect('https://localhost:9000', { secure: true })
+            ioSocket: io.connect(CONST.socketEndpoint, { secure: true })
         });
 
         // authenticate with JWT before sending actual socket command

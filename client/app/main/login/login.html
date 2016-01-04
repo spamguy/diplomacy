@@ -1,21 +1,19 @@
-<div layout="row" layout-align="center center" layout-padding>
-    <section flex="33" flex-sm="100">
-        <form name="loginForm" ng-submit="user.login()">
+<form name="loginForm" ng-submit="user.login()">
+    <div layout="row" layout-align="center center">
+        <div class="md-whiteframe-2dp" layout="column" flex="60" flex-xs="100" layout-padding layout-margin>
             <div ng-messages="loginForm.password.$error">
                 <div id="validLoginMessage" ng-message="validLogin">Your username or password is incorrect.</div>
             </div>
-            <md-input-container>
+            <md-input-container flex>
                 <label>Email</label>
-                <input type="email" name="email" ng-model="user.email" required="true" />
-            </md-input-container>
+                <input type="email" name="email" ng-model="user.email" required />
+            </md-input-container flex>
             <md-input-container>
                 <label>Password</label>
-                <input type="password" name="password" ng-model="user.password" required="true" />
+                <input type="password" name="password" ng-model="user.password" required />
             </md-input-container>
 
-            <p style="text-align:center">
-                <md-button type="submit" id="loginButton" class="md-raised md-primary">Log In</md-button>
-            </p>
-        </form>
-    </section>
-</div>
+            <md-button type="submit" id="loginButton" class="md-raised md-primary" flex>Log In</md-button>
+        </div>
+    </div>
+</form>

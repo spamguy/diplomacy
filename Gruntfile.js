@@ -52,21 +52,24 @@ module.exports = function(grunt) {
             mock: {
                 constants: {
                     CONST: {
-                        apiEndpoint: 'http://private-182900-diplio.apiary-mock.com'
+                        apiEndpoint: 'http://private-182900-diplio.apiary-mock.com',
+                        socketEndpoint: 'https://localhost'
                     }
                 }
             },
             mongo: {
                 constants: {
                     CONST: {
-                        apiEndpoint: 'https://localhost/api'
+                        apiEndpoint: 'https://localhost/api',
+                        socketEndpoint: 'https://localhost'
                     }
                 }
             },
             prod: {
                 constants: {
                     CONST: {
-                        apiEndpoint: 'https://dipl.io/api'
+                        apiEndpoint: 'https://dipl.io/api',
+                        socketEndpoint: 'https://dipl.io'
                     }
                 }
             }
@@ -265,12 +268,10 @@ module.exports = function(grunt) {
             username: process.env.SAUCE_USERNAME,
             accessKey: process.env.SAUCE_ACCESS_KEY
         }, function(err, sauceConnectProcess) {
-            if (err) {
+            if (err)
                 console.error(err.message);
-            }
-            else {
+            else
                 done();
-            }
         });
     });
 

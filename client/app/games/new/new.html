@@ -1,6 +1,6 @@
 <form name="newGameForm" ng-submit="game.save()">
     <div layout="row" layout-align="center center">
-        <div layout="column" ng-if="hasDecentScore()" flex="80" flex-sm="100" layout-margin layout-padding>
+        <div layout="column" ng-if="hasDecentScore()" flex="80" flex-xs="100" layout-margin layout-padding>
             <section class="md-whiteframe-z2" flex>
                 <div layout="column">
                     <md-input-container flex>
@@ -20,7 +20,7 @@
                 </div>
             </section>
 
-            <v-accordion class="vAccordion--default md-whiteframe-z2" style="background-color:#fff" multiple layout="column" ng-if="hasDecentScore()" flex="80" flex-sm="100" layout-margin layout-padding>
+            <v-accordion class="vAccordion--default md-whiteframe-z2" style="background-color:#fff" multiple layout="column" ng-if="hasDecentScore()" flex="80" flex-xs="100" layout-margin layout-padding>
                 <v-pane>
                     <v-pane-header>Movement Deadlines</v-pane-header>
                     <v-pane-content>
@@ -69,7 +69,7 @@
     <wizard on-finish="onWizardFinished()" hide-indicators="true">
         <wz-step title="Name" canexit="canExitStep1">
             <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
                     <p class="subheader">What will your game be called?</p>
 
                     <md-input-container>
@@ -83,7 +83,7 @@
         </wz-step>
         <wz-step title="Variant">
             <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
                     <p class="subheader">Choose a variant.</p>
 
                     <md-radio-group ng-model="game.variant">
@@ -99,7 +99,7 @@
         </wz-step>
         <wz-step title="Movements">
             <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
                     <p class="subheader">Choose when and how movement phases are processed.</p>
                     <div layout="row" class="clockOption">
                         <span>Every</span>
@@ -117,7 +117,7 @@
         </wz-step>
         <wz-step title="Retreats">
             <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
                     <p class="subheader">Choose when and how retreat phases are processed.</p>
                     <div layout="row" class="clockOption">
                         <span>Every</span>
@@ -135,7 +135,7 @@
         </wz-step>
         <wz-step title="Builds">
             <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
                     <p class="subheader">Choose when and how adjustment (build) phases are processed.</p>
                     <div layout="row" class="clockOption">
                         <span>Every</span>
@@ -153,7 +153,7 @@
         </wz-step>
         <wz-step title="Press">
             <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
                     <p class="subheader">What type of press can players use?</p>
 
                     <md-radio-group ng-model="game.press">
@@ -172,7 +172,7 @@
         </wz-step>
         <wz-step title="Press">
             <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-sm="100">
+                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
                     <p class="subheader">Set this game's visibility.</p>
 
                     <md-radio-group ng-model="game.visibility">
@@ -198,7 +198,7 @@
 </form> -->
 
 <div layout="row" layout-align="center center" layout-padding ng-if="!hasDecentScore()">
-    <section class="md-whiteframe-z2" flex="50" flex-sm="100">
+    <section class="md-whiteframe-z2" flex="50" flex-xs="100">
         <h1>Sorry!</h1>
 
         You haven't earned enough good standing to create and oversee games. {{minimumPointsToGM}} points are required; you have {{currentPoints}}. Keep at it!
