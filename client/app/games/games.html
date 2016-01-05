@@ -5,6 +5,9 @@
                 <sg-game-list-item game="game" variant="variants[game.variant]" joinable="true" user="user" />
             </md-list-item>
         </md-list>
+        <div layout="row" layout-align="center center" layout-margin>
+            <span ng-show="!games.length">Nothing here.</span>
+        </div>
     </div>
     <div class="md-whiteframe-2dp" flex="20" flex-order-sm="1" flex-order="2" layout-padding>
         <md-select placeholder="Variant" ng-model="variantFilter">

@@ -4,29 +4,33 @@ var express = require('express.oi'),
     all = require('require-tree'),
     _ = require('lodash'),
     mongoose = require('mongoose'),
-    agenda = require('agenda'),
-    fs = require('fs'),
-    path = require('path');
-
-var models = all(path.join(__dirname, 'models')),
+    Agenda = require('agenda'),
+    path = require('path'),
+    models = all(path.join(__dirname, 'models')), // Keep this.
     controllers = all(path.join(__dirname, 'controllers')),
     core = require('./cores/index'),
-    app = express();
+    app = express(),
+    seekrits,
+    validateToken = function(token, callback) {
+        console.log('Token = ' + token);
+        jwt.verify(token, seekrits.SESSION_SECRET, function(err, decoded) {
+            return callback(err, decoded);
+        });
+    };
 
-var seekrits;
 try {
     seekrits = require('./config/local.env');
 }
 catch (ex) {
     if (ex.code === 'MODULE_NOT_FOUND')
-    seekrits = require('./config/local.env.sample');
+        seekrits = require('./config/local.env.sample');
 }
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Fire up scheduling.
-app.agenda = new agenda({
+app.agenda = new Agenda({
     db: {
         address: seekrits.mongoURI
     }
@@ -36,11 +40,7 @@ app.agenda.on('ready', function() {
     app.agenda.start();
 });
 
-app.https({
-    key: fs.readFileSync(seekrits.certificates.keyPath),
-    cert: fs.readFileSync(seekrits.certificates.certificatePath),
-    ca: fs.readFileSync(seekrits.certificates.caPath)
-}).io();
+app.http().io();
 
 _.each(controllers, function(controller) {
     controller.apply({
@@ -55,7 +55,7 @@ app.io.on('connection', function(socket) {
     delete app.io.sockets.connected[socket.id];
 
     var authTimeout = setTimeout(function() {
-        console.log("Disconnecting socket ", socket.id);
+        console.log('Disconnecting socket ', socket.id);
         socket.disconnect('unauthorized');
     }, 2000);
 
@@ -75,18 +75,11 @@ app.io.on('connection', function(socket) {
             });
         }
     });
-
-    var validateToken = function(token, callback) {
-        console.log('Token = ' + token);
-        jwt.verify(token, seekrits.SESSION_SECRET, function(err, decoded) {
-            return callback(err, decoded);
-        });
-    };
 });
 
 mongoose.connect(seekrits.mongoURI);
 mongoose.set('debug', true);
 
 app.listen(9000, function() {
-  console.log('Express server listening on %d', 9000);
+    console.log('Express server listening on %d', 9000);
 });
