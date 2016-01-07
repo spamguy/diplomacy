@@ -10,13 +10,13 @@
     <!-- build:css app.min.css -->
     <link href="../bower_components/v-accordion/dist/v-accordion.css" rel="stylesheet" type="text/css" />
     <link href="../bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="temp/app.css" />
+    <link href="temp/app.css" rel="stylesheet" type="text/css" />
     <!-- endbuild -->
 </head>
 <body ng-controller="AppController" layout="column">
     <md-toolbar style="background-color:transparent;">
         <div class="md-toolbar-tools">
-            <span class="logo">dipl.io</span>
+            <span class="logo"><a ui-sref="main.home">dipl.io</a></span>
             <span flex></span>
             <md-button class="md-raised md-primary" aria-label="Log In" ui-sref="main.login" ng-if="!isAuthenticated">Log In</md-button>
             <md-button class="md-raised md-primary" aria-label="Sign Up" ui-sref="main.signup" ng-if="!isAuthenticated">Sign Up</md-button>

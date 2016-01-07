@@ -1,42 +1,42 @@
-<div class="md-whiteframe-2dp" layout="column" layout-margin>
-    <md-tabs md-dynamic-height md-border-bottom>
-        <md-tab label="Active Games">
-            <md-list>
-                <md-list-item ng-repeat="game in playingList = (playing | gmStatus:false)" class="gameItem">
-                    <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
-                </md-list-item>
-            </md-list>
-            <div layout="row" layout-align="center center" layout-margin>
-                <span ng-show="!(playing | gmStatus:false).length">Nothing here.</span>
-            </div>
-        </md-tab>
-        <md-tab label="Inactive Games">
-            <md-list>
-                <md-list-item ng-repeat="game in playingList = (playing | gmStatus:false)" class="gameItem">
-                    <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
-                </md-list-item>
-            </md-list>
-            <div layout="row" layout-align="center center" layout-margin>
-                <span ng-show="!(playing | gmStatus:false).length">Nothing here.</span>
-            </div>
-        </md-tab>
-        <md-tab label="Mastering">
-            <md-list>
-                <md-list-item ng-repeat="game in playingList = (playing | gmStatus:true)" class="gameItem">
-                    <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
-                </md-list-item>
-            </md-list>
-            <div layout="row" layout-align="center center" layout-margin>
-                <span ng-show="!(playing | gmStatus:true).length">Nothing here.</span>
-            </div>
-        </md-tab>
-        <md-tab label="Completed">
-            <div layout="column" layout-margin>
-                <!-- <sg-game-list-item ng-repeat="game in playingList = (playing | gmStatus:false)" /> -->
-                <div layout="row" layout-align="center center" layout-margin>
-                    <span ng-show="!(playing | gmStatus:false).length">Nothing here.</span>
-                </div>
-            </div>
-        </md-tab>
-    </md-tabs>
-</div>
+<md-tabs class="md-whiteframe-2dp" md-dynamic-height md-border-bottom style="margin: auto 20px">
+    <md-tab label="Active Games">
+        <md-list>
+            <md-list-item ng-repeat="game in playingList = (playing | gmStatus:false)" class="gameItem">
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+            </md-list-item>
+        </md-list>
+        <div layout="row" layout-align="center center" layout-margin ng-if="!(playing | gmStatus:false).length" ng-if="!(playing | gmStatus:true).length">
+            <h1 class="md-display-1">Nothing here.</h1>
+        </div>
+    </md-tab>
+    <md-tab label="Inactive Games">
+        <md-list>
+            <md-list-item ng-repeat="game in playingList = (playing | gmStatus:false)" class="gameItem">
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+            </md-list-item>
+        </md-list>
+        <div layout="row" layout-align="center center" layout-margin ng-if="!(playing | gmStatus:false).length">
+            <h1 class="md-display-1">Nothing here.</h1>
+        </div>
+    </md-tab>
+    <md-tab label="Mastering">
+        <md-list>
+            <md-list-item ng-repeat="game in playingList = (playing | gmStatus:true)" class="gameItem">
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+            </md-list-item>
+        </md-list>
+        <div layout="row" layout-align="center center" layout-margin ng-if="!(playing | gmStatus:true).length">
+            <h1 class="md-display-1">Nothing here.</h1>
+        </div>
+    </md-tab>
+    <md-tab label="Completed">
+        <md-list>
+            <md-list-item ng-repeat="game in playingList = (playing | gmStatus:true)" class="gameItem">
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+            </md-list-item>
+        </md-list>
+        <div layout="row" layout-align="center center" layout-margin ng-if="!(playing | gmStatus:true).length">
+            <h1 class="md-display-1">Nothing here.</h1>
+        </div>
+    </md-tab>
+</md-tabs>

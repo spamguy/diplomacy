@@ -1,8 +1,10 @@
 var async = require('async'),
     path = require('path'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    seekrits,
+    DiplomacyJudge,
+    mailer = require('../mailer/mailer');
 
-var seekrits;
 try {
     seekrits = require('../config/local.env');
 }
@@ -11,8 +13,7 @@ catch (ex) {
     seekrits = require('../config/local.env.sample');
 }
 
-var DiplomacyJudge = require(path.join(seekrits.judgePath, 'diplomacy-godip')),
-    mailer = require('../mailer/mailer');
+DiplomacyJudge = require(path.join(seekrits.judgePath, 'diplomacy-godip'));
 
 module.exports = function(agenda, core) {
     function handleLateSeason(game, season) {
@@ -64,8 +65,14 @@ module.exports = function(agenda, core) {
                     };
 
                     core.user.list({ ID: player.player_id }, function(err, users) {
+                        if (err)
+                            console.error(err);
+
                         emailOptions.email = users[0].email;
-                        mailer.sendOne('adjudication', emailOptions, function(err) { });
+                        mailer.sendOne('adjudication', emailOptions, function(err) {
+                            if (err)
+                                console.log(err);
+                        });
                     });
 
                     core.game.resetReadyFlag(game, function(err, game) { callback(err, variant, game, season); });
