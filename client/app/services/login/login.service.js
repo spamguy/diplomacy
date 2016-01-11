@@ -9,7 +9,8 @@ angular.module('loginService', [ ])
             userService.setCurrentUser(data.id, data.email);
             userService.setToken(data.token);
 
-            // subscribe to all associated games after authenticating
+            // Subscribe to all associated games after authenticating.
+            socketService.initialize();
             socketService.socket.emit('game:watch');
 
             $state.go('profile.games');

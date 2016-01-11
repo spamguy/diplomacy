@@ -201,10 +201,10 @@ module.exports = function() {
                 if (err)
                     console.error(err);
 
-                for (var g = 0; g < games.length; g++) {
+                for (var g = 0; g < games.length; g++)
                     req.socket.join(games[g]._id);
-                    console.log(userID + ' joined game room ' + games[g]._id);
-                }
+
+                console.log(userID + ' now watching ' + games.length + ' room(s)');
             });
         },
 

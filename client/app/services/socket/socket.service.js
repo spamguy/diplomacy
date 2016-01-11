@@ -22,18 +22,6 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
             })
         });
 
-        // authenticate with JWT before sending actual socket command
-        socket.on('connect', function() {
-            // userService.getToken() would be better, but that would create a circular dependency
-            var token = localStorageService.get('token');
-            // if (token)
-            socket.emit('authenticate', { token: token });
-        });
-
-        socket.on('authenticated', function() {
-            isAuthenticated = true;
-        });
-
         // TODO: move to GameService
         socket.on('game:join:announce', function(data) {
             $mdToast.show(

@@ -48,10 +48,6 @@ app.io.use(socketioJWT.authorize({
     handshake: true
 }));
 
-app.io.on('connection', function(socket) {
-    console.log('Connected/authenticated as ' + socket.decoded_token.email);
-});
-
 app.io.on('error', function(err) {
     console.log('Unable to authenticate: ' + JSON.stringify(err));
 });
