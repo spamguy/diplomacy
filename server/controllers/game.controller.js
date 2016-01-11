@@ -92,7 +92,7 @@ module.exports = function() {
 
         join: function(req, res) {
             var gameID = req.data.gameID,
-                playerID = req.socket.tokenData.id,
+                playerID = req.socket.decoded_token.id,
                 prefs = req.data.prefs;
 
             core.user.list({ ID: playerID }, function(err, players) {
@@ -146,6 +146,9 @@ module.exports = function() {
                                     remainingSlots: game.maxPlayers - game.playerCount + 1
                                 },
                                 playerFetchCallback = function(err, user) {
+                                    if (err)
+                                        console.error(err);
+
                                     emailOptions.email = user[0].email;
                                     mailer.sendOne('join', emailOptions, function(err) {
                                         if (err)
@@ -187,7 +190,7 @@ module.exports = function() {
         },
 
         watch: function(req, res) {
-            var userID = req.socket.tokenData.id,
+            var userID = req.socket.decoded_token.id,
                 gameID = req.data ? req.data.gameID : null;
 
             // Get list of subscribed games and join them as socket.io rooms.
@@ -215,7 +218,7 @@ module.exports = function() {
                     console.error(err);
                 }
                 else {
-                    console.log(req.socket.tokenData.id + ' joined game room ' + savedGame._id);
+                    console.log(req.socket.decoded_token.id + ' joined game room ' + savedGame._id);
                     req.socket.join(savedGame._id);
                     app.io.in(savedGame._id).emit('game:create:success', { gamename: savedGame.name });
                 }
@@ -237,7 +240,11 @@ module.exports = function() {
                 function(game, callback) {
                     core.season.list({
                         gameID: game._id
-                    }, function(err, seasons) { callback(null, game, seasons); });
+                    }, function(err, seasons) {
+                        if (err)
+                            console.error(err);
+                        callback(null, game, seasons);
+                    });
                 },
 
                 // Creates first season if previous step pulled up nothing.
@@ -319,12 +326,14 @@ module.exports = function() {
                         };
 
                         core.user.list({ ID: player.player_id }, function(err, users) {
+                            if (err)
+                                console.error(err);
                             emailOptions.email = users[0].email;
                             if (player.power === '*')
                                 emailOptions.powerDesignation = 'You are the GM for this game. You can watch the action at ';
                             else
                                 emailOptions.powerDesignation = 'You have been selected to play ' + variant.powers[player.power].name + ' in the game ' + game.name + '. You can start playing right now by visiting the game page at ';
-                            mailer.sendOne('gamestart', emailOptions, function(err) { });
+                            mailer.sendOne('gamestart', emailOptions, function(err) { console.error(err); });
                         });
                     });
                 }

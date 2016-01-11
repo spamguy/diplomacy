@@ -19,7 +19,7 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
             ioSocket: io.connect(CONST.socketEndpoint, {
                 secure: true,
                 query: 'token=' + localStorageService.get('token')
-	    })
+            })
         });
 
         // authenticate with JWT before sending actual socket command

@@ -49,43 +49,12 @@ app.io.use(socketioJWT.authorize({
 }));
 
 app.io.on('connection', function(socket) {
-    console.log('Token = ' + socket.decoded_token);
+    console.log('Connected/authenticated as ' + socket.decoded_token.email);
 });
 
-// many thanks to http://wmyers.github.io/technical/nodejs/Simple-JWT-auth-for-SocketIO/
-// app.io.on('connection', function(socket) {
-//     console.log('Attempting to connect socket ' + socket.id);
-//     delete app.io.sockets.connected[socket.id];
-//
-//     var authTimeout = setTimeout(function() {
-//         console.log('Disconnecting socket ', socket.id);
-//         socket.disconnect('unauthorized');
-//     }, 2000);
-//
-//     socket.on('authenticate', function(data) {
-//         var validateToken = function(token, callback) {
-//             console.log('Token = ' + token);
-//             jwt.verify(token, seekrits.SESSION_SECRET, function(err, decoded) {
-//                 return callback(err, decoded);
-//             });
-//         };
-//
-//         if (data.token) {
-//             clearTimeout(authTimeout);
-//             validateToken(data.token, function(err, data) {
-//                 if (!err && data) {
-//                     console.log('Authenticated socket ' + socket.id);
-//                     app.io.sockets.connected[socket.id] = socket;
-//                     socket.tokenData = data;
-//                     socket.emit('authenticated');
-//                 }
-//                 else {
-//                     console.log(err);
-//                 }
-//             });
-//         }
-//     });
-// });
+app.io.on('error', function(err) {
+    console.log('Unable to authenticate: ' + JSON.stringify(err));
+});
 
 Mongoose.connect(seekrits.mongoURI);
 Mongoose.set('debug', true);

@@ -24,10 +24,7 @@ angular.module('games', [
             userService: 'userService',
             user: function(userService) {
                 return userService.getUser(userService.getCurrentUser());
-            },
-            auth: ['socketAuthService', function(socketAuthService) {
-                return socketAuthService.getAuthenticatedAsPromise();
-            }]
+            }
         }
     })
     .state('games.new', {
@@ -38,9 +35,6 @@ angular.module('games', [
             restricted: true
         },
         resolve: {
-            auth: ['socketAuthService', function(socketAuthService) {
-                return socketAuthService.getAuthenticatedAsPromise();
-            }],
             currentUser: ['userService', function(userService) {
                 return userService.getUser(userService.getCurrentUser());
             }],
@@ -57,9 +51,6 @@ angular.module('games', [
             restricted: true
         },
         resolve: {
-            auth: ['socketAuthService', function(socketAuthService) {
-                return socketAuthService.getAuthenticatedAsPromise();
-            }],
             user: function(userService) {
                 return userService.getUser(userService.getCurrentUser());
             },

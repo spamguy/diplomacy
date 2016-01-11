@@ -11,7 +11,7 @@ module.exports = function() {
         list: function(req, res) {
             var gameID = req.data.gameID,
                 options = { gameID: gameID },
-                userID = req.socket.tokenData.id;
+                userID = req.socket.decoded_token.id;
 
             core.game.list(options, function(err, games) {
                 var game = games[0],

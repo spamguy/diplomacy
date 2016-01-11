@@ -9,8 +9,6 @@ function($scope, $http, userService, loginService, socketService, CONST, $mdToas
             password: null,
 
             login: function() {
-                socketService.initialize();
-
                 $http.post(CONST.apiEndpoint + '/login', this)
                 .then(
                     loginService.validLoginCallback,

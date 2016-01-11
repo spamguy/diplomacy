@@ -13,8 +13,7 @@ angular.module('diplomacy', [
     'map.directive',
     'gamelistitem.directive',
     'ngMaterial',
-    'socketService',
-    'socketAuthService'
+    'socketService'
 ])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider',
 function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider) {
@@ -72,6 +71,10 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
         if (isRestricted && !userService.isAuthenticated()) {
             event.preventDefault();
             console.log('State change blocked');
+        }
+        else if (!socketService.socket) {
+            // Initialize socket voodoo.
+            socketService.initialize();
         }
     });
 }]);
