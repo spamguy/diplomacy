@@ -30,7 +30,7 @@ var sendVerifyEmail = function(user) {
     };
     var options = {
         email: user.tempEmail,
-        token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: 24 * 60 }),
+        token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresIn: 24 * 60 * 60 }),
         baseURL: seekrits.DOMAIN,
         subject: 'Verify your email address with dipl.io'
     };
