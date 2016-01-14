@@ -1,26 +1,22 @@
 <form name="newGameForm" ng-submit="game.save()">
-    <div layout="row" layout-align="center center">
-        <div layout="column" ng-if="hasDecentScore()" flex="80" flex-xs="100" layout-margin layout-padding>
-            <section class="md-whiteframe-z2" flex>
-                <div layout="column">
-                    <md-input-container flex>
-                        <label>Game Name</label>
-                        <input type="text" name="gamename" ng-model="game.name" aria-label="Game Name" required />
-                    </md-input-container>
+        <div layout="column" ng-if="hasDecentScore()" layout-padding layout-margin flex>
+            <div class="md-whiteframe-2dp" layout="column">
+                <md-input-container flex>
+                    <label>Game Name</label>
+                    <input type="text" name="gamename" ng-model="game.name" aria-label="Game Name" required />
+                </md-input-container>
 
-                    <div layout="row" layout-sm="column" flex>
-                        <md-select flex placeholder="Variant" ng-model="game.variant" md-on-open="loadVariants()">
-                            <!-- <md-select-label>{{ variant ? variant : 'Variant' }}</md-select-label> -->
-                            <md-option ng-value="variant" ng-repeat="variant in variants">{{variant}}</md-option>
-                        </md-select>
-                        <div style="padding-left:10px" flex>
-                            <h1 class="md-subhead">Learn more about variants here.</h1>
-                        </div>
+                <div layout="row" layout-sm="column" flex>
+                    <md-select flex placeholder="Variant" ng-model="game.variant" md-on-open="loadVariants()">
+                        <md-option ng-value="variant" ng-repeat="variant in variants">{{variant}}</md-option>
+                    </md-select>
+                    <div style="padding-left:10px" flex>
+                        <h1 class="md-subhead">Learn more about variants here.</h1>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <v-accordion class="vAccordion--default md-whiteframe-z2" style="background-color:#fff" multiple layout="column" ng-if="hasDecentScore()" flex="80" flex-xs="100" layout-margin layout-padding>
+            <v-accordion class="vAccordion--default md-whiteframe-z2" style="background-color:#fff" multiple>
                 <v-pane>
                     <v-pane-header>Movement Deadlines</v-pane-header>
                     <v-pane-content>
@@ -57,9 +53,9 @@
                     </v-pane-content>
                 </v-pane>
 
-                <div style="text-align:center;margin-top:15px">
+                <div layout="row" layout-align="center center">
                     <md-button class="md-raised">Cancel</md-button>
-                    <md-button type="submit" class="md-raised md-accent">Complete</md-button>
+                    <md-button type="submit" class="md-raised md-primary">Complete</md-button>
                 </div>
             </v-accordion>
         </div>
@@ -198,9 +194,9 @@
 </form> -->
 
 <div layout="row" layout-align="center center" layout-padding ng-if="!hasDecentScore()">
-    <section class="md-whiteframe-z2" flex="50" flex-xs="100">
+    <div class="md-whiteframe-2dp" layout="column" layout-margin flex="60" flex-xs="100">
         <h1>Sorry!</h1>
 
-        You haven't earned enough good standing to create and oversee games. {{minimumPointsToGM}} points are required; you have {{currentPoints}}. Keep at it!
-    </section>
+        <p>You haven't earned enough good standing to create and oversee games. {{minimumPointsToGM}} points are required; you have {{currentPoints}}. Keep at it!</p>
+    </div>
 </div>

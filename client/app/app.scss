@@ -51,11 +51,18 @@ span.logo
     color: #fff;
 }
 
-span.email
+.info
 {
-    font-family: 'Sears Tower Regular';
     color: #000;
-    font-size: 14pt;
+    .points
+    {
+        font-size: 10pt;
+    }
+    span.email
+    {
+        font-family: 'Sears Tower Regular';
+        font-size: 14pt;
+    }
 }
 
 .tab-pane
@@ -79,8 +86,9 @@ md-toolbar.miniToolbar
     background-color: #fff;
 }
 
-button.svg48px md-icon
+md-icon.svg48px
 {
     height: 48px;
     width: 48px;
+    cursor: pointer;
 }

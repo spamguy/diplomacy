@@ -37,21 +37,7 @@ angular.module('games')
     $scope.hasDecentScore = function() {
         return currentUser.points >= $scope.minimumPointsToGM;
     };
-    //
-    // $scope.canExitStep1 = function() {
-    //     return $scope.forms.newGameForm.gamename.$valid;
-    // };
-    //
-    // $scope.onWizardFinished = function() {
-    //     // apply variant data DB will need occasionally, like max player count
-    //     gameService.getVariant($scope.game.variant)
-    //     .then(function(variant) {
-    //         $scope.game.maxPlayers = variant.data.powers.length;
-    //         gameService.createNewGame($scope.game);
-    //         $state.go('profile');
-    //     });
-    // };
-    //
+
     // $scope.humaniseTime = function(clock) {
     //     // hours -> milliseconds
     //     return humanizeDuration(moment.duration({ hours: clock }).asMilliseconds());

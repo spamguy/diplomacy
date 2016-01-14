@@ -20,28 +20,38 @@
             <span flex></span>
             <md-button class="md-raised md-primary" aria-label="Log In" ui-sref="main.login" ng-if="!isAuthenticated">Log In</md-button>
             <md-button class="md-raised md-primary" aria-label="Sign Up" ui-sref="main.signup" ng-if="!isAuthenticated">Sign Up</md-button>
-            <span class="email" ng-if="isAuthenticated">{{userEmail}}</span>
-            <md-menu md-position-mode="target-right target" ng-if="isAuthenticated">
-                <md-button aria-label="Main menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
-                    <md-icon md-menu-origin md-svg-icon="account"></md-icon>
-                </md-button>
-                <md-menu-content>
-                    <md-menu-item>
-                        <md-button ui-sref="profile.games">
-                            <span md-menu-align-target>My games</span>
-                        </md-button>
-                    </md-menu-item>
-                    <md-divider></md-divider>
-                    <md-menu-item>
-                        <md-button ng-click="logOut()">
-                            <div layout="row">
-                                <md-icon md-menu-align-target md-svg-icon="eject"></md-icon>
-                                <p flex>Log out</p>
-                            </div>
-                        </md-button>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
+
+            <div class="info" layout="row" layout-margin ng-if="isAuthenticated">
+                <div layout="column" layout-align="center end">
+                    <span class="email" ng-if="isAuthenticated">{{userEmail}}</span>
+                    <span class="points">100 points</span>
+                </div>
+
+                <md-menu md-position-mode="target-right target">
+                    <md-icon md-menu-origin md-svg-icon="account" ng-click="$mdOpenMenu($event)" class="svg48px"></md-icon>
+                    <md-menu-content>
+                        <md-menu-item>
+                            <md-button ui-sref="profile.games">
+                                <span md-menu-align-target>My games</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ui-sref="games.new">
+                                <span md-menu-align-target>Start a new game</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-divider></md-divider>
+                        <md-menu-item>
+                            <md-button ng-click="logOut()">
+                                <div layout="row">
+                                    <md-icon md-menu-align-target md-svg-icon="eject"></md-icon>
+                                    <p flex>Log out</p>
+                                </div>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </div>
         </div>
     </md-toolbar>
 

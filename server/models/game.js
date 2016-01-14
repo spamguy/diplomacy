@@ -3,6 +3,10 @@
 var mongoose = require('mongoose'),
     timestamp = require('mongoose-timestamp'),
     GameSchema = new mongoose.Schema({
+        /**
+         * The name of the game.
+         * @type {String}
+         */
         name: String,
         description: String,
         variant: String,
@@ -19,6 +23,12 @@ var mongoose = require('mongoose'),
                 default: false
             }
         }],
+
+        /**
+         * The minimum score needed for a player to be allowed entry.
+         * This also acts as the player's contribution towards the pot.
+         * @type {Integer}
+         */
         minimumScoreToJoin: Number,
         password: String,
         passwordsalt: String,
