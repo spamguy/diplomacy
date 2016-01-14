@@ -1,12 +1,31 @@
 'use strict';
 
-var hashOptions = {
-    'DEFAULT_HASH_ITERATIONS': 32000,
-    'SALT_SIZE': 64,
-    'KEY_LENGTH': 128
-};
-var SESSION_LENGTH = 60 * 4;
-var seekrits;
+var jwt = require('jsonwebtoken'),
+    pbkdf2 = require('easy-pbkdf2')(hashOptions),
+    auth = require('../auth'),
+    mailer = require('../mailer/mailer'),
+    hashOptions = {
+        'DEFAULT_HASH_ITERATIONS': 32000,
+        'SALT_SIZE': 64,
+        'KEY_LENGTH': 128
+    },
+    SESSION_LENGTH = 60 * 4,
+    seekrits,
+    sendVerifyEmail = function(user, cb) {
+        console.log('Sending verify email to ' + user.tempEmail);
+        var safeUser = {
+                email: user.tempEmail,
+                id: user._id
+            },
+            options = {
+                email: user.tempEmail,
+                token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresIn: 24 * 60 * 60 }),
+                baseURL: seekrits.DOMAIN,
+                subject: 'Verify your email address with dipl.io'
+            };
+        mailer.sendOne('verify', options, cb);
+    };
+
 try {
     seekrits = require('../config/local.env');
 }
@@ -14,31 +33,6 @@ catch (ex) {
     if (ex.code === 'MODULE_NOT_FOUND')
         seekrits = require('../config/local.env.sample');
 }
-
-var jwt = require('jsonwebtoken'),
-    pbkdf2 = require('easy-pbkdf2')(hashOptions);
-
-var auth = require('../auth'),
-    mailer = require('../mailer/mailer');
-
-var sendVerifyEmail = function(user) {
-    console.log('Sending verify email to ' + user.tempEmail);
-
-    var safeUser = {
-        email: user.tempEmail,
-        id: user._id
-    };
-    var options = {
-        email: user.tempEmail,
-        token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresIn: 24 * 60 * 60 }),
-        baseURL: seekrits.DOMAIN,
-        subject: 'Verify your email address with dipl.io'
-    };
-    mailer.sendOne('verify', options, function(err) {
-        if (err)
-            console.error(err);
-    });
-};
 
 module.exports = function() {
     var app = this.app,
@@ -100,8 +94,13 @@ module.exports = function() {
         // },
 
         // Creates new (or recycles existing) stub user. Contains only email address until extended by user:verify event.
+        // TODO: Rewrite with async.
         create: function(req, res, next) {
-            var email = req.body.email;
+            var email = req.body.email,
+                cb = function(err) {
+                    if (!err)
+                        res.sendStatus(201);
+                };
             core.user.getStubByEmail(email, function(err, users) {
                 var stubUser;
                 if (users.length > 0)
@@ -112,16 +111,14 @@ module.exports = function() {
                     stubUser = null;
 
                 if (stubUser) {
-                    sendVerifyEmail(stubUser);
+                    sendVerifyEmail(stubUser, cb);
                 }
                 else {
                     core.user.create({
                         tempEmail: email
                     }, function(err, newUser) {
-                        if (!err) {
-                            sendVerifyEmail(newUser);
-                            return res.status(201);
-                        }
+                        if (!err)
+                            sendVerifyEmail(newUser, cb);
                         else
                             console.log(err);
                     });
@@ -139,11 +136,17 @@ module.exports = function() {
                 salt = pbkdf2.generateSalt();
 
             jwt.verify(verifyToken, seekrits.SESSION_SECRET, function(err, payload) {
+                if (err)
+                    console.error(err);
+
                 core.user.getStubByEmail(payload.email, function(err, users) {
                     if (err)
                         return new Error(err);
                     var user = users[0];
                     pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
+                        if (err)
+                            console.error(err);
+
                         user.password = hash;
                         user.passwordsalt = salt;
                         user.points = 0;
@@ -156,11 +159,12 @@ module.exports = function() {
                                 id: updatedUser._id
                             };
 
-                            if (!err)
+                            if (!err) {
                                 return res.json({
                                     id: updatedUser._id,
                                     token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
                                 });
+                            }
                         });
                     });
                 });
@@ -170,8 +174,12 @@ module.exports = function() {
         list: function(req, res) {
             var options = { ID: req.data.ID };
             core.user.list(options, function(err, users) {
-                var safeUsers = [];
-                for (var u = 0; u < users.length; u++) {
+                if (err)
+                    console.error(err);
+
+                var safeUsers = [],
+                    u;
+                for (u = 0; u < users.length; u++) {
                     safeUsers.push({
                         '_id': users[u]._id,
                         'email': users[u].email,
