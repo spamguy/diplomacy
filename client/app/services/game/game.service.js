@@ -62,7 +62,7 @@ angular.module('gameService', ['userService', 'socketService'])
 
             return $q(function(resolve) {
                 socketService.socket.emit('season:list', options, function(seasons) {
-                    resolve(seasons);
+                    resolve(seasons[0]);
                 });
             });
         },
@@ -76,7 +76,7 @@ angular.module('gameService', ['userService', 'socketService'])
 
             return $q(function(resolve) {
                 socketService.socket.emit('season:list', options, function(seasons) {
-                    resolve(seasons);
+                    resolve(seasons[0]);
                 });
             });
         },

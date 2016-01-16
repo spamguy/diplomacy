@@ -31,7 +31,6 @@ angular.module('map.directive', ['SVGService', 'gameService'])
 
     return {
         replace: true,
-        template: '<section class="md-whitespace-2"></section>',
         scope: {
             variant: '=variant',               // Full variant data. (JSON)
             season: '=season',                 // Movement data. (JSON)
@@ -71,7 +70,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
 
             absURL = $location.absUrl();
 
-            var season = scope.season[0],
+            var season = scope.season,
                 variant = scope.variant,
                 readonly = scope.readonly;
 
