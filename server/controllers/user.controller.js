@@ -9,7 +9,7 @@ var jwt = require('jsonwebtoken'),
         'SALT_SIZE': 64,
         'KEY_LENGTH': 128
     },
-    SESSION_LENGTH = 60 * 4,
+    SESSION_LENGTH = 60 * 60 * 4, // Session length, in seconds.
     seekrits,
     sendVerifyEmail = function(user, cb) {
         console.log('Sending verify email to ' + user.tempEmail);
@@ -80,7 +80,7 @@ module.exports = function() {
                 return res.json({
                     id: user._id,
                     email: user.email,
-                    token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
+                    token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresIn: SESSION_LENGTH })
                 });
             });
         },
