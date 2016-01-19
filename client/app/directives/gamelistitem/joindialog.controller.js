@@ -9,6 +9,6 @@ angular.module('games')
     $scope.joinGame = function() {
         gameService.joinGame(game);
         $mdDialog.hide();
-        $state.go('profile');
+        $state.go('profile.games');
     };
 }]);

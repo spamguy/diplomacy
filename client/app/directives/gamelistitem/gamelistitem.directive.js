@@ -8,17 +8,6 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
         renderCalendarDescription = function() {
             return '';
         };
-        // },
-        // getResolutionStatusMessage = function(playersForFullGame, foundPlayers) {
-        //     if (playersForFullGame > foundPlayers) {
-        //         var neededPlayers = playersForFullGame - foundPlayers,
-        //             personPlural = neededPlayers === 1 ? '' : 's';
-        //         return 'Waiting on ' + neededPlayers + ' player' + personPlural;
-        //     }
-        //     else {
-        //         return 'Next deadline in ';
-        //     }
-        // };
 
     return {
         replace: true,

@@ -5,6 +5,8 @@ angular.module('games')
     angular.extend($scope, {
         game: {
             name: null,
+            year: null,
+            season: null,
             variant: 'Standard',
             move: {
                 clock: 24
@@ -32,7 +34,7 @@ angular.module('games')
 
     $scope.variants = variants;
 
-    $scope.minimumPointsToGM = 10;
+    $scope.minimumPointsToGM = 0;
     $scope.currentPoints = currentUser.points;
     $scope.hasDecentScore = function() {
         return currentUser.points >= $scope.minimumPointsToGM;

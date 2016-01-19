@@ -1,6 +1,6 @@
 <div ng-click="goToGame()" layout="column" layout-fill>
     <div layout="row">
-        <div flex="85">
+        <div flex="85" flex-xs="75">
             <h1 class="md-title">{{game.name}}</h1>
             <div class="gameDetails">
                 <md-icon md-svg-icon="clock"></md-icon>
@@ -10,7 +10,7 @@
         <div flex layout="column" layout-align="center center">
             <!-- HACK: Tooltip does not work on disabled buttons. -->
             <md-tooltip ng-if="joinable && reasonForNoJoin()">{{reasonForNoJoin()}}</md-tooltip>
-            <md-button class="md-raised md-primary" ng-if="joinable" ng-disabled="!canJoinGame()">
+            <md-button class="md-raised md-primary" ng-if="joinable" ng-disabled="reasonForNoJoin()" ng-click="showJoinDialog()">
                 <span>Join</span>
             </md-button>
         </div>

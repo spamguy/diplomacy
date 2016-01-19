@@ -57,15 +57,15 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             scope.clickCount = 0;
 
             // Add header?
-            if (scope.header) {
+            if (scope.header && !scope.readonly && scope.season) {
                 $compile('<sg-map-header></sg-map-header>')(scope, function(cloned, scope) {
                     element.append(cloned);
                 });
             }
 
             // Bail if vital info isn't present.
-            // TODO: Log and report to user absence of variant/season info.
-            if (!scope.variant || !scope.season)
+            // TODO: Log and report absence of variant info.
+            if (!scope.variant)
                 return;
 
             absURL = $location.absUrl();
