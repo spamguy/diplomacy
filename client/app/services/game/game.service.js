@@ -9,14 +9,29 @@ angular.module('gameService', ['userService', 'socketService'])
 
     return {
         /**
-         * Gets all games associated with the logged-in user.
+         * Gets all games the logged-in user has played in.
          * @memberof GameService
          * @returns {Promise<array>} A list of games.
          */
-        getAllForCurrentUser: function() {
+        getAllGamesForCurrentUser: function() {
             return $q(function(resolve) {
                 socketService.socket.emit('game:userlist', {
                     playerID: userService.getCurrentUser()
+                }, function(games) {
+                    resolve(games);
+                });
+            });
+        },
+
+        /**
+         * Gets all games owned by the logged-in user.
+         * @memberof GameService
+         * @returns {Promise<array>} A list of games.
+         */
+        getAllGamesOwnedByCurrentUser: function() {
+            return $q(function(resolve) {
+                socketService.socket.emit('game:usergmlist', {
+                    'gmID': userService.getCurrentUser()
                 }, function(games) {
                     resolve(games);
                 });
@@ -94,16 +109,6 @@ angular.module('gameService', ['userService', 'socketService'])
             options = options || { };
             options.gameID = game._id;
             socketService.socket.emit('game:join', options);
-        },
-
-        isAdmin: function(game) {
-            for (var p = 0; p < game.players.length; p++) {
-                if (game.players[p].power === '*' && game.players[p].player_id === userService.getCurrentUser())
-                    return true;
-            }
-
-            // no admin found with ID pairing
-            return false;
         },
 
         publishCommand: function(command, season) {

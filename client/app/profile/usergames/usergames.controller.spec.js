@@ -7,19 +7,15 @@ describe('UserGamesController', function() {
         deferred,
         deferred2,
         deferred3,
-        //httpBackend,
         $state,
         $injector,
-        games,
-        variant;
+        games;
 
     games = [
         { name: 'Game 1', variant: 'standard' },
         { name: 'Game 2', variant: 'standard' },
         { name: 'Game 3', variant: 'not-standard' }
     ];
-
-    variant = { name: 'something' };
 
     beforeEach(module('templates'));
     beforeEach(module('profile'));
@@ -34,7 +30,7 @@ describe('UserGamesController', function() {
     beforeEach(inject(function($controller) {
         $scope = $rootScope.$new();
         mockService = {
-            getAllForCurrentUser: function() {
+            getAllGamesForCurrentUser: function() {
                 deferred = $q.defer();
                 return deferred.promise;
             },
@@ -48,7 +44,7 @@ describe('UserGamesController', function() {
             }
         };
 
-        spyOn(mockService, 'getAllForCurrentUser').and.callThrough();
+        spyOn(mockService, 'getAllGamesForCurrentUser').and.callThrough();
         spyOn(mockService, 'getMoveDataForCurrentUser').and.callThrough();
         spyOn(mockService, 'getVariant').and.callThrough();
     }));

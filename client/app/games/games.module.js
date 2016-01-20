@@ -64,13 +64,7 @@ angular.module('games', [
                 // FIXME: This approach is probably totally exploitable. This decision making needs to happen server-side.
                 // Identify whether current player is admin of this game.
                 var playerID = userService.getCurrentUser(),
-                    isAdmin = false;
-                for (var p = 0; p < game.players.length; p++) {
-                    if (game.players[p].power === '*' && game.players[p].player_id === playerID) {
-                        isAdmin = true;
-                        break;
-                    }
-                }
+                    isAdmin = game.gm_id === playerID;
 
                 if (isAdmin)
                     return gameService.getMoveData(game._id);

@@ -20,7 +20,7 @@ angular.module('games')
             visibility: 'public',
             press: 'white',
             minimumScoreToJoin: 0,
-            playerID: currentUser._id,
+            gmID: currentUser._id,
 
             save: function() {
                 gameService.getVariant($scope.game.variant).then(function(variant) {

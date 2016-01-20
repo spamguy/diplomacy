@@ -73,6 +73,15 @@ module.exports = function() {
             });
         },
 
+        usergmlist: function(req, res) {
+            var options = { gmID: req.data.gmID };
+            core.game.list(options, function(err, games) {
+                if (err)
+                    console.error(err);
+                return res.json(games);
+            });
+        },
+
         list: function(req, res) {
             var options = { gameID: req.data.gameID };
             core.game.list(options, function(err, games) {
@@ -119,7 +128,7 @@ module.exports = function() {
                     }
 
                     // Join.
-                    newPlayer = { player_id: playerID };
+                    newPlayer = { player_id: playerID, isReady: false };
                     if (prefs)
                         newPlayer.prefs = prefs;
                     core.game.addPlayer(game, newPlayer, function(err) {
@@ -259,10 +268,14 @@ module.exports = function() {
                         // Create first season.
                         firstSeason = {
                             year: variant.startYear,
-                            season: 1,
+                            season: variant.seasons[0],
                             game_id: game._id,
                             regions: defaultRegions
                         };
+
+                        game.year = variant.startYear;
+                        game.season = variant.seasons[0];
+
                         core.season.create(firstSeason, function(err, newSeason) { callback(err, variant, game, newSeason); });
                     }
                     else {
@@ -282,11 +295,9 @@ module.exports = function() {
                     for (p = 0; p < game.players.length; p++) {
                         player = game.players[p];
 
-                        if (player.power !== '*') {
-                            player.power = shuffledSetOfPowers[shuffledSetIndex];
-                            console.log('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
-                            shuffledSetIndex++;
-                        }
+                        player.power = shuffledSetOfPowers[shuffledSetIndex];
+                        console.log('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
+                        shuffledSetIndex++;
                     }
 
                     core.game.update(game, function(err, savedGame) { callback(err, variant, savedGame, season); });
@@ -329,13 +340,15 @@ module.exports = function() {
                             if (err)
                                 console.error(err);
                             emailOptions.email = users[0].email;
-                            if (player.power === '*')
-                                emailOptions.powerDesignation = 'You are the GM for this game. You can watch the action at ';
-                            else
-                                emailOptions.powerDesignation = 'You have been selected to play ' + variant.powers[player.power].name + ' in the game ' + game.name + '. You can start playing right now by visiting the game page at ';
+                            // if (player.power === '*')
+                            //    emailOptions.powerDesignation = 'You are the GM for this game. You can watch the action at ';
+                            // else
+                            emailOptions.powerDesignation = 'You have been selected to play ' + variant.powers[player.power].name + ' in the game ' + game.name + '. You can start playing right now by visiting the game page at ';
                             mailer.sendOne('gamestart', emailOptions, function(err) { console.error(err); });
                         });
                     });
+
+                    // TODO: Email the GM too.
                 }
             ]);
         },

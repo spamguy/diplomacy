@@ -14,6 +14,7 @@ GameCore.prototype.list = function(options, cb) {
     var Game = mongoose.model('Game'),
         query = Game.find(_.pick({
             '_id': options.gameID,
+            'gm_id': options.gmID,
             'players.player_id': options.playerID,
             'status': options.status
         }, _.identity));
@@ -54,14 +55,13 @@ GameCore.prototype.create = function(options, cb) {
         moveClock: options.move.clock,
         retreatClock: options.retreat.clock,
         adjustClock: options.adjust.clock,
-        players: [{
-            player_id: options.playerID,
-            power: '*'
-        }],
+        minimumScoreToJoin: options.minimumScoreToJoin,
+        gm_id: options.gmID,
+        players: [],
         status: 0
     });
 
-    // generate password hash
+    // Generate password hash.
     if (newGame.visibility === 'private') {
         // TODO: hash password as found in user:create
         newGame.passwordsalt = '';
@@ -97,4 +97,5 @@ GameCore.prototype.resetReadyFlag = function(game, cb) {
         cb
     );
 };
+
 module.exports = GameCore;

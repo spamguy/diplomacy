@@ -24,7 +24,10 @@ angular.module('profile', [
             userService: 'userService',
 
             games: function(gameService) {
-                return gameService.getAllForCurrentUser();
+                return gameService.getAllGamesForCurrentUser();
+            },
+            gmGames: function(gameService) {
+                return gameService.getAllGamesOwnedByCurrentUser();
             },
             currentUser: function(userService) {
                 return userService.getUser(userService.getCurrentUser());

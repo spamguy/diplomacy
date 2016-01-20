@@ -14,6 +14,7 @@ var mongoose = require('mongoose'),
         season: Number,
         maxPlayers: Number,
         status: Number,
+        gm_id: mongoose.Schema.Types.ObjectId,
         players: [{
             _id: false,
             player_id: mongoose.Schema.Types.ObjectId,

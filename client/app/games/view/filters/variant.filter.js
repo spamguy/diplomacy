@@ -3,9 +3,10 @@ angular.module('games')
     'use strict';
 
     return function(games, variant) {
-        var filtered = [];
+        var filtered = [],
+            g;
 
-        for (var g = 0; g < games.length; g++) {
+        for (g = 0; g < games.length; g++) {
             if (games[g].variant.toLowerCase() === variant.toLowerCase())
                 filtered.push(games[g]);
         }
