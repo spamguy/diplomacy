@@ -131,7 +131,7 @@ module.exports = function() {
                     newPlayer = { player_id: playerID, isReady: false };
                     if (prefs)
                         newPlayer.prefs = prefs;
-                    core.game.addPlayer(game, newPlayer, function(err) {
+                    core.game.addPlayer(game, newPlayer, function(err, game) {
                         if (err)
                             console.log(err);
 
@@ -139,20 +139,17 @@ module.exports = function() {
                         req.socket.join(gameID);
 
                         // If everyone is here, signal the game can (re)start.
-                        if (game.playerCount + 1 === game.maxPlayers) {
+                        if (game.players.length === game.maxPlayers) {
                             req.io.route('game:start', { gameID: gameID });
                         }
                         else {
-                            /*
-                             * Send join alert email to other subscribers.
-                             * game.playerCount hasn't been updated yet, so manually add 1.
-                             */
+                            // Send join alert email to other subscribers.
                             var emailOptions = {
                                     subject: '[' + game.name + '] A new player has joined',
                                     gameName: game.name,
-                                    personInflection: pluralize('person', game.maxPlayers - game.playerCount),
-                                    playerCount: game.playerCount + 1,
-                                    remainingSlots: game.maxPlayers - game.playerCount + 1
+                                    personInflection: pluralize('person', game.maxPlayers - game.players.length),
+                                    playerCount: game.players.length,
+                                    remainingSlots: game.maxPlayers - game.players.length
                                 },
                                 playerFetchCallback = function(err, user) {
                                     if (err)
@@ -305,25 +302,9 @@ module.exports = function() {
 
                 // Schedule adjudication and send out emails.
                 function(variant, game, season, callback) {
-                    var clock,
+                    var clock = game.getClockFromSeason(season.season),
                         job;
 
-                    switch (season.season) {
-                    // (move)
-                    case 1:
-                    case 3:
-                        clock = game.moveClock;
-                        break;
-                    // (retreat)
-                    case 2:
-                    case 4:
-                        clock = game.retreatClock;
-                        break;
-                    // (build)
-                    case 5:
-                        clock = game.adjustClock;
-                        break;
-                    }
                     job = app.agenda.schedule(clock + ' hours', 'adjudicate', { seasonID: season._id });
 
                     async.each(game.players, function(player, err) {

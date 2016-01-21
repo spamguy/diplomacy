@@ -27,6 +27,7 @@
     "socketio-jwt": "4.3.3"
   },
   "devDependencies": {
+    "agenda-ui": "0.0.7",
     "angular-mocks": "1.4.5",
     "body-parser": "1.5.2",
     "eslint": "1.10.3",

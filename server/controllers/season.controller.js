@@ -13,30 +13,72 @@ module.exports = function() {
                 options = { gameID: gameID },
                 userID = req.socket.decoded_token.id;
 
-            core.game.list(options, function(err, games) {
-                var game = games[0],
-                    isComplete = game.isComplete,
-                    currentSeason = game.season,
-                    currentYear = game.year,
-                    playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
-                    powerShortName = playerPower.power,
-                    seasons = core.season.list(options, function(err, seasons) {
-                        for (var s = 0; s < seasons.length; s++) {
-                            var season = seasons[s];
+            /*
+             * It's so likely the scheduling details of these seasons will come up,
+             * they might as well be fetched now.
+             */
+            async.waterfall([
+                function(callback) {
+                    core.game.list(options, callback);
+                },
 
-                            // Incomplete games and active seasons are sanitised for your protection.
-                            if (!isComplete && (season.year === currentYear && season.season === currentSeason)) {
-                                for (var r = 0; r < season.regions.length; r++) {
-                                    var region = season.regions[r];
-                                    if (region.unit && region.unit.power !== powerShortName)
-                                        delete region.unit.order;
-                                }
+                function(games, callback) {
+                    core.season.list(options, function(err, seasons) {
+                        callback(err, games[0], seasons);
+                    });
+                },
+
+                // Append deadlines to results.
+                function(game, seasons, callback) {
+                    // Can't add deadline property to Mongoose objects. Use JS objects instead.
+                    async.map(seasons, function(season, callback) {
+                        app.agenda.jobs({ 'data.seasonID': season._id }, function(err, jobs) {
+                            season = season.toObject();
+                            if (jobs.length > 0)
+                                season.deadline = jobs[0].attrs.nextRunAt;
+                            callback(err, season);
+                        });
+                    }, function(err, seasons) {
+                        if (err)
+                            console.error(err);
+                        callback(err, game, seasons);
+                    });
+                }],
+
+                // Strip out movements the user shouldn't see.
+                function(err, game, seasons) {
+                    if (err)
+                        console.error(err);
+
+                    var r,
+                        s,
+                        season,
+                        region,
+                        isComplete = game.isComplete,
+                        currentSeason = game.season,
+                        currentYear = game.year,
+                        playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
+                        powerShortName;
+
+                    if (playerPower)
+                        powerShortName = playerPower.power;
+
+                    for (s = 0; s < seasons.length; s++) {
+                        season = seasons[s];
+
+                        // Incomplete games and active seasons are sanitised for your protection.
+                        if (!isComplete && (season.year === currentYear && season.season === currentSeason)) {
+                            for (r = 0; r < season.regions.length; r++) {
+                                region = season.regions[r];
+                                if (region.unit && region.unit.power !== powerShortName)
+                                    delete region.unit.order;
                             }
                         }
+                    }
 
-                        return res.json(seasons);
-                });
-            });
+                    return res.json(seasons);
+                }
+            );
         },
 
         create: function(req, res) {

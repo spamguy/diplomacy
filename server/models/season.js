@@ -12,8 +12,6 @@ var SeasonSchema = new mongoose.Schema({
 });
 SeasonSchema.plugin(timestamp);
 
-var Season = mongoose.model('Season', SeasonSchema);
+SeasonSchema.set('toJSON', { virtuals: true });
 
-module.exports = {
-  Season: Season
-};
+module.exports = mongoose.model('Season', SeasonSchema);

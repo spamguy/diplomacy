@@ -1,5 +1,5 @@
 angular.module('gamelistitem.directive', ['ngMaterial'])
-.directive('sgGameListItem', ['$mdDialog', '$state', function($mdDialog, $state) {
+.directive('sgGameListItem', ['gameService', '$mdDialog', '$state', function(gameService, $mdDialog, $state) {
     'use strict';
 
     var renderClockDescription = function(clock) {
@@ -58,6 +58,16 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
             };
 
             scope.movementDescription = scope.game.movementClock ? renderClockDescription(scope.game.movementClock) : renderCalendarDescription();
+
+            gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
+                if (season) {
+                    scope.seasonDescription = season.season + ' ' + season.year;
+                    
+                }
+                else {
+                    scope.seasonDescription = '(not started)';
+                }
+            });
         }
     };
 }]);

@@ -38,7 +38,8 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
         .icon('fold-in', '/assets/icons/ic_unfold_less_24px.svg', 24)
         .icon('settings', '/assets/icons/ic_settings_48px.svg', 48)
         .icon('clock', '/assets/icons/ic_query_builder_black_48px.svg', 48)
-        .icon('account', '/assets/icons/ic_account_circle_black_48px.svg', 48);
+        .icon('account', '/assets/icons/ic_account_circle_black_48px.svg', 48)
+        .icon('calendar', '/assets/icons/ic_date_range_black_48px.svg', 48);
 
     // Local storage setup.
     localStorageServiceProvider.setPrefix('diplomacy');

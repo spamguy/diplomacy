@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose'),
     timestamp = require('mongoose-timestamp'),
+    _ = require('lodash'),
     GameSchema = new mongoose.Schema({
         /**
          * The name of the game.
@@ -11,7 +12,7 @@ var mongoose = require('mongoose'),
         description: String,
         variant: String,
         year: Number,
-        season: Number,
+        season: String,
         maxPlayers: Number,
         status: Number,
         gm_id: mongoose.Schema.Types.ObjectId,
@@ -48,10 +49,22 @@ var mongoose = require('mongoose'),
 
 GameSchema.plugin(timestamp);
 
-GameSchema.virtual('playerCount')
-    .get(function() {
-        return this.players.length - 1; // The GM is not a player.
-    });
+/**
+ * Returns the appropriate clock associated with a season.
+ * @param  {String} seasonName The name of the season.
+ * @return {Number}            The season's clock.
+ */
+GameSchema.methods.getClockFromSeason = function(seasonName) {
+    if (_.contains(seasonName.toLowerCase(), 'move'))
+        return this.moveClock;
+    else if (_.contains(seasonName.toLowerCase(), 'retreat'))
+        return this.retreatClock;
+    else if (_.contains(seasonName.toLowerCase(), 'adjust'))
+        return this.adjustClock;
+    else
+        throw new Error('The season type could not be parsed from the name "' + seasonName + '".');
+};
+
 GameSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model('Game', GameSchema);

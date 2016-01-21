@@ -33,7 +33,7 @@ GameCore.prototype.listOpen = function(options, cb) {
     options = options || { };
     var Game = mongoose.model('Game'),
         query = Game.find({ status: { $in: [NOT_STARTED, STOPPED] } })
-                    .where('this.players.length - 1 < this.maxPlayers');
+                    .where('this.players.length < this.maxPlayers');
 
     query.exec(function(err, games) {
         if (err) {
@@ -81,10 +81,10 @@ GameCore.prototype.update = function(game, cb) {
 };
 
 GameCore.prototype.addPlayer = function(game, player, cb) {
-    mongoose.model('Game').update(
+    mongoose.model('Game').findOneAndUpdate(
         { _id: game._id },
         { $push: { 'players': player } },
-        { upsert: true },
+        { new: true },
         cb
     );
 };
