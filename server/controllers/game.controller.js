@@ -272,6 +272,7 @@ module.exports = function() {
 
                         game.year = variant.startYear;
                         game.season = variant.seasons[0];
+                        game.status = 1;
 
                         core.season.create(firstSeason, function(err, newSeason) { callback(err, variant, game, newSeason); });
                     }

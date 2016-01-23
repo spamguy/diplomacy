@@ -2,13 +2,6 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
 .directive('sgGameListItem', ['gameService', '$mdDialog', '$state', function(gameService, $mdDialog, $state) {
     'use strict';
 
-    var renderClockDescription = function(clock) {
-            return 'Every ' + humanizeDuration(clock * 60 * 1000);
-        },
-        renderCalendarDescription = function() {
-            return '';
-        };
-
     return {
         replace: true,
         restrict: 'E',
@@ -35,7 +28,9 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
 
                 // User belongs to game already, whether as GM or user.
                 if (_.find(scope.game.players, _.matchesProperty('player_id', scope.user._id)))
-                    return 'You already participate in this game.';
+                    return 'You already are a player in this game.';
+                if (scope.game.gm_id === scope.user._id)
+                    return 'You GM this game.';
 
                 return null;
             };
@@ -57,16 +52,11 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 });
             };
 
-            scope.movementDescription = scope.game.movementClock ? renderClockDescription(scope.game.movementClock) : renderCalendarDescription();
-
             gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
-                if (season) {
+                if (season)
                     scope.seasonDescription = season.season + ' ' + season.year;
-                    
-                }
-                else {
+                else
                     scope.seasonDescription = '(not started)';
-                }
             });
         }
     };
