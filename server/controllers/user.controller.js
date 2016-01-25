@@ -1,14 +1,14 @@
 'use strict';
 
-var jwt = require('jsonwebtoken'),
-    pbkdf2 = require('easy-pbkdf2')(hashOptions),
-    auth = require('../auth'),
-    mailer = require('../mailer/mailer'),
-    hashOptions = {
+var hashOptions = {
         'DEFAULT_HASH_ITERATIONS': 32000,
         'SALT_SIZE': 64,
         'KEY_LENGTH': 128
     },
+    jwt = require('jsonwebtoken'),
+    pbkdf2 = require('easy-pbkdf2')(hashOptions),
+    auth = require('../auth'),
+    mailer = require('../mailer/mailer'),
     SESSION_LENGTH = 60 * 60 * 4, // Session length, in seconds.
     seekrits,
     sendVerifyEmail = function(user, cb) {
