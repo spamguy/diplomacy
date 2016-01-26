@@ -31,8 +31,5 @@
     "moment": "2.11.1",
     "angular-sanitize": "1.4.9"
   },
-  "devDependencies": {
-    "jquery": "~2.1.4",
-    "jasmine-jquery": "~2.1.0"
-  }
+  "devDependencies": {}
 }

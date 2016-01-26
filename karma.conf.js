@@ -5,10 +5,8 @@ module.exports = function(config) {
         preprocessors: {
             'client/app/**/*.html': ['ng-html2js']
         },
-        frameworks: ['jasmine'],
+        frameworks: ['mocha'],
         files: [
-            'bower_components/jquery/dist/jquery.js',
-            'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
             'bower_components/d3/d3.js',
             'bower_components/lodash/lodash.js',
             'bower_components/humanize-duration/humanize-duration.js',
@@ -40,8 +38,8 @@ module.exports = function(config) {
             // HTML files and templates
             'client/app/**/*.tmpl.html'
         ],
-        logLevel:'ERROR',
-        reporters:['spec'],
+        logLevel: 'ERROR',
+        reporters: ['spec'],
         autoWatch: false,
         singleRun: true,
         browsers: ['PhantomJS'],
