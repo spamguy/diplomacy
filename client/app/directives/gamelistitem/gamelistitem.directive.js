@@ -15,10 +15,6 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
         link: function(scope, element, attrs) {
             scope.variants = { };
 
-            scope.toggleGameDetails = function(id) {
-                scope.expandState = !scope.expandState;
-            };
-
             scope.reasonForNoJoin = function() {
                 // Breaking this down into individual rules to avoid one monstrous if() statement.
 
@@ -53,10 +49,14 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
             };
 
             gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
-                if (season)
+                if (season) {
                     scope.seasonDescription = season.season + ' ' + season.year;
-                else
+                    scope.readableTimer = humanizeDuration(new Date(season.deadline).getTime() - new Date().getTime());
+                }
+                else {
                     scope.seasonDescription = '(not started)';
+                    scope.readableTimer = '';
+                }
             });
         }
     };

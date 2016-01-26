@@ -36,9 +36,11 @@ module.exports = function() {
                         baseRegion.sr.push({ r: region.sr[sr].r });
                 }
 
-                if (region.default) { // Add a SC marker, colour it, and put the default unit there.
+                // Add a SC marker, colour it, and put the default unit there.
+                if (region.default) {
+                    // Default unit is in a subregion.
                     if (region.default.sr) {
-                        subregion = _.find(region.sr, 'r', region.default.sr);
+                        subregion = _.find(baseRegion.sr, 'r', region.default.sr);
                         subregion.sc = region.default.power;
                         subregion.unit = {
                             power: region.default.power,
