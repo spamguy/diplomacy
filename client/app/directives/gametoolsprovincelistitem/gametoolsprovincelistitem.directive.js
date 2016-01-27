@@ -1,5 +1,5 @@
-angular.module('gametoolsprovincelistitem.directive', [])
-.directive('sgProvinceListItem', ['$state', function($state) {
+angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
+.directive('sgProvinceListItem', ['$state', '$sce', function($state, $sce) {
     'use strict';
 
     return {
@@ -10,6 +10,9 @@ angular.module('gametoolsprovincelistitem.directive', [])
             province: '='
         },
         link: function(scope, element, attrs) {
+            scope.provinceStatus = '<strong>' + scope.province.r + '</strong>';
+
+            //scope.provinceStatus = $sce.trustAsHtml(provinceStatus);
         }
     };
 }]);

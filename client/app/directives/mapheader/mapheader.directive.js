@@ -7,6 +7,11 @@ angular.module('map.directive')
         restrict: 'E',
         require: '^sgMap',
         scope: false,
-        templateUrl: 'app/directives/mapheader/mapheader.tmpl.html'
+        templateUrl: 'app/directives/mapheader/mapheader.tmpl.html',
+        link: function(scope) {
+            scope.canMove = _.contains(scope.season.season.toLowerCase(), 'move');
+            scope.canRetreat = _.contains(scope.season.season.toLowerCase(), 'retreat');
+            scope.canBuild = _.contains(scope.season.season.toLowerCase(), 'adjust');
+        }
     };
 }]);

@@ -6,7 +6,7 @@
                 <section ng-repeat="(code, power) in variant.powers">
                     <md-subheader>{{power.name}}</md-subheader>
                     <md-list>
-                        <md-list-item ng-repeat="province in season[0].regions" ng-if="powerOwnsProvince(code, province)">
+                        <md-list-item ng-repeat="province in season.regions" ng-if="powerOwnsProvince(code, province)">
                             <sg-province-list-item province="province" />
                         </md-list-item>
                     </md-list>
