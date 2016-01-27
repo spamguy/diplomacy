@@ -1,59 +1,45 @@
 describe('Game list item directive', function() {
     'use strict';
 
-    var el,
+    var sinon = require('sinon'),
+        sinonStubPromise = require('sinon-stub-promise')(sinon),
+        el,
         scope,
-        mockService,
-        deferred,
-        deferred2,
-        q;
+        mockService;
 
     beforeEach(function() {
-        module('templates');
-        module('ui.router');
-        module('gamelistitem.directive');
-    });
+        angular.mock.module('templates');
+        angular.mock.module('ui.router');
+        angular.mock.module('gameService', function($provide) {
+            $provide.value('gameService', mockService);
+        });
+        angular.mock.module('gamelistitem.directive');
 
-    beforeEach(function() {
         mockService = {
-            getVariantData: function(name) {
-                deferred = q.defer();
-                deferred.resolve({
-                    data: {
-                        name: 'standard'
-                    }
-                });
-                return deferred.promise;
-            }
+            getMoveDataForCurrentUser: sinon.stub().returnsPromise()
         };
-        spyOn(mockService, 'getVariantData').and.callThrough();
     });
 
     beforeEach(function() {
         inject(function($injector, $compile, $rootScope, $q) {
-            q = $q;
             scope = $rootScope;
 
             scope.game = {
                 variant: 'Standard',
-                movementClock: 2880
+                movementClock: 24
             };
-            scope.variant = mockService.getVariantData();
+            scope.variant = { name: 'Standard' };
             el = $compile('<sg-game-list-item game="game" variant="variant" joinable="false"></sg-game-list-item>')(scope);
 
             scope.$digest();
         });
     });
 
-    it('loads variant info', function() {
-        expect(mockService.getVariantData).toHaveBeenCalled();
-    });
-
-    it('lists the game\'s variant', function() {
-        expect($('#variantDescription', $(el))).toContainText('Standard');
-    });
-
-    it('describes movement adjudication with readable text', function() {
-        expect($('#movementDescription', $(el))).toContainText('Every 2 days');
+    it.only('fetches recent season data', function() {
+        mockService.getMoveDataForCurrentUser.resolves({ season: 'Spring Movement 1901' });
+        expect(mockService.getMoveDataForCurrentUser()).to.be.fulfilled;
+        //expect($('#seasonDescription')).to.have.text('Spring Movement 1901');
     });
 });
+
+// expect(mockService.getMoveDataForCurrentUser()).to.eventually.have.property('season');

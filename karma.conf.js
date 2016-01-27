@@ -3,9 +3,10 @@
 module.exports = function(config) {
     config.set({
         preprocessors: {
+            'client/app/**/*.spec.js': ['browserify'],
             'client/app/**/*.html': ['ng-html2js']
         },
-        frameworks: ['mocha'],
+        frameworks: ['browserify', 'mocha', 'chai-jquery', 'jquery-2.1.0', 'chai-as-promised', 'chai'],
         files: [
             'bower_components/d3/d3.js',
             'bower_components/lodash/lodash.js',

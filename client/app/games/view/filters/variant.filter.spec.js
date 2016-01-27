@@ -4,7 +4,7 @@ describe('Game list variant filter', function() {
     var filter;
 
     beforeEach(function() {
-        module('games');
+        angular.mock.module('games');
 
         inject(function($filter) {
             filter = $filter('variant');

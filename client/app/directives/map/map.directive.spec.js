@@ -5,7 +5,7 @@ describe('Map directive', function() {
         el;
 
     beforeEach(function() {
-        module('map.directive');
+        angular.mock.module('map.directive');
     });
 
     beforeEach(function() {

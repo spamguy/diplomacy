@@ -6,7 +6,7 @@ describe('gameService', function() {
         gameService;
 
     // load the service's module
-    beforeEach(module('gameService'));
+    beforeEach(angular.mock.module('gameService'));
 
     beforeEach(function() {
         inject(function($injector, $rootScope, $compile, $q, $timeout) {

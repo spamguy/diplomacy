@@ -4,7 +4,7 @@ describe('AppController', function() {
     var AppController,
         scope;
 
-    beforeEach(module('diplomacy'));
+    beforeEach(angular.mock.module('diplomacy'));
 
     beforeEach(inject(function($controller, $rootScope) {
         scope = $rootScope.$new();

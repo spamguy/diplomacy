@@ -17,8 +17,8 @@ describe('UserGamesController', function() {
         { name: 'Game 3', variant: 'not-standard' }
     ];
 
-    beforeEach(module('templates'));
-    beforeEach(module('profile'));
+    beforeEach(angular.mock.module('templates'));
+    beforeEach(angular.mock.module('profile'));
 
     beforeEach(inject(function(_$q_, _$rootScope_, _$state_, _$injector_) {
         $q = _$q_;

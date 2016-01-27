@@ -3,7 +3,7 @@
 describe('GameListController', function() {
 
   // load the controller's module
-  beforeEach(module('games'));
+  beforeEach(angular.mock.module('games'));
 
   var GamesController, scope;
 
