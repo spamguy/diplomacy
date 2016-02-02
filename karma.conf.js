@@ -3,20 +3,23 @@
 module.exports = function(config) {
     config.set({
         preprocessors: {
+            'karma-setup.js': ['browserify'],
             'client/app/**/*.spec.js': ['browserify'],
-            'client/app/**/*.html': ['ng-html2js']
+            'client/app/**/*.tmpl.html': ['ng-html2js']
         },
         frameworks: ['browserify', 'mocha', 'chai-jquery', 'jquery-2.1.0', 'chai-as-promised', 'chai'],
         files: [
+            'karma-setup.js',
+            'bower_components/momentjs/moment.js',
             'bower_components/d3/d3.js',
             'bower_components/lodash/lodash.js',
             'bower_components/humanize-duration/humanize-duration.js',
             'bower_components/socket.io-client/socket.io.js',
             'bower_components/angular/angular.js',
-            'bower_components/angular-mocks/angular-mocks.js', // for the love of god, stop deleting this!
+            'bower_components/angular-sanitize/angular-sanitize.js',
+            'bower_components/angular-mocks/angular-mocks.js', // For the love of god, stop deleting this!
             'bower_components/angular-ui-router/release/angular-ui-router.js',
             'bower_components/angular-animate/angular-animate.js',
-            'bower_components/hammerjs/hammer.js',
             'bower_components/angular-local-storage/dist/angular-local-storage.js',
             'bower_components/angular-jwt/dist/angular-jwt.js',
             'bower_components/angular-material/angular-material.js',
@@ -24,19 +27,18 @@ module.exports = function(config) {
             'bower_components/angular-socket-io/socket.js',
             'bower_components/v-accordion/dist/v-accordion.js',
 
-            // client files
+            // Client files.
             'client/app/app.module.js',
             'client/app/app.controller.js',
             'client/app/**/*.service.js',
             'client/app/**/*.directive.js',
             'client/app/**/*.module.js',
-            'client/app/**/*.state.js',
             'client/app/**/*.filter.js',
             'client/app/**/*.controller.js',
             'client/app/**/*.html',
             'client/app/**/*.spec.js',
 
-            // HTML files and templates
+            // HTML files and templates.
             'client/app/**/*.tmpl.html'
         ],
         logLevel: 'ERROR',

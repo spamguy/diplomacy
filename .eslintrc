@@ -4,7 +4,9 @@
         "inject": true,
         "_": true,
         "d3": true,
-        "io": true
+        "io": true,
+        "expect": true,
+        "sinon": true
     },
     "extends": "semistandard",
     "env": {

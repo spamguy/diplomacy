@@ -50,8 +50,9 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
 
             gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
                 if (season) {
+                    var timeUntilDeadline = new Date(season.deadline).getTime() - new Date().getTime();
                     scope.seasonDescription = season.season + ' ' + season.year;
-                    scope.readableTimer = humanizeDuration(new Date(season.deadline).getTime() - new Date().getTime());
+                    scope.readableTimer = humanizeDuration(timeUntilDeadline, { largest: 2, round: true });
                 }
                 else {
                     scope.seasonDescription = '(not started)';
