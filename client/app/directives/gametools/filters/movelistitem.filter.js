@@ -9,9 +9,10 @@ angular.module('gametools.directive')
      * @return {Array}        The filtered list.
      */
     return function(moves, power) {
-        var filtered = [];
+        var filtered = [],
+            m;
 
-        for (var m = 0; m < moves.length; m++) {
+        for (m = 0; m < moves.length; m++) {
             if (moves[m].unit && moves[m].unit.power === power.toLowerCase())
                 filtered.push(moves[m]);
         }

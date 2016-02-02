@@ -9,7 +9,7 @@ exports.config = {
     baseUrl: 'http://localhost',
 
     specs: ['e2e/**/*.po.js', 'e2e/**/*.spec.js'],
-    framework: 'jasmine',
+    framework: 'mocha',
     maxSessions: 1,
     allScriptsTimeout: 40000,
     getPageTimeout: 40000,

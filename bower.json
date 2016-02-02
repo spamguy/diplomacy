@@ -31,5 +31,7 @@
     "moment": "2.11.1",
     "angular-sanitize": "1.4.9"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "angular-socket.io-mock": "~1.1.0"
+  }
 }

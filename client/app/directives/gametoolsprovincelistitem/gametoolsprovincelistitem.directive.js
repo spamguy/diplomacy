@@ -11,8 +11,6 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
         },
         link: function(scope, element, attrs) {
             scope.provinceStatus = '<strong>' + scope.province.r + '</strong>';
-
-            //scope.provinceStatus = $sce.trustAsHtml(provinceStatus);
         }
     };
 }]);

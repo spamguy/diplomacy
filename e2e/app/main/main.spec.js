@@ -8,6 +8,6 @@ describe('Home page', function() {
     });
 
     it('should pass', function() {
-        expect(true).toBe(true);
+        expect(true).to.equal(true);
     });
 });

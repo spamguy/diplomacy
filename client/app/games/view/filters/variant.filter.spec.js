@@ -16,7 +16,7 @@ describe('Game list variant filter', function() {
             filter([
                 { variant: 'Standard' }, { variant: 'Standard' }, { variant: 'Chromatic' }
             ], 'Standard').length)
-        .toEqual(2);
+        .to.equal(2);
     });
 
     it('is case-insensitive', function() {
@@ -24,6 +24,6 @@ describe('Game list variant filter', function() {
             filter([
                 { variant: 'Standard' }, { variant: 'standard' }, { variant: 'stANDard' }
             ], 'STANdard').length)
-        .toEqual(3);
+        .to.equal(3);
     });
 });

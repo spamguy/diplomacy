@@ -1,10 +1,11 @@
-'use strict';
-
 describe('Map directive', function() {
+    'use strict';
+
     var scope,
         el;
 
     beforeEach(function() {
+        angular.mock.module('diplomacy.constants');
         angular.mock.module('map.directive');
     });
 
@@ -26,9 +27,9 @@ describe('Map directive', function() {
         });
     });
 
-    it('registers data passed in', function() {
+    it('retains data passed in', function() {
         var isolated = el.isolateScope();
-        expect(isolated.readonly).toBe(true);
-        expect(isolated.variant.data.name).toBe('Standard');
+        expect(isolated.readonly).to.equal(true);
+        expect(isolated.variant.data.name).to.equal('Standard');
     });
 });

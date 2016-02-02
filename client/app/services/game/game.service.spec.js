@@ -1,23 +1,31 @@
-'use strict';
-
 describe('gameService', function() {
-    var scope,
-        httpBackend, // $http mock
-        gameService;
+    'use strict';
 
-    // load the service's module
-    beforeEach(angular.mock.module('gameService'));
+    var gameService,
+        socketFactory,
+        socket;
 
     beforeEach(function() {
-        inject(function($injector, $rootScope, $compile, $q, $timeout) {
-            scope = $rootScope;
-            httpBackend = $injector.get('$httpBackend');
-            httpBackend.whenGET(/\/api\/games\/.+?\//).respond([{ name: 'game1' }, { name: 'game2' }, { name: 'game3' }]);
-            gameService = $injector.get('gameService');
+        angular.mock.module('diplomacy.constants');
+        angular.mock.module('gameService');
+
+        inject(function($rootScope, _socketFactory_, _socketService_, _gameService_) {
+            socketFactory = _socketFactory_;
+            gameService = _gameService_;
+            socket = socketFactory();
+            _socketService_.socket = socket;
         });
     });
 
-    it('should return gameService', function() {
-        expect(!!gameService).toBe(true);
+    it('creates new games', function() {
+        // TODO: Test reception of callback. Requires pull request to mock library.
+        // socket.on('game:create', function(response) {
+        //     console.log('Game created');
+        //     socket.emit('game:create:success');
+        // });
+
+        gameService.createNewGame({ });
+
+        expect(socket.emits).to.contain.keys('game:create');
     });
 });

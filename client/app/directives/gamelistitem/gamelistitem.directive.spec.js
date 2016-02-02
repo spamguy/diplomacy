@@ -11,7 +11,6 @@ describe('Game list item directive', function() {
             year: 1901,
             deadline: moment.utc().add({ days: 1, hours: 2, minutes: 3 })
         };
-    require('sinon-stub-promise')(sinon);
 
     beforeEach(function() {
         angular.mock.module('templates');

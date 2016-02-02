@@ -4,8 +4,10 @@ module.exports = function(config) {
     config.set({
         preprocessors: {
             'karma-setup.js': ['browserify'],
+            'client/temp/constants.js': ['browserify'],
             'client/app/**/*.spec.js': ['browserify'],
-            'client/app/**/*.tmpl.html': ['ng-html2js']
+            'client/app/**/*.tmpl.html': ['ng-html2js'],
+            'client/app/**/!(*.spec).js': ['coverage']
         },
         frameworks: ['browserify', 'mocha', 'chai-jquery', 'jquery-2.1.0', 'chai-as-promised', 'chai'],
         files: [
@@ -14,20 +16,22 @@ module.exports = function(config) {
             'bower_components/d3/d3.js',
             'bower_components/lodash/lodash.js',
             'bower_components/humanize-duration/humanize-duration.js',
-            'bower_components/socket.io-client/socket.io.js',
             'bower_components/angular/angular.js',
             'bower_components/angular-sanitize/angular-sanitize.js',
-            'bower_components/angular-mocks/angular-mocks.js', // For the love of god, stop deleting this!
+            'bower_components/angular-mocks/angular-mocks.js',
+            'bower_components/socket.io-client/socket.io.js',
+            'bower_components/angular-socket.io-mock/angular-socket.io-mock.js',
             'bower_components/angular-ui-router/release/angular-ui-router.js',
             'bower_components/angular-animate/angular-animate.js',
             'bower_components/angular-local-storage/dist/angular-local-storage.js',
             'bower_components/angular-jwt/dist/angular-jwt.js',
             'bower_components/angular-material/angular-material.js',
             'bower_components/angular-aria/angular-aria.js',
-            'bower_components/angular-socket-io/socket.js',
+            // 'bower_components/angular-socket-io/socket.js',
             'bower_components/v-accordion/dist/v-accordion.js',
 
             // Client files.
+            'client/temp/constants.js',
             'client/app/app.module.js',
             'client/app/app.controller.js',
             'client/app/**/*.service.js',
@@ -42,13 +46,17 @@ module.exports = function(config) {
             'client/app/**/*.tmpl.html'
         ],
         logLevel: 'ERROR',
-        reporters: ['spec'],
+        reporters: ['spec', 'coverage'],
         autoWatch: false,
         singleRun: true,
         browsers: ['PhantomJS'],
         ngHtml2JsPreprocessor: {
             stripPrefix: 'client/',
             moduleName: 'templates'
+        },
+        coverageReporter: {
+            type: 'html',
+            dir: 'coverage/'
         }
     });
 };
