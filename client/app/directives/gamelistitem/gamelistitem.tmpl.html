@@ -2,6 +2,7 @@
     <div layout="row">
         <div flex="85" flex-xs="75">
             <h1 class="md-title">{{game.name}}</h1>
+            <h2 class="md-subhead" ng-if="joinable">{{game.description ? game.description : '(no description)'}}</h2>
             <div class="gameDetails">
                 <md-icon md-svg-icon="calendar"></md-icon>
                 <span id="seasonDescription" aria-label="Current season">{{seasonDescription}}</span>

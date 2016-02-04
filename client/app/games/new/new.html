@@ -1,64 +1,68 @@
 <form name="newGameForm" ng-submit="game.save()">
-        <div layout="column" ng-if="hasDecentScore()" layout-padding layout-margin flex>
-            <div class="md-whiteframe-2dp" layout="column">
-                <md-input-container flex>
-                    <label>Game Name</label>
-                    <input type="text" name="gamename" ng-model="game.name" aria-label="Game Name" required />
-                </md-input-container>
+    <div layout="column" ng-if="hasDecentScore()" layout-padding layout-margin flex>
+        <div class="md-whiteframe-2dp" layout="column">
+            <md-input-container flex>
+                <label>Game Name</label>
+                <input type="text" name="gamename" ng-model="game.name" aria-label="Game Name" required />
+            </md-input-container>
 
-                <div layout="row" layout-sm="column" flex>
-                    <md-select flex placeholder="Variant" ng-model="game.variant" md-on-open="loadVariants()">
-                        <md-option ng-value="variant" ng-repeat="variant in variants">{{variant}}</md-option>
-                    </md-select>
-                    <div style="padding-left:10px" flex>
-                        <h1 class="md-subhead">Learn more about variants here.</h1>
-                    </div>
+            <md-input-container class="md-block">
+                <label>Description</label>
+                <textarea ng-model="game.description" columns="1" md-maxlength="150" rows="2"></textarea>
+            </md-input-container>
+
+            <div layout="row" layout-sm="column" flex>
+                <md-select flex placeholder="Variant" ng-model="game.variant" md-on-open="loadVariants()">
+                    <md-option ng-value="variant" ng-repeat="variant in variants">{{variant}}</md-option>
+                </md-select>
+                <div style="padding-left:10px" flex>
+                    <h1 class="md-subhead">Learn more about variants here.</h1>
                 </div>
             </div>
-
-            <v-accordion class="vAccordion--default md-whiteframe-z2" style="background-color:#fff" multiple>
-                <v-pane>
-                    <v-pane-header>Movement Deadlines</v-pane-header>
-                    <v-pane-content>
-                    </v-pane-content>
-                </v-pane>
-
-                <v-pane>
-                    <v-pane-header>Retreat Deadlines</v-pane-header>
-                    <v-pane-content>
-                    </v-pane-content>
-                </v-pane>
-
-                <v-pane>
-                    <v-pane-header>Build Deadlines</v-pane-header>
-                    <v-pane-content>
-                    </v-pane-content>
-                </v-pane>
-
-                <v-pane>
-                    <v-pane-header>Visibility</v-pane-header>
-                    <v-pane-content>
-                    </v-pane-content>
-                </v-pane>
-
-                <v-pane>
-                    <v-pane-header>Press</v-pane-header>
-                    <v-pane-content>
-                    </v-pane-content>
-                </v-pane>
-
-                <v-pane>
-                    <v-pane-header>Everything Else</v-pane-header>
-                    <v-pane-content>
-                    </v-pane-content>
-                </v-pane>
-
-                <div layout="row" layout-align="center center">
-                    <md-button class="md-raised">Cancel</md-button>
-                    <md-button type="submit" class="md-raised md-primary">Complete</md-button>
-                </div>
-            </v-accordion>
         </div>
+
+        <v-accordion class="vAccordion--default md-whiteframe-z2" style="background-color:#fff" multiple>
+            <v-pane>
+                <v-pane-header>Movement Deadlines</v-pane-header>
+                <v-pane-content>
+                </v-pane-content>
+            </v-pane>
+
+            <v-pane>
+                <v-pane-header>Retreat Deadlines</v-pane-header>
+                <v-pane-content>
+                </v-pane-content>
+            </v-pane>
+
+            <v-pane>
+                <v-pane-header>Build Deadlines</v-pane-header>
+                <v-pane-content>
+                </v-pane-content>
+            </v-pane>
+
+            <v-pane>
+                <v-pane-header>Visibility</v-pane-header>
+                <v-pane-content>
+                </v-pane-content>
+            </v-pane>
+
+            <v-pane>
+                <v-pane-header>Press</v-pane-header>
+                <v-pane-content>
+                </v-pane-content>
+            </v-pane>
+
+            <v-pane>
+                <v-pane-header>Everything Else</v-pane-header>
+                <v-pane-content>
+                </v-pane-content>
+            </v-pane>
+
+            <div layout="row" layout-align="center center">
+                <md-button class="md-raised">Cancel</md-button>
+                <md-button type="submit" class="md-raised md-primary">Complete</md-button>
+            </div>
+        </v-accordion>
     </div>
 </form>
 <!-- <form name="forms.newGameForm" ng-if="hasDecentScore()">

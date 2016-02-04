@@ -6,7 +6,8 @@
         "d3": true,
         "io": true,
         "expect": true,
-        "sinon": true
+        "sinon": true,
+        "$": true
     },
     "extends": "semistandard",
     "env": {

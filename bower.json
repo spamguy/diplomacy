@@ -32,6 +32,7 @@
     "angular-sanitize": "1.4.9"
   },
   "devDependencies": {
-    "angular-socket.io-mock": "~1.1.0"
+    "angular-socket.io-mock": "~1.1.0",
+    "jquery": "2.2.0"
   }
 }

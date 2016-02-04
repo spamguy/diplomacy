@@ -5,6 +5,7 @@ angular.module('games')
     angular.extend($scope, {
         game: {
             name: null,
+            description: null,
             year: null,
             season: null,
             variant: 'Standard',
@@ -39,9 +40,4 @@ angular.module('games')
     $scope.hasDecentScore = function() {
         return currentUser.points >= $scope.minimumPointsToGM;
     };
-
-    // $scope.humaniseTime = function(clock) {
-    //     // hours -> milliseconds
-    //     return humanizeDuration(moment.duration({ hours: clock }).asMilliseconds());
-    // };
 }]);

@@ -15,15 +15,10 @@ exports.config = {
     getPageTimeout: 40000,
     rootElement: 'html',
     multiCapabilities: [
-        capabilitiesForBrowser('chrome', '41'),
+        capabilitiesForBrowser('chrome', '47'),
         capabilitiesForBrowser('firefox'),
         capabilitiesForBrowser('safari')
-    ],
-    jasmineNodeOpts: {
-        showColors: true,
-        defaultTimeoutInterval: 360000,
-        includeStackTrace: true
-    }
+    ]
 };
 
 function capabilitiesForBrowser(browserName, browserVersion) {

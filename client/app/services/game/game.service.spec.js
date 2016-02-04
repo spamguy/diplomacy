@@ -17,13 +17,15 @@ describe('gameService', function() {
         });
     });
 
-    it('creates new games', function() {
-        // TODO: Test reception of callback. Requires pull request to mock library.
-        // socket.on('game:create', function(response) {
-        //     console.log('Game created');
-        //     socket.emit('game:create:success');
-        // });
+    it('gets all games for the current user', function() {
+        // var gameListPromise = sinon.stub().returnsPromise();
+        // gameListPromise.resolves([{ name: 'Game 1' }, { name: 'Game 2' }]);
+        // socket.setEmit('game:userlist', [1,2,3]);
+        // // socket.receive('game:userlist', { playerID: 123 }, gameListPromise);
+        // expect(gameService.getAllGamesForCurrentUser()).to.eventually.have.length(3);
+    });
 
+    it('creates new games', function() {
         gameService.createNewGame({ });
 
         expect(socket.emits).to.contain.keys('game:create');

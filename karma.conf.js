@@ -12,6 +12,7 @@ module.exports = function(config) {
         frameworks: ['browserify', 'mocha', 'chai-jquery', 'jquery-2.1.0', 'chai-as-promised', 'chai'],
         files: [
             'karma-setup.js',
+            'bower_components/jquery/dist/jquery.js',
             'bower_components/momentjs/moment.js',
             'bower_components/d3/d3.js',
             'bower_components/lodash/lodash.js',
@@ -45,7 +46,7 @@ module.exports = function(config) {
             // HTML files and templates.
             'client/app/**/*.tmpl.html'
         ],
-        logLevel: 'ERROR',
+        logLevel: 'INFO',
         reporters: ['spec', 'coverage'],
         autoWatch: false,
         singleRun: true,
