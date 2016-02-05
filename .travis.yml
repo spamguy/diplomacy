@@ -26,4 +26,4 @@ before_script:
     - chmod +x setup-nginx-travis.sh
     - sudo ./setup-nginx-travis.sh
 script:
-    - grunt test:protractor-travis
+    - grunt test

@@ -10,7 +10,26 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
             province: '='
         },
         link: function(scope, element, attrs) {
-            scope.provinceStatus = '<strong>' + scope.province.r + '</strong>';
+            var provinceStatus = '<strong>' + scope.province.r + '</strong> ';
+
+            if (scope.province.unit && scope.province.unit.order) {
+                switch (scope.province.unit.order.action) {
+                case 'move':
+                    provinceStatus += '→ '; break;
+                case 'support':
+                    provinceStatus += 'supports '; break;
+                case 'hold':
+                    provinceStatus += 'holds '; break;
+                case 'convoy':
+                    provinceStatus += 'convoys '; break;
+                case 'build':
+                    provinceStatus += 'builds a'; break;
+                case 'disband':
+                    provinceStatus += 'disbands'; break;
+                }
+            }
+
+            scope.provinceStatus = provinceStatus;
         }
     };
 }]);

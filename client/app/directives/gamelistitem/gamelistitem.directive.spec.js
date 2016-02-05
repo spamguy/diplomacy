@@ -39,6 +39,8 @@ describe('Game list item directive', function() {
             compile = $compile;
 
             scope.game = {
+                name: 'Test Game',
+                description: 'This is a test game.',
                 variant: 'Standard',
                 movementClock: 24,
                 minimumScoreToJoin: 1,
@@ -50,10 +52,35 @@ describe('Game list item directive', function() {
         });
     });
 
+    it('displays the name', function() {
+        el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
+        scope.$digest();
+        expect($('h1.md-title', el)).to.have.text('Test Game');
+    });
+
+    it('displays the description when \'joinable\' is true', function() {
+        // PART I: Description provided.
+        el = compile('<sg-game-list-item game="game" variant="variant" joinable="true" user="user"></sg-game-list-item>')(scope);
+        scope.$digest();
+        expect($('h2.md-subhead', el)).to.have.text('This is a test game.');
+
+        // PART II: No description provided.
+        delete scope.game.description;
+        el = compile('<sg-game-list-item game="game" variant="variant" joinable="true" user="user"></sg-game-list-item>')(scope);
+        scope.$digest();
+        expect($('h2.md-subhead', el)).to.have.text('(no description)');
+    });
+
+    it('doesn\'t display the description when \'joinable\' is false', function() {
+        el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
+        scope.$digest();
+        expect($('h2.md-subhead', el)).to.have.length(0);
+    });
+
     it('displays the correct season and year', function() {
         el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
         scope.$digest();
-        expect(el.isolateScope().seasonDescription).to.equal('Spring Movement 1901');
+        expect($('#seasonDescription', el)).to.have.text('Spring Movement 1901');
     });
 
     it('displays the largest two units in deadline', function() {
@@ -102,7 +129,7 @@ describe('Game list item directive', function() {
             expect($('button', el)).to.be.disabled;
         });
 
-        it('is disabled if player is in game', function() {
+        it('is disabled if player is in game already', function() {
             scope.game.players.push({ player_id: '123' });
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="true" user="user"></sg-game-list-item>')(scope);
             scope.$digest();

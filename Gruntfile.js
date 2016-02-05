@@ -5,7 +5,6 @@ module.exports = function(grunt) {
     require('jit-grunt')(grunt, {
         ngconstant: 'grunt-ng-constant',
         express: 'grunt-express-server',
-        protractor: 'grunt-protractor-runner',
         useminPrepare: 'grunt-usemin',
         ngtemplates: 'grunt-angular-templates',
         replace: 'grunt-text-replace'
@@ -242,23 +241,6 @@ module.exports = function(grunt) {
             unit: {
                 configFile: 'karma.conf.js'
             }
-        },
-        protractor: {
-            travis: {
-                options: {
-                    configFile: 'protractor-travis.conf.js',
-                    args: {
-                        sauceUser: process.env.SAUCE_USERNAME,
-                        sauceKey: process.env.SAUCE_ACCESS_KEY
-                    }
-                }
-            },
-            local: {
-                options: {
-                    configFile: 'protractor-local.conf.js'
-                    // ,debug: true
-                }
-            }
         }
     });
 
@@ -306,7 +288,7 @@ module.exports = function(grunt) {
         'open',
         'watch'
     ]);
-    grunt.registerTask('test', ['ngconstant:mock', 'karma', 'protractor:local']);
+    grunt.registerTask('test', ['ngconstant:mock', 'karma']);
     grunt.registerTask('test:protractor-travis', [
         'ngconstant:mock',
         'karma',
