@@ -111,9 +111,18 @@ angular.module('gameService', ['userService', 'socketService'])
             socketService.socket.emit('game:join', options);
         },
 
-        publishCommand: function(command, season) {
-            command.seasonID = season._id;
-            socketService.socket.emit('season:setorder', command);
+        /**
+         * Updates orders for a single unit.
+         * @param  {String} action  The action.
+         * @param  {Object} command The unit's new command.
+         * @param  {Object} season  The season being modified.
+         */
+        publishCommand: function(action, command, season) {
+            socketService.socket.emit('season:setorder', {
+                seasonID: season._id,
+                command: command,
+                action: action
+            });
         }
     };
 }]);

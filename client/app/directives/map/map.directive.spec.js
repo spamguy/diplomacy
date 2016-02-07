@@ -5,6 +5,7 @@ describe('Map directive', function() {
         el;
 
     beforeEach(function() {
+        angular.mock.module('templates');
         angular.mock.module('diplomacy.constants');
         angular.mock.module('map.directive');
     });
@@ -18,7 +19,10 @@ describe('Map directive', function() {
                     name: 'Standard'
                 }
             };
-            scope.season = [];
+            scope.season = {
+                year: 1901,
+                season: 'Spring Movement'
+            };
             scope.readonly = true;
 
             el = $compile('<sg-map variant="variant" season="season" readonly="readonly" />')(scope);

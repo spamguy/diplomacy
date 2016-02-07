@@ -57,8 +57,8 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             scope.clickCount = 0;
 
             // Add header?
-            if (scope.header && !scope.readonly && scope.season) {
-                $compile('<sg-map-header></sg-map-header>')(scope, function(cloned, scope) {
+            if (scope.season) {
+                $compile('<sg-map-header readonly="readonly"></sg-map-header>')(scope, function(cloned, scope) {
                     element.append(cloned);
                 });
             }
@@ -134,7 +134,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 // FIXME: Check for processed state.
                 if (!readonly) {
                     mouseLayer.on('click', function() {
-                        scope.commandData.push(this.id);
+                        scope.commandData.regions.push(this.id);
 
                         switch (scope.currentAction) {
                         case 'hold':
@@ -142,12 +142,12 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                             break;
                         case 'move':
                             // Source, target.
-                            if (scope.commandData.length < 2)
+                            if (scope.commandData.regions.length < 2)
                                 return;
                             break;
                         case 'support':
                             // Source, target, target of target.
-                            if (scope.commandData.length < 3)
+                            if (scope.commandData.regions.length < 3)
                                 return;
                             break;
                         case 'convoy':
@@ -155,7 +155,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                         }
 
                         // Making it this far means there is a full set of commands to publish.
-                        gameService.publishCommand(scope.commandData, season);
+                        gameService.publishCommand(scope.currentAction, scope.commandData);
                     });
                 }
                 // --------------------------------------------

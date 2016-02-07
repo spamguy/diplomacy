@@ -30,7 +30,10 @@ app.agenda = new Agenda({
     }
 });
 app.agenda.on('ready', function() {
-    all(__dirname + '/jobs', { each: function(obj) { obj(app.agenda, core); } });
+    all(__dirname + '/jobs', {
+        each: function(obj) { obj(app.agenda, core); },
+        filter: function(filename) { return filename.indexOf('spec') < 0; }
+    });
     app.agenda.start();
 });
 

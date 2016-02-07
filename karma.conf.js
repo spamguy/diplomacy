@@ -13,7 +13,7 @@ module.exports = function(config) {
         files: [
             'karma-setup.js',
             'bower_components/jquery/dist/jquery.js',
-            'bower_components/momentjs/moment.js',
+            'bower_components/moment/moment.js',
             'bower_components/d3/d3.js',
             'bower_components/lodash/lodash.js',
             'bower_components/humanize-duration/humanize-duration.js',

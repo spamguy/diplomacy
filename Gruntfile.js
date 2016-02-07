@@ -241,6 +241,14 @@ module.exports = function(grunt) {
             unit: {
                 configFile: 'karma.conf.js'
             }
+        },
+        mochaTest: {
+            test: {
+                options: {
+                    reporter: 'spec'
+                },
+                src: ['server/**/*.spec.js']
+            }
         }
     });
 
@@ -288,10 +296,11 @@ module.exports = function(grunt) {
         'open',
         'watch'
     ]);
-    grunt.registerTask('test', ['ngconstant:mock', 'karma']);
+    grunt.registerTask('test', ['ngconstant:mock', 'karma', 'mochaTest']);
     grunt.registerTask('test:protractor-travis', [
         'ngconstant:mock',
         'karma',
+        'mochaTest',
         'express:dev',
         'sauce-connect',
         'protractor:travis'
