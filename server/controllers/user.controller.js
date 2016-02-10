@@ -9,30 +9,7 @@ var hashOptions = {
     pbkdf2 = require('easy-pbkdf2')(hashOptions),
     auth = require('../auth'),
     mailer = require('../mailer/mailer'),
-    SESSION_LENGTH = 60 * 60 * 4, // Session length, in seconds.
-    seekrits,
-    sendVerifyEmail = function(user, cb) {
-        console.log('Sending verify email to ' + user.tempEmail);
-        var safeUser = {
-                email: user.tempEmail,
-                id: user._id
-            },
-            options = {
-                email: user.tempEmail,
-                token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresIn: 24 * 60 * 60 }),
-                baseURL: seekrits.DOMAIN,
-                subject: 'Verify your email address with dipl.io'
-            };
-        mailer.sendOne('verify', options, cb);
-    };
-
-try {
-    seekrits = require('../config/local.env');
-}
-catch (ex) {
-    if (ex.code === 'MODULE_NOT_FOUND')
-        seekrits = require('../config/local.env.sample');
-}
+    SESSION_LENGTH = 60 * 60 * 4; // Session length, in seconds.
 
 module.exports = function() {
     var app = this.app,
@@ -80,7 +57,7 @@ module.exports = function() {
                 return res.json({
                     id: user._id,
                     email: user.email,
-                    token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresIn: SESSION_LENGTH })
+                    token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresIn: SESSION_LENGTH })
                 });
             });
         },
@@ -111,14 +88,14 @@ module.exports = function() {
                     stubUser = null;
 
                 if (stubUser) {
-                    sendVerifyEmail(stubUser, cb);
+                    sendVerifyEmail(app.seekrits, stubUser, cb);
                 }
                 else {
                     core.user.create({
                         tempEmail: email
                     }, function(err, newUser) {
                         if (!err)
-                            sendVerifyEmail(newUser, cb);
+                            sendVerifyEmail(app.seekrits, newUser, cb);
                         else
                             console.log(err);
                     });
@@ -135,7 +112,7 @@ module.exports = function() {
             var verifyToken = req.body.token,
                 salt = pbkdf2.generateSalt();
 
-            jwt.verify(verifyToken, seekrits.SESSION_SECRET, function(err, payload) {
+            jwt.verify(verifyToken, app.seekrits.get('sessionSecret'), function(err, payload) {
                 if (err)
                     console.error(err);
 
@@ -162,7 +139,7 @@ module.exports = function() {
                             if (!err) {
                                 return res.json({
                                     id: updatedUser._id,
-                                    token: jwt.sign(safeUser, seekrits.SESSION_SECRET, { expiresInMinutes: SESSION_LENGTH })
+                                    token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresInMinutes: SESSION_LENGTH })
                                 });
                             }
                         });
@@ -191,3 +168,20 @@ module.exports = function() {
         }
     });
 };
+
+// PRIVATE FUNCTIONS
+
+function sendVerifyEmail(seekrits, user, cb) {
+    console.log('Sending verify email to ' + user.tempEmail);
+    var safeUser = {
+            email: user.tempEmail,
+            id: user._id
+        },
+        options = {
+            email: user.tempEmail,
+            token: jwt.sign(safeUser, seekrits.get('sessionSecret'), { expiresIn: 24 * 60 * 60 }),
+            baseURL: seekrits.get('domain'),
+            subject: 'Verify your email address with dipl.io'
+        };
+    mailer.sendOne('verify', options, cb);
+}

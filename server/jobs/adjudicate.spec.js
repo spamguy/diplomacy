@@ -1,24 +1,32 @@
 describe.only('Adjudicate job', function() {
     'use strict';
 
-    var expect = require('chai').expect,
+    var path = require('path'),
+        expect = require('chai').expect,
         Mongoose = require('mongoose').Mongoose,
         Mockgoose = require('mockgoose'),
         mongoose = new Mongoose(),
-        seekrits,
-        job = require('./adjudicate');
-    try {
-        seekrits = require('../config/local.env');
-    }
-    catch (ex) {
-        if (ex.code === 'MODULE_NOT_FOUND')
-            seekrits = require('../config/local.env.sample');
-    };
+        rewire = require('rewire'),
+        sinon = require('sinon'),
+        phonyJudge = sinon.stub(),
+        job = rewire('./adjudicate'),
+        seekrits = require('nconf')
+            .file(path.relative(__dirname, 'server/config/local.env.json'))
+            .file(path.relative(__dirname, 'server/config/local.env.sample.json'));
 
     Mockgoose(mongoose);
 
     before(function(done) {
-        mongoose.connect(seekrits.mongoURI);
+        // Mock judge module.
+        job.__set__({
+            global: {
+                state: {
+                    NextFromJS: phonyJudge
+                }
+            }
+        });
+
+        mongoose.connect(seekrits.get('mongoURI'));
         done();
     });
 

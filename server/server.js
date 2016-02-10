@@ -1,4 +1,5 @@
-var express = require('express.oi'),
+var path = require('path'),
+    express = require('express.oi'),
     bodyParser = require('body-parser'), // for crying out loud, STOP REMOVING THIS
     all = require('require-tree'),
     _ = require('lodash'),
@@ -7,15 +8,10 @@ var express = require('express.oi'),
     controllers = all(__dirname + '/controllers'),
     core = require('./cores/index'),
     app = express(),
-    socketioJWT = require('socketio-jwt'),
-    seekrits;
-try {
-    seekrits = require('./config/local.env');
-}
-catch (ex) {
-    if (ex.code === 'MODULE_NOT_FOUND')
-        seekrits = require('./config/local.env.sample');
-}
+    socketioJWT = require('socketio-jwt');
+    var seekrits = require('nconf')
+        .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
+        .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json'));
 
 // Register models.
 all(__dirname + '/models');
@@ -26,7 +22,7 @@ app.use(bodyParser.json());
 // Fire up scheduling.
 app.agenda = new Agenda({
     db: {
-        address: seekrits.mongoURI
+        address: seekrits.get('mongoURI')
     }
 });
 app.agenda.on('ready', function() {
@@ -36,6 +32,7 @@ app.agenda.on('ready', function() {
     });
     app.agenda.start();
 });
+app.seekrits = seekrits;
 
 app.http().io();
 
@@ -47,7 +44,7 @@ _.each(controllers, function(controller) {
 });
 
 app.io.use(socketioJWT.authorize({
-    secret: seekrits.SESSION_SECRET,
+    secret: seekrits.get('sessionSecret'),
     handshake: true
 }));
 
@@ -55,7 +52,7 @@ app.io.on('error', function(err) {
     console.log('Unable to authenticate: ' + JSON.stringify(err));
 });
 
-Mongoose.connect(seekrits.mongoURI);
+Mongoose.connect(seekrits.get('mongoURI'));
 Mongoose.set('debug', true);
 
 app.listen(9000, function() {

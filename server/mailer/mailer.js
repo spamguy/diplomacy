@@ -6,15 +6,9 @@ var path = require('path'),
     EmailTemplate = require('email-templates').EmailTemplate,
     templatesDir = path.resolve(__dirname, 'templates'),
     EmailAddressRequiredError = new Error('An email address is required'),
-    seekrits;
-
-try {
-    seekrits = require('../config/local.env');
-}
-catch (ex) {
-    if (ex.code === 'MODULE_NOT_FOUND')
-        seekrits = require('../config/local.env.sample');
-}
+    seekrits = require('nconf')
+        .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
+        .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json'));
 
 module.exports = {
     sendOne: function(templateName, options, cb) {
@@ -28,12 +22,12 @@ module.exports = {
             var transport = nodemailer.createTransport({
                 service: 'mandrill',
                 auth: {
-                    user: seekrits.mail.auth.user,
-                    pass: seekrits.mail.auth.password
+                    user: seekrits.get('mail:auth:user'),
+                    pass: seekrits.get('mail:auth:password')
                 }
             });
             transport.sendMail({
-                from: seekrits.mail.defaultFromAddress,
+                from: seekrits.get('mail:defaultFromAddress'),
                 to: options.email,
                 subject: options.subject,
                 html: results.html,

@@ -1,19 +1,14 @@
-var async = require('async'),
+var fs = require('fs'),
+    async = require('async'),
     path = require('path'),
     _ = require('lodash'),
-    seekrits,
-    DiplomacyJudge,
+    seekrits = require('nconf')
+        .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
+        .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
     mailer = require('../mailer/mailer');
 
-try {
-    seekrits = require('../config/local.env');
-}
-catch (ex) {
-    if (ex.code === 'MODULE_NOT_FOUND')
-    seekrits = require('../config/local.env.sample');
-}
-
-DiplomacyJudge = require(path.join(seekrits.judgePath, 'diplomacy-godip'));
+if (require('file-exists')(path.join(seekrits.get('judgePath'), 'diplomacy-godip')))
+    require(path.join(seekrits.get('judgePath'), 'diplomacy-godip'));
 
 module.exports = function(agenda, core) {
     function handleLateSeason(game, season) {
@@ -57,7 +52,7 @@ module.exports = function(agenda, core) {
                 async.each(game.players, function(player, err) {
                     var emailOptions = {
                         gameName: game.name,
-                        gameURL: seekrits.DOMAIN + '/games/' + game._id,
+                        gameURL: path.join(seekrits.get('domain'), 'games', game._id),
                         subject: '[' + game.name + '] ' + season.season + ' ' + season.year + ' has been adjudicated',
                         deadline: job.nextRunAt,
                         season: season.season,

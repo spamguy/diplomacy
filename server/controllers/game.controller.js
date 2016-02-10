@@ -1,18 +1,10 @@
 'use strict';
 
-var _ = require('lodash'),
+var path = require('path'),
+    _ = require('lodash'),
     pluralize = require('pluralize'),
     async = require('async'),
-    mailer = require('../mailer/mailer'),
-    seekrits;
-
-try {
-    seekrits = require('../config/local.env');
-}
-catch (ex) {
-    if (ex.code === 'MODULE_NOT_FOUND')
-        seekrits = require('../config/local.env.sample');
-}
+    mailer = require('../mailer/mailer');
 
 module.exports = function() {
     var app = this.app,
@@ -313,7 +305,7 @@ module.exports = function() {
                     async.each(game.players, function(player, err) {
                         var emailOptions = {
                             gameName: game.name,
-                            gameURL: seekrits.DOMAIN + '/games/' + game._id,
+                            gameURL: path.join(app.seekrits.get('domain'), 'games', game._id),
                             subject: '[' + game.name + '] The game is starting!',
                             deadline: job.nextRunAt,
                             season: variant.seasons[season.season - 1],
