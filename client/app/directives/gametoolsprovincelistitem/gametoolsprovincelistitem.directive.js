@@ -15,13 +15,19 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
             if (scope.province.unit && scope.province.unit.order) {
                 switch (scope.province.unit.order.action) {
                 case 'move':
-                    provinceStatus += '→ '; break;
+                    provinceStatus += '→ <strong>' + scope.province.unit.order.y1 + '</strong>';
+                    break;
                 case 'support':
-                    provinceStatus += 'supports '; break;
+                    provinceStatus += 'supports <strong>' + scope.province.unit.order.y1 + '</strong> ';
+                    if (scope.province.unit.order.y2)
+                        provinceStatus += '→ <strong>' + scope.province.unit.order.y2 + '</strong>';
+                    break;
                 case 'hold':
-                    provinceStatus += 'holds '; break;
+                    provinceStatus += 'holds';
+                    break;
                 case 'convoy':
-                    provinceStatus += 'convoys '; break;
+                    provinceStatus += '~ <strong>' + _.last(scope.province.unit.order.y1) + '</strong>';
+                    break;
                 case 'build':
                     provinceStatus += 'builds a'; break;
                 case 'disband':
