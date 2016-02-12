@@ -8,8 +8,8 @@ var path = require('path'),
     controllers = all(__dirname + '/controllers'),
     core = require('./cores/index'),
     app = express(),
-    socketioJWT = require('socketio-jwt');
-    var seekrits = require('nconf')
+    socketioJWT = require('socketio-jwt'),
+    seekrits = require('nconf')
         .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
         .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json'));
 

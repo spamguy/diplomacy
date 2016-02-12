@@ -34,5 +34,8 @@
   "devDependencies": {
     "angular-socket.io-mock": "~1.1.0",
     "jquery": "2.2.0"
+  },
+  "resolutions": {
+    "angular": "~1.4.9"
   }
 }

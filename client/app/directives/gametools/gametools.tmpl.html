@@ -3,7 +3,7 @@
         <md-tab-label>Orders</md-tab-label>
         <md-tab-body>
             <md-content>
-                <section ng-repeat="(code, power) in variant.powers">
+                <section ng-repeat="(code, power) in getPowerList()">
                     <md-subheader>{{power.name}}</md-subheader>
                     <md-list>
                         <md-list-item ng-repeat="province in season.regions" ng-if="powerOwnsProvince(code, province)">
