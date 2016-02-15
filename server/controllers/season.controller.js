@@ -91,7 +91,12 @@ module.exports = function() {
         },
 
         setorder: function(req, res) {
-            console.log('Setting order for season ' + req.data.seasonID);
+            async.waterfall([
+                // Get relevant season.
+                function(callback) {
+                    core.season.setOrder(req.data.seasonID, req.data.command, req.data.action, callback);
+                }
+            ]);
         },
 
         toggleready: function(req, res) {

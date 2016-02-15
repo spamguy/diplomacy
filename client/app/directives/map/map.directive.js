@@ -45,13 +45,13 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 $scope.currentAction = action;
 
                 // Reset any half-made orders.
-                $scope.commandData = { };
+                $scope.commandData = [];
             };
         }],
         link: function(scope, element, attrs) {
             // Set default action.
             scope.currentAction = 'hold';
-            scope.commandData = { };
+            scope.commandData = [];
 
             // Set click counter, responsible for deciding in accordance with $scope.currentAction when to publish an order.
             scope.clickCount = 0;
@@ -134,7 +134,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 // FIXME: Check for processed state.
                 if (!readonly) {
                     mouseLayer.on('click', function() {
-                        scope.commandData.regions.push(this.id);
+                        scope.commandData.push(this.id.toUpperCase());
 
                         switch (scope.currentAction) {
                         case 'hold':
@@ -142,12 +142,12 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                             break;
                         case 'move':
                             // Source, target.
-                            if (scope.commandData.regions.length < 2)
+                            if (scope.commandData.length < 2)
                                 return;
                             break;
                         case 'support':
                             // Source, target, target of target.
-                            if (scope.commandData.regions.length < 3)
+                            if (scope.commandData.length < 3)
                                 return;
                             break;
                         case 'convoy':
@@ -155,7 +155,9 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                         }
 
                         // Making it this far means there is a full set of commands to publish.
-                        gameService.publishCommand(scope.currentAction, scope.commandData);
+                        gameService.publishCommand(scope.currentAction, scope.commandData, scope.season);
+
+                        scope.commandData = [];
                     });
                 }
                 // --------------------------------------------

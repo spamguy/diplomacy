@@ -42,4 +42,19 @@ SeasonCore.prototype.createFromState = function(variant, game, state, cb) {
     newSeason.save(function(err, data) { cb(err, data); });
 };
 
+SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {
+    mongoose.model('Season').findOneAndUpdate({
+        _id: seasonID,
+        'regions.r': data[0]
+    }, {
+        $set: {
+            'regions.$.unit': {
+                order: {
+                    action: action
+                }
+            }
+        }
+    }, { new: true }, cb);
+};
+
 module.exports = SeasonCore;
