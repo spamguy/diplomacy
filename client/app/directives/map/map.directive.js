@@ -83,6 +83,8 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 // STEP 1: Build root <svg>. ------------------
                 var svg = d3.select(element[0])
                     .append('svg')
+                    .attr('flex', '')
+                    .attr('opacity', function(d) { return d ? '1' : '0.3'; })
                     .attr('viewBox', '0 0 ' + xml.rootElement.getAttribute('width') + ' ' + xml.rootElement.getAttribute('height'));
                 // --------------------------------------------
 

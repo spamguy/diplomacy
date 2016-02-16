@@ -5,9 +5,8 @@
 <div layout="row" layout-sm="column" layout-margin>
     <div layout="column" flex="60" flex-xs="100" class="md-whiteframe-2dp">
         <sg-map variant="variant.data" season="season" arrows="true" header="true" readonly="readonly" ng-class="season ? 'started' : 'notStarted'" />
+        <h1 ng-class="season ? 'started' : 'notStarted'" flex>This game has not started yet.</h1>
     </div>
 
     <sg-game-tools class="md-whiteframe-2dp" season="season" game="game" variant="variant.data" flex="40" flex-xs="100" layout="row" />
 </div>
-
-<h1 ng-class="season ? 'started' : 'notStarted'">This game has not started yet.</p>

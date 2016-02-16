@@ -57,15 +57,12 @@ g.mouseLayer path
 
 h1.notStarted
 {
-
+    position: absolute;
+    z-index: 10;
+    padding: 100px;
 }
 
 h1.started
 {
     display: none;
-}
-
-sg-map.notStarted
-{
-    opacity: 0.3;
 }
