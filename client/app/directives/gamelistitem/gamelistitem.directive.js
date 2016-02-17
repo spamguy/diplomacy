@@ -1,5 +1,5 @@
 angular.module('gamelistitem.directive', ['ngMaterial'])
-.directive('sgGameListItem', ['gameService', '$mdDialog', '$state', function(gameService, $mdDialog, $state) {
+.directive('sgGameListItem', ['gameService', '$mdDialog', '$mdMedia', '$state', function(gameService, $mdDialog, $mdMedia, $state) {
     'use strict';
 
     return {
@@ -48,6 +48,25 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 });
             };
 
+            scope.showMapDialog = function($event) {
+                var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
+
+                gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
+                    $mdDialog.show({
+                        parent: angular.element(document.body),
+                        targetEvent: $event,
+                        fullscreen: useFullScreen,
+                        templateUrl: 'app/directives/gamelistitem/gamelistitemmap.tmpl.html',
+                        controller: 'GameListItemMapController',
+                        clickOutsideToClose: true,
+                        locals: {
+                            season: season,
+                            variant: scope.variant
+                        }
+                    });
+                });
+            };
+
             gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
                 if (season) {
                     var timeUntilDeadline = new Date(season.deadline).getTime() - new Date().getTime();
@@ -56,9 +75,12 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 }
                 else {
                     scope.seasonDescription = '(not started)';
-                    scope.readableTimer = '';
+                    scope.readableTimer = humanizeDuration(scope.game.moveClock * 60 * 60 * 1000) + ' deadline';
                 }
             });
         }
     };
+}])
+.controller('GameListItemMapController', ['$scope', '$mdDialog', 'gameService', function($scope, $mdDialog, gameService) {
+
 }]);

@@ -23,179 +23,93 @@
 
         <v-accordion class="vAccordion--default md-whiteframe-z2" style="background-color:#fff" multiple>
             <v-pane>
-                <v-pane-header>Movement Deadlines</v-pane-header>
+                <v-pane-header class="md-headline">Deadlines</v-pane-header>
+                <v-pane-content>
+                    <div layout="row" layout-xs="column" layout-margin>
+                        <div layout="column">
+                            <span flex>Movement Phases</span>
+                            <div layout="row">
+                                <md-input-container class="md-block" flex>
+                                    <label>Days</label>
+                                    <input type="number" ng-model="game.move.days" min="0">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex>
+                                    <label>Hours</label>
+                                    <input type="number" ng-model="game.move.hours" min="0">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex>
+                                    <label>Minutes</label>
+                                    <input type="number" ng-model="game.move.minutes" min="0">
+                                </md-input-container>
+                            </div>
+                        </div>
+
+                        <!-- Retreat -->
+                        <div layout="column">
+                            <span flex>Retreat Phases</span>
+                            <div layout="row">
+                                <md-input-container class="md-block" flex>
+                                    <label>Days</label>
+                                    <input type="number" ng-model="game.retreat.days" min="0">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex>
+                                    <label>Hours</label>
+                                    <input type="number" ng-model="game.retreat.hours" min="0">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex>
+                                    <label>Minutes</label>
+                                    <input type="number" ng-model="game.retreat.minutes" min="0">
+                                </md-input-container>
+                            </div>
+                        </div>
+
+                        <!-- Adjustment -->
+                        <div layout="column">
+                            <span flex>Adjustment Phases</span>
+                            <div layout="row">
+                                <md-input-container class="md-block" flex>
+                                    <label>Days</label>
+                                    <input type="number" ng-model="game.adjust.days" min="0">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex>
+                                    <label>Hours</label>
+                                    <input type="number" ng-model="game.adjust.hours" min="0">
+                                </md-input-container>
+                                <md-input-container class="md-block" flex>
+                                    <label>Minutes</label>
+                                    <input type="number" ng-model="game.adjust.minutes" min="0">
+                                </md-input-container>
+                            </div>
+                        </div>
+                    </div>
+                </v-pane-content>
+            </v-pane>
+
+            <v-pane>
+                <v-pane-header class="md-headline">Visibility</v-pane-header>
                 <v-pane-content>
                 </v-pane-content>
             </v-pane>
 
             <v-pane>
-                <v-pane-header>Retreat Deadlines</v-pane-header>
+                <v-pane-header class="md-headline">Press</v-pane-header>
                 <v-pane-content>
                 </v-pane-content>
             </v-pane>
 
             <v-pane>
-                <v-pane-header>Build Deadlines</v-pane-header>
-                <v-pane-content>
-                </v-pane-content>
-            </v-pane>
-
-            <v-pane>
-                <v-pane-header>Visibility</v-pane-header>
-                <v-pane-content>
-                </v-pane-content>
-            </v-pane>
-
-            <v-pane>
-                <v-pane-header>Press</v-pane-header>
-                <v-pane-content>
-                </v-pane-content>
-            </v-pane>
-
-            <v-pane>
-                <v-pane-header>Everything Else</v-pane-header>
+                <v-pane-header class="md-headline">Everything Else</v-pane-header>
                 <v-pane-content>
                 </v-pane-content>
             </v-pane>
 
             <div layout="row" layout-align="center center">
                 <md-button class="md-raised">Cancel</md-button>
-                <md-button type="submit" class="md-raised md-primary">Complete</md-button>
+                <md-button type="submit" class="md-raised md-primary" ng-disabled="newGameForm.$invalid">Create</md-button>
             </div>
         </v-accordion>
     </div>
 </form>
-<!-- <form name="forms.newGameForm" ng-if="hasDecentScore()">
-    <wizard on-finish="onWizardFinished()" hide-indicators="true">
-        <wz-step title="Name" canexit="canExitStep1">
-            <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
-                    <p class="subheader">What will your game be called?</p>
-
-                    <md-input-container>
-                        <label>Name</label>
-                        <input type="text" name="gamename" ng-model="game.name" aria-label="Game Name" required />
-                    </md-input-container>
-
-                    <p style="text-align:center"><md-button wz-next class="md-raised md-accent">Continue</md-button></p>
-                </md-whiteframe>
-            </div>
-        </wz-step>
-        <wz-step title="Variant">
-            <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
-                    <p class="subheader">Choose a variant.</p>
-
-                    <md-radio-group ng-model="game.variant">
-                        <md-radio-button ng-repeat="variant in variants" ng-value="variant" aria-label="{{variant}}">{{variant}}</md-radio-group>
-                    </md-radio-group>
-
-                    <p style="text-align:center">
-                        <md-button wz-previous class="md-raised">Back</md-button>
-                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
-                    </p>
-                </md-whiteframe>
-            </div>
-        </wz-step>
-        <wz-step title="Movements">
-            <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
-                    <p class="subheader">Choose when and how movement phases are processed.</p>
-                    <div layout="row" class="clockOption">
-                        <span>Every</span>
-                        <md-input-container>
-                            <input type="number" name="moveClock" ng-model="game.move.clock" min="0" aria-label="Movement Clock" />
-                        </md-input-container>
-                        <span>hours ({{humaniseTime(game.move.clock)}})</span>
-                    </div>
-                    <p style="text-align:center">
-                        <md-button wz-previous class="md-raised">Back</md-button>
-                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
-                    </p>
-                </md-whiteframe>
-            </div>
-        </wz-step>
-        <wz-step title="Retreats">
-            <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
-                    <p class="subheader">Choose when and how retreat phases are processed.</p>
-                    <div layout="row" class="clockOption">
-                        <span>Every</span>
-                        <md-input-container>
-                            <input type="number" name="retreatClock" ng-model="game.retreat.clock" min="0" aria-label="Retreat Clock" />
-                        </md-input-container>
-                        <span>hours ({{humaniseTime(game.retreat.clock)}})</span>
-                    </div>
-                    <p style="text-align:center">
-                        <md-button wz-previous class="md-raised">Back</md-button>
-                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
-                    </p>
-                </md-whiteframe>
-            </div>
-        </wz-step>
-        <wz-step title="Builds">
-            <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
-                    <p class="subheader">Choose when and how adjustment (build) phases are processed.</p>
-                    <div layout="row" class="clockOption">
-                        <span>Every</span>
-                        <md-input-container>
-                            <input type="number" name="adjustClock" ng-model="game.adjust.clock" min="0" aria-label="Adjustment Clock" />
-                        </md-input-container>
-                        <span>hours ({{humaniseTime(game.adjust.clock)}})</span>
-                    </div>
-                    <p style="text-align:center">
-                        <md-button wz-previous class="md-raised">Back</md-button>
-                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
-                    </p>
-                </md-whiteframe>
-            </div>
-        </wz-step>
-        <wz-step title="Press">
-            <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
-                    <p class="subheader">What type of press can players use?</p>
-
-                    <md-radio-group ng-model="game.press">
-                        <md-radio-button value="white">White</md-radio-button>
-                        <md-radio-button value="grey">Grey</md-radio-button>
-                        <md-radio-button value="black">Black</md-radio-button>
-                        <md-radio-button value="none">None (Gunboat)</md-radio-button>
-                    </md-radio-group>
-
-                    <p style="text-align:center">
-                        <md-button wz-previous class="md-raised">Back</md-button>
-                        <md-button wz-next class="md-raised md-accent">Continue</md-button>
-                    </p>
-                </md-whiteframe>
-            </div>
-        </wz-step>
-        <wz-step title="Press">
-            <div layout="row" layout-align="center center" layout-padding>
-                <md-whiteframe class="md-whiteframe-z2" flex="60" flex-xs="100">
-                    <p class="subheader">Set this game's visibility.</p>
-
-                    <md-radio-group ng-model="game.visibility">
-                        <md-radio-button value="public">Public</md-radio-button>
-                        <md-radio-button value="private">Private</md-radio-button>
-                    </md-radio-group>
-
-                    <div ng-if="game.visibility == 'private'">
-                        <md-input-container>
-                            <label>Password</label>
-                            <input type="password" name="gamepassword" ng-model="game.password" required />
-                        </md-input-container>
-                    </div>
-
-                    <p style="text-align:center">
-                        <md-button wz-previous class="md-raised">Back</md-button>
-                        <md-button wz-finish class="md-raised md-accent">Complete</md-button>
-                    </p>
-                </md-whiteframe>
-            </div>
-        </wz-step>
-    </wizard>
-</form> -->
 
 <div layout="row" layout-align="center center" layout-padding ng-if="!hasDecentScore()">
     <div class="md-whiteframe-2dp" layout="column" layout-margin flex="60" flex-xs="100">

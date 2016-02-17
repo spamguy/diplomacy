@@ -1,9 +1,21 @@
 'use strict';
 
 angular.module('games')
-.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'season', function($scope, userService, gameService, variant, game, season) {
+.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'season', '$mdDialog', function($scope, userService, gameService, variant, game, season, $mdDialog) {
     $scope.variant = variant;
     $scope.game = game;
     $scope.season = season;
     $scope.readonly = userService.getCurrentUser() === game.gm_id;
+
+    if (!season) {
+        $mdDialog.show(
+            $mdDialog.alert()
+                .parent(angular.element(document.body))
+                .clickOutsideToClose(true)
+                .title('Not started')
+                .ok('OK')
+                .textContent('This game has not started yet. No powers have been assigned.')
+                .ariaLabel('Game not started')
+        );
+    }
 }]);

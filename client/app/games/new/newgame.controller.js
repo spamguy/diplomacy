@@ -10,13 +10,19 @@ angular.module('games')
             season: null,
             variant: 'Standard',
             move: {
-                clock: 24
+                days: 1,
+                hours: 0,
+                minutes: 0
             },
             retreat: {
-                clock: 24
+                days: 1,
+                hours: 0,
+                minutes: 0
             },
             adjust: {
-                clock: 24
+                days: 1,
+                hours: 0,
+                minutes: 0
             },
             visibility: 'public',
             press: 'white',
