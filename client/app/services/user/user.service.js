@@ -1,11 +1,13 @@
 'use strict';
 
 angular.module('userService', ['LocalStorageModule'])
-.factory('userService', ['localStorageService', 'socketService', '$q',
-function(localStorageService, socketService, $q) {
+.factory('userService', ['localStorageService', 'socketService', '$q', '$rootScope',
+function(localStorageService, socketService, $q, $rootScope) {
+    var currentUserID;
+
     return {
         isAuthenticated: function() {
-            return !!localStorageService.get('token');
+            return !!$rootScope.currentUser;
         },
 
         getToken: function() {
@@ -21,16 +23,19 @@ function(localStorageService, socketService, $q) {
         },
 
         getCurrentUser: function() {
-            return localStorageService.get('currentUser');
+            return $rootScope.currentUser;
         },
 
-        getCurrentUserEmail: function() {
-            return localStorageService.get('currentUserEmail');
-        },
-
-        setCurrentUser: function(userID, userEmail) {
-            localStorageService.set('currentUser', userID);
-            localStorageService.set('currentUserEmail', userEmail);
+        /**
+         * Saves user info to service for convenient access.
+         * @param  {string} [userID] The user ID.
+         */
+        setCurrentUser: function(userID) {
+            if (userID)
+                currentUserID = userID;
+            this.getUser(currentUserID).then(function(user) {
+                $rootScope.currentUser = user;
+            });
         },
 
         getUser: function(userID) {

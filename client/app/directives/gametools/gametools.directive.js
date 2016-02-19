@@ -20,13 +20,13 @@ angular.module('gametools.directive', [])
                 var currentUser = userService.getCurrentUser(),
                     p;
 
-                if (currentUser === scope.game.gm_id) {
+                if (currentUser._id === scope.game.gm_id) {
                     // GMs see everyone.
                     return scope.variant.powers;
                 }
                 else {
                     for (p = 0; p < scope.game.players.length; p++) {
-                        if (scope.game.players[p].player_id === currentUser)
+                        if (scope.game.players[p].player_id === currentUser._id)
                             return _.pick(scope.variant.powers, [scope.game.players[p].power]);
                     }
                 }

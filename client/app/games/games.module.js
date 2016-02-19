@@ -20,12 +20,6 @@ angular.module('games', [
         templateUrl: 'app/games/games.html',
         data: {
             restricted: true
-        },
-        resolve: {
-            userService: 'userService',
-            user: function(userService) {
-                return userService.getUser(userService.getCurrentUser());
-            }
         }
     })
     .state('games.new', {
@@ -36,9 +30,6 @@ angular.module('games', [
             restricted: true
         },
         resolve: {
-            currentUser: ['userService', function(userService) {
-                return userService.getUser(userService.getCurrentUser());
-            }],
             variants: ['gameService', function(gameService) {
                 return gameService.getAllVariantNames();
             }]
@@ -52,9 +43,6 @@ angular.module('games', [
             restricted: true
         },
         resolve: {
-            user: function(userService) {
-                return userService.getUser(userService.getCurrentUser());
-            },
             variant: ['gameService', 'game', function(gameService, game) {
                 return gameService.getVariant(game.variant);
             }],
@@ -64,7 +52,7 @@ angular.module('games', [
             season: ['userService', 'gameService', 'game', function(userService, gameService, game) {
                 // FIXME: This approach is probably totally exploitable. This decision making needs to happen server-side.
                 // Identify whether current player is admin of this game.
-                var playerID = userService.getCurrentUser(),
+                var playerID = userService.getCurrentUser()._id,
                     isAdmin = game.gm_id === playerID;
 
                 if (isAdmin)

@@ -2,14 +2,16 @@ describe('Games module', function() {
     'use strict';
 
     var mockUserService,
-        mockGameService,
-        $state,
-        $injector;
+        $state;
 
     beforeEach(function() {
         mockUserService = {
             getUser: sinon.stub().returnsPromise(),
-            getCurrentUser: function() { return '123'; }
+            getCurrentUser: function() {
+                return {
+                    _id: '123'
+                };
+            }
         };
 
         mockUserService.getUser.resolves({
@@ -22,7 +24,6 @@ describe('Games module', function() {
 
         inject(function(_$state_, _$injector_) {
             $state = _$state_;
-            $injector = _$injector_;
         });
     });
 

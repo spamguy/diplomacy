@@ -1,12 +1,12 @@
 'use strict';
 
 angular.module('loginService', [ ])
-.factory('loginService', ['userService', 'socketService', '$state', function(userService, socketService, $state) {
+.factory('loginService', ['userService', 'socketService', '$state', '$rootScope', function(userService, socketService, $state, $rootScope) {
     return {
         validLoginCallback: function(data) {
             data = data.data; // data? data!
 
-            userService.setCurrentUser(data.id, data.email);
+            userService.setCurrentUser(data.id);
             userService.setToken(data.token);
 
             // Subscribe to all associated games after authenticating.

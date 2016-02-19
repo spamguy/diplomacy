@@ -1,23 +1,28 @@
 'use strict';
 
 angular.module('games')
-.controller('GameListController', ['$scope', 'user', 'gameService', function($scope, user, gameService) {
+.controller('GameListController', ['$scope', 'userService', 'gameService', function($scope, userService, gameService) {
     $scope.variants = { };
-    $scope.user = user; // 'user' has been resolved already; see games.module.js
+    $scope.user = userService.getCurrentUser();
 
     gameService.getAllOpenGames().then(function(games) {
+        var theGame,
+            variantName,
+            key,
+            i;
+
         $scope.games = games;
 
-        for (var i = 0; i < $scope.games.length; i++) {
-            var theGame = $scope.games[i];
+        for (i = 0; i < $scope.games.length; i++) {
+            theGame = $scope.games[i];
 
-            // identify what variants need fetching
-            var variantName = theGame.variant;
+            // Identify what variants need fetching.
+            variantName = theGame.variant;
             if (!$scope.variants[variantName])
                 $scope.variants[variantName] = { };
         }
 
-        for (var key in $scope.variants)
+        for (key in $scope.variants)
             $scope.variants[key] = gameService.getVariant(key);
     });
 }]);

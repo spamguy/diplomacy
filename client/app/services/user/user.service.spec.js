@@ -1,16 +1,27 @@
-'use strict';
-
 describe('userService', function() {
-    var $scope,
+    'use strict';
+
+    var $rootScope,
         userService;
 
-    beforeEach(angular.mock.module('userService'));
-    beforeEach(angular.mock.module('socketService'));
-
     beforeEach(function() {
-        inject(function($injector, $rootScope, $compile, $q, $timeout) {
-            $scope = $rootScope;
-            userService = $injector.get('userService');
+        angular.mock.module('diplomacy.constants');
+        angular.mock.module('userService');
+        angular.mock.module('socketService');
+
+        inject(function($injector, _$rootScope_, _userService_) {
+            $rootScope = _$rootScope_;
+            userService = _userService_;
         });
+    });
+
+    it('returns authentication status', function() {
+        expect(userService.isAuthenticated()).to.be.false;
+
+        $rootScope.currentUser = {
+            _id: '12345'
+        };
+
+        expect(userService.isAuthenticated()).to.be.true;
     });
 });
