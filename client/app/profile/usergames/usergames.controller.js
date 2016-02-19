@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('profile')
-.controller('UserGamesController', ['$scope', '$http', 'userService', 'gameService', 'games', 'gmGames', function($scope, $http, userService, gameService, games, gmGames) {
+.controller('UserGamesController', ['$scope', '$http', 'gameService', 'games', 'gmGames', 'currentUser', function($scope, $http, gameService, games, gmGames, currentUser) {
     var i,
         theGame,
         variantName,
@@ -14,7 +14,7 @@ angular.module('profile')
 
     $scope.playing = games;
     $scope.GMing = gmGames;
-    $scope.user = userService.getCurrentUser();
+    $scope.user = currentUser;
 
     for (i = 0; i < games.length; i++) {
         theGame = games[i];

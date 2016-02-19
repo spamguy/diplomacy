@@ -16,7 +16,7 @@ angular.module('gameService', ['userService', 'socketService'])
         getAllGamesForCurrentUser: function() {
             return $q(function(resolve) {
                 socketService.socket.emit('game:userlist', {
-                    playerID: userService.getCurrentUser()._id
+                    playerID: userService.getCurrentUser()
                 }, function(games) {
                     resolve(games);
                 });
@@ -31,7 +31,7 @@ angular.module('gameService', ['userService', 'socketService'])
         getAllGamesOwnedByCurrentUser: function() {
             return $q(function(resolve) {
                 socketService.socket.emit('game:usergmlist', {
-                    'gmID': userService.getCurrentUser()._id
+                    'gmID': userService.getCurrentUser()
                 }, function(games) {
                     resolve(games);
                 });

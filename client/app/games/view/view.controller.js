@@ -5,7 +5,7 @@ angular.module('games')
     $scope.variant = variant;
     $scope.game = game;
     $scope.season = season;
-    $scope.readonly = userService.getCurrentUser()._id === game.gm_id;
+    $scope.readonly = userService.getCurrentUser() === game.gm_id;
 
     if (!season) {
         $mdDialog.show(

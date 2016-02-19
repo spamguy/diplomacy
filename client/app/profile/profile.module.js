@@ -28,6 +28,9 @@ angular.module('profile', [
             },
             gmGames: function(gameService) {
                 return gameService.getAllGamesOwnedByCurrentUser();
+            },
+            currentUser: function(userService) {
+                return userService.getUser(userService.getCurrentUser());
             }
         }
     })

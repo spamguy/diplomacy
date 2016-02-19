@@ -23,8 +23,8 @@
 
             <div class="info" layout="row" layout-margin ng-if="isAuthenticated">
                 <div layout="column" layout-align="center end">
-                    <span class="email" ng-if="isAuthenticated">{{currentUser.email}}</span>
-                    <span class="points">{{currentUser.points}} points</span>
+                    <span class="email" ng-if="isAuthenticated">{{userEmail}}</span>
+                    <span class="points">100 points</span>
                 </div>
 
                 <md-menu md-position-mode="target-right target">

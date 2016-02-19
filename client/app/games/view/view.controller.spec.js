@@ -21,11 +21,7 @@ describe('Game view controller', function() {
         };
 
         mockUserService = {
-            getCurrentUser: function() {
-                return {
-                    _id: '123'
-                };
-            }
+            getCurrentUser: function() { return '123'; }
         };
         mockGameService = {
 

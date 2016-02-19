@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('games')
-.controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'variants', function($scope, gameService, userService, $state, variants) {
+.controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'currentUser', 'variants', function($scope, gameService, userService, $state, currentUser, variants) {
     angular.extend($scope, {
         game: {
             name: null,
@@ -27,7 +27,7 @@ angular.module('games')
             visibility: 'public',
             press: 'white',
             minimumScoreToJoin: 0,
-            gmID: userService.getCurrentUser()._id,
+            gmID: currentUser._id,
 
             save: function() {
                 gameService.getVariant($scope.game.variant).then(function(variant) {
