@@ -2,9 +2,7 @@ describe('Games module', function() {
     'use strict';
 
     var mockUserService,
-        mockGameService,
-        $state,
-        $injector;
+        $state;
 
     beforeEach(function() {
         mockUserService = {
@@ -22,7 +20,6 @@ describe('Games module', function() {
 
         inject(function(_$state_, _$injector_) {
             $state = _$state_;
-            $injector = _$injector_;
         });
     });
 

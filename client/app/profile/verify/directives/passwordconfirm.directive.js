@@ -13,7 +13,7 @@ angular.module('signupform.directives', ['userService'])
                 return modelValue === scope.otherModelValue;
             };
 
-            scope.$watch("otherModelValue", function() {
+            scope.$watch('otherModelValue', function() {
                 ngModel.$validate();
             });
         }

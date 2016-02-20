@@ -74,7 +74,7 @@ describe('Game list item directive', function() {
     it('doesn\'t display the description when \'joinable\' is false', function() {
         el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
         scope.$digest();
-        expect($('h2.md-subhead', el)).to.have.length(0);
+        expect($('h2.md-subhead', el)).to.have.lengthOf(0);
     });
 
     it('displays the correct season and year', function() {
@@ -101,12 +101,12 @@ describe('Game list item directive', function() {
             // PART I: joinable = true.
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="true" user="user"></sg-game-list-item>')(scope);
             scope.$digest();
-            expect($('button', el)).to.have.length(1);
+            expect($('button', el)).to.have.lengthOf(1);
 
             // PART II: joinable = false.
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
             scope.$digest();
-            expect($('button', el)).to.have.length(0);
+            expect($('button', el)).to.have.lengthOf(0);
         });
 
         it('is disabled if player\'s score is too low', function() {

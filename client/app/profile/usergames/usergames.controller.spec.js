@@ -1,75 +1,63 @@
-describe('UserGamesController', function() {
+describe('User games controller', function() {
     'use strict';
-    var $q,
-        $rootScope,
-        $scope,
-        mockService,
-        deferred,
-        deferred2,
-        deferred3,
-        $state,
-        $injector,
-        games;
 
-    games = [
-        { name: 'Game 1', variant: 'standard' },
-        { name: 'Game 2', variant: 'standard' },
-        { name: 'Game 3', variant: 'not-standard' }
-    ];
+    var scope,
+        createController,
+        mockGameService,
+        games,
+        currentUser,
+        gmGames;
 
     beforeEach(function() {
-        angular.mock.module('diplomacy.constants');
-        angular.mock.module('templates');
-        angular.mock.module('profile');
-
-        inject(function(_$q_, _$rootScope_, _$state_, _$injector_) {
-            $q = _$q_;
-            $rootScope = _$rootScope_;
-            $state = _$state_;
-            $injector = _$injector_;
-        });
-    });
-
-    beforeEach(inject(function($controller) {
-        $scope = $rootScope.$new();
-        mockService = {
-            getAllGamesForCurrentUser: function() {
-                deferred = $q.defer();
-                return deferred.promise;
-            },
-            getMoveDataForCurrentUser: function() {
-                deferred2 = $q.defer();
-                return deferred2.promise;
-            },
-            getVariant: function() {
-                deferred3 = $q.defer();
-                return deferred3.promise;
-            }
+        mockGameService = {
+            getVariant: sinon.spy()
         };
-    }));
+        games = [{
+            name: 'Game 1',
+            variant: 'Standard'
+        }, {
+            name: 'Game 2',
+            variant: 'Standard'
+        }, {
+            name: 'Game 3',
+            variant: 'Standard'
+        }, {
+            name: 'Chromatic Game',
+            variant: 'Chromatic'
+        }];
+        gmGames = [ ];
+        currentUser = {
+            _id: '123'
+        };
 
-    beforeEach(inject(function($rootScope, $controller, $q) {
-        $scope = $rootScope.$new();
-        $controller('UserGamesController', { $scope: $scope, gameService: mockService, games: games, gmGames: [ ], currentUser: { } });
-    }));
+        angular.mock.module('profile');
+        angular.mock.module('gameService', function($provide) {
+            $provide.value('gameService', mockGameService);
+        });
 
-    xit('resolves game data', function() {
-        $state.go('profile.games');
-
-        $rootScope.$digest();
-        $injector.invoke($state.get('profile.games').resolve.games).then(function(result) {
-            expect(result.length).to.equal(games.length);
+        inject(function($controller, $rootScope) {
+            scope = $rootScope.$new();
+            createController = function(theGames, theGmGames, theCurrentUser) {
+                return $controller('UserGamesController', {
+                    $scope: scope,
+                    games: theGames,
+                    gmGames: theGmGames,
+                    currentUser: theCurrentUser
+                });
+            };
         });
     });
 
-    // one call for 'standard', one for 'not-standard'
-    xit('fetches variant data once per distinct variant', function() {
-        $state.go('profile.games');
+    it('lists the correct number of games being played', function() {
+        createController(games, gmGames, currentUser);
+        scope.$digest();
+        expect(scope.playing).to.have.lengthOf(4);
+    });
 
-        $rootScope.$digest();
-
-        // deferred3.promise.then(function(moves) {
-        //     expect(mockService.getVariant.calls.count()).to.equal(2);
-        // });
+    it('fetches each distinct variant only once', function() {
+        createController(games, gmGames, currentUser);
+        scope.$digest();
+        expect(scope.variants).to.have.all.keys(['Standard', 'Chromatic']);
+        expect(mockGameService.getVariant.calledTwice).to.be.true;
     });
 });

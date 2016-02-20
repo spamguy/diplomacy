@@ -23,9 +23,9 @@ angular.module('games', [
         },
         resolve: {
             userService: 'userService',
-            user: function(userService) {
-                return userService.getUser(userService.getCurrentUser());
-            }
+            games: ['gameService', function(gameService) {
+                return gameService.getAllOpenGames();
+            }]
         }
     })
     .state('games.new', {

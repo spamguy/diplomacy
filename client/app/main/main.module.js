@@ -31,9 +31,5 @@ angular.module('diplomacy.main', [
         url: '/login',
         templateUrl: 'app/main/login/login.html',
         controller: 'LoginController'
-    })
-    .state('main.logout', {
-        url: '/logout',
-        controller: 'LogoutController'
     });
 }]);
