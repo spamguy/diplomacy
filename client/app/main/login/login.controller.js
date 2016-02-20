@@ -13,7 +13,7 @@ function($scope, $http, userService, loginService, socketService, CONST, $mdToas
                 .then(
                     loginService.validLoginCallback,
                     function(response) {
-                        userService.unsetToken();
+                        $scope.logOut();
                         $mdToast.show(
                             $mdToast.simple()
                                 .content(response.data.message)

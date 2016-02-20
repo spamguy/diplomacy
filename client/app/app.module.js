@@ -46,13 +46,12 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
     localStorageServiceProvider.setPrefix('diplomacy');
 
     // JWT/auth setup.
-    jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$state', '$http', 'userService', function(jwtHelper, $state, $http, userService) {
+    jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$rootScope', 'userService', function(jwtHelper, $rootScope, userService) {
         var oldToken = userService.getToken();
 
         if (oldToken && jwtHelper.isTokenExpired(oldToken)) {
             console.log('Token is expired: ' + oldToken);
-            userService.unsetToken();
-            $state.go('main.home');
+            $rootScope.logOut();
         }
         else {
             return oldToken;

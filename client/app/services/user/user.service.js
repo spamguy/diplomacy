@@ -16,10 +16,6 @@ function(localStorageService, socketService, $q) {
             localStorageService.set('token', token);
         },
 
-        unsetToken: function() {
-            localStorageService.remove('token');
-        },
-
         getCurrentUser: function() {
             return localStorageService.get('currentUser');
         },

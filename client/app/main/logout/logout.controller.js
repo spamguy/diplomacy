@@ -1,9 +1,8 @@
 'use strict';
 
 angular.module('diplomacy.main')
-.controller('LogoutController', ['userService', 'socketService', '$state', function(userService, socketService, $state) {
-    // clear token
-    userService.unsetToken();
+.controller('LogoutController', ['userService', 'socketService', '$state', 'localStorageService', function(userService, socketService, $state, localStorageService) {
+    localStorageService.clearAll();
 
     // disconnect socket
     if (socketService.socket)
