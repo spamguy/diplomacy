@@ -20,6 +20,11 @@ angular.module('games', [
         templateUrl: 'app/games/games.html',
         data: {
             restricted: true
+        },
+        resolve: {
+            openGames: ['gameService', function(gameService) {
+                return gameService.getAllOpenGames();
+            }]
         }
     })
     .state('games.new', {
