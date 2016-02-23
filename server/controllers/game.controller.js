@@ -4,6 +4,7 @@ var path = require('path'),
     _ = require('lodash'),
     pluralize = require('pluralize'),
     async = require('async'),
+    Moment = require('moment'),
     mailer = require('../mailer/mailer');
 
 module.exports = function() {
@@ -226,6 +227,7 @@ module.exports = function() {
         },
 
         start: function(req, res) {
+            var nextSeasonDeadline = new Moment();
             console.log('Starting game ' + req.data.gameID);
 
             async.waterfall([
@@ -250,6 +252,7 @@ module.exports = function() {
                 // Creates first season if previous step pulled up nothing.
                 function(game, seasons, callback) {
                     var variant = core.variant.get(game.variant),
+                        clock,
                         defaultRegions,
                         firstSeason;
                     if (!seasons || !seasons.length) {
@@ -263,6 +266,7 @@ module.exports = function() {
                             game_id: game._id,
                             regions: defaultRegions
                         };
+                        clock = game.getClockFromSeason(firstSeason.season);
 
                         game.year = variant.startYear;
                         game.season = variant.seasons[0];
@@ -297,17 +301,20 @@ module.exports = function() {
 
                 // Schedule adjudication and send out emails.
                 function(variant, game, season, callback) {
-                    var clock = game.getClockFromSeason(season.season),
-                        job;
-
-                    job = app.agenda.schedule(clock + ' hours', 'adjudicate', { seasonID: season._id });
+                    var job = app.queue.create('adjudicate', {
+                        seasonID: season._id
+                    });
+                    job.save(function(err) {
+                        if (err)
+                            callback(err);
+                    });
 
                     async.each(game.players, function(player, err) {
                         var emailOptions = {
                             gameName: game.name,
-                            gameURL: path.join(app.seekrits.get('domain'), 'games', game._id),
+                            gameURL: path.join(app.seekrits.get('domain'), 'games', game._id.toString()),
                             subject: '[' + game.name + '] The game is starting!',
-                            deadline: job.nextRunAt,
+                            deadline: nextSeasonDeadline,
                             season: variant.seasons[season.season - 1],
                             year: season.year
                         };

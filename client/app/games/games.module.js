@@ -25,6 +25,9 @@ angular.module('games', [
             userService: 'userService',
             games: ['gameService', function(gameService) {
                 return gameService.getAllOpenGames();
+            }],
+            user: ['userService', function(userService) {
+                return userService.getUser(userService.getCurrentUser());
             }]
         }
     })

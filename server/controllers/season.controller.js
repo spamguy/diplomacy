@@ -26,23 +26,6 @@ module.exports = function() {
                     core.season.list(options, function(err, seasons) {
                         callback(err, games[0], seasons);
                     });
-                },
-
-                // Append deadlines to results.
-                function(game, seasons, callback) {
-                    // Can't add deadline property to Mongoose objects. Use JS objects instead.
-                    async.map(seasons, function(season, callback) {
-                        app.agenda.jobs({ 'data.seasonID': season._id }, function(err, jobs) {
-                            season = season.toObject();
-                            if (jobs.length > 0)
-                                season.deadline = jobs[0].attrs.nextRunAt;
-                            callback(err, season);
-                        });
-                    }, function(err, seasons) {
-                        if (err)
-                            console.error(err);
-                        callback(err, game, seasons);
-                    });
                 }],
 
                 // Strip out movements the user shouldn't see.

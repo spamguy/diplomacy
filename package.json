@@ -3,7 +3,6 @@
   "version": "0.0.4",
   "main": "server/server.js",
   "dependencies": {
-    "agenda": "0.7.9",
     "async": "1.5.2",
     "body-parser": "1.5.2",
     "easy-pbkdf2": "~0.1.1",
@@ -14,6 +13,7 @@
     "glob": "6.0.1",
     "handlebars": "4.0.5",
     "jsonwebtoken": "5.5.4",
+    "kue": "0.10.5",
     "lodash": "3.7.0",
     "moment": "~2.10.2",
     "mongoose": "4.4.3",
@@ -29,7 +29,6 @@
     "socketio-jwt": "4.3.3"
   },
   "devDependencies": {
-    "agenda-ui": "0.0.7",
     "body-parser": "1.5.2",
     "browserify": "13.0.0",
     "chai": "3.5.0",

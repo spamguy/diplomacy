@@ -1,26 +1,20 @@
-var fs = require('fs'),
-    async = require('async'),
-    path = require('path'),
-    _ = require('lodash'),
-    seekrits = require('nconf')
-        .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
-        .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
-    mailer = require('../mailer/mailer');
+'use strict';
 
-if (require('file-exists')(path.join(seekrits.get('judgePath'), 'diplomacy-godip')))
-    require(path.join(seekrits.get('judgePath'), 'diplomacy-godip'));
+module.exports = {
+    name: 'adjudicate',
+    process: function(job, done) {
+        var core = require('../cores/index'),
+            async = require('async'),
+            path = require('path'),
+            _ = require('lodash'),
+            seekrits = require('nconf')
+                .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
+                .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
+            mailer = require('../mailer/mailer'),
+            seasonID = job.data.seasonID;
 
-module.exports = function(agenda, core) {
-    function handleLateSeason(game, season) {
-        // TODO: Begin the grace period countdown.
-        // TODO: Penalize late players.
-    }
-
-    // Define custom error type.
-    function AllPlayersNotReadyError() { }
-
-    agenda.define('adjudicate', function(job, done) {
-        var seasonID = job.attrs.data.seasonID;
+        if (require('file-exists')(path.join(seekrits.get('judgePath'), 'diplomacy-godip')))
+            require(path.join(seekrits.get('judgePath'), 'diplomacy-godip'));
 
         console.log('Adjudicating season ' + seasonID);
 
@@ -39,7 +33,7 @@ module.exports = function(agenda, core) {
             function(game, season, callback) {
                 // Not everyone is ready. Handling this situation deserves its own block.
                 if (!game.ignoreLateOrders && !_.every(game.players, 'isReady'))
-                    throw new AllPlayersNotReadyError();
+                    handleLateSeason();
 
                 var variant = core.variant.get(game.variant),
                     nextState = global.state.NextFromJS(variant, season);
@@ -54,7 +48,7 @@ module.exports = function(agenda, core) {
                         gameName: game.name,
                         gameURL: path.join(seekrits.get('domain'), 'games', game._id),
                         subject: '[' + game.name + '] ' + season.season + ' ' + season.year + ' has been adjudicated',
-                        deadline: job.nextRunAt,
+                        deadline: season.deadline,
                         season: season.season,
                         year: season.year
                     };
@@ -76,11 +70,12 @@ module.exports = function(agenda, core) {
         ], function(err, game, season) {
             if (!err)
                 return;
-
-            if (err instanceof AllPlayersNotReadyError)
-                handleLateSeason(game, season);
         });
 
         return done();
-    });
+    }
 };
+
+function handleLateSeason() {
+
+}

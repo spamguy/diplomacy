@@ -4,7 +4,7 @@ var path = require('path'),
     all = require('require-tree'),
     _ = require('lodash'),
     Mongoose = require('mongoose'),
-    Agenda = require('agenda'),
+    kue = require('kue'),
     controllers = all(__dirname + '/controllers'),
     core = require('./cores/index'),
     app = express(),
@@ -20,18 +20,19 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Fire up scheduling.
-app.agenda = new Agenda({
-    db: {
-        address: seekrits.get('mongoURI')
+app.queue = kue.createQueue({
+    redis: {
+        auth: seekrits.get('redis:password')
     }
 });
-app.agenda.on('ready', function() {
-    all(__dirname + '/jobs', {
-        each: function(obj) { obj(app.agenda, core); },
-        filter: function(filename) { return filename.indexOf('spec') < 0; }
-    });
-    app.agenda.start();
+
+all(__dirname + '/jobs', {
+    each: function(job) {
+        app.queue.process(job.name, job.process);
+    },
+    filter: function(filename) { return filename.indexOf('spec') < 0; }
 });
+
 app.seekrits = seekrits;
 
 app.http().io();
