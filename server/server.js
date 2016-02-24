@@ -4,6 +4,7 @@ var path = require('path'),
     all = require('require-tree'),
     _ = require('lodash'),
     Mongoose = require('mongoose'),
+    cachegoose = require('cachegoose'),
     kue = require('kue'),
     controllers = all(__dirname + '/controllers'),
     core = require('./cores/index'),
@@ -55,6 +56,11 @@ app.io.on('error', function(err) {
 
 Mongoose.connect(seekrits.get('mongoURI'));
 Mongoose.set('debug', true);
+cachegoose(Mongoose, {
+    engine: 'redis',
+    host: 'localhost',
+    password: seekrits.get('redis:password')
+});
 
 app.listen(9000, function() {
     console.log('Express server listening on %d', 9000);

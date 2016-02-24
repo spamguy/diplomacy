@@ -4,7 +4,7 @@ var path = require('path'),
     _ = require('lodash'),
     pluralize = require('pluralize'),
     async = require('async'),
-    Moment = require('moment'),
+    moment = require('moment'),
     mailer = require('../mailer/mailer');
 
 module.exports = function() {
@@ -227,7 +227,7 @@ module.exports = function() {
         },
 
         start: function(req, res) {
-            var nextSeasonDeadline = new Moment();
+            var nextSeasonDeadline = moment();
             console.log('Starting game ' + req.data.gameID);
 
             async.waterfall([
@@ -267,6 +267,8 @@ module.exports = function() {
                             regions: defaultRegions
                         };
                         clock = game.getClockFromSeason(firstSeason.season);
+                        nextSeasonDeadline.add(clock, 'hours');
+                        firstSeason.deadline = nextSeasonDeadline;
 
                         game.year = variant.startYear;
                         game.season = variant.seasons[0];
@@ -304,6 +306,7 @@ module.exports = function() {
                     var job = app.queue.create('adjudicate', {
                         seasonID: season._id
                     });
+                    job.delay(nextSeasonDeadline.toDate());
                     job.save(function(err) {
                         if (err)
                             callback(err);
@@ -314,7 +317,7 @@ module.exports = function() {
                             gameName: game.name,
                             gameURL: path.join(app.seekrits.get('domain'), 'games', game._id.toString()),
                             subject: '[' + game.name + '] The game is starting!',
-                            deadline: nextSeasonDeadline,
+                            deadline: nextSeasonDeadline.format('dddd, MMMM Do [at] h:mm a'),
                             season: variant.seasons[season.season - 1],
                             year: season.year
                         };

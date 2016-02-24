@@ -5,6 +5,7 @@
   "dependencies": {
     "async": "1.5.2",
     "body-parser": "1.5.2",
+    "cachegoose": "2.1.7",
     "easy-pbkdf2": "~0.1.1",
     "email-templates": "2.0.1",
     "express": "~4.11.2",
