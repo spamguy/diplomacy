@@ -23,6 +23,29 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             var failed = d.target.failed ? 'failed' : '';
             return 'url(' + absURL + '#' + failed + d.target.action + ')';
         },
+        getUnitInRegion = function(r, type) {
+            var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
+
+            if (r.unit)
+                return r.unit;
+            else if (subregionWithUnit)
+                return subregionWithUnit.unit;
+
+            return null;
+        },
+        getUnitCoordinates = function(r, type) {
+            var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
+
+            if (r.unit) {
+                return { x: regionDictionary[r.r].x, y: regionDictionary[r.r].y };
+            }
+            else if (subregionWithUnit) {
+                subregionWithUnit = _.find(regionDictionary[r.r].sr, 'r', subregionWithUnit.r);
+                return { x: subregionWithUnit.x, y: subregionWithUnit.y };
+            }
+
+            return { x: null, y: null };
+        },
         markerDefs = [
             { name: 'move', path: 'M0,-5L10,0L0,5', viewbox: '0 -5 10 10' },
             { name: 'support', path: 'M 0,0m -5,0a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0', viewbox: '-6 -6 12 12' }
@@ -81,11 +104,14 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 regionDictionary = _.indexBy(variant.regions, 'r');
 
                 // STEP 1: Build root <svg>. ------------------
-                var svg = d3.select(element[0])
+                var height = xml.rootElement.getAttribute('height'),
+                    width = xml.rootElement.getAttribute('width'),
+                    scaleFactor = 980595 * Math.pow(width, -2.423),
+                    svg = d3.select(element[0])
                     .append('svg')
                     .attr('flex', '')
-                    .attr('opacity', function(d) { return d ? '1' : '0.3'; })
-                    .attr('viewBox', '0 0 ' + xml.rootElement.getAttribute('width') + ' ' + xml.rootElement.getAttribute('height'));
+                    .attr('opacity', function(d) { return season ? '1' : '0.3'; })
+                    .attr('viewBox', '0 0 ' + width + ' ' + height);
                 // --------------------------------------------
 
                 // STEP 2: Build templated items. -------------
@@ -176,7 +202,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                     .attr('xlink:href', absURL + '#sc')
                     .attr('class', 'sc')
                     .attr('transform', function(d) {
-                        return 'translate(' + regionDictionary[d.r].sc.x + ',' + regionDictionary[d.r].sc.y + ') scale(0.03)';
+                        return 'translate(' + regionDictionary[d.r].sc.x + ',' + regionDictionary[d.r].sc.y + ') scale(' + scaleFactor + ')';
                     })
                     .attr('fill', function(d) {
                         return d.sc ? variant.powers[d.sc].colour : '#bbbbbb';
@@ -190,38 +216,40 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 // FIXME: Consider and render bounced units in a region.
                 unitGroup
                     .selectAll('circle')
-                    .data(_.filter(season.regions, function(r) { return r.unit && r.unit.type === 1; }))
+                    .data(_.filter(season.regions, function(r) {
+                        return getUnitInRegion(r, 1);
+                    }))
                     .enter()
                     .append('circle')
-                    .attr('cx', function(d) { return regionDictionary[d.r].x; })
-                    .attr('cy', function(d) { return regionDictionary[d.r].y; })
+                    .attr('cx', function(d) { return getUnitCoordinates(d, 1).x; })
+                    .attr('cy', function(d) { return getUnitCoordinates(d, 1).y; })
                     .attr('r', unitRadius)
                     .attr('stroke-width', '1px')
                     .attr('stroke', '#000')
                     .attr('fill', function(d) {
-                        return variant.powers[d.unit.power].colour;
+                        return variant.powers[getUnitInRegion(d, 1).power].colour;
                     });
 
                 // FIXME: Consider and render bounced units in a region.
                 unitGroup
                     .selectAll('rect')
                     .data(_.filter(season.regions, function(r) {
-                        return r.unit && r.unit.type === 2;
+                        return getUnitInRegion(r, 2);
                     }))
                     .enter()
                     .append('rect')
                     .attr('x', function(d) {
-                        return regionDictionary[d.r].x - 10;
+                        return getUnitCoordinates(d, 2).x - 10;
                     })
                     .attr('y', function(d) {
-                        return regionDictionary[d.r].y - 5;
+                        return getUnitCoordinates(d, 2).y - 5;
                     })
                     .attr('height', 10)
                     .attr('width', unitRadius * 2)
                     .attr('stroke-width', '1px')
                     .attr('stroke', '#000')
                     .attr('fill', function(d) {
-                        return variant.powers[d.unit.power].colour;
+                        return variant.powers[getUnitInRegion(d, 2).power].colour;
                     });
                 // --------------------------------------------
 
@@ -266,10 +294,11 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                                     action = d.target.action,
                                     actionOfTarget,
                                     pathOfTarget,
-                                    dr;
+                                    dr,
+                                    targetUnit;
 
                                 if (d.target) {
-                                    var targetUnit = _.find(season.regions, 'r', d.target.r);
+                                    targetUnit = _.find(season.regions, 'r', d.target.r);
                                     if (targetUnit.unit && targetUnit.unit.order)
                                         actionOfTarget = targetUnit.unit.order.action;
                                 }

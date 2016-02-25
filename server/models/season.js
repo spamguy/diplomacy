@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
         season: String,
         deadline: Date,
         regions: [ OrderSchema ]
-    });
+    }, { useNestedStrict: true }); // See mongoose/mongoose in GitHub, ticket #3883.
 SeasonSchema.plugin(timestamp);
 
 module.exports = mongoose.model('Season', SeasonSchema);

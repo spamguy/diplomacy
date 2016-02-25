@@ -13,42 +13,42 @@ module.exports = function() {
         initRegions = function(variant) {
             var regions = [],
                 vr,
-                region,
+                variantRegion,
                 baseRegion,
                 subregion,
                 sr;
 
             for (vr = 0; vr < variant.regions.length; vr++) {
-                region = variant.regions[vr];
-                baseRegion = { r: region.r };
+                variantRegion = variant.regions[vr];
+                baseRegion = { r: variantRegion.r };
 
                 // Add subregions.
-                if (region.sr) {
+                if (variantRegion.sr) {
                     baseRegion.sr = [];
-                    for (sr = 0; sr < region.sr.length; sr++)
-                        baseRegion.sr.push({ r: region.sr[sr].r });
+                    for (sr = 0; sr < variantRegion.sr.length; sr++)
+                        baseRegion.sr.push({ r: variantRegion.sr[sr].r });
                 }
 
                 // Add a SC marker, colour it, and put the default unit there.
-                if (region.default) {
+                if (variantRegion.default) {
+                    baseRegion.sc = variantRegion.default.power;
+
                     // Default unit is in a subregion.
-                    if (region.default.sr) {
-                        subregion = _.find(baseRegion.sr, 'r', region.default.sr);
-                        subregion.sc = region.default.power;
+                    if (variantRegion.default.sr) {
+                        subregion = _.find(baseRegion.sr, 'r', variantRegion.default.sr);
                         subregion.unit = {
-                            power: region.default.power,
-                            type: region.default.type
+                            power: variantRegion.default.power,
+                            type: variantRegion.default.type
                         };
                     }
                     else {
-                        baseRegion.sc = region.default.power;
                         baseRegion.unit = {
-                            power: region.default.power,
-                            type: region.default.type
+                            power: variantRegion.default.power,
+                            type: variantRegion.default.type
                         };
                     }
                 }
-                else if (region.sc) { // Add an uncoloured SC marker.
+                else if (variantRegion.sc) { // Add an uncoloured SC marker.
                     baseRegion.sc = null;
                 }
 
