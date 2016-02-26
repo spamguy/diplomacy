@@ -39,9 +39,15 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         getVariant: function(variantName) {
-            // strip spaces
+            // Strip spaces.
             variantName = variantName.replace(' ', '');
             return $http.get('variants/' + variantName + '/' + variantName + '.json');
+        },
+
+        getVariantSVG: function(variantName) {
+            // Strip spaces.
+            variantName = variantName.replace(' ', '');
+            return $http.get('variants/' + variantName + '/' + variantName + '.svg');
         },
 
         getAllVariantNames: function() {

@@ -54,7 +54,7 @@ describe('Game tools directive', function() {
         scope.game.gm_id = '12345';
         el = compile('<sg-game-tools variant="variant" game="game" season="season" />')(scope);
         scope.$digest();
-        expect($('md-subheader', el)).to.have.length(3);
+        expect($('md-subheader', el)).to.have.lengthOf(3);
     });
 
     it('only lists assigned power when viewing as a player', function() {
@@ -64,7 +64,7 @@ describe('Game tools directive', function() {
         });
         el = compile('<sg-game-tools variant="variant" game="game" season="season" />')(scope);
         scope.$digest();
-        expect($('md-subheader', el)).to.have.length(1);
+        expect($('md-subheader', el)).to.have.lengthOf(1);
         expect($('md-subheader', el).html()).to.equal('France');
     });
 });

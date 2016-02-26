@@ -1,8 +1,10 @@
-describe('Map directive', function() {
+xdescribe('Map directive', function() {
     'use strict';
 
     var scope,
-        el;
+        compile,
+        el,
+        httpBackend;
 
     beforeEach(function() {
         angular.mock.module('templates');
@@ -11,29 +13,43 @@ describe('Map directive', function() {
     });
 
     beforeEach(function() {
-        inject(function($injector, $rootScope, $compile, $q) {
+        inject(function($injector, $rootScope, $compile, $httpBackend) {
+            compile = $compile;
             scope = $rootScope;
+            httpBackend = $httpBackend;
 
             scope.variant = {
-                data: {
-                    name: 'Standard'
-                }
+                name: 'Standard'
             };
             scope.season = {
                 year: 1901,
                 season: 'Spring Movement'
             };
             scope.readonly = true;
-
-            el = $compile('<sg-map variant="variant" season="season" readonly="readonly" />')(scope);
-
-            scope.$digest();
+            scope.svg = new DOMParser().parseFromString('<svg height="1" width="1"><g id="mouseLayer"></g></svg>', 'image/svg+xml');
         });
     });
 
-    it('retains data passed in', function() {
-        var isolated = el.isolateScope();
-        expect(isolated.readonly).to.equal(true);
-        expect(isolated.variant.data.name).to.equal('Standard');
+    describe('SVG element', function() {
+        it('creates an SVG element', function() {
+            el = compile('<sg-map variant="variant" season="season" readonly="readonly" svg="svg" />')(scope);
+            scope.$digest();
+            httpBackend.flush();
+            expect($('svg', el)).to.have.lengthOf(1);
+        });
+
+        it('is slightly transparent when no season is passed in', function() {
+            scope.season = null;
+
+            el = compile('<sg-map variant="variant" season="season" readonly="readonly" svg="svg" />')(scope);
+            scope.$digest();
+            expect($('svg', el)).to.have.prop('opacity', '0.3');
+        });
+
+        it('is fully visible when a season is passed in', function() {
+            el = compile('<sg-map variant="variant" season="season" readonly="readonly" svg="svg" />')(scope);
+            scope.$digest();
+            expect($('svg', el)[0]).to.have.prop('opacity', 1);
+        });
     });
 });

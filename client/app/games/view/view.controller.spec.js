@@ -7,6 +7,7 @@ describe('Game view controller', function() {
         variant,
         game,
         season,
+        svg,
         createController;
 
     beforeEach(function() {
@@ -19,6 +20,7 @@ describe('Game view controller', function() {
         game = {
             gm_id: '123'
         };
+        svg = { data: new DOMParser().parseFromString('<svg><g id="mouseLayer"></g></svg>', 'image/svg+xml') };
 
         mockUserService = {
             getCurrentUser: function() { return '123'; }
@@ -36,12 +38,13 @@ describe('Game view controller', function() {
 
         inject(function($controller, $rootScope) {
             scope = $rootScope.$new();
-            createController = function(theVariant, theGame, theSeason) {
+            createController = function(theVariant, theGame, theSeason, theSVG) {
                 return $controller('ViewController', {
                     $scope: scope,
                     variant: theVariant,
                     season: theSeason,
-                    game: theGame
+                    game: theGame,
+                    svg: theSVG
                 });
             };
         });
@@ -49,14 +52,14 @@ describe('Game view controller', function() {
 
     describe('Read-only status', function() {
         it('is read-only for GMs', function() {
-            createController(variant, game, season);
+            createController(variant, game, season, svg);
             scope.$digest();
             expect(scope.readonly).to.be.true;
         });
 
         it('is not read-only for players', function() {
             game.gm_id = '666';
-            createController(variant, game, season);
+            createController(variant, game, season, svg);
             scope.$digest();
             expect(scope.readonly).to.be.false;
         });

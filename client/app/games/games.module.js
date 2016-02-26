@@ -74,6 +74,9 @@ angular.module('games', [
                     return gameService.getMoveData(game._id);
                 else
                     return gameService.getMoveDataForCurrentUser(game._id);
+            }],
+            svg: ['gameService', 'game', function(gameService, game) {
+                return gameService.getVariantSVG(game.variant);
             }]
         }
     });

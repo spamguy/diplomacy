@@ -1,11 +1,12 @@
 'use strict';
 
 angular.module('games')
-.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'season', '$mdDialog', function($scope, userService, gameService, variant, game, season, $mdDialog) {
+.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'season', 'svg', '$mdDialog', function($scope, userService, gameService, variant, game, season, svg, $mdDialog) {
     $scope.variant = variant;
     $scope.game = game;
     $scope.season = season;
     $scope.readonly = userService.getCurrentUser() === game.gm_id;
+    $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
 
     if (!season) {
         $mdDialog.show(
