@@ -26,7 +26,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
         getUnitInRegion = function(r, type) {
             var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
 
-            if (r.unit)
+            if (r.unit && r.unit.type === type)
                 return r.unit;
             else if (subregionWithUnit)
                 return subregionWithUnit.unit;
@@ -252,18 +252,16 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             for (s = 0; s < season.regions.length; s++) {
                 region = season.regions[s];
                 if (region.unit && region.unit.order && region.unit.order.action) {
-                    target = region.unit.order.y1 || region.unit.order.y2;
+                    target = region.unit.order.y1 || region.unit.order.y2 || region.r;
 
-                    if (target) {
-                        links.push({
-                            source: _.defaults(region, { fixed: true }),
-                            target: _.defaults(regionDictionary[target], {
-                                fixed: true, // to keep d3 from treating this map like a true force graph
-                                action: region.unit.order.action,
-                                failed: region.unit.order.failed
-                            })
-                        });
-                    }
+                    links.push({
+                        source: _.defaults(region, { fixed: true }),
+                        target: _.defaults(regionDictionary[target], {
+                            fixed: true, // to keep d3 from treating this map like a true force graph
+                            action: region.unit.order.action,
+                            failed: region.unit.order.failed
+                        })
+                    });
                 }
             }
 
@@ -293,11 +291,13 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                                 dr,
                                 targetUnit;
 
-                            if (d.target) {
-                                targetUnit = _.find(season.regions, 'r', d.target.r);
-                                if (targetUnit.unit && targetUnit.unit.order)
-                                    actionOfTarget = targetUnit.unit.order.action;
-                            }
+                            // If a hold, don't draw any arrows.
+                            if (d.target.r === d.source.r)
+                                return;
+
+                            targetUnit = _.find(season.regions, 'r', d.target.r);
+                            if (targetUnit.unit && targetUnit.unit.order)
+                                actionOfTarget = targetUnit.unit.order.action;
 
                             if (action === 'move')
                                 evenMorePadding = 5;

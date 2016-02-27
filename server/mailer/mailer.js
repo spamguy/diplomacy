@@ -2,7 +2,7 @@
 
 var path = require('path'),
     nodemailer = require('nodemailer'),
-    wellknown = require('nodemailer-wellknown'), // eslint-disable-line
+    sendgridTransport = require('nodemailer-sendgrid-transport'),
     EmailTemplate = require('email-templates').EmailTemplate,
     templatesDir = path.resolve(__dirname, 'templates'),
     EmailAddressRequiredError = new Error('An email address is required'),
@@ -19,20 +19,20 @@ module.exports = {
             if (templateErr)
                 return cb(templateErr);
 
-            var transport = nodemailer.createTransport({
-                service: 'mandrill',
-                auth: {
-                    user: seekrits.get('mail:auth:user'),
-                    pass: seekrits.get('mail:auth:password')
-                }
-            });
+            var options = {
+                    auth: {
+                        api_user: seekrits.get('mail:auth:user'),
+                        api_key: seekrits.get('mail:auth:password')
+                    }
+                },
+                transport = nodemailer.createTransport(sendgridTransport(options));
             transport.sendMail({
                 from: seekrits.get('mail:defaultFromAddress'),
                 to: options.email,
                 subject: options.subject,
                 html: results.html,
                 text: results.text
-            }, cb());
+            }, cb);
         });
     }
 };

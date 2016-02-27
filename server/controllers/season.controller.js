@@ -74,6 +74,8 @@ module.exports = function() {
         },
 
         setorder: function(req, res) {
+            // TODO: Make sure order issuer actually owns the unit!
+
             async.waterfall([
                 // Get relevant season.
                 function(callback) {
