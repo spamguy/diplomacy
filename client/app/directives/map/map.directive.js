@@ -24,9 +24,11 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             return 'url(' + absURL + '#' + failed + d.target.action + ')';
         },
         getUnitInRegion = function(r, type) {
-            var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
+            var subregionWithUnit = type
+                ? _.find(r.sr, { unit: { type: type } })
+                : _.find(r.sr, 'unit');
 
-            if (r.unit && r.unit.type === type)
+            if (r.unit && (!type || r.unit.type === type))
                 return r.unit;
             else if (subregionWithUnit)
                 return subregionWithUnit.unit;
@@ -56,6 +58,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
         replace: true,
         scope: {
             variant: '=variant',               // Full variant data. (Object)
+            game: '=game',                     // Game data. (Object)
             season: '=season',                 // Movement data. (Object)
             svg: '=svg',                       // SVG map data. (XML)
             header: '=header',                 // Whether to show the header. (bool)
@@ -158,7 +161,16 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             // FIXME: Check for processed state.
             if (!readonly) {
                 mouseLayer.on('click', function() {
-                    scope.commandData.push(this.id.toUpperCase());
+                    var r = this.id.toUpperCase(),
+                        region = _.find(season.regions, 'r', r),
+                        unitInRegion = getUnitInRegion(region);
+
+                    // Users who try to control units that don't exist or don't own? We have ways of shutting the whole thing down.
+                    if (scope.commandData.length === 0 &&
+                        (!unitInRegion || region.unit.power !== gameService.getPowerOfCurrentUserInGame(scope.game)))
+                        return;
+
+                    scope.commandData.push(r);
 
                     switch (scope.currentAction) {
                     case 'hold':

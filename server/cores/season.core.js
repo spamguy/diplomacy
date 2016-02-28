@@ -43,18 +43,30 @@ SeasonCore.prototype.createFromState = function(variant, game, state, cb) {
 };
 
 SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {
+    var setCommand = {
+        '$set': { }
+    };
+
+    if (action !== 'build') {
+        setCommand.$set['regions.$.unit.order'] = {
+            action: action
+        };
+        if (data[1])
+            setCommand.$set['regions.$.unit.order'].y1 = data[1];
+        if (data[2])
+            setCommand.$set['regions.$.unit.order'].y2 = data[2];
+    }
+    else {
+        // TODO: Build command.
+    }
+
+    console.log('Command to execute:');
+    console.log(JSON.stringify(setCommand));
+
     mongoose.model('Season').findOneAndUpdate({
         _id: seasonID,
         'regions.r': data[0]
-    }, {
-        $set: {
-            'regions.$.unit': {
-                order: {
-                    action: action
-                }
-            }
-        }
-    }, { new: true }, cb);
+    }, setCommand, { new: true }, cb);
 };
 
 module.exports = SeasonCore;

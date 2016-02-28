@@ -5,18 +5,29 @@ module.exports = {
     process: function(job, done) {
         var core = require('../cores/index'),
             async = require('async'),
+            winston = require('winston'),
             path = require('path'),
             _ = require('lodash'),
+            logger,
             seekrits = require('nconf')
                 .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
                 .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
             mailer = require('../mailer/mailer'),
-            seasonID = job.data.seasonID;
+            seasonID = job.data.seasonID,
+            judgePath = path.join(seekrits.get('judgePath'), 'diplomacy-godip');
+        require('winston-mongodb').MongoDB;
+        logger = new winston.Logger({
+            transports: [
+                new winston.transports.MongoDB({
+                    db: seekrits.get('mongoURI')
+                })
+            ]
+        });
 
-        if (require('file-exists')(path.join(seekrits.get('judgePath'), 'diplomacy-godip')))
-            require(path.join(seekrits.get('judgePath'), 'diplomacy-godip'));
-
-        console.log('Adjudicating season ' + seasonID);
+        if (require('file-exists')(judgePath))
+            require(judgePath);
+        else
+            logger.error('Could not adjudicate: no judge could be found at ' + judgePath);
 
         async.waterfall([
             // Fetches the season in question.
@@ -32,11 +43,15 @@ module.exports = {
             // Verifies all players are ready. Fetches the variant, adjudicates, and persists the outcome.
             function(game, season, callback) {
                 // Not everyone is ready. Handling this situation deserves its own block.
-                if (!game.ignoreLateOrders && !_.every(game.players, 'isReady'))
+                if (!game.ignoreLateOrders && !_.every(game.players, 'isReady')) {
                     handleLateSeason();
+                    callback(null, game, season);
+                }
 
                 var variant = core.variant.get(game.variant),
                     nextState = global.state.NextFromJS(variant, season);
+
+                logger.info('Result of adjudication for season ' + seasonID + ':\n' + JSON.stringify(nextState));
 
                 core.season.createFromState(variant, game, nextState, function(err, s) { callback(err, variant, game, season); });
             },

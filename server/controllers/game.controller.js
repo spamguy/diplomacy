@@ -306,11 +306,13 @@ module.exports = function() {
                     var job = app.queue.create('adjudicate', {
                         seasonID: season._id
                     });
-                    job.delay(nextSeasonDeadline.toDate());
-                    job.save(function(err) {
-                        if (err)
-                            callback(err);
-                    });
+                    job.delay(nextSeasonDeadline.toDate())
+                        .attempts(1000) // TODO: Obviously, do not constantly retry in production.
+                        .backoff({ delay: 'exponential' })
+                        .save(function(err) {
+                            if (err)
+                                callback(err);
+                        });
 
                     async.each(game.players, function(player, err) {
                         var emailOptions = {

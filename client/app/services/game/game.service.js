@@ -129,6 +129,15 @@ angular.module('gameService', ['userService', 'socketService'])
                 command: command,
                 action: action
             });
+        },
+
+        getPowerOfCurrentUserInGame: function(game) {
+            for (var p = 0; p < game.players.length; p++) {
+                if (game.players[p].player_id === userService.getCurrentUser())
+                    return game.players[p].power;
+            }
+
+            return null;
         }
     };
 }]);
