@@ -7,14 +7,11 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
         restrict: 'E',
         templateUrl: 'app/directives/gamelistitem/gamelistitem.tmpl.html',
         scope: {
-            variantPromise: '=variant',
             game: '=game',
             joinable: '=joinable',
             user: '=user'
         },
         link: function(scope, element, attrs) {
-            scope.variants = { };
-
             scope.reasonForNoJoin = function() {
                 // Breaking this down into individual rules to avoid one monstrous if() statement.
 
@@ -52,17 +49,23 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
 
                 gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
-                    $mdDialog.show({
-                        parent: angular.element(document.body),
-                        targetEvent: $event,
-                        fullscreen: useFullScreen,
-                        templateUrl: 'app/directives/gamelistitem/gamelistitemmap.tmpl.html',
-                        controller: 'GameListItemMapController',
-                        clickOutsideToClose: true,
-                        locals: {
-                            season: season,
-                            variant: scope.variant
-                        }
+                    gameService.getVariant(scope.game.variant).then(function(variant) {
+                        gameService.getVariantSVG(scope.game.variant).then(function(svg) {
+                            $mdDialog.show({
+                                parent: angular.element(document.body),
+                                targetEvent: $event,
+                                fullscreen: useFullScreen,
+                                templateUrl: 'app/directives/gamelistitem/gamelistitemmap.tmpl.html',
+                                controller: 'GameListItemMapController',
+                                clickOutsideToClose: true,
+                                locals: {
+                                    season: season,
+                                    variant: variant,
+                                    game: scope.game,
+                                    svg: svg
+                                }
+                            });
+                        });
                     });
                 });
             };
@@ -81,6 +84,9 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
         }
     };
 }])
-.controller('GameListItemMapController', ['$scope', '$mdDialog', 'gameService', function($scope, $mdDialog, gameService) {
-
+.controller('GameListItemMapController', ['$scope', '$mdDialog', 'season', 'variant', 'game', 'svg', function($scope, $mdDialog, season, variant, game, svg) {
+    $scope.season = season;
+    $scope.variant = variant;
+    $scope.game = game;
+    $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
 }]);

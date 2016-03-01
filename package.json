@@ -88,7 +88,7 @@
     "rewire": "2.5.1",
     "sinon": "1.17.2",
     "sinon-chai": "2.8.0",
-    "sinon-stub-promise": "1.0.1",
+    "sinon-stub-promise": "1.1.0",
     "watchify": "3.7.0"
   },
   "engines": {
