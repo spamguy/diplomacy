@@ -192,20 +192,41 @@ module.exports = function() {
 
         watch: function(req, res) {
             var userID = req.socket.decoded_token.id,
-                gameID = req.data ? req.data.gameID : null;
+                gameID = req.data ? req.data.gameID : null,
+                watchedGames = 0;
 
             // Get list of subscribed games and join them as socket.io rooms.
-            core.game.list({
-                gameID: gameID,
-                playerID: userID
-            }, function(err, games) {
+            async.parallel([
+                function(callback) {
+                    core.game.list({
+                        gameID: gameID,
+                        playerID: userID
+                    }, callback);
+                },
+
+                function(callback) {
+                    if (userID) {
+                        core.game.list({
+                            gmID: userID
+                        }, callback);
+                    }
+                    else {
+                        // No need to filter by user.
+                        callback(null, []);
+                    }
+                }
+            ], function(err, gamesArray) {
                 if (err)
                     console.error(err);
 
-                for (var g = 0; g < games.length; g++)
-                    req.socket.join(games[g]._id);
+                _.forEach(gamesArray, function(games) {
+                    for (var g = 0; g < games.length; g++) {
+                        req.socket.join(games[g]._id);
+                        watchedGames++;
+                    }
+                });
 
-                console.log(userID + ' now watching ' + games.length + ' room(s)');
+                console.log(userID + ' now watching ' + watchedGames + ' room(s)');
             });
         },
 

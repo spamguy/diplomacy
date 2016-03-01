@@ -101,9 +101,8 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 season = scope.season,
                 variant = scope.variant,
                 readonly = scope.readonly,
-                xml = scope.svg,
-                height = xml.rootElement.getAttribute('height'),
-                width = xml.rootElement.getAttribute('width'),
+                height = scope.svg.documentElement.getAttribute('height'),
+                width = scope.svg.documentElement.getAttribute('width'),
                 scaleFactor = 980595 * Math.pow(width, -2.423),
                 svg = d3.select(element[0])
                     .append('svg')
@@ -153,7 +152,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
 
             // STEP 4: Add clickable region layer. ---------
             mouseLayer = svg.append(function() {
-                return xml.documentElement.firstElementChild;
+                return scope.svg.documentElement.firstElementChild;
             })
             .selectAll('path');
 

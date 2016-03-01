@@ -2,21 +2,18 @@
 
 var mongoose = require('mongoose'),
     passport = require('passport'),
-    jwt = require('jsonwebtoken'),
-    LocalStrategy = require('passport-local').Strategy;
-
-var tokenAuth = function(username, password, done) {
-    var User = mongoose.model('User');
-    User.findByEmailAndToken(username, password, function(err, user) {
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        return done(null, user);
-    });
-};
+    LocalStrategy = require('passport-local').Strategy,
+    tokenAuth = function(username, password, done) {
+        mongoose.model('User').findByEmailAndToken(username, password, function(err, user) {
+            if (err) return done(err);
+            if (!user) return done(null, false);
+            return done(null, user);
+        });
+    };
 
 passport.use(new LocalStrategy({
-        usernameField: 'email'
-    }, tokenAuth));
+    usernameField: 'email'
+}, tokenAuth));
 
 function authenticate(req, cb) {
     passport.authenticate('local', cb)(req);
