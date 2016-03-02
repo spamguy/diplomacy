@@ -6,9 +6,11 @@ describe('Province list item directive', function() {
         compile;
 
     beforeEach(function() {
+        angular.mock.module('diplomacy.constants');
         angular.mock.module('templates');
         angular.mock.module('ui.router');
         angular.mock.module('gametoolsprovincelistitem.directive');
+        angular.mock.module('gameService');
 
         inject(function($injector, $compile, $rootScope) {
             scope = $rootScope;
@@ -31,6 +33,24 @@ describe('Province list item directive', function() {
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.contain('MOS');
+    });
+
+    it('prints subregions', function() {
+        scope.province = {
+            r: 'STP',
+            sr: [{
+                r: 'NC',
+                unit: {
+                    type: 2,
+                    power: 'R'
+                }
+            }, {
+                r: 'SC'
+            }]
+        };debugger;
+        el = compile('<sg-province-list-item province="province" />')(scope);
+        scope.$digest();
+        expect($('div span', el).html()).to.contain('STP/NC');
     });
 
     it('reports hold orders', function() {
@@ -88,5 +108,12 @@ describe('Province list item directive', function() {
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> disbands');
+    });
+
+    it('reports units still needing orders', function() {
+        delete scope.province.unit.order;
+        el = compile('<sg-province-list-item province="province" />')(scope);
+        scope.$digest();
+        expect($('div span', el).html()).to.equal('<strong>MOS</strong> <em>awaiting orders</em>');
     });
 });

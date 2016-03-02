@@ -58,4 +58,64 @@ describe('gameService', function() {
     it('gets the current player\'s power in a game', function() {
         expect(gameService.getPowerOfCurrentUserInGame(game)).to.equal('N');
     });
+
+    describe('getUnitOwnerInRegion()', function() {
+        var season;
+        beforeEach(function() {
+            season = {
+                regions: [{
+                    r: 'BUD',
+                    unit: {
+                        power: 'A',
+                        type: 1
+                    }
+                }, {
+                    r: 'HUN',
+                    unit: {
+                        power: 'A',
+                        type: 1
+                    }
+                }, {
+                    r: 'ROM',
+                    unit: {
+                        power: 'I',
+                        type: 1
+                    }
+                }, {
+                    r: 'BUL',
+                    sr: [{
+                        r: 'EC',
+                        unit: {
+                            power: 'A',
+                            type: 2
+                        }
+                    }]
+                }]
+            };
+        });
+
+        it('finds units in occupied regions/subregions', function() {
+            for (var i = 0; i < season.regions.length; i++)
+                expect(gameService.getUnitOwnerInRegion(season.regions[i])).not.to.be.null;
+        });
+
+        it('returns null in unoccupied regions', function() {
+            season.regions.push({ r: 'TRI' });
+            season.regions.push({ r: 'SPA', sr: [{ r: 'NC' }, { r: 'SC' }] });
+            for (var i = 0; i < season.regions.length; i++) {
+                if (i > 3)
+                    expect(gameService.getUnitOwnerInRegion(season.regions[i])).to.be.null;
+            }
+        });
+
+        it('filters by type if supplied', function() {
+            expect(gameService.getUnitOwnerInRegion(season.regions[0], 1)).not.to.be.null;
+            expect(gameService.getUnitOwnerInRegion(season.regions[0], 2)).to.be.null;
+        });
+
+        it('filters by power if supplied', function() {
+            expect(gameService.getUnitOwnerInRegion(season.regions[1], null, 'A')).not.to.be.null;
+            expect(gameService.getUnitOwnerInRegion(season.regions[1], null, 'I')).to.be.null;
+        });
+    });
 });

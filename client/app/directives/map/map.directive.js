@@ -23,18 +23,6 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             var failed = d.target.failed ? 'failed' : '';
             return 'url(' + absURL + '#' + failed + d.target.action + ')';
         },
-        getUnitInRegion = function(r, type) {
-            var subregionWithUnit = type
-                ? _.find(r.sr, { unit: { type: type } })
-                : _.find(r.sr, 'unit');
-
-            if (r.unit && (!type || r.unit.type === type))
-                return r.unit;
-            else if (subregionWithUnit)
-                return subregionWithUnit.unit;
-
-            return null;
-        },
         getUnitCoordinates = function(r, type) {
             var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
 
@@ -162,7 +150,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 mouseLayer.on('click', function() {
                     var r = this.id.toUpperCase(),
                         region = _.find(season.regions, 'r', r),
-                        unitInRegion = getUnitInRegion(region);
+                        unitInRegion = gameService.getUnitOwnerInRegion(region).unit;
 
                     // Users who try to control units that don't exist or don't own? We have ways of shutting the whole thing down.
                     if (scope.commandData.length === 0 &&
@@ -224,7 +212,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             unitGroup
                 .selectAll('circle')
                 .data(_.filter(season.regions, function(r) {
-                    return getUnitInRegion(r, 1);
+                    return gameService.getUnitOwnerInRegion(r, 1);
                 }))
                 .enter()
                 .append('circle')
@@ -234,14 +222,14 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 .attr('stroke-width', '1px')
                 .attr('stroke', '#000')
                 .attr('fill', function(d) {
-                    return variant.powers[getUnitInRegion(d, 1).power].colour;
+                    return variant.powers[gameService.getUnitOwnerInRegion(d, 1).unit.power].colour;
                 });
 
             // FIXME: Consider and render bounced units in a region.
             unitGroup
                 .selectAll('rect')
                 .data(_.filter(season.regions, function(r) {
-                    return getUnitInRegion(r, 2);
+                    return gameService.getUnitOwnerInRegion(r, 2);
                 }))
                 .enter()
                 .append('rect')
@@ -256,7 +244,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 .attr('stroke-width', '1px')
                 .attr('stroke', '#000')
                 .attr('fill', function(d) {
-                    return variant.powers[getUnitInRegion(d, 2).power].colour;
+                    return variant.powers[gameService.getUnitOwnerInRegion(d, 2).unit.power].colour;
                 });
             // --------------------------------------------
 

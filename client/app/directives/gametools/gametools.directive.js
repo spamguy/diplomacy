@@ -1,5 +1,5 @@
 angular.module('gametools.directive', [])
-.directive('sgGameTools', ['userService', function(userService) {
+.directive('sgGameTools', ['userService', 'gameService', function(userService, gameService) {
     'use strict';
 
     return {
@@ -13,7 +13,7 @@ angular.module('gametools.directive', [])
         },
         link: function(scope, element, attrs) {
             scope.powerOwnsProvince = function(code, province) {
-                return province.unit && province.unit.power === code;
+                return gameService.getUnitOwnerInRegion(province, null, code);
             };
 
             scope.getPowerList = function() {

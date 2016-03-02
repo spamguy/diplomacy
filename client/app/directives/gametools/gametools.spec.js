@@ -7,6 +7,7 @@ describe('Game tools directive', function() {
         mockUserService;
 
     beforeEach(function() {
+        angular.mock.module('diplomacy.constants');
         angular.mock.module('templates');
         angular.mock.module('gametools.directive');
         mockUserService = {
@@ -17,6 +18,7 @@ describe('Game tools directive', function() {
         angular.mock.module('userService', function($provide) {
             $provide.value('userService', mockUserService);
         });
+        angular.mock.module('gameService');
 
         inject(function($injector, $compile, $rootScope) {
             compile = $compile;
@@ -32,6 +34,9 @@ describe('Game tools directive', function() {
                     },
                     'F': {
                         name: 'France'
+                    },
+                    'I': {
+                        name: 'Italy'
                     }
                 }
             };
@@ -39,12 +44,33 @@ describe('Game tools directive', function() {
                 players: []
             };
             scope.season = {
-                moves: [{
+                regions: [{
                     r: 'BUD',
                     unit: {
                         power: 'A',
                         type: 1
                     }
+                }, {
+                    r: 'HUN',
+                    unit: {
+                        power: 'A',
+                        type: 1
+                    }
+                }, {
+                    r: 'ROM',
+                    unit: {
+                        power: 'I',
+                        type: 1
+                    }
+                }, {
+                    r: 'BUL',
+                    sr: [{
+                        r: 'EC',
+                        unit: {
+                            power: 'A',
+                            type: 2
+                        }
+                    }]
                 }]
             };
         });
@@ -54,7 +80,7 @@ describe('Game tools directive', function() {
         scope.game.gm_id = '12345';
         el = compile('<sg-game-tools variant="variant" game="game" season="season" />')(scope);
         scope.$digest();
-        expect($('md-subheader', el)).to.have.lengthOf(3);
+        expect($('div.md-subheader', el)).to.have.lengthOf(4);
     });
 
     it('only lists assigned power when viewing as a player', function() {
@@ -64,7 +90,7 @@ describe('Game tools directive', function() {
         });
         el = compile('<sg-game-tools variant="variant" game="game" season="season" />')(scope);
         scope.$digest();
-        expect($('md-subheader', el)).to.have.lengthOf(1);
-        expect($('md-subheader', el).html()).to.equal('France');
+        expect($('div.md-subheader', el)).to.have.lengthOf(1);
+        expect($('div.md-subheader', el).html()).to.contain('France');
     });
 });

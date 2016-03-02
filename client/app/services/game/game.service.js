@@ -138,6 +138,21 @@ angular.module('gameService', ['userService', 'socketService'])
             }
 
             return null;
+        },
+
+        getUnitOwnerInRegion: function(r, type, power) {
+            var subregionWithUnit = _.find(r.sr, 'unit');
+
+            if (r.unit && unitMatchesFilters(r.unit, type, power))
+                return r;
+            else if (subregionWithUnit && unitMatchesFilters(subregionWithUnit.unit, type, power))
+                return subregionWithUnit;
+
+            return null;
         }
     };
+
+    function unitMatchesFilters(unit, type, power) {
+        return (!type || unit.type === type) && (!power || unit.power === power);
+    }
 }]);

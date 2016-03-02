@@ -1,5 +1,5 @@
 angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
-.directive('sgProvinceListItem', ['$state', '$sce', function($state, $sce) {
+.directive('sgProvinceListItem', ['$state', '$sce', 'gameService', function($state, $sce, gameService) {
     'use strict';
 
     return {
@@ -10,29 +10,39 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
             province: '='
         },
         link: function(scope, element, attrs) {
-            var provinceStatus = '<strong>' + scope.province.r + '</strong> ';
+            var unitOwner = gameService.getUnitOwnerInRegion(scope.province),
+                regionName = scope.province.r,
+                provinceStatus;
 
-            if (scope.province.unit && scope.province.unit.order) {
-                switch (scope.province.unit.order.action) {
+            // Unit is in a subregion if region mentions subregions but unit owner does not.
+            if (unitOwner && scope.province.sr && !unitOwner.sr)
+                regionName += '/' + unitOwner.r;
+            provinceStatus = '<strong>' + regionName + '</strong> ';
+
+            if (unitOwner && unitOwner.unit.order) {
+                switch (unitOwner.unit.order.action) {
                 case 'move':
-                    provinceStatus += '→ <strong>' + scope.province.unit.order.y1 + '</strong>';
+                    provinceStatus += '→ <strong>' + unitOwner.unit.order.y1 + '</strong>';
                     break;
                 case 'support':
-                    provinceStatus += 'supports <strong>' + scope.province.unit.order.y1 + '</strong> ';
-                    if (scope.province.unit.order.y2)
-                        provinceStatus += '→ <strong>' + scope.province.unit.order.y2 + '</strong>';
+                    provinceStatus += 'supports <strong>' + unitOwner.unit.order.y1 + '</strong> ';
+                    if (unitOwner.unit.order.y2)
+                        provinceStatus += '→ <strong>' + unitOwner.unit.order.y2 + '</strong>';
                     break;
                 case 'hold':
                     provinceStatus += 'holds';
                     break;
                 case 'convoy':
-                    provinceStatus += '~ <strong>' + _.last(scope.province.unit.order.y1) + '</strong>';
+                    provinceStatus += '~ <strong>' + _.last(unitOwner.unit.order.y1) + '</strong>';
                     break;
                 case 'build':
                     provinceStatus += 'builds a'; break;
                 case 'disband':
                     provinceStatus += 'disbands'; break;
                 }
+            }
+            else {
+                provinceStatus += '<em>awaiting orders</em>';
             }
 
             scope.provinceStatus = provinceStatus;
