@@ -29,7 +29,10 @@ UserCore.prototype.list = function(options, cb) {
             'tempEmail': options.tempEmail
         }, _.identity));
 
-    query.cache(300).exec(function(err, users) {
+    if (options.cache !== false)
+        query.cache(300);
+
+    query.exec(function(err, users) {
         if (err) {
             console.error(err);
             return cb(err);
@@ -42,7 +45,8 @@ UserCore.prototype.list = function(options, cb) {
 UserCore.prototype.getStubByEmail = function(email, cb) {
     this.list({
         tempEmail: email,
-        password: { '$exists': false }
+        password: { '$exists': false },
+        cache: false
     }, cb);
 };
 

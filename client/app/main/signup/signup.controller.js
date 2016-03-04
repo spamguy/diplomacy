@@ -16,7 +16,7 @@ angular.module('diplomacy.main')
                     .then(function(response) {
                         $mdToast.showSimple('A verification email has been sent.');
                     }, function(response) {
-
+                        $mdToast.showSimple(response.data.error);
                     });
             }
         }

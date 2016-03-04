@@ -47,7 +47,7 @@ describe('Province list item directive', function() {
             }, {
                 r: 'SC'
             }]
-        };debugger;
+        };
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.contain('STP/NC');

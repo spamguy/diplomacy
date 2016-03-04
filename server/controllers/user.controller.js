@@ -1,7 +1,7 @@
 'use strict';
 
 var hashOptions = {
-        'DEFAULT_HASH_ITERATIONS': 32000,
+        'DEFAULT_HASH_ITERATIONS': 64000,
         'SALT_SIZE': 64,
         'KEY_LENGTH': 128
     },
@@ -9,6 +9,7 @@ var hashOptions = {
     pbkdf2 = require('easy-pbkdf2')(hashOptions),
     auth = require('../auth'),
     mailer = require('../mailer/mailer'),
+    async = require('async'),
     SESSION_LENGTH = 60 * 60 * 4; // Session length, in seconds.
 
 module.exports = function() {
@@ -19,10 +20,6 @@ module.exports = function() {
     app.post('/api/login', function(req) {
         req.io.route('user:login');
     });
-
-    // app.get('/api/users/:username/exists', function(req) {
-    //     req.io.route('user:exists');
-    // });
 
     app.post('/api/users', function(req) {
         req.io.route('user:create');
@@ -62,42 +59,42 @@ module.exports = function() {
             });
         },
 
-        // exists: function(req, res) {
-        //     var options = { username: req.params.username };
-        //
-        //     var users = core.user.list(options, function(err, users) {
-        //         return res.json({ exists: users.length === 1 });
-        //     });
-        // },
-
         // Creates new (or recycles existing) stub user. Contains only email address until extended by user:verify event.
-        // TODO: Rewrite with async.
         create: function(req, res, next) {
-            var email = req.body.email,
-                cb = function(err) {
-                    if (!err)
-                        res.sendStatus(201);
-                };
-            core.user.getStubByEmail(email, function(err, users) {
-                var stubUser;
-                if (users.length > 0)
-                    stubUser = users[0];
-                else if (err)
-                    throw new Error(err);
-                else
-                    stubUser = null;
+            var email = req.body.email;
 
-                if (stubUser) {
-                    sendVerifyEmail(app.seekrits, stubUser, cb);
+            async.waterfall([
+                function(callback) {
+                    core.user.list({ email: email }, callback);
+                },
+
+                function(users, callback) {
+                    if (users.length > 0)
+                        callback('A user with this email address already exists.');
+                    else
+                        core.user.getStubByEmail(email, callback);
+                },
+
+                function(users, callback) {
+                    var stubUser = null;
+                    if (users.length > 0) {
+                        stubUser = users[0];
+                        callback(null, stubUser);
+                    }
+                    else {
+                        core.user.create({
+                            tempEmail: email
+                        }, function(err, user) { callback(err, user); });
+                    }
+                },
+
+                function(user, callback) {
+                    sendVerifyEmail(app.seekrits, user, callback);
                 }
-                else {
-                    core.user.create({
-                        tempEmail: email
-                    }, function(err, newUser) {
-                        if (!err)
-                            sendVerifyEmail(app.seekrits, newUser, cb);
-                        else
-                            console.log(err);
+            ], function(err) {
+                if (err) {
+                    return res.status(400).json({
+                        error: err
                     });
                 }
             });

@@ -19,13 +19,12 @@ module.exports = {
             if (templateErr)
                 return cb(templateErr);
 
-            var options = {
+            var apiOptions = {
                     auth: {
-                        api_user: seekrits.get('mail:auth:user'),
                         api_key: seekrits.get('mail:auth:password')
                     }
                 },
-                transport = nodemailer.createTransport(sendgridTransport(options));
+                transport = nodemailer.createTransport(sendgridTransport(apiOptions));
             transport.sendMail({
                 from: seekrits.get('mail:defaultFromAddress'),
                 to: options.email,
