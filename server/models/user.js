@@ -1,21 +1,19 @@
 var hashOptions = {
-    'DEFAULT_HASH_ITERATIONS': 32000,
-    'SALT_SIZE': 64,
-    'KEY_LENGTH': 128
-};
-
-var mongoose = require('mongoose'),
+        'DEFAULT_HASH_ITERATIONS': 64000,
+        'SALT_SIZE': 64,
+        'KEY_LENGTH': 128
+    },
+    mongoose = require('mongoose'),
     pbkdf2 = require('easy-pbkdf2')(hashOptions),
-    timestamp = require('mongoose-timestamp');
-
-var UserSchema = new mongoose.Schema({
-    password: String,
-    passwordsalt: String,
-    email: String,
-    tempEmail: String,
-    points: Number,
-    timezone: Number
-});
+    timestamp = require('mongoose-timestamp'),
+    UserSchema = new mongoose.Schema({
+        password: String,
+        passwordsalt: String,
+        email: String,
+        tempEmail: String,
+        points: Number,
+        timezone: Number
+    });
 UserSchema.plugin(timestamp);
 
 UserSchema.statics.findByEmailAndToken = function(email, plaintextPassword, cb) {

@@ -266,7 +266,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('build', [
-        // 'eslint',
+        'eslint',
         'clean:before',
         'ngconstant:prod',
         'preprocess',
@@ -287,7 +287,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('serve', [
-        // 'eslint',
+        'eslint',
         'ngconstant:mongo',
         'preprocess',
         'wiredep',
