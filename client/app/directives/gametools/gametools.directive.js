@@ -17,7 +17,7 @@ angular.module('gametools.directive', [])
             };
 
             scope.getPowerList = function() {
-                var currentUser = userService.getCurrentUser(),
+                var currentUser = userService.getCurrentUserID(),
                     p;
 
                 if (currentUser === scope.game.gm_id) {

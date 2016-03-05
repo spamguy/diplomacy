@@ -11,7 +11,7 @@ describe('Game tools directive', function() {
         angular.mock.module('templates');
         angular.mock.module('gametools.directive');
         mockUserService = {
-            getCurrentUser: function() {
+            getCurrentUserID: function() {
                 return '12345';
             }
         };

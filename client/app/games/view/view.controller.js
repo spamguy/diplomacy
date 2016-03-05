@@ -5,7 +5,7 @@ angular.module('games')
     $scope.variant = variant;
     $scope.game = game;
     $scope.season = season;
-    $scope.readonly = userService.getCurrentUser() === game.gm_id;
+    $scope.readonly = userService.getCurrentUserID() === game.gm_id;
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
 
     if (!season) {

@@ -21,16 +21,11 @@ angular.module('profile', [
         },
         resolve: {
             gameService: 'gameService',
-            userService: 'userService',
-
             games: function(gameService) {
                 return gameService.getAllGamesForCurrentUser();
             },
             gmGames: function(gameService) {
                 return gameService.getAllGamesOwnedByCurrentUser();
-            },
-            currentUser: function(userService) {
-                return userService.getUser(userService.getCurrentUser());
             }
         }
     })

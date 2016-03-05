@@ -16,7 +16,7 @@ angular.module('gameService', ['userService', 'socketService'])
         getAllGamesForCurrentUser: function() {
             return $q(function(resolve) {
                 socketService.socket.emit('game:userlist', {
-                    playerID: userService.getCurrentUser()
+                    playerID: userService.getCurrentUserID()
                 }, function(games) {
                     resolve(games);
                 });
@@ -31,7 +31,7 @@ angular.module('gameService', ['userService', 'socketService'])
         getAllGamesOwnedByCurrentUser: function() {
             return $q(function(resolve) {
                 socketService.socket.emit('game:usergmlist', {
-                    'gmID': userService.getCurrentUser()
+                    'gmID': userService.getCurrentUserID()
                 }, function(games) {
                     resolve(games);
                 });
@@ -133,7 +133,7 @@ angular.module('gameService', ['userService', 'socketService'])
 
         getPowerOfCurrentUserInGame: function(game) {
             for (var p = 0; p < game.players.length; p++) {
-                if (game.players[p].player_id === userService.getCurrentUser())
+                if (game.players[p].player_id === userService.getCurrentUserID())
                     return game.players[p].power;
             }
 

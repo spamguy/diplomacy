@@ -9,7 +9,7 @@ describe('gameService', function() {
 
     beforeEach(function() {
         mockUserService = {
-            getCurrentUser: function() { return '789'; }
+            getCurrentUserID: function() { return '789'; }
         };
         angular.mock.module('userService', function($provide) {
             $provide.value('userService', mockUserService);

@@ -16,17 +16,20 @@ function(localStorageService, socketService, $q) {
             localStorageService.set('token', token);
         },
 
+        getCurrentUserID: function() {
+            return localStorageService.get('currentUserID');
+        },
+
         getCurrentUser: function() {
-            return localStorageService.get('currentUser');
+            var currentUserID = this.getCurrentUserID();
+            if (!currentUserID)
+                return null;
+
+            return this.getUser(currentUserID);
         },
 
-        getCurrentUserEmail: function() {
-            return localStorageService.get('currentUserEmail');
-        },
-
-        setCurrentUser: function(userID, userEmail) {
-            localStorageService.set('currentUser', userID);
-            localStorageService.set('currentUserEmail', userEmail);
+        setCurrentUser: function(userID) {
+            localStorageService.set('currentUserID', userID);
         },
 
         getUser: function(userID) {

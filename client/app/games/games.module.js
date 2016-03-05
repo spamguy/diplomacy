@@ -22,12 +22,8 @@ angular.module('games', [
             restricted: true
         },
         resolve: {
-            userService: 'userService',
             games: ['gameService', function(gameService) {
                 return gameService.getAllOpenGames();
-            }],
-            user: ['userService', function(userService) {
-                return userService.getUser(userService.getCurrentUser());
             }]
         }
     })
@@ -39,9 +35,6 @@ angular.module('games', [
             restricted: true
         },
         resolve: {
-            currentUser: ['userService', function(userService) {
-                return userService.getUser(userService.getCurrentUser());
-            }],
             variants: ['gameService', function(gameService) {
                 return gameService.getAllVariantNames();
             }]
@@ -55,9 +48,6 @@ angular.module('games', [
             restricted: true
         },
         resolve: {
-            user: function(userService) {
-                return userService.getUser(userService.getCurrentUser());
-            },
             variant: ['gameService', 'game', function(gameService, game) {
                 return gameService.getVariant(game.variant);
             }],
@@ -67,8 +57,7 @@ angular.module('games', [
             season: ['userService', 'gameService', 'game', function(userService, gameService, game) {
                 // FIXME: This approach is probably totally exploitable. This decision making needs to happen server-side.
                 // Identify whether current player is admin of this game.
-                var playerID = userService.getCurrentUser(),
-                    isAdmin = game.gm_id === playerID;
+                var isAdmin = game.gm_id === userService.getCurrentUserID();
 
                 if (isAdmin)
                     return gameService.getMoveData(game._id);

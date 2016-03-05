@@ -64,18 +64,24 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
 }])
 .run(['$rootScope', 'userService', 'socketService', function($rootScope, userService, socketService) {
     $rootScope.$on('$stateChangeStart', function(event, next) {
-        var isRestricted = !!(next.data && next.data.restricted);
-
-        $rootScope.isAuthenticated = userService.isAuthenticated();
-
-        // if page is restricted and auth is bad, block entry to route
-        if (isRestricted && !userService.isAuthenticated()) {
-            event.preventDefault();
-            console.log('State change blocked');
-        }
-        else if (!socketService.socket) {
-            // Initialize socket voodoo.
+        // Initialize socket voodoo.
+        if (!socketService.socket)
             socketService.initialize();
+
+        var isRestricted = !!(next.data && next.data.restricted),
+            currentUserPromise = userService.getCurrentUser();
+
+        if (currentUserPromise) {
+            currentUserPromise.then(function(user) {
+                $rootScope.currentUser = user;
+                $rootScope.isAuthenticated = userService.isAuthenticated();
+
+                // If page is restricted and auth is bad, block entry to route.
+                if (isRestricted && !userService.isAuthenticated()) {
+                    event.preventDefault();
+                    console.log('State change blocked');
+                }
+            });
         }
     });
 }]);

@@ -6,7 +6,7 @@ var path = require('path'),
     Mongoose = require('mongoose'),
     cachegoose = require('cachegoose'),
     kue = require('kue'),
-    controllers = all(__dirname + '/controllers'),
+    controllers = all(path.join(__dirname, '/controllers')),
     core = require('./cores/index'),
     app = express(),
     socketioJWT = require('socketio-jwt'),
@@ -15,7 +15,7 @@ var path = require('path'),
         .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json'));
 
 // Register models.
-all(__dirname + '/models');
+all(path.join(__dirname, '/models'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -27,7 +27,7 @@ app.queue = kue.createQueue({
     }
 });
 
-all(__dirname + '/jobs', {
+all(path.join(__dirname, '/jobs'), {
     each: function(job) {
         app.queue.process(job.name, job.process);
     },

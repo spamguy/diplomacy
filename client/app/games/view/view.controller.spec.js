@@ -23,7 +23,7 @@ describe('Game view controller', function() {
         svg = { data: new DOMParser().parseFromString('<svg><g id="mouseLayer"></g></svg>', 'image/svg+xml') };
 
         mockUserService = {
-            getCurrentUser: function() { return '123'; }
+            getCurrentUserID: function() { return '123'; }
         };
         mockGameService = {
 

@@ -10,7 +10,7 @@ describe('Open game list controller', function() {
 
     beforeEach(function() {
         mockUserService = {
-            getCurrentUser: function() { return '123'; }
+            getCurrentUserID: function() { return '123'; }
         };
         mockGameService = {
             getVariant: sinon.spy()

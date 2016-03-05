@@ -2,7 +2,7 @@
     <md-tab label="Active Games">
         <md-list>
             <md-list-item ng-repeat="game in playing | filter: { status: 1 }" class="gameItem">
-                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="currentUser" />
             </md-list-item>
         </md-list>
         <div layout="row" layout-align="center center" layout-margin ng-if="!(playing | filter: { status: 1 }).length">
@@ -12,7 +12,7 @@
     <md-tab label="Inactive Games">
         <md-list>
             <md-list-item ng-repeat="game in playing.concat(GMing) | filter: { status: 0 }" class="gameItem">
-                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="currentUser" />
             </md-list-item>
         </md-list>
         <div layout="row" layout-align="center center" layout-margin ng-if="!(playing.concat(GMing) | filter: { status: 0 }).length">
@@ -22,7 +22,7 @@
     <md-tab label="Mastering">
         <md-list>
             <md-list-item ng-repeat="game in GMing" class="gameItem">
-                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="currentUser" />
             </md-list-item>
         </md-list>
         <div layout="row" layout-align="center center" layout-margin ng-if="!GMing.length">
@@ -32,7 +32,7 @@
     <md-tab label="Completed">
         <md-list>
             <md-list-item ng-repeat="game in playing.concat(GMing) | filter: { status: 2 }" class="gameItem">
-                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="user" />
+                <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="currentUser" />
             </md-list-item>
         </md-list>
         <div layout="row" layout-align="center center" layout-margin ng-if="!(playing.concat(GMing) | filter: { status: 2 }).length">
