@@ -24,7 +24,7 @@ module.exports = {
             ]
         });
 
-        if (require('file-exists')(judgePath))
+        if (require('file-exists')(judgePath + '.js'))
             require(judgePath);
         else
             logger.error('Could not adjudicate: no judge could be found at ' + judgePath);
@@ -61,7 +61,7 @@ module.exports = {
                 async.each(game.players, function(player, err) {
                     var emailOptions = {
                         gameName: game.name,
-                        gameURL: path.join(seekrits.get('domain'), 'games', game._id),
+                        gameURL: path.join(seekrits.get('domain'), 'games', game._id.toString()),
                         subject: '[' + game.name + '] ' + season.season + ' ' + season.year + ' has been adjudicated',
                         deadline: season.deadline,
                         season: season.season,
