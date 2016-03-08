@@ -32,12 +32,12 @@ module.exports = {
         async.waterfall([
             // Fetches the season in question.
             function(callback) {
-                core.season.list({ ID: seasonID }, function(err, seasons) { callback(err, seasons[0]); });
+                core.season.list({ '_id': seasonID }, function(err, seasons) { callback(err, seasons[0]); });
             },
 
             // Fetches the game in question.
             function(season, callback) {
-                core.game.list({ ID: season.game_id }, function(err, games) { callback(err, games[0], season); });
+                core.game.list({ '_id': season.game_id }, function(err, games) { callback(err, games[0], season); });
             },
 
             // Verifies all players are ready. Fetches the variant, adjudicates, and persists the outcome.
@@ -45,14 +45,11 @@ module.exports = {
                 // Not everyone is ready. Handling this situation deserves its own block.
                 if (!game.ignoreLateOrders && !_.every(game.players, 'isReady')) {
                     handleLateSeason();
-                    callback(null, game, season);
+                    callback('Not adjudicating: some players are not ready');
                 }
 
                 var variant = core.variant.get(game.variant),
                     nextState = global.state.NextFromJS(variant, season);
-
-                logger.info('Result of adjudication for season ' + seasonID + ':\n' + JSON.stringify(nextState));
-
                 core.season.createFromState(variant, game, nextState, function(err, s) { callback(err, variant, game, season); });
             },
 
@@ -65,7 +62,9 @@ module.exports = {
                         subject: '[' + game.name + '] ' + season.season + ' ' + season.year + ' has been adjudicated',
                         deadline: season.deadline,
                         season: season.season,
-                        year: season.year
+                        year: season.year,
+                        nextSeason: season.getNextSeasonSeason(variant),
+                        nextYear: season.getNextSeasonYear(variant)
                     };
 
                     core.user.list({ ID: player.player_id }, function(err, users) {
@@ -75,7 +74,7 @@ module.exports = {
                         emailOptions.email = users[0].email;
                         mailer.sendOne('adjudication', emailOptions, function(err) {
                             if (err)
-                                console.log(err);
+                                logger.error(err);
                         });
                     });
 
@@ -83,8 +82,8 @@ module.exports = {
                 });
             }
         ], function(err, game, season) {
-            if (!err)
-                return;
+            if (err)
+                logger.error(err);
         });
 
         return done();

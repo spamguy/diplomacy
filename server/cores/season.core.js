@@ -1,7 +1,8 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    moment = require('moment');
 
 function SeasonCore(options) {
     this.core = options.core;
@@ -34,10 +35,14 @@ SeasonCore.prototype.create = function(season, cb) {
 };
 
 SeasonCore.prototype.createFromState = function(variant, game, state, cb) {
-    var newSeason = mongoose.model('Season')();
+    var newSeason = mongoose.model('Season')(),
+        nextDeadline = moment();
 
     newSeason.game_id = game._id;
-    newSeason.moves = variant.regions;
+    newSeason.regions = variant.regions;
+
+    nextDeadline.add(game.getClockFromSeason(game.season), 'hours');
+    newSeason.deadline = nextDeadline;
 
     newSeason.save(function(err, data) { cb(err, data); });
 };
