@@ -49,6 +49,10 @@ var mongoose = require('mongoose'),
 
 GameSchema.plugin(timestamp);
 
+GameSchema.virtual('isEverybodyReady').get(function() {
+    return _.every(this.players, 'isReady');
+});
+
 /**
  * Returns the appropriate clock associated with a season.
  * @param  {String} seasonName The name of the season.

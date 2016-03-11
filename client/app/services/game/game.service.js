@@ -131,6 +131,14 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         },
 
+        setReadyState: function(game, state) {
+            socketService.socket.emit('season:toggleready', {
+                gameID: game._id,
+                isReady: state,
+                playerID: userService.getCurrentUserID()
+            });
+        },
+
         getPowerOfCurrentUserInGame: function(game) {
             for (var p = 0; p < game.players.length; p++) {
                 if (game.players[p].player_id === userService.getCurrentUserID())

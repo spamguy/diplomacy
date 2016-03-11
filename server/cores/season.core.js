@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose'),
     _ = require('lodash'),
+    async = require('async'),
     moment = require('moment');
 
 function SeasonCore(options) {
@@ -34,17 +35,45 @@ SeasonCore.prototype.create = function(season, cb) {
     newSeason.save(function(err, data) { cb(err, data); });
 };
 
-SeasonCore.prototype.createFromState = function(variant, game, state, cb) {
-    var newSeason = mongoose.model('Season')(),
-        nextDeadline = moment();
+SeasonCore.prototype.createFromState = function(variant, game, oldSeason, state, cb) {
+    var indexedRegions = _.indexBy(oldSeason.regions, 'r'),
+        unit,
+        u;
 
-    newSeason.game_id = game._id;
-    newSeason.regions = variant.regions;
+    async.waterfall([
+        function(callback) {
+            // STEP 1: Mark up old season with outcomes.
+            for (u in state.Dislodgeds()) {
+                unit = state.Dislodgeds()[u];
+                indexedRegions[u].dislodged = {
+                    power: unit.Nation[0],
+                    type: unit.Type === 'Fleet' ? 2 : 1
+                };
+            }
 
-    nextDeadline.add(game.getClockFromSeason(game.season), 'hours');
-    newSeason.deadline = nextDeadline;
+            mongoose.model('Season').findOneAndUpdate(
+                { '_id': oldSeason._id },
+                { '$set': {
+                    'regions': _.values(indexedRegions)
+                } },
+                callback
+            );
+        },
 
-    newSeason.save(function(err, data) { cb(err, data); });
+        function(season, callback) {
+            // STEP 2: Create new season using formatted old season.
+            var newSeason = mongoose.model('Season')(),
+                nextDeadline = moment();
+            newSeason.game_id = game._id;
+
+            nextDeadline.add(game.getClockFromSeason(game.season), 'hours');
+            newSeason.deadline = nextDeadline;
+            newSeason.season = season.getNextSeasonSeason(variant);
+            newSeason.year = season.getNextSeasonYear(variant);
+
+            newSeason.save(callback);
+        }
+    ]);
 };
 
 SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {

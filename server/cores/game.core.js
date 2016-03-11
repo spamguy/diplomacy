@@ -90,7 +90,16 @@ GameCore.prototype.addPlayer = function(game, player, cb) {
     );
 };
 
-GameCore.prototype.resetReadyFlag = function(game, cb) {
+GameCore.prototype.setReadyFlag = function(gameID, userID, state, cb) {
+    mongoose.model('Game').findOneAndUpdate(
+        { _id: gameID, 'players.player_id': userID },
+        { $set: { 'players.$.isReady': state } },
+        { new: true },
+        cb
+    );
+};
+
+GameCore.prototype.resetAllReadyFlags = function(game, cb) {
     mongoose.model('Game').update(
         { _id: game._id },
         { $set: { 'players.isReady': false } },

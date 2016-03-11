@@ -90,14 +90,15 @@ module.exports = function() {
                 gameID = req.data.gameID;
             console.log('Player ' + playerID + ' has set ready flag to ' + isReady + ' in game ' + gameID);
 
-            core.season.setReadyState(playerID, isReady, gameID, function(err, isEverybodyReady) {
+            core.game.setReadyFlag(gameID, playerID, isReady, function(err, game) {
                 if (err)
                     console.log(err);
 
                 // IS EVERYBODY READY?!
-                if (isEverybodyReady) {
-                    // TODO: Schedule near-immediate adjudication.
-                }
+                // TODO: Delete any existing adjudication schedules.
+                // TODO: Schedule near-immediate adjudication.
+                if (game.isEverybodyReady)
+                    console.log('Everybody is ready in game ' + gameID + '. Scheduling adjudication.');
             });
         }
     });

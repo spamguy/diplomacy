@@ -12,6 +12,8 @@ angular.module('gametools.directive', [])
             variant: '='
         },
         link: function(scope, element, attrs) {
+            scope.currentPlayer = _.find(scope.game.players, 'player_id', userService.getCurrentUserID());
+
             scope.powerOwnsProvince = function(code, province) {
                 return gameService.getUnitOwnerInRegion(province, null, code);
             };
@@ -30,6 +32,10 @@ angular.module('gametools.directive', [])
                             return _.pick(scope.variant.powers, [scope.game.players[p].power]);
                     }
                 }
+            };
+
+            scope.setReadyState = function() {
+                gameService.setReadyState(scope.game, scope.currentPlayer.isReady);
             };
         }
     };

@@ -7,7 +7,6 @@ module.exports = {
             async = require('async'),
             winston = require('winston'),
             path = require('path'),
-            _ = require('lodash'),
             logger,
             seekrits = require('nconf')
                 .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
@@ -43,14 +42,14 @@ module.exports = {
             // Verifies all players are ready. Fetches the variant, adjudicates, and persists the outcome.
             function(game, season, callback) {
                 // Not everyone is ready. Handling this situation deserves its own block.
-                if (!game.ignoreLateOrders && !_.every(game.players, 'isReady')) {
+                if (!game.ignoreLateOrders && !game.isEverybodyReady) {
                     handleLateSeason();
                     callback('Not adjudicating: some players are not ready');
                 }
 
                 var variant = core.variant.get(game.variant),
                     nextState = global.state.NextFromJS(variant, season);
-                core.season.createFromState(variant, game, nextState, function(err, s) { callback(err, variant, game, season); });
+                core.season.createFromState(variant, game, season, nextState, function(err, s) { callback(err, variant, game, season); });
             },
 
             // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.
@@ -78,7 +77,7 @@ module.exports = {
                         });
                     });
 
-                    core.game.resetReadyFlag(game, function(err, game) { callback(err, variant, game, season); });
+                    core.game.resetAllReadyFlags(game, function(err, game) { callback(err, variant, game, season); });
                 });
             }
         ], function(err, game, season) {
