@@ -94,9 +94,6 @@ SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {
         // TODO: Build command.
     }
 
-    console.log('Command to execute:');
-    console.log(JSON.stringify(setCommand));
-
     mongoose.model('Season').findOneAndUpdate({
         _id: seasonID,
         'regions.r': data[0]

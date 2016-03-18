@@ -96,7 +96,19 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                     .append('svg')
                     .attr('flex', '')
                     .attr('opacity', function(d) { return season ? '1' : '0.3'; })
-                    .attr('viewBox', '0 0 ' + width + ' ' + height);
+                    .attr('viewBox', '0 0 ' + width + ' ' + height),
+                onSuccessfulSave = function(response, r, action, y1, y2) {
+                    if (response.status === 'ok') {
+                        var unitInRegion = gameService.getUnitOwnerInRegion(r);
+
+                        // Update local data to reflect DB change.
+                        unitInRegion.order = { action: action };
+                        if (y1)
+                            unitInRegion.order.y1 = y1;
+                        if (y2)
+                            unitInRegion.order.y2 = y2;
+                    }
+                };
 
             regionDictionary = _.indexBy(variant.regions, 'r');
 
@@ -150,11 +162,15 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 mouseLayer.on('click', function() {
                     var r = this.id.toUpperCase(),
                         region = _.find(season.regions, 'r', r),
-                        unitInRegion = gameService.getUnitOwnerInRegion(region).unit;
+                        ownerInRegion = gameService.getUnitOwnerInRegion(region),
+                        unitInRegion;
+
+                    if (ownerInRegion)
+                        unitInRegion = ownerInRegion.unit;
 
                     // Users who try to control units that don't exist or don't own? We have ways of shutting the whole thing down.
                     if (scope.commandData.length === 0 &&
-                        (!unitInRegion || region.unit.power !== gameService.getPowerOfCurrentUserInGame(scope.game)))
+                        (!unitInRegion || unitInRegion.power !== gameService.getPowerOfCurrentUserInGame(scope.game)))
                         return;
 
                     scope.commandData.push(r);
@@ -178,9 +194,12 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                     }
 
                     // Making it this far means there is a full set of commands to publish.
-                    gameService.publishCommand(scope.currentAction, scope.commandData, scope.season);
-
-                    scope.commandData = [];
+                    gameService.publishCommand(scope.currentAction, scope.commandData, scope.season,
+                        function(response) {
+                            onSuccessfulSave(response, _.find(scope.season.regions, 'r', scope.commandData[0]), scope.currentAction, scope.commandData[1], scope.commandData[2]);
+                            scope.commandData = [];
+                        }
+                    );
                 });
             }
             // --------------------------------------------

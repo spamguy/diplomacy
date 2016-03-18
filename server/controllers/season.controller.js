@@ -81,7 +81,16 @@ module.exports = function() {
                 function(callback) {
                     core.season.setOrder(req.data.seasonID, req.data.command, req.data.action, callback);
                 }
-            ]);
+            ], function(err) {
+                if (err) {
+                    console.error(err);
+                    return res.status(400).json({
+                        message: err
+                    });
+                }
+
+                return res.json({ status: 'ok' });
+            });
         },
 
         toggleready: function(req, res) {

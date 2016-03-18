@@ -122,13 +122,14 @@ angular.module('gameService', ['userService', 'socketService'])
          * @param  {String} action  The action.
          * @param  {Object} command The unit's new command.
          * @param  {Object} season  The season being modified.
+         * @param  {Function} callback The callback to execute after completion.
          */
-        publishCommand: function(action, command, season) {
+        publishCommand: function(action, command, season, callback) {
             socketService.socket.emit('season:setorder', {
                 seasonID: season._id,
                 command: command,
                 action: action
-            });
+            }, callback);
         },
 
         setReadyState: function(game, state) {
