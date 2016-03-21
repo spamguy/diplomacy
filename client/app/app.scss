@@ -4,8 +4,7 @@ $am-light-blue-grey: #ECEFF1;
 @import 'games/view/view.scss';
 @import 'main/main.scss';
 @import 'profile/profile.scss';
-@import 'directives/map/map.scss';
-@import 'directives/mapheader/mapheader.scss';
+@import 'components/map/map.scss';
 @import 'directives/gamelistitem/gamelistitem.scss';
 
 @font-face
@@ -28,6 +27,7 @@ html, body
     background-repeat: no-repeat;
     background-size: 60vw;
     background-position: -130px -130px;
+    color: #000;
 }
 
 footer
