@@ -10,7 +10,7 @@ angular.module('diplomacy', [
     'games',
     'diplomacy.main',
     'profile',
-    'map.directive',
+    'map.component',
     'gamelistitem.directive',
     'ngMaterial',
     'socketService'
