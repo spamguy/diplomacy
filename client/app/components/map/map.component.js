@@ -39,7 +39,7 @@ function MapController() {
     }
 }
 
-angular.module('map.component', ['SVGService', 'gameService'])
+angular.module('map.component', ['gameService'])
 .component('sgMap', {
     bindings: {
         variant: '<',
