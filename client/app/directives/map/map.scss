@@ -1,24 +1,3 @@
-#mapToolbar
-{
-    margin-bottom: 16px;
-
-    md-icon.active
-    {
-        color: #f00;
-    }
-}
-
-.mapContainer
-{
-    background-repeat: no-repeat;
-    background-size: 100%;
-
-    &.notStarted
-    {
-        opacity: 0.3;
-    }
-}
-
 .sc
 {
     stroke: #000;

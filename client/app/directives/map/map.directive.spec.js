@@ -8,7 +8,7 @@ describe('Map directive', function() {
     beforeEach(function() {
         angular.mock.module('templates');
         angular.mock.module('diplomacy.constants');
-        angular.mock.module('map.component');
+        angular.mock.module('map.directive');
         angular.mock.module('SVGService', function($provide) {
             $provide.value('SVGService', {
                 getStar: function() {
@@ -45,6 +45,7 @@ describe('Map directive', function() {
             scope.$digest();
             expect($('svg', el)).to.have.lengthOf(1);
             expect($('svg', el)).to.have.prop('viewBox');
+            expect($('svg', el)).to.have.attr('opacity');
         });
 
         it('is slightly transparent when no season is passed in', function() {
@@ -52,14 +53,13 @@ describe('Map directive', function() {
 
             el = compile('<sg-map game="game" variant="variant" season="season" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
-            console.debug($('div.mapContainer', el));
-            expect($('div.mapContainer', el)).to.have.class('notStarted');
+            expect($('svg', el)).to.have.attr('opacity', '0.3');
         });
 
         it('is fully visible when a season is passed in', function() {
             el = compile('<sg-map game="game" variant="variant" season="season" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
-            expect($('svg', el)).to.not.have.css('notStarted');
+            expect($('svg', el)).to.have.attr('opacity', '1');
         });
     });
 });

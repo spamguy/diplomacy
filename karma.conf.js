@@ -36,7 +36,6 @@ module.exports = function(config) {
             'client/app/app.module.js',
             'client/app/app.controller.js',
             'client/app/**/*.service.js',
-            'client/app/**/*.component.js',
             'client/app/**/*.directive.js',
             'client/app/**/*.module.js',
             'client/app/**/*.filter.js',
