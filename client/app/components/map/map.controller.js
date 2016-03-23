@@ -1,4 +1,4 @@
-angular.module('map.component')
+angular.module('map.component', ['gameService'])
 .controller('MapController', ['$location', function($location) {
     var vm = this,
         paths = vm.svg.getElementsByTagName('path'),
@@ -28,6 +28,7 @@ angular.module('map.component')
         vm.canBuild = _.contains(this.season.season.toLowerCase(), 'adjust');
         vm.viewBox = '0 0 ' + vm.getSVGAttribute('width') + ' ' + vm.getSVGAttribute('height');
         vm.scPath = $location.absUrl() + '#sc';
+        vm.commandData = [];
         vm.currentAction = 'hold';
     }
 
@@ -44,7 +45,7 @@ angular.module('map.component')
     }
 
     function inputCommand(r) {
-
+        vm.commandData.push(r.toUpperCase());
     }
 
     function changeAction(action) {

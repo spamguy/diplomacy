@@ -55,8 +55,12 @@
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" ng-repeat="region in $ctrl.season.regions | filter: { sc: '!!' }" xlink:href="" ng-href="{{$ctrl.scPath}}" ng-attr-transform="{{$ctrl.getSCTransform(region.r)}}" class="sc">
                 </g>
                 <!-- TODO: Don't hard-code transform attribute -->
-                <g class="mouseLayer" transform="translate(8,7)" ng-if="!$ctrl.readonly">
-                    <path ng-repeat="(r, d) in $ctrl.paths" id="{{r}}" ng-attr-d="{{d}}" ng-click="$ctrl.inputCommand(r)"></path>
+                <g class="mouseLayer" transform="translate(8,4)" ng-if="!$ctrl.readonly">
+                    <path ng-repeat="(r, d) in $ctrl.paths"
+                        id="{{r}}"
+                        ng-attr-d="{{d}}"
+                        ng-click="$ctrl.inputCommand(r)"
+                        ng-class="{'clicked': $ctrl.commandData.indexOf('{{r.toUpperCase()}}') >= 0}"></path>
                 </g>
             </svg>
         </div>

@@ -74,6 +74,15 @@ g.mouseLayer path
         fill-opacity: 0.1;
         cursor: pointer;
     }
+
+    &.clicked
+    {
+        transition-property: fill, fill-opacity;
+        transition-duration: 0.2s;
+        transition-timing-function: linear;
+        fill: #c00;
+        fill-opacity: 0.5;
+    }
 }
 
 h1.notStarted

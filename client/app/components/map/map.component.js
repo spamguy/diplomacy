@@ -1,4 +1,4 @@
-angular.module('map.component', ['gameService'])
+angular.module('map.component')
 .component('sgMap', {
     bindings: {
         variant: '<',
