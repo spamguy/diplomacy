@@ -3,6 +3,7 @@ angular.module('map.component', ['gameService'])
     bindings: {
         variant: '<',
         svg: '=',
+        game: '=',
         season: '=',
         readonly: '<',
         header: '<'

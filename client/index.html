@@ -16,7 +16,7 @@
 <body ng-controller="AppController">
     <md-toolbar style="background-color:transparent;">
         <div class="md-toolbar-tools">
-            <span class="logo"><a ui-sref="main.home">dipl.io</a></span>
+            <span class="md-primary logo"><a ui-sref="main.home">dipl.io</a></span>
             <span flex></span>
             <md-button class="md-raised md-primary" aria-label="Log In" ui-sref="main.login" ng-if="!isAuthenticated">Log In</md-button>
             <md-button class="md-raised md-primary" aria-label="Sign Up" ui-sref="main.signup" ng-if="!isAuthenticated">Sign Up</md-button>
@@ -60,14 +60,16 @@
         </div>
     </md-toolbar>
 
-    <ui-view />
+    <div layout="column">
+        <div><ui-view /></div>
 
-    <div>
-        <footer>
-            v{{VERSION}}-{{TIMESTAMP}} |
-            <a href="https://github.com/spamguy/diplomacy">dipl.io on GitHub</a> |
-            <a href="https://blog.dipl.io">dipl.io Blog</a>
-        </footer>
+        <div>
+            <footer>
+                v{{VERSION}}-{{TIMESTAMP}} |
+                <a href="https://github.com/spamguy/diplomacy">dipl.io on GitHub</a> |
+                <a href="https://blog.dipl.io">dipl.io Blog</a>
+            </footer>
+        </div>
     </div>
 
     <script>

@@ -4,7 +4,7 @@
 
     md-icon.active
     {
-        color: #f00;
+        fill: yellow;
     }
 }
 
@@ -69,6 +69,8 @@ g.mouseLayer path
 {
     fill: #000;
     fill-opacity: 0.0;
+    outline: none;
+
     &:hover
     {
         fill-opacity: 0.1;
