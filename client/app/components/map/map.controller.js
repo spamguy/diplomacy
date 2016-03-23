@@ -1,4 +1,4 @@
-angular.module('map.component', ['gameService'])
+angular.module('map.component')
 .controller('MapController', ['$location', function($location) {
     var vm = this,
         paths = vm.svg.getElementsByTagName('path'),
