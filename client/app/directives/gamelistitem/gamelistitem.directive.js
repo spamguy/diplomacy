@@ -71,14 +71,20 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
             };
 
             gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
-                if (season) {
+                switch (scope.game.status) {
+                case 0:
+                    scope.seasonDescription = '(waiting on ' + (scope.game.maxPlayers - scope.game.players.length) + ' more players)';
+                    scope.readableTimer = humanizeDuration(scope.game.moveClock * 60 * 60 * 1000) + ' deadline';
+                    break;
+                case 1:
                     var timeUntilDeadline = new Date(season.deadline).getTime() - new Date().getTime();
                     scope.seasonDescription = season.season + ' ' + season.year;
                     scope.readableTimer = humanizeDuration(timeUntilDeadline, { largest: 2, round: true });
-                }
-                else {
-                    scope.seasonDescription = '(not started)';
-                    scope.readableTimer = humanizeDuration(scope.game.moveClock * 60 * 60 * 1000) + ' deadline';
+                    break;
+                case 2:
+                    scope.seasonDescription = 'Complete';
+                    scope.readableTimer = 'Complete';
+                    break;
                 }
             });
         }

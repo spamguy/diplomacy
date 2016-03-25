@@ -45,7 +45,9 @@ describe('Game list item directive', function() {
                 movementClock: 24,
                 minimumScoreToJoin: 1,
                 gm_id: '666',
-                players: [ ]
+                players: [ ],
+                status: 1,
+                maxPlayers: 7
             };
             scope.variant = { name: 'Standard' };
             scope.user = sampleUser;
@@ -77,13 +79,29 @@ describe('Game list item directive', function() {
         expect($('h2.md-subhead', el)).to.have.lengthOf(0);
     });
 
-    it('displays the correct season and year', function() {
-        el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
-        scope.$digest();
-        expect($('#seasonDescription', el)).to.have.text('Spring Movement 1901');
+    describe('Season description', function() {
+        it('displays the correct season and year during active games', function() {
+            el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
+            scope.$digest();
+            expect($('#seasonDescription', el)).to.have.text('Spring Movement 1901');
+        });
+
+        it('displays the number of remaining needed players during new games', function() {
+            scope.game.status = 0;
+            el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
+            scope.$digest();
+            expect($('#seasonDescription', el)).to.have.text('(waiting on 7 more players)');
+        });
+
+        it('displays a completion message if the game is over', function() {
+            scope.game.status = 2;
+            el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
+            scope.$digest();
+            expect($('#seasonDescription', el)).to.have.text('Complete');
+        });
     });
 
-    it('displays the largest two units in deadline', function() {
+    it('displays the largest two units in deadline during active games', function() {
         el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
         scope.$digest();
         expect(el.isolateScope().readableTimer).to.equal('1 day, 2 hours');
