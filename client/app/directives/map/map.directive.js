@@ -92,6 +92,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
                 height = scope.svg.documentElement.getAttribute('height'),
                 width = scope.svg.documentElement.getAttribute('width'),
                 scaleFactor = 980595 * Math.pow(width, -2.423),
+                normalisedVariantName = gameService.getNormalisedVariantName(variant.name),
                 svg = d3.select(element[0])
                     .append('svg')
                     .attr('flex', '')
@@ -141,7 +142,7 @@ angular.module('map.directive', ['SVGService', 'gameService'])
             // STEP 3: Add background image layer. --------
             svg.append('g')
                 .append('svg:image')
-                .attr('xlink:href', 'variants/' + variant.name + '/' + variant.name + '.png')
+                .attr('xlink:href', 'variants/' + normalisedVariantName + '/' + normalisedVariantName + '.png')
                 .attr('width', '100%')
                 .attr('height', '100%');
 

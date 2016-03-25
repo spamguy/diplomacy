@@ -38,15 +38,17 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         },
 
+        getNormalisedVariantName: function(variantName) {
+            return variantName.replace(new RegExp(' ', 'g'), '').toLowerCase();
+        },
+
         getVariant: function(variantName) {
-            // Strip spaces.
-            variantName = variantName.replace(' ', '').toLowerCase();
+            variantName = this.getNormalisedVariantName(variantName);
             return $http.get('variants/' + variantName + '/' + variantName + '.json');
         },
 
         getVariantSVG: function(variantName) {
-            // Strip spaces.
-            variantName = variantName.replace(' ', '').toLowerCase();
+            variantName = this.getNormalisedVariantName(variantName);
             return $http.get('variants/' + variantName + '/' + variantName + '.svg');
         },
 

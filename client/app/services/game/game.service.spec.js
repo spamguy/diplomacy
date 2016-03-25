@@ -49,6 +49,10 @@ describe('gameService', function() {
         // expect(gameService.getAllGamesForCurrentUser()).to.eventually.have.length(3);
     });
 
+    it('normalises variant names as lowercase and without spaces', function() {
+        expect(gameService.getNormalisedVariantName('Very lONG variant NAME')).to.equal('verylongvariantname');
+    });
+
     it('creates new games', function() {
         gameService.createNewGame({ });
 
