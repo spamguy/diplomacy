@@ -40,13 +40,13 @@ angular.module('gameService', ['userService', 'socketService'])
 
         getVariant: function(variantName) {
             // Strip spaces.
-            variantName = variantName.replace(' ', '');
+            variantName = variantName.replace(' ', '').toLowerCase();
             return $http.get('variants/' + variantName + '/' + variantName + '.json');
         },
 
         getVariantSVG: function(variantName) {
             // Strip spaces.
-            variantName = variantName.replace(' ', '');
+            variantName = variantName.replace(' ', '').toLowerCase();
             return $http.get('variants/' + variantName + '/' + variantName + '.svg');
         },
 
