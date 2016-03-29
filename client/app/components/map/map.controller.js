@@ -18,6 +18,7 @@ angular.module('map.component')
     if (!this.variant || !this.svg)
         return;
 
+    vm.regionReferenceDictionary = regionReferenceDictionary;
     vm.paths = { };
     for (p = 0; p < paths.length; p++)
         vm.paths[paths[p].id.toUpperCase()] = paths[p].getAttribute('d');

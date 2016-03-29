@@ -69,6 +69,20 @@
                       ng-class="{'clicked': $ctrl.commandData.indexOf('{{r.toUpperCase()}}') >= 0}">
                 </path>
             </g>
+
+            <g class="unitLayer">
+                <circle ng-repeat="region in $ctrl.season.regions | filter:hasUnit:1"
+                        cx={{regionReferenceDictionary[region.r].x}}
+                        cy={{regionReferenceDictionary[region.r].y}}>
+                </circle>
+
+                <rect ng-repeat="region in $ctrl.season.regions | filter:hasUnit:2"
+                      x="{{regionReferenceDictionary[region.r].x}}"
+                      y="{{regionReferenceDictionary[region.r].y}}"
+                      height="10"
+                      width="20">
+                </rect>
+            </g>
         </svg>
     </div>
 </div>

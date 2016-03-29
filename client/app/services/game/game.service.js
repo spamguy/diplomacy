@@ -149,6 +149,13 @@ angular.module('gameService', ['userService', 'socketService'])
             return null;
         },
 
+        /**
+         * Gets a unit's most precise location within a region.
+         * @param  {Object} r     The region.
+         * @param  {Integer} [type] The unit type by which to filter.
+         * @param  {String} [power] The power by which to filter.
+         * @return {Object}       The region or subregion with a unit present, or null.
+         */
         getUnitOwnerInRegion: function(r, type, power) {
             var subregionWithUnit = _.find(r.sr, 'unit');
 

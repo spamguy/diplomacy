@@ -18,6 +18,7 @@ module.exports = function(config) {
             'bower_components/lodash/lodash.js',
             'bower_components/humanize-duration/humanize-duration.js',
             'bower_components/angular/angular.js',
+            'bower_components/angular-messages/angular-messages.js',
             'bower_components/angular-sanitize/angular-sanitize.js',
             'bower_components/angular-mocks/angular-mocks.js',
             'bower_components/socket.io-client/socket.io.js',
