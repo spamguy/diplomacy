@@ -10,6 +10,8 @@ angular.module('map.component')
     vm.inputCommand = inputCommand;
     vm.getSCTransform = getSCTransform;
     vm.getSCFill = getSCFill;
+    vm.getUnitFill = getUnitFill;
+    vm.getCoordinates = getCoordinates;
     vm.changeAction = changeAction;
     vm.onOrderSave = onOrderSave;
 
@@ -46,14 +48,33 @@ angular.module('map.component')
 
     function getSCTransform(r) {
         return 'translate(' +
-            regionReferenceDictionary[r.toUpperCase()].x + ',' +
-            regionReferenceDictionary[r.toUpperCase()].y + ') ' +
+            regionReferenceDictionary[r.toUpperCase()].sc.x + ',' +
+            regionReferenceDictionary[r.toUpperCase()].sc.y + ') ' +
             'scale(0.04)';
     }
 
     function getSCFill(r) {
         var owner = _.find(vm.season.regions, 'r', r).sc;
         return owner ? vm.variant.powers[owner].colour : '#bbbbbb';
+    }
+
+    function getUnitFill(r) {
+        var container = gameService.getUnitOwnerInRegion(r);
+        return this.variant.powers[container.unit.power].colour;
+    }
+
+    function getCoordinates(r, type) {
+        var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
+
+        if (r.unit) {
+            return { x: regionReferenceDictionary[r.r].x, y: regionReferenceDictionary[r.r].y };
+        }
+        else if (subregionWithUnit) {
+            subregionWithUnit = _.find(regionReferenceDictionary[r.r].sr, 'r', subregionWithUnit.r);
+            return { x: subregionWithUnit.x, y: subregionWithUnit.y };
+        }
+
+        return { x: null, y: null };
     }
 
     function inputCommand(id) {

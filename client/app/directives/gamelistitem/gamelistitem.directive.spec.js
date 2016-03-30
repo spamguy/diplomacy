@@ -7,7 +7,8 @@ describe('Game list item directive', function() {
         scope,
         mockService,
         sampleSeason,
-        sampleUser;
+        sampleUser,
+        httpBackend;
 
     beforeEach(function() {
         angular.mock.module('templates');
@@ -34,9 +35,13 @@ describe('Game list item directive', function() {
     });
 
     beforeEach(function() {
-        inject(function($injector, $compile, $rootScope) {
+        inject(function($injector, $compile, $rootScope, $httpBackend) {
             scope = $rootScope;
             compile = $compile;
+            httpBackend = $httpBackend;
+
+            // Icon fetches are to be expected.
+            httpBackend.whenGET(/\/icons\//).respond(200);
 
             scope.game = {
                 name: 'Test Game',

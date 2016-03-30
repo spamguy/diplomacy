@@ -71,16 +71,25 @@
             </g>
 
             <g class="unitLayer">
-                <circle ng-repeat="region in $ctrl.season.regions | filter:hasUnit:1"
-                        cx={{regionReferenceDictionary[region.r].x}}
-                        cy={{regionReferenceDictionary[region.r].y}}>
+                <circle ng-repeat="region in $ctrl.season.regions | hasUnit:1"
+                        id="{{region.r}}-army"
+                        r="10"
+                        stroke="#000"
+                        stroke-width="1px"
+                        ng-attr-cx="{{$ctrl.getCoordinates(region, 1).x}}"
+                        ng-attr-cy="{{$ctrl.getCoordinates(region, 1).y}}"
+                        ng-attr-fill="{{$ctrl.getUnitFill(region)}}">
                 </circle>
 
-                <rect ng-repeat="region in $ctrl.season.regions | filter:hasUnit:2"
-                      x="{{regionReferenceDictionary[region.r].x}}"
-                      y="{{regionReferenceDictionary[region.r].y}}"
+                <rect ng-repeat="region in $ctrl.season.regions | hasUnit:2"
+                      id="{{region.r}}-fleet"
                       height="10"
-                      width="20">
+                      width="20"
+                      stroke="#000"
+                      stroke-width="1px"
+                      ng-attr-x="{{$ctrl.getCoordinates(region, 2).x}}"
+                      ng-attr-y="{{$ctrl.getCoordinates(region, 2).y}}"
+                      ng-attr-fill="{{$ctrl.getUnitFill(region)}}">
                 </rect>
             </g>
         </svg>

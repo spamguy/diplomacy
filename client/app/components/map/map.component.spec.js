@@ -6,6 +6,7 @@ describe('Map component', function() {
         el;
 
     beforeEach(function() {
+        angular.mock.module('diplomacy');
         angular.mock.module('templates');
         angular.mock.module('diplomacy.constants');
         angular.mock.module('map.component');
