@@ -110,11 +110,12 @@ angular.module('gameService', ['userService', 'socketService'])
          * @description Signs the current user up for a game.
          * @param {Object} game    A game.
          * @param {Object} [options] Power preferences, if allowed.
+         * @param {Function} [callback] The callback to execute after completion.
          */
-        joinGame: function(game, options) {
+        joinGame: function(game, options, callback) {
             options = options || { };
             options.gameID = game._id;
-            socketService.socket.emit('game:join', options);
+            socketService.socket.emit('game:join', options, callback);
         },
 
         /**

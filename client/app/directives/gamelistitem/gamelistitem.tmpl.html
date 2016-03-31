@@ -16,9 +16,7 @@
         <div flex layout="column" layout-align="center center">
             <!-- HACK: Tooltip does not work on disabled buttons. -->
             <md-tooltip ng-if="joinable && reasonForNoJoin()">{{reasonForNoJoin()}}</md-tooltip>
-            <md-button class="md-raised md-primary" ng-if="joinable" ng-disabled="reasonForNoJoin()" ng-click="showJoinDialog()">
-                <span>Join</span>
-            </md-button>
+            <md-button class="md-raised md-primary" ng-if="joinable" ng-disabled="reasonForNoJoin()" ng-click="showJoinDialog()">Join</md-button>
         </div>
     </div>
 

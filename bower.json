@@ -18,7 +18,7 @@
     "angular-hotkeys": "0.2.2",
     "angular-jwt": "~0.0.6",
     "angular-local-storage": "~0.1.5",
-    "angular-material": "1.1.0-rc1",
+    "angular-material": "1.1.0-rc2",
     "angular-messages": "1.5.2",
     "angular-sanitize": "1.5.2",
     "angular-socket-io": "~0.7.0",
