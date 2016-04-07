@@ -34,14 +34,19 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                     $state.go('games.view', { id: scope.game._id });
             };
 
-            scope.showJoinDialog = function($event) {
-                $mdDialog.show({
-                    targetEvent: $event,
-                    templateUrl: 'app/directives/gamelistitem/joindialog.tmpl.html',
-                    controller: 'JoinDialogController',
-                    locals: {
-                        game: scope.game
-                    }
+            scope.showJoinDialog = function(event) {
+                var confirm = $mdDialog.confirm()
+                                .title('Really join?')
+                                .textContent('Are you sure you want to join this game? By clicking OK you are agreeing to participate to the best of your ability. See the FAQ and Community Guidelines for details.')
+                                .ariaLabel('Really join game?')
+                                .targetEvent(event)
+                                .ok('Join')
+                                .cancel('Cancel');
+
+                $mdDialog.show(confirm).then(function() {
+                    gameService.joinGame(scope.game, { }, function() {
+                        $state.go('profile.games');
+                    });
                 });
             };
 

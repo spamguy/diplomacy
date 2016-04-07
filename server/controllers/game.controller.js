@@ -171,6 +171,7 @@ module.exports = function() {
                             gameData = { gamename: game.name };
                             req.socket.emit('game:join:success', gameData);
                             req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
+                            return res.json({ status: 'ok' });
                         }
                     });
                 });

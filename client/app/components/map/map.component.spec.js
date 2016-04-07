@@ -1,4 +1,4 @@
-describe('Map directive', function() {
+describe('Map component', function() {
     'use strict';
 
     var scope,
@@ -6,16 +6,10 @@ describe('Map directive', function() {
         el;
 
     beforeEach(function() {
+        angular.mock.module('diplomacy');
         angular.mock.module('templates');
         angular.mock.module('diplomacy.constants');
-        angular.mock.module('map.directive');
-        angular.mock.module('SVGService', function($provide) {
-            $provide.value('SVGService', {
-                getStar: function() {
-                    return new DOMParser().parseFromString('<svg height="1" width="1"></svg>', 'image/svg+xml');
-                }
-            });
-        });
+        angular.mock.module('map.component');
     });
 
     beforeEach(function() {
@@ -39,13 +33,33 @@ describe('Map directive', function() {
         });
     });
 
+    describe('Map header', function() {
+        it('is invisible when \'header\' flag is false', function() {
+            el = compile('<sg-map game="game" variant="variant" season="season" readonly="readonly" svg="svg" header="false" />')(scope);
+            scope.$digest();
+            expect($('#mapToolbar', el)).to.have.lengthOf(0);
+        });
+
+        it('is invisible when there is no season data', function() {
+            scope.season = null;
+            el = compile('<sg-map game="game" variant="variant" season="season" readonly="readonly" svg="svg" header="true" />')(scope);
+            scope.$digest();
+            expect($('#mapToolbar', el)).to.have.lengthOf(0);
+        });
+
+        it('is visible when \'header\' flag is true and season data is present', function() {
+            el = compile('<sg-map game="game" variant="variant" season="season" readonly="readonly" svg="svg" header="true" />')(scope);
+            scope.$digest();
+            expect($('#mapToolbar', el)).to.have.lengthOf(1);
+        });
+    });
+
     describe('SVG element', function() {
         it('creates an SVG element with expected attributes', function() {
             el = compile('<sg-map game="game" variant="variant" season="season" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
             expect($('svg', el)).to.have.lengthOf(1);
             expect($('svg', el)).to.have.prop('viewBox');
-            expect($('svg', el)).to.have.attr('opacity');
         });
 
         it('is slightly transparent when no season is passed in', function() {
@@ -53,13 +67,13 @@ describe('Map directive', function() {
 
             el = compile('<sg-map game="game" variant="variant" season="season" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
-            expect($('svg', el)).to.have.attr('opacity', '0.3');
+            expect($('div.mapContainer', el)).to.have.class('notStarted');
         });
 
         it('is fully visible when a season is passed in', function() {
             el = compile('<sg-map game="game" variant="variant" season="season" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
-            expect($('svg', el)).to.have.attr('opacity', '1');
+            expect($('svg', el)).to.not.have.css('notStarted');
         });
     });
 });

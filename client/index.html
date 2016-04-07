@@ -16,7 +16,7 @@
 <body ng-controller="AppController">
     <md-toolbar style="background-color:transparent;">
         <div class="md-toolbar-tools">
-            <span class="logo"><a ui-sref="main.home">dipl.io</a></span>
+            <span class="md-primary logo"><a ui-sref="main.home">dipl.io</a></span>
             <span flex></span>
             <md-button class="md-raised md-primary" aria-label="Log In" ui-sref="main.login" ng-if="!isAuthenticated">Log In</md-button>
             <md-button class="md-raised md-primary" aria-label="Sign Up" ui-sref="main.signup" ng-if="!isAuthenticated">Sign Up</md-button>
@@ -60,14 +60,16 @@
         </div>
     </md-toolbar>
 
-    <ui-view />
+    <div layout="column">
+        <div><ui-view /></div>
 
-    <div>
-        <footer>
-            v{{VERSION}}-{{TIMESTAMP}} |
-            <a href="https://github.com/spamguy/diplomacy">dipl.io on GitHub</a> |
-            <a href="https://blog.dipl.io">dipl.io Blog</a>
-        </footer>
+        <div>
+            <footer>
+                v{{VERSION}}-{{TIMESTAMP}} |
+                <a href="https://github.com/spamguy/diplomacy">dipl.io on GitHub</a> |
+                <a href="https://blog.dipl.io">dipl.io Blog</a>
+            </footer>
+        </div>
     </div>
 
     <script>
@@ -104,7 +106,6 @@
     <!-- build:js app.min.js -->
     <script src="temp/constants.js"></script>
 
-    <script src="app/services/SVG/SVG.service.js"></script>
     <script src="app/services/login/login.service.js"></script>
     <script src="app/services/user/user.service.js"></script>
     <script src="app/services/game/game.service.js"></script>
@@ -118,12 +119,12 @@
 
     <script src="app/app.controller.js"></script>
     <script src="app/main/home/home.controller.js"></script>
-    <script src="app/directives/map/map.directive.js"></script>
-    <script src="app/directives/mapheader/mapheader.directive.js"></script>
+    <script src="app/components/map/map.component.js"></script>
+    <script src="app/components/map/map.controller.js"></script>
     <script src="app/directives/gametools/gametools.directive.js"></script>
     <script src="app/directives/gametoolsprovincelistitem/gametoolsprovincelistitem.directive.js"></script>
     <script src="app/directives/gamelistitem/gamelistitem.directive.js"></script>
-    <script src="app/directives/gamelistitem/joindialog.controller.js"></script>
+    <script src="app/filters/hasUnit/hasUnit.filter.js"></script>
     <script src="app/games/view/filters/variant.filter.js"></script>
     <script src="app/games/games.controller.js"></script>
     <script src="app/games/view/view.controller.js"></script>
@@ -131,7 +132,7 @@
     <script src="app/main/signup/signup.controller.js"></script>
     <script src="app/profile/usergames/usergames.controller.js"></script>
     <script src="app/profile/verify/verify.controller.js"></script>
-    <script src="app/profile/verify/directives/passwordconfirm.directive.js"></script>
+    <script src="app/directives/passwordconfirm/passwordconfirm.directive.js"></script>
     <script src="app/profile/usergames/usergames.controller.js"></script>
     <script src="app/games/new/newgame.controller.js"></script>
     <!-- endbuild -->

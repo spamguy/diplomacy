@@ -2,6 +2,8 @@
 
 angular.module('games')
 .controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'season', 'svg', '$mdDialog', function($scope, userService, gameService, variant, game, season, svg, $mdDialog) {
+    $scope.updateRegionData = updateRegionData;
+
     $scope.variant = variant;
     $scope.game = game;
     $scope.season = season;
@@ -18,5 +20,17 @@ angular.module('games')
                 .textContent('This game has not started yet. No powers have been assigned.')
                 .ariaLabel('Game not started')
         );
+    }
+
+    function updateRegionData(r, action, y1, y2) {
+        var region = _.find($scope.season.regions, 'r', r),
+            unitInRegion = gameService.getUnitOwnerInRegion(region);
+
+        // Update local data to reflect DB change.
+        unitInRegion.unit.order = { action: action };
+        if (y1)
+            unitInRegion.unit.order.y1 = y1;
+        if (y2)
+            unitInRegion.unit.order.y2 = y2;
     }
 }]);

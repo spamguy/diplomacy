@@ -77,6 +77,8 @@ SeasonCore.prototype.createFromState = function(variant, game, oldSeason, state,
 };
 
 SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {
+    // FIXME: Set subregion orders in subregions and not at the region level.
+
     var setCommand = {
         '$set': { }
     };

@@ -112,11 +112,12 @@ angular.module('gameService', ['userService', 'socketService'])
          * @description Signs the current user up for a game.
          * @param {Object} game    A game.
          * @param {Object} [options] Power preferences, if allowed.
+         * @param {Function} [callback] The callback to execute after completion.
          */
-        joinGame: function(game, options) {
+        joinGame: function(game, options, callback) {
             options = options || { };
             options.gameID = game._id;
-            socketService.socket.emit('game:join', options);
+            socketService.socket.emit('game:join', options, callback);
         },
 
         /**
@@ -151,6 +152,13 @@ angular.module('gameService', ['userService', 'socketService'])
             return null;
         },
 
+        /**
+         * Gets a unit's most precise location within a region.
+         * @param  {Object} r     The region.
+         * @param  {Integer} [type] The unit type by which to filter.
+         * @param  {String} [power] The power by which to filter.
+         * @return {Object}       The region or subregion with a unit present, or null.
+         */
         getUnitOwnerInRegion: function(r, type, power) {
             var subregionWithUnit = _.find(r.sr, 'unit');
 
