@@ -1,5 +1,5 @@
 angular.module('map.component')
-.controller('MapController', ['$location', 'gameService', function($location, gameService) {
+.controller('MapController', ['$location', '$scope', 'gameService', function($location, $scope, gameService) {
     var vm = this,
         paths = vm.svg.getElementsByTagName('path'),
         regionReferenceDictionary = _.indexBy(this.variant.regions, 'r'),
@@ -8,13 +8,17 @@ angular.module('map.component')
         region,
         unitInRegion,
         target,
-        links = [],
-        force,
-        moveGroup = d3.select('svg g.moveLayer'),
+        moveLayer = d3.select('svg g.moveLayer'),
+        moveLayerArrows = moveLayer.selectAll('path'),
+        moveLayerHolds = moveLayer.selectAll('circle'),
         evenMorePadding,
-        unitRadiusPlusPadding,
+        unitRadius = 10,
+        unitRadiusPlusPadding = unitRadius + 6,
         pathLength,
-        midpoint;
+        midpoint,
+        force,
+        links = [],
+        holds = [];
 
     vm.getSVGAttribute = getSVGAttribute;
     vm.isHeaderVisible = isHeaderVisible;
@@ -39,77 +43,23 @@ angular.module('map.component')
     vm.imagePath = 'variants/' + this.variant.name + '/' + this.variant.name + '.png';
     vm.viewBox = '0 0 ' + vm.getSVGAttribute('width') + ' ' + vm.getSVGAttribute('height');
 
-    if (this.season) {
-        vm.canMove = _.contains(this.season.season.toLowerCase(), 'move');
-        vm.canRetreat = _.contains(this.season.season.toLowerCase(), 'retreat');
-        vm.canBuild = _.contains(this.season.season.toLowerCase(), 'adjust');
-        vm.scPath = $location.absUrl() + '#sc';
-        vm.commandData = [];
-        vm.currentAction = 'hold';
-        vm.clickCount = 0;
+    if (!this.season)
+        return;
 
-        // Build force directed graph.
-        for (p = 0; p < this.season.regions.length; p++) {
-            region = this.season.regions[p];
-            unitInRegion = gameService.getUnitOwnerInRegion(region);
-            if (unitInRegion && unitInRegion.unit.order)
-                target = unitInRegion.unit.order.y1 || unitInRegion.unit.order.y2 || unitInRegion.r;
-            else
-                continue;
+    vm.canMove = _.contains(this.season.season.toLowerCase(), 'move');
+    vm.canRetreat = _.contains(this.season.season.toLowerCase(), 'retreat');
+    vm.canBuild = _.contains(this.season.season.toLowerCase(), 'adjust');
+    vm.scPath = $location.absUrl() + '#sc';
+    vm.commandData = [];
+    vm.currentAction = 'hold';
+    vm.clickCount = 0;
 
-            links.push({
-                source: _.defaults(region, { fixed: true }),
-                target: _.defaults(regionReferenceDictionary[target], {
-                    fixed: true, // To keep d3 from treating this map like a true force graph.
-                    action: unitInRegion.unit.order.action,
-                    failed: unitInRegion.unit.order.failed
-                })
-            });
-        }
+    force = d3.layout.force()
+        .nodes(regionReferenceDictionary)
+        .links(links)
+        .on('tick', onForceDirectedGraphTick.bind(this)); // bind() forces function's scope to controller.
 
-        if (!links.length)
-            return;
-
-        force = d3.layout.force()
-            .nodes(regionReferenceDictionary)
-            .links(links)
-            .on('tick', onForceDirectedGraphTick.bind(this)); // bind() forces function's scope to controller.
-        moveGroup = d3.select('svg g.moveLayer')
-            .selectAll('path')
-            .data(force.links())
-            .enter()
-            .append('svg:path')
-            .attr('marker-end', generateMarkerEnd)
-            .attr('class', function(d) {
-                var failed = d.target.failed ? 'failed ' : 'ok ';
-                return failed + 'link move';
-            })
-            .attr('id', function(d) { return d.source.r + '-link'; });
-
-        // Append circles to units perceived to or actually holding.
-        moveGroup
-            .select('circle')
-            .data(_.filter(this.season.regions, function(r) {
-                if (r.unit && r.unit.order) {
-                    if (r.unit.order.action === 'hold')
-                        return true;
-                    else if (r.unit.order.action === 'support' && !r.unit.order.y2)
-                        return true;
-                    else
-                        return false;
-                }
-            }))
-            .enter()
-            .append('circle')
-            .attr('class', 'hold')
-            .attr('cx', function(d) { return regionReferenceDictionary[d.r].x; })
-            .attr('cy', function(d) { return regionReferenceDictionary[d.r].y; })
-            .attr('r', unitRadiusPlusPadding);
-
-        force.start();
-        for (i = 20; i > 0; --i) force.tick();
-        force.stop();
-    }
+    renderForceDirectedGraph();
 
     function getSVGAttribute(attr) {
         return this.svg.documentElement.getAttribute(attr);
@@ -188,7 +138,7 @@ angular.module('map.component')
         // Making it this far means there is a full set of commands to publish.
         gameService.publishCommand(vm.currentAction, vm.commandData, vm.season,
             function(response) {
-                vm.onOrderSave(response, _.find(vm.season.regions, 'r', vm.commandData[0]), vm.currentAction, vm.commandData[1], vm.commandData[2]);
+                vm.onOrderSave(response, vm.commandData[0], vm.currentAction, vm.commandData[1], vm.commandData[2]);
                 vm.commandData = [];
             }
         );
@@ -203,27 +153,22 @@ angular.module('map.component')
 
     function onOrderSave(response, r, action, y1, y2) {
         if (response.status === 'ok') {
-            var unitInRegion = gameService.getUnitOwnerInRegion(r);
+            $scope.$parent.updateRegionData(r, action, y1, y2);
 
-            // Update local data to reflect DB change.
-            unitInRegion.order = { action: action };
-            if (y1)
-                unitInRegion.order.y1 = y1;
-            if (y2)
-                unitInRegion.order.y2 = y2;
+            renderForceDirectedGraph();
         }
     }
 
     function generateMarkerEnd(d) {
         // See CSS file for why separate markers exist for failed orders.
         var failed = d.target.failed ? 'failed' : '';
-        return 'url(' + vm.scPath + '#' + failed + d.target.action + ')';
+        return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
     }
 
     function onForceDirectedGraphTick(e, scope) {
-        var regions = this.season.regions,
-            svg = this.svg;
-        moveGroup.attr('d', function(d) {
+        var regions = vm.season.regions,
+            svg = vm.svg;
+        moveLayerArrows.attr('d', function(d) {
             /*
              * Let T -> target, T' -> target of target, and S -> source.
              *
@@ -249,24 +194,25 @@ angular.module('map.component')
                 return;
 
             targetUnit = _.find(regions, 'r', d.target.r);
-            if (targetUnit.unit && targetUnit.unit.order)
+            if (targetUnit.unit && targetUnit.unit.order) {
                 actionOfTarget = targetUnit.unit.order.action;
 
-            if (action === 'move')
-                evenMorePadding = 5;
-            else
-                evenMorePadding = 0;
+                if (action === 'move')
+                    evenMorePadding = 5;
+                else
+                    evenMorePadding = 0;
 
-            // Figure out a good corner to which to point.
-            if (sx > tx)
-                tx += unitRadiusPlusPadding + evenMorePadding;
-            else
-                tx -= unitRadiusPlusPadding + evenMorePadding;
+                // Figure out a good corner to which to point.
+                if (sx > tx)
+                    tx += unitRadiusPlusPadding + evenMorePadding;
+                else
+                    tx -= unitRadiusPlusPadding + evenMorePadding;
 
-            if (sy > ty)
-                ty -= unitRadiusPlusPadding + evenMorePadding;
-            else
-                ty += unitRadiusPlusPadding + evenMorePadding;
+                if (sy > ty)
+                    ty -= unitRadiusPlusPadding + evenMorePadding;
+                else
+                    ty += unitRadiusPlusPadding + evenMorePadding;
+            }
 
             dx = tx - sx;
             dy = ty - sy;
@@ -283,5 +229,67 @@ angular.module('map.component')
                 return 'M' + sx + ',' + sy + 'L' + midpoint.x + ',' + midpoint.y;
             }
         });
+    }
+
+    /**
+     * Builds force directed graph.
+     */
+    function renderForceDirectedGraph() {
+        // Reset link list and regenerate holding unit list.
+        links = [];
+        holds = _.filter(vm.season.regions, function(r) {
+            if (r.unit && r.unit.order) {
+                if (r.unit.order.action === 'hold')
+                    return true;
+                else if (r.unit.order.action === 'support' && !r.unit.order.y2)
+                    return true;
+                else
+                    return false;
+            }
+        });
+
+        for (p = 0; p < vm.season.regions.length; p++) {
+            region = vm.season.regions[p];
+            unitInRegion = gameService.getUnitOwnerInRegion(region);
+
+            if (unitInRegion && unitInRegion.unit.order && unitInRegion.unit.order.action !== 'hold')
+                target = unitInRegion.unit.order.y1 || unitInRegion.unit.order.y2 || unitInRegion.r;
+            else
+                continue;
+
+            links.push({
+                source: _.defaults(region, { fixed: true }),
+                target: _.defaults(regionReferenceDictionary[target], {
+                    fixed: true, // To keep d3 from treating this map like a true force graph.
+                    action: unitInRegion.unit.order.action,
+                    failed: unitInRegion.unit.order.failed
+                })
+            });
+        }
+
+        moveLayerArrows = moveLayerArrows.data(links);
+        moveLayerArrows.enter()
+            .insert('svg:path')
+            .attr('marker-end', generateMarkerEnd)
+            .attr('class', function(d) {
+                var failed = d.target.failed ? 'failed ' : 'ok ';
+                return failed + 'link move';
+            })
+            .attr('id', function(d) { return d.source.r + '-' + d.target.r + '-link'; });
+        moveLayerArrows.exit().remove();
+
+        // Append circles to units perceived to or actually holding.
+        moveLayerHolds = moveLayerHolds.data(holds);
+        moveLayerHolds.enter()
+            .insert('svg:circle')
+            .attr('class', 'hold')
+            .attr('cx', function(d) { return regionReferenceDictionary[d.r].x; })
+            .attr('cy', function(d) { return regionReferenceDictionary[d.r].y; })
+            .attr('r', unitRadiusPlusPadding);
+        moveLayerHolds.exit().remove();
+
+        force.start();
+        for (i = 20; i > 0; --i) force.tick();
+        force.stop();
     }
 }]);

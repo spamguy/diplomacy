@@ -19,7 +19,7 @@ GameCore.prototype.list = function(options, cb) {
             'status': options.status
         }, _.identity));
 
-    query.cache(120).exec(function(err, games) {
+    query.exec(function(err, games) {
         if (err) {
             console.error(err);
             return cb(err);

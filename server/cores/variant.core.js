@@ -8,7 +8,7 @@ function VariantCore(options) {
 }
 
 VariantCore.prototype.get = function(name) {
-    name = name.replace(' ', '').toLowerCase();
+    name = name.replace(new RegExp(' ', 'g'), '').toLowerCase();
     var result = JSON.parse(fs.readFileSync(path.join(__dirname, '../../variants', name, name + '.json')));
 
     // Merge in default properties like season names.
