@@ -104,7 +104,8 @@ angular.module('map.component')
         var r = id.toUpperCase(),
             region = _.find(vm.season.regions, 'r', r),
             ownerInRegion = gameService.getUnitOwnerInRegion(region),
-            unitInRegion;
+            unitInRegion,
+            overrideAction;
 
         if (ownerInRegion)
             unitInRegion = ownerInRegion.unit;
@@ -125,11 +126,27 @@ angular.module('map.component')
             // Source, target.
             if (vm.commandData.length < 2)
                 return;
+
+            // Don't move to yourself. Treat this as a hold.
+            if (vm.commandData[0] === vm.commandData[1]) {
+                vm.commandData.pop();
+                overrideAction = 'hold';
+            }
             break;
         case 'support':
+            // Don't support yourself. Treat this as a hold.
+            if (vm.commandData[0] === vm.commandData[1]) {
+                while (vm.commandData.length) vm.commandData.pop();
+                overrideAction = 'hold';
+            }
             // Source, target, target of target.
-            if (vm.commandData.length < 3)
+            else if (vm.commandData.length < 3) {
                 return;
+            }
+            // Source, holding target.
+            else if (vm.commandData[1] === vm.commandData[2]) {
+                vm.commandData.pop();
+            }
             break;
         case 'convoy':
             break;
@@ -138,7 +155,7 @@ angular.module('map.component')
         // Making it this far means there is a full set of commands to publish.
         gameService.publishCommand(vm.currentAction, vm.commandData, vm.season,
             function(response) {
-                vm.onOrderSave(response, vm.commandData[0], vm.currentAction, vm.commandData[1], vm.commandData[2]);
+                vm.onOrderSave(response, vm.commandData[0], overrideAction || vm.currentAction, vm.commandData[1], vm.commandData[2]);
                 vm.commandData = [];
             }
         );
@@ -166,8 +183,7 @@ angular.module('map.component')
     }
 
     function onForceDirectedGraphTick(e, scope) {
-        var regions = vm.season.regions,
-            svg = vm.svg;
+        var regions = vm.season.regions;
         moveLayerArrows.attr('d', function(d) {
             /*
              * Let T -> target, T' -> target of target, and S -> source.
@@ -197,32 +213,41 @@ angular.module('map.component')
             if (targetUnit.unit && targetUnit.unit.order) {
                 actionOfTarget = targetUnit.unit.order.action;
 
-                if (action === 'move')
-                    evenMorePadding = 5;
-                else
-                    evenMorePadding = 0;
+                if (action === 'move') {
+                    // Move arrows should appear to run head-to-tail as closely as possible.
+                    if (sx > tx)
+                        tx += 20;
+                    else
+                        tx -= 20;
+                }
+                else {
+                    evenMorePadding = -2;
 
-                // Figure out a good corner to which to point.
-                if (sx > tx)
-                    tx += unitRadiusPlusPadding + evenMorePadding;
-                else
-                    tx -= unitRadiusPlusPadding + evenMorePadding;
+                    // Figure out a good corner to which to point.
+                    if (sx > tx)
+                        tx += unitRadiusPlusPadding + evenMorePadding;
+                    else
+                        tx -= unitRadiusPlusPadding + evenMorePadding;
 
-                if (sy > ty)
-                    ty -= unitRadiusPlusPadding + evenMorePadding;
-                else
-                    ty += unitRadiusPlusPadding + evenMorePadding;
+                    if (sy > ty)
+                        ty += unitRadiusPlusPadding + evenMorePadding;
+                    else
+                        ty -= unitRadiusPlusPadding + evenMorePadding;
+                }
             }
 
             dx = tx - sx;
             dy = ty - sy;
 
-            if (action !== 'support' || actionOfTarget !== 'move') {
+            if (action === 'support' || action === 'move') {
                 dr = Math.sqrt(dx * dx + dy * dy);
                 return 'M' + sx + ',' + sy + 'A' + dr + ',' + dr + ' 0 0,1 ' + tx + ',' + ty;
             }
-            else if (actionOfTarget === 'move') {
-                pathOfTarget = svg.select('path#' + d.target.r)[0][0];
+            else if (moveLayerArrows && actionOfTarget === 'move') {
+                pathOfTarget = moveLayerArrows.select('path#' + d.target.r + '-link')[0][0];
+                if (!pathOfTarget)
+                    return;
+
                 pathLength = pathOfTarget.getTotalLength();
                 midpoint = pathOfTarget.getPointAtLength(pathLength / 2);
 
@@ -241,8 +266,8 @@ angular.module('map.component')
             if (r.unit && r.unit.order) {
                 if (r.unit.order.action === 'hold')
                     return true;
-                else if (r.unit.order.action === 'support' && !r.unit.order.y2)
-                    return true;
+                // else if (r.unit.order.action === 'support' && !r.unit.order.y2)
+                //     return true;
                 else
                     return false;
             }
@@ -275,7 +300,7 @@ angular.module('map.component')
                 var failed = d.target.failed ? 'failed ' : 'ok ';
                 return failed + 'link move';
             })
-            .attr('id', function(d) { return d.source.r + '-' + d.target.r + '-link'; });
+            .attr('id', function(d) { return d.source.r + '-link'; });
         moveLayerArrows.exit().remove();
 
         // Append circles to units perceived to or actually holding.
