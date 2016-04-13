@@ -19,6 +19,9 @@ SeasonCore.prototype.list = function(options, cb) {
             'season': options.season
         }, _.identity));
 
+    if (options.lean)
+        query.lean();
+
     query.exec(function(err, seasons) {
         if (err) {
             console.error(err);
