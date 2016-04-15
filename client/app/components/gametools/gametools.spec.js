@@ -1,4 +1,4 @@
-describe('Game tools directive', function() {
+describe('Game tools component', function() {
     'use strict';
 
     var scope,
@@ -9,7 +9,7 @@ describe('Game tools directive', function() {
     beforeEach(function() {
         angular.mock.module('diplomacy.constants');
         angular.mock.module('templates');
-        angular.mock.module('gametools.directive');
+        angular.mock.module('gametools.component');
         mockUserService = {
             getCurrentUserID: function() {
                 return '12345';

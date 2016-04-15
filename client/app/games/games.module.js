@@ -3,7 +3,7 @@
 angular.module('games', [
     'ui.router',
     'ngMaterial',
-    'gametools.directive',
+    'gametools.component',
     'gametoolsprovincelistitem.directive',
     'vAccordion'
 ])

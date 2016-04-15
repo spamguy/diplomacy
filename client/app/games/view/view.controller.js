@@ -32,5 +32,9 @@ angular.module('games')
             unitInRegion.unit.order.y1 = y1;
         if (y2)
             unitInRegion.unit.order.y2 = y2;
+
+        $scope.$broadcast('orderChange', {
+            r: r
+        });
     }
 }]);
