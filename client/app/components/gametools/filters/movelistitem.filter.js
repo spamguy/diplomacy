@@ -1,4 +1,4 @@
-angular.module('gametools.directive')
+angular.module('gametools.component')
 .filter('variant', function() {
     'use strict';
 
