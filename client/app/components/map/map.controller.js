@@ -1,6 +1,7 @@
 angular.module('map.component')
 .controller('MapController', ['$location', '$scope', 'gameService', function($location, $scope, gameService) {
     var vm = this,
+        normalisedVariantName = gameService.getNormalisedVariantName(vm.variant.name),
         paths = vm.svg.getElementsByTagName('path'),
         regionReferenceDictionary = _.indexBy(this.variant.regions, 'r'),
         p,
@@ -40,7 +41,7 @@ angular.module('map.component')
     for (p = 0; p < paths.length; p++)
         vm.paths[paths[p].id.toUpperCase()] = paths[p].getAttribute('d');
 
-    vm.imagePath = 'variants/' + this.variant.name + '/' + this.variant.name + '.png';
+    vm.imagePath = 'variants/' + normalisedVariantName + '/' + normalisedVariantName + '.png';
     vm.viewBox = '0 0 ' + vm.getSVGAttribute('width') + ' ' + vm.getSVGAttribute('height');
 
     if (!this.season)
