@@ -38,6 +38,7 @@ module.exports = function() {
                         season,
                         region,
                         isComplete = game.isComplete,
+                        isGM = game.gm_id.toString() === userID,
                         currentSeason = game.season,
                         currentYear = game.year,
                         playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
@@ -50,7 +51,7 @@ module.exports = function() {
                         season = seasons[s];
 
                         // Incomplete games and active seasons are sanitised for your protection.
-                        if (!isComplete && (season.year === currentYear && season.season === currentSeason)) {
+                        if (!isGM && !isComplete && season.year === currentYear && season.season === currentSeason) {
                             for (r = 0; r < season.regions.length; r++) {
                                 region = getUnitOwnerInRegion(season.regions[r]);
                                 if (region && region.unit.power !== powerShortName)

@@ -90,26 +90,25 @@ angular.module('map.component')
     function getCoordinates(r, type) {
         var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
 
-        if (r.unit) {
-            return { x: regionReferenceDictionary[r.r].x, y: regionReferenceDictionary[r.r].y };
-        }
-        else if (subregionWithUnit) {
+        if (subregionWithUnit) {
             subregionWithUnit = _.find(regionReferenceDictionary[r.r].sr, 'r', subregionWithUnit.r);
             return { x: subregionWithUnit.x, y: subregionWithUnit.y };
         }
 
-        return { x: null, y: null };
+        return { x: regionReferenceDictionary[r.r].x, y: regionReferenceDictionary[r.r].y };
     }
 
     function inputCommand(id) {
-        var r = id.toUpperCase(),
-            region = _.find(vm.season.regions, 'r', r),
+        var r = id.toUpperCase().replace('-', '/'), // HTML IDs use - for subdivisions.
+            region = _.find(vm.season.regions, 'r', r.split('/')[0]),
             ownerInRegion = gameService.getUnitOwnerInRegion(region),
             unitInRegion,
             overrideAction;
 
         if (ownerInRegion)
             unitInRegion = ownerInRegion.unit;
+
+        // TODO: Force armies to move to regions only.
 
         // Users who try to control units that don't exist or don't own?
         // We have ways of shutting the whole thing down.
@@ -121,7 +120,7 @@ angular.module('map.component')
 
         switch (vm.currentAction) {
         case 'hold':
-            // Don't bother retaining clicks or such. Just continue on to send the command.
+            // Don't bother retaining clicks. Just continue on to send the command.
             break;
         case 'move':
             // Source, target.
@@ -194,25 +193,25 @@ angular.module('map.component')
              * In all other cases T as an endpoint is fine.
              */
 
-            var sx = regionReferenceDictionary[d.source.r].x,
-                sy = regionReferenceDictionary[d.source.r].y,
-                tx = regionReferenceDictionary[d.target.r].x,
-                ty = regionReferenceDictionary[d.target.r].y,
+            var sourceRegion = _.find(regions, 'r', d.source.r),
+                targetRegion = _.find(regions, 'r', d.target.r),
+                unitInSourceRegion = gameService.getUnitOwnerInRegion(sourceRegion),
+                unitInTargetRegion = gameService.getUnitOwnerInRegion(targetRegion),
+                sourceCoordinates = getCoordinates(sourceRegion, unitInSourceRegion.unit.type),
+                targetCoordinates = getCoordinates(targetRegion, unitInSourceRegion.unit.type),
+                sx = sourceCoordinates.x,
+                sy = sourceCoordinates.y,
+                tx = targetCoordinates.x,
+                ty = targetCoordinates.y,
                 dx,
                 dy,
                 action = d.target.action,
                 actionOfTarget,
                 pathOfTarget,
-                dr,
-                targetUnit;
+                dr;
 
-            // If a hold, don't draw any arrows.
-            if (d.target.r === d.source.r)
-                return;
-
-            targetUnit = _.find(regions, 'r', d.target.r);
-            if (targetUnit.unit && targetUnit.unit.order) {
-                actionOfTarget = targetUnit.unit.order.action;
+            if (unitInTargetRegion && unitInTargetRegion.unit.order) {
+                actionOfTarget = unitInTargetRegion.unit.order.action;
 
                 if (action === 'move') {
                     // Move arrows should appear to run head-to-tail as closely as possible.
@@ -285,7 +284,7 @@ angular.module('map.component')
 
             links.push({
                 source: _.defaults(region, { fixed: true }),
-                target: _.defaults(regionReferenceDictionary[target], {
+                target: _.defaults(regionReferenceDictionary[target.split('/')[0]], {
                     fixed: true, // To keep d3 from treating this map like a true force graph.
                     action: unitInRegion.unit.order.action,
                     failed: unitInRegion.unit.order.failed
