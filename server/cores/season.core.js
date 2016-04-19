@@ -12,12 +12,14 @@ function SeasonCore(options) {
 SeasonCore.prototype.list = function(options, cb) {
     options = options || { };
     var Season = mongoose.model('Season'),
-        query = Season.find(_.pick({
-            '_id': options.ID,
-            'game_id': options.gameID,
-            'year': options.year,
-            'season': options.season
-        }, _.identity));
+        query = Season
+            .find(_.pick({
+                '_id': options.ID,
+                'game_id': options.gameID,
+                'year': options.year,
+                'season': options.season
+            }, _.identity))
+            .sort({ 'createdAt': -1 });
 
     if (options.lean)
         query.lean();
@@ -39,6 +41,7 @@ SeasonCore.prototype.create = function(season, cb) {
 };
 
 SeasonCore.prototype.createFromState = function(variant, game, oldSeason, state, cb) {
+    oldSeason = oldSeason.toObject();
     var indexedRegions = _.indexBy(oldSeason.regions, 'r'),
         unit,
         u;
@@ -63,8 +66,8 @@ SeasonCore.prototype.createFromState = function(variant, game, oldSeason, state,
             );
         },
 
+        // STEP 2: Create new season using formatted old season.
         function(season, callback) {
-            // STEP 2: Create new season using formatted old season.
             var newSeason = mongoose.model('Season')(),
                 nextDeadline = moment();
             newSeason.game_id = game._id;
@@ -75,8 +78,17 @@ SeasonCore.prototype.createFromState = function(variant, game, oldSeason, state,
             newSeason.year = season.getNextSeasonYear(variant);
 
             newSeason.save(callback);
+        },
+
+        function(season, callback) {
+            game.season = season.season;
+            game.year = season.year;
+            game.save(callback);
         }
-    ]);
+    ], function(err) {
+        if (err)
+            console.error(err);
+    });
 };
 
 SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {

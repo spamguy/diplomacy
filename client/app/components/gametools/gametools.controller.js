@@ -7,6 +7,11 @@ angular.module('gametools.component')
     vm.powerOwnsProvince = powerOwnsProvince;
     vm.getPowerList = getPowerList;
     vm.setReadyState = setReadyState;
+    vm.isGM = gameService.isGM;
+
+    vm.actions = {
+        adjudicateNow: gameService.adjudicateSeason
+    };
 
     function powerOwnsProvince(code, province) {
         return gameService.getUnitOwnerInRegion(province, null, code);

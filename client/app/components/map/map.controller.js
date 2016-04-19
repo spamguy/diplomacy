@@ -307,6 +307,7 @@ angular.module('map.component')
         moveLayerHolds = moveLayerHolds.data(holds);
         moveLayerHolds.enter()
             .insert('svg:circle')
+            .attr('id', function(d) { return d.r + '-hold'; })
             .attr('class', 'hold')
             .attr('cx', function(d) { return regionReferenceDictionary[d.r].x; })
             .attr('cy', function(d) { return regionReferenceDictionary[d.r].y; })

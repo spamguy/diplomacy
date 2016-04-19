@@ -19,7 +19,7 @@ SeasonSchema.methods.getNextSeasonYear = function(variant) {
 
 SeasonSchema.methods.getNextSeasonSeason = function(variant) {
     var seasonIndex = variant.seasons.indexOf(this.season);
-    return variant.seasons[seasonIndex % (variant.seasons.length - 1)];
+    return variant.seasons[(seasonIndex + 1) % (variant.seasons.length - 1)];
 };
 
 module.exports = mongoose.model('Season', SeasonSchema);

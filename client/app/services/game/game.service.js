@@ -138,8 +138,14 @@ angular.module('gameService', ['userService', 'socketService'])
         setReadyState: function(game, state) {
             socketService.socket.emit('season:toggleready', {
                 gameID: game._id,
-                isReady: state,
-                playerID: userService.getCurrentUserID()
+                isReady: state
+            });
+        },
+
+        adjudicateSeason: function(season) {
+            socketService.socket.emit('season:adjudicate', {
+                seasonID: season._id,
+                gameID: season.game_id
             });
         },
 
@@ -168,6 +174,10 @@ angular.module('gameService', ['userService', 'socketService'])
                 return subregionWithUnit;
 
             return null;
+        },
+
+        isGM: function(game) {
+            return game.gm_id === userService.getCurrentUserID();
         }
     };
 

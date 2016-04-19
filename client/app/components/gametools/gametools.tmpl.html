@@ -20,4 +20,16 @@
             </md-content>
         </md-tab-body>
     </md-tab>
+
+    <md-tab>
+        <md-tab-label>Actions</md-tab-label>
+        <md-tab-body>
+            <md-list>
+                <md-list-item ng-if="$ctrl.isGM($ctrl.game)" ng-click="$ctrl.actions.adjudicateNow($ctrl.season)">
+                    <div><span>Adjudicate now</span></div>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
+        </md-tab-body>
+    </md-tab>
 </md-tabs>

@@ -31,12 +31,12 @@ module.exports = {
         async.waterfall([
             // Fetches the season in question.
             function(callback) {
-                core.season.list({ '_id': seasonID }, function(err, seasons) { callback(err, seasons[0]); });
+                core.season.list({ ID: seasonID }, function(err, seasons) { callback(err, seasons[0]); });
             },
 
             // Fetches the game in question.
             function(season, callback) {
-                core.game.list({ '_id': season.game_id }, function(err, games) { callback(err, games[0], season); });
+                core.game.list({ gameID: season.game_id }, function(err, games) { callback(err, games[0], season); });
             },
 
             // Verifies all players are ready. Fetches the variant, adjudicates, and persists the outcome.
@@ -83,9 +83,8 @@ module.exports = {
         ], function(err, game, season) {
             if (err)
                 logger.error(err);
+            return done();
         });
-
-        return done();
     }
 };
 

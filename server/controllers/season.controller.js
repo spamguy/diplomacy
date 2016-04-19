@@ -96,7 +96,7 @@ module.exports = function() {
 
         toggleready: function(req, res) {
             var isReady = req.data.isReady,
-                playerID = req.data.playerID,
+                playerID = req.socket.decoded_token.id,
                 gameID = req.data.gameID;
             console.log('Player ' + playerID + ' has set ready flag to ' + isReady + ' in game ' + gameID);
 
@@ -109,6 +109,38 @@ module.exports = function() {
                 // TODO: Schedule near-immediate adjudication.
                 if (game.isEverybodyReady)
                     console.log('Everybody is ready in game ' + gameID + '. Scheduling adjudication.');
+            });
+        },
+
+        adjudicate: function(req, res) {
+            var playerID = req.socket.decoded_token.id,
+                gameID = req.data.gameID,
+                seasonID = req.data.seasonID;
+
+            async.waterfall([
+                function(callback) {
+                    core.game.list({ gameID: gameID }, callback);
+                },
+
+                function(games, callback) {
+                    if (games[0].gm_id.toString() !== playerID)
+                        callback('You are not authorized to schedule adjudications for this game.');
+                    var job = app.queue.create('adjudicate', {
+                        seasonID: seasonID
+                    });
+                    job.backoff({ delay: 'exponential' })
+                        .save(function(err) {
+                            console.log('Manual adjudication started for game ' + gameID + ', season ' + seasonID);
+                            callback(err);
+                        });
+                }
+            ], function(err) {
+                if (err) {
+                    console.error(err);
+                    return res.status(400).json({
+                        message: err
+                    });
+                }
             });
         }
     });
