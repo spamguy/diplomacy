@@ -210,6 +210,7 @@ angular.module('map.component')
                 pathOfTarget,
                 dr;
 
+            // Tweak coordinates of arrows that interact with other arrows.
             if (unitInTargetRegion && unitInTargetRegion.unit.order) {
                 actionOfTarget = unitInTargetRegion.unit.order.action;
 
@@ -220,7 +221,7 @@ angular.module('map.component')
                     else
                         tx -= 20;
                 }
-                else {
+                else if (action !== 'support') {
                     evenMorePadding = -2;
 
                     // Figure out a good corner to which to point.
@@ -239,15 +240,14 @@ angular.module('map.component')
             dx = tx - sx;
             dy = ty - sy;
 
-            if (action === 'support' || action === 'move') {
+            // Use generic arc for moves and units supporting holding targets.
+            if ((!actionOfTarget && action === 'support') || action === 'move') {
                 dr = Math.sqrt(dx * dx + dy * dy);
                 return 'M' + sx + ',' + sy + 'A' + dr + ',' + dr + ' 0 0,1 ' + tx + ',' + ty;
             }
+            // Use straight line for units supporting moving targets.
             else if (moveLayerArrows && actionOfTarget === 'move') {
-                pathOfTarget = moveLayerArrows.select('path#' + d.target.r + '-link')[0][0];
-                if (!pathOfTarget)
-                    return;
-
+                pathOfTarget = d3.selectAll('g.moveLayer path#' + d.target.r + '-link').node();
                 pathLength = pathOfTarget.getTotalLength();
                 midpoint = pathOfTarget.getPointAtLength(pathLength / 2);
 
@@ -266,8 +266,6 @@ angular.module('map.component')
             if (r.unit && r.unit.order) {
                 if (r.unit.order.action === 'hold')
                     return true;
-                // else if (r.unit.order.action === 'support' && !r.unit.order.y2)
-                //     return true;
                 else
                     return false;
             }

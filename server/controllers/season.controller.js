@@ -13,15 +13,13 @@ module.exports = function() {
                 options = { gameID: gameID, lean: true },
                 userID = req.socket.decoded_token.id;
 
-            /*
-             * It's so likely the scheduling details of these seasons will come up,
-             * they might as well be fetched now.
-             */
             async.waterfall([
+                // Fetch the game.
                 function(callback) {
                     core.game.list(options, callback);
                 },
 
+                // Fetch the matching seasons.
                 function(games, callback) {
                     core.season.list(options, function(err, seasons) {
                         callback(err, games[0], seasons);
@@ -31,7 +29,7 @@ module.exports = function() {
                 // Strip out movements the user shouldn't see.
                 function(err, game, seasons) {
                     if (err)
-                        console.error(err);
+                        app.logger.error(err);
 
                     var r,
                         s,
@@ -50,7 +48,7 @@ module.exports = function() {
                     for (s = 0; s < seasons.length; s++) {
                         season = seasons[s];
 
-                        // Incomplete games and active seasons are sanitised for your protection.
+                        // Incomplete games and active seasons are sanitised for players' protection.
                         if (!isGM && !isComplete && season.year === currentYear && season.season === currentSeason) {
                             for (r = 0; r < season.regions.length; r++) {
                                 region = getUnitOwnerInRegion(season.regions[r]);
@@ -70,7 +68,7 @@ module.exports = function() {
 
             core.season.create(season, function(err, savedSeason) {
                 if (err)
-                    console.log(err);
+                    app.logger.error(err);
             });
         },
 
@@ -84,7 +82,7 @@ module.exports = function() {
                 }
             ], function(err) {
                 if (err) {
-                    console.error(err);
+                    app.logger.error(err);
                     return res.status(400).json({
                         message: err
                     });
@@ -98,17 +96,17 @@ module.exports = function() {
             var isReady = req.data.isReady,
                 playerID = req.socket.decoded_token.id,
                 gameID = req.data.gameID;
-            console.log('Player ' + playerID + ' has set ready flag to ' + isReady + ' in game ' + gameID);
+            app.logger.info('Player ' + playerID + ' has set ready flag to ' + isReady + ' in game ' + gameID);
 
             core.game.setReadyFlag(gameID, playerID, isReady, function(err, game) {
                 if (err)
-                    console.log(err);
+                    app.logger.info(err);
 
                 // IS EVERYBODY READY?!
                 // TODO: Delete any existing adjudication schedules.
                 // TODO: Schedule near-immediate adjudication.
                 if (game.isEverybodyReady)
-                    console.log('Everybody is ready in game ' + gameID + '. Scheduling adjudication.');
+                    app.logger.info('Everybody is ready in game ' + gameID + '. Scheduling adjudication.');
             });
         },
 
@@ -124,19 +122,27 @@ module.exports = function() {
 
                 function(games, callback) {
                     if (games[0].gm_id.toString() !== playerID)
-                        callback('You are not authorized to schedule adjudications for this game.');
+                        callback(new Error('You are not authorized to schedule adjudications for this game.'));
                     var job = app.queue.create('adjudicate', {
                         seasonID: seasonID
                     });
+
+                    job.on('complete', function(err, result) {
+                        if (!err)
+                            req.socket.broadcast.to(result.gameID).emit('season:adjudicate:success', result);
+                        else
+                            app.logger.error(err);
+                    });
+
                     job.backoff({ delay: 'exponential' })
                         .save(function(err) {
-                            console.log('Manual adjudication started for game ' + gameID + ', season ' + seasonID);
+                            app.logger.info('Manual adjudication started', { gameID: gameID, seasonID: seasonID });
                             callback(err);
                         });
                 }
             ], function(err) {
                 if (err) {
-                    console.error(err);
+                    app.logger.error(err);
                     return res.status(400).json({
                         message: err
                     });

@@ -5,6 +5,7 @@ var path = require('path'),
     _ = require('lodash'),
     Mongoose = require('mongoose'),
     cachegoose = require('cachegoose'),
+    winston = require('winston'),
     kue = require('kue'),
     controllers = all(path.join(__dirname, '/controllers')),
     core = require('./cores/index'),
@@ -25,6 +26,13 @@ app.queue = kue.createQueue({
     redis: {
         auth: seekrits.get('redis:password')
     }
+});
+
+// Add logging transports.
+app.logger = new (winston.Logger)({
+    transports: [
+        new (winston.transports.Console)()
+    ]
 });
 
 all(path.join(__dirname, '/jobs'), {
@@ -63,5 +71,5 @@ cachegoose(Mongoose, {
 });
 
 app.listen(9000, function() {
-    console.log('Express server listening on %d', 9000);
+    app.logger.info('Express server listening on %d', 9000);
 });

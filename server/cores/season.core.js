@@ -3,7 +3,8 @@
 var mongoose = require('mongoose'),
     _ = require('lodash'),
     async = require('async'),
-    moment = require('moment');
+    moment = require('moment'),
+    winston = require('winston');
 
 function SeasonCore(options) {
     this.core = options.core;
@@ -40,14 +41,16 @@ SeasonCore.prototype.create = function(season, cb) {
     newSeason.save(function(err, data) { cb(err, data); });
 };
 
-SeasonCore.prototype.createFromState = function(variant, game, oldSeason, state, cb) {
-    oldSeason = oldSeason.toObject();
-    var indexedRegions = _.indexBy(oldSeason.regions, 'r'),
+SeasonCore.prototype.createFromState = function(variant, game, season, state, cb) {
+    var indexedRegions = _.indexBy(season.toObject().regions, 'r'),
         unit,
         u;
 
     async.waterfall([
         function(callback) {
+            for (u in state.Units())
+                ;
+
             // STEP 1: Mark up old season with outcomes.
             for (u in state.Dislodgeds()) {
                 unit = state.Dislodgeds()[u];
@@ -55,10 +58,12 @@ SeasonCore.prototype.createFromState = function(variant, game, oldSeason, state,
                     power: unit.Nation[0],
                     type: unit.Type === 'Fleet' ? 2 : 1
                 };
+                winston.info('Marking %s:%s as dislodged', unit.Nation[0], u, { gameID: game._id });
             }
 
+            callback(null, season);
             mongoose.model('Season').findOneAndUpdate(
-                { '_id': oldSeason._id },
+                { '_id': season._id },
                 { '$set': {
                     'regions': _.values(indexedRegions)
                 } },
@@ -76,6 +81,14 @@ SeasonCore.prototype.createFromState = function(variant, game, oldSeason, state,
             newSeason.deadline = nextDeadline;
             newSeason.season = season.getNextSeasonSeason(variant);
             newSeason.year = season.getNextSeasonYear(variant);
+
+            // If no dislodges and no adjustments, skip this phase.
+            if (_.isEmpty(state.Dislodgeds())) {
+                winston.info('Skipping %s %s phase: no dislodged units', newSeason.season, newSeason.year, { gameID: game._id });
+
+                newSeason.season = season.getNextSeasonSeason(variant);
+                newSeason.year = season.getNextSeasonYear(variant);
+            }
 
             newSeason.save(callback);
         },

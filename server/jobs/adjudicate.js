@@ -7,26 +7,20 @@ module.exports = {
             async = require('async'),
             winston = require('winston'),
             path = require('path'),
-            logger,
             seekrits = require('nconf')
                 .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
                 .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
             mailer = require('../mailer/mailer'),
             seasonID = job.data.seasonID,
             judgePath = path.join(seekrits.get('judgePath'), 'diplomacy-godip');
-        require('winston-mongodb').MongoDB;
-        logger = new winston.Logger({
-            transports: [
-                new winston.transports.MongoDB({
-                    db: seekrits.get('mongoURI')
-                })
-            ]
-        });
 
-        if (require('file-exists')(judgePath + '.js'))
+        if (require('file-exists')(judgePath + '.js')) {
             require(judgePath);
-        else
-            logger.error('Could not adjudicate: no judge could be found at ' + judgePath);
+        }
+        else {
+            winston.error('Could not adjudicate: no judge could be found at ' + judgePath);
+            return;
+        }
 
         async.waterfall([
             // Fetches the season in question.
@@ -44,26 +38,32 @@ module.exports = {
                 // Not everyone is ready. Handling this situation deserves its own block.
                 if (!game.ignoreLateOrders && !game.isEverybodyReady) {
                     handleLateSeason();
-                    callback('Not adjudicating: some players are not ready');
+                    callback(new Error('Not adjudicating: some players are not ready'));
                 }
 
                 var variant = core.variant.get(game.variant),
-                    nextState = global.state.NextFromJS(variant, season);
-                core.season.createFromState(variant, game, season, nextState, function(err, s) { callback(err, variant, game, season); });
+                    seasonObject = season.toObject(),
+                    nextState;
+
+                // Godip expects a season type.
+                seasonObject.seasonType = seasonObject.season.split(' ')[1];
+
+                nextState = global.state.NextFromJS(variant, seasonObject);
+                core.season.createFromState(variant, game, season, nextState, function(err, s) { callback(err, variant, game, season, s); });
             },
 
             // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.
-            function(variant, game, season, callback) {
+            function(variant, game, oldSeason, newSeason, callback) {
                 async.each(game.players, function(player, err) {
                     var emailOptions = {
                         gameName: game.name,
                         gameURL: path.join(seekrits.get('domain'), 'games', game._id.toString()),
-                        subject: '[' + game.name + '] ' + season.season + ' ' + season.year + ' has been adjudicated',
-                        deadline: season.deadline,
-                        season: season.season,
-                        year: season.year,
-                        nextSeason: season.getNextSeasonSeason(variant),
-                        nextYear: season.getNextSeasonYear(variant)
+                        subject: '[' + game.name + '] ' + oldSeason.season + ' ' + oldSeason.year + ' has been adjudicated',
+                        deadline: oldSeason.deadline,
+                        season: oldSeason.season,
+                        year: oldSeason.year,
+                        nextSeason: oldSeason.getNextSeasonSeason(variant),
+                        nextYear: oldSeason.getNextSeasonYear(variant)
                     };
 
                     core.user.list({ ID: player.player_id }, function(err, users) {
@@ -73,17 +73,22 @@ module.exports = {
                         emailOptions.email = users[0].email;
                         mailer.sendOne('adjudication', emailOptions, function(err) {
                             if (err)
-                                logger.error(err);
+                                winston.error(err);
                         });
                     });
 
-                    core.game.resetAllReadyFlags(game, function(err, game) { callback(err, variant, game, season); });
+                    core.game.resetAllReadyFlags(game, function(err, game) { callback(err, game, oldSeason); });
                 });
             }
-        ], function(err, game, season) {
+        ], function(err, game, oldSeason) {
             if (err)
-                logger.error(err);
-            return done();
+                done(err);
+            return done(null, {
+                gameID: game._id,
+                gameName: game.name,
+                year: oldSeason.year,
+                season: oldSeason.season
+            });
         });
     }
 };
