@@ -43,11 +43,13 @@ SeasonCore.prototype.create = function(season, cb) {
 
 SeasonCore.prototype.createFromState = function(variant, game, season, state, cb) {
     var indexedRegions = _.indexBy(season.toObject().regions, 'r'),
-        unit,
-        u;
+        unit;
 
     async.waterfall([
         function(callback) {
+            var u,
+                destination;
+
             for (u in state.Units())
                 ;
 
@@ -58,7 +60,14 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
                     power: unit.Nation[0],
                     type: unit.Type === 'Fleet' ? 2 : 1
                 };
-                winston.info('Marking %s:%s as dislodged', unit.Nation[0], u, { gameID: game._id });
+                winston.debug('Marking %s:%s as dislodged', unit.Nation[0], u, { gameID: game._id.toString() });
+            }
+
+            for (destination in state.Bounces()) {
+                for (u in state.Bounces()[destination]) {
+                    indexedRegions[u].unit.order.failed = true;
+                    winston.debug('Marking %s as bounced', u, { gameID: game._id.toString() });
+                }
             }
 
             callback(null, season);

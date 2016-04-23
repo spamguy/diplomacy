@@ -39,10 +39,13 @@
     <div class="mapContainer" ng-class="{'notStarted': !$ctrl.season}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
         <svg width="100%" ng-attr-view_box="{{$ctrl.viewBox}}">
             <defs>
-                <marker id="move" viewBox="0 -5 10 10" markerWidth="6" markerHeight="6" orient="auto" class="ok">
+                <marker id="move" viewBox="0 -5 10 10" markerWidth="6" markerHeight="6" orient="auto">
                     <path d="M0,-5L10,0L0,5"></path>
                 </marker>
-                <marker id="support" viewBox="-6 -6 12 12" markerWidth="6" markerHeight="6" orient="auto" class="ok">
+                <marker id="failedmove" viewBox="0 -5 10 10" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M0,-5L10,0L0,5"></path>
+                </marker>
+                <marker id="support" viewBox="-6 -6 12 12" markerWidth="6" markerHeight="6" orient="auto">
                     <path d="M 0,0m -5,0a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0"></path>
                 </marker>
 
@@ -73,7 +76,7 @@
             <g class="unitLayer">
                 <circle ng-repeat="region in $ctrl.season.regions | hasUnit:1"
                         id="{{region.r}}-army"
-                        r="10"
+                        r="8"
                         stroke="#000"
                         stroke-width="1px"
                         ng-attr-cx="{{$ctrl.getCoordinates(region, 1).x}}"
@@ -83,12 +86,12 @@
 
                 <rect ng-repeat="region in $ctrl.season.regions | hasUnit:2"
                       id="{{region.r}}-fleet"
-                      height="10"
-                      width="20"
+                      height="8"
+                      width="16"
                       stroke="#000"
                       stroke-width="1px"
-                      ng-attr-x="{{$ctrl.getCoordinates(region, 2).x - 20/2}}"
-                      ng-attr-y="{{$ctrl.getCoordinates(region, 2).y - 10/2}}"
+                      ng-attr-x="{{$ctrl.getCoordinates(region, 2).x - 16/2}}"
+                      ng-attr-y="{{$ctrl.getCoordinates(region, 2).y - 8/2}}"
                       ng-attr-fill="{{$ctrl.getUnitFill(region)}}">
                 </rect>
             </g>

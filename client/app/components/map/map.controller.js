@@ -13,7 +13,7 @@ angular.module('map.component')
         moveLayerArrows = moveLayer.selectAll('path'),
         moveLayerHolds = moveLayer.selectAll('circle'),
         evenMorePadding,
-        unitRadius = 10,
+        unitRadius = 8,
         unitRadiusPlusPadding = unitRadius + 6,
         pathLength,
         midpoint,
@@ -211,17 +211,17 @@ angular.module('map.component')
                 dr;
 
             // Tweak coordinates of arrows that interact with other arrows.
-            if (unitInTargetRegion && unitInTargetRegion.unit.order) {
+            if (action === 'move') {
+                // Move arrows should appear to run head-to-tail as closely as possible.
+                if (sx > tx)
+                    tx += 20;
+                else
+                    tx -= 20;
+            }
+            else if (unitInTargetRegion && unitInTargetRegion.unit.order) {
                 actionOfTarget = unitInTargetRegion.unit.order.action;
 
-                if (action === 'move') {
-                    // Move arrows should appear to run head-to-tail as closely as possible.
-                    if (sx > tx)
-                        tx += 20;
-                    else
-                        tx -= 20;
-                }
-                else if (action !== 'support') {
+                if (action !== 'support') {
                     evenMorePadding = -2;
 
                     // Figure out a good corner to which to point.
