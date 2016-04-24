@@ -70,7 +70,6 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
                 }
             }
 
-            callback(null, season);
             mongoose.model('Season').findOneAndUpdate(
                 { '_id': season._id },
                 { '$set': {
@@ -108,8 +107,7 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
             game.save(callback);
         }
     ], function(err) {
-        if (err)
-            console.error(err);
+        cb(err);
     });
 };
 
