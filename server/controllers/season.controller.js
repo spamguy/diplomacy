@@ -31,7 +31,8 @@ module.exports = function() {
                     if (err)
                         app.logger.error(err);
 
-                    var r,
+                    var SeasonSchema = require('mongoose').model('Season'),
+                        r,
                         s,
                         season,
                         region,
@@ -51,7 +52,7 @@ module.exports = function() {
                         // Incomplete games and active seasons are sanitised for players' protection.
                         if (!isGM && !isComplete && season.year === currentYear && season.season === currentSeason) {
                             for (r = 0; r < season.regions.length; r++) {
-                                region = getUnitOwnerInRegion(season.regions[r]);
+                                region = SeasonSchema.getUnitOwnerInRegion(season.regions[r]);
                                 if (region && region.unit.power !== powerShortName)
                                     delete region.unit.order;
                             }
@@ -151,25 +152,3 @@ module.exports = function() {
         }
     });
 };
-
-/**
- * Gets a unit's most precise location within a region.
- * @param  {Object} r     The region.
- * @param  {Integer} [type] The unit type by which to filter.
- * @param  {String} [power] The power by which to filter.
- * @return {Object}       The region or subregion with a unit present, or null.
- */
-function getUnitOwnerInRegion(r, type, power) {
-    var subregionWithUnit = _.find(r.sr, 'unit');
-
-    if (r.unit && unitMatchesFilters(r.unit, type, power))
-        return r;
-    else if (subregionWithUnit && unitMatchesFilters(subregionWithUnit.unit, type, power))
-        return subregionWithUnit;
-
-    return null;
-}
-
-function unitMatchesFilters(unit, type, power) {
-    return (!type || unit.type === type) && (!power || unit.power === power);
-}

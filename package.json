@@ -80,7 +80,7 @@
     "karma-sinon": "1.0.4",
     "karma-spec-reporter": "0.0.23",
     "mocha": "2.4.5",
-    "mockgoose": "5.2.4",
+    "mockgoose": "6.0.2",
     "open": "~0.0.4",
     "phantomjs-prebuilt": "2.1.7",
     "rewire": "2.5.1",

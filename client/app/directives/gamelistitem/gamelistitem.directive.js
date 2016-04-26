@@ -1,3 +1,4 @@
+/* global humanizeDuration */
 angular.module('gamelistitem.directive', ['ngMaterial'])
 .directive('sgGameListItem', ['gameService', '$mdDialog', '$mdMedia', '$state', function(gameService, $mdDialog, $mdMedia, $state) {
     'use strict';

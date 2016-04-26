@@ -7,7 +7,9 @@ var mongoose = require('mongoose'),
     winston = require('winston');
 
 function SeasonCore(options) {
-    this.core = options.core;
+    options = options || { };
+    if (options.core)
+        this.core = options.core;
 }
 
 SeasonCore.prototype.list = function(options, cb) {
@@ -46,14 +48,12 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
         unit;
 
     async.waterfall([
+        // STEP 1: Mark up old season, keeping orders intact for posterity.
         function(callback) {
             var u,
                 destination;
 
-            for (u in state.Units())
-                ;
-
-            // STEP 1: Mark up old season with outcomes.
+            // Move dislodged units from 'unit' to 'dislodged'.
             for (u in state.Dislodgeds()) {
                 unit = state.Dislodgeds()[u];
                 indexedRegions[u].dislodged = {
@@ -81,12 +81,41 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
 
         // STEP 2: Create new season using formatted old season.
         function(season, callback) {
-            var newSeason = mongoose.model('Season')(),
-                nextDeadline = moment();
+            var SeasonSchema = mongoose.model('Season'),
+                newSeason = SeasonSchema(),
+                nextDeadline = moment(),
+                u,
+                region;
             newSeason.game_id = game._id;
+
+            // Resolve successes.
+            for (u in indexedRegions) {
+                region = SeasonSchema.getUnitOwnerInRegion(indexedRegions[u]);
+
+                /*
+                 * Skip:
+                 * - unitless regions
+                 * - units whose action failed
+                 * - units holding or supporting
+                 */
+                if (!region || region.unit.order.failed)
+                    continue;
+
+                // Move moving units to destination, but under a temp location for now.
+            }
+
+            // Clear all orders.
+            for (u in indexedRegions) {
+                region = SeasonSchema.getUnitOwnerInRegion(indexedRegions[u]);
+
+                // Skip: unitless regions.
+                if (!region)
+                    continue;
+            }
 
             nextDeadline.add(game.getClockFromSeason(game.season), 'hours');
             newSeason.deadline = nextDeadline;
+            newSeason.regions = _.values(indexedRegions);
             newSeason.season = season.getNextSeasonSeason(variant);
             newSeason.year = season.getNextSeasonYear(variant);
 
@@ -106,9 +135,7 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
             game.year = season.year;
             game.save(callback);
         }
-    ], function(err) {
-        cb(err);
-    });
+    ], cb);
 };
 
 SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {

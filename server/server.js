@@ -3,14 +3,13 @@ var path = require('path'),
     bodyParser = require('body-parser'), // for crying out loud, STOP REMOVING THIS
     all = require('require-tree'),
     _ = require('lodash'),
-    Mongoose = require('mongoose'),
-    cachegoose = require('cachegoose'),
     winston = require('winston'),
     kue = require('kue'),
     controllers = all(path.join(__dirname, '/controllers')),
     core = require('./cores/index'),
     app = express(),
     socketioJWT = require('socketio-jwt'),
+    cachegoose = require('cachegoose'),
     seekrits = require('nconf')
         .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
         .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json'));
@@ -38,8 +37,7 @@ app.logger = new (winston.Logger)({
 all(path.join(__dirname, '/jobs'), {
     each: function(job) {
         app.queue.process(job.name, job.process);
-    },
-    filter: function(filename) { return filename.indexOf('spec') < 0; }
+    }
 });
 
 app.seekrits = seekrits;
@@ -62,9 +60,7 @@ app.io.on('error', function(err) {
     console.log('Unable to authenticate: ' + JSON.stringify(err));
 });
 
-Mongoose.connect(seekrits.get('mongoURI'));
-Mongoose.set('debug', true);
-cachegoose(Mongoose, {
+cachegoose(require('./db')(), {
     engine: 'redis',
     host: 'localhost',
     password: seekrits.get('redis:password')

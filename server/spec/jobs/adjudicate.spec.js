@@ -1,20 +1,15 @@
-describe.only('Adjudicate job', function() {
+describe('Adjudicate job', function() {
     'use strict';
 
-    var path = require('path'),
-        expect = require('chai').expect,
-        Mongoose = require('mongoose').Mongoose,
-        Mockgoose = require('mockgoose'),
-        mongoose = new Mongoose(),
+    var expect = require('chai').expect,
+        mockgoose = require('mockgoose'),
+        mongoose = require('../../db')(),
         rewire = require('rewire'),
         sinon = require('sinon'),
         phonyJudge = sinon.stub(),
-        job = rewire('./adjudicate'),
-        seekrits = require('nconf')
-            .file(path.relative(__dirname, 'server/config/local.env.json'))
-            .file(path.relative(__dirname, 'server/config/local.env.sample.json'));
+        job = rewire('../../jobs/adjudicate');
 
-    Mockgoose(mongoose);
+    mockgoose(mongoose);
 
     before(function(done) {
         // Mock judge module.
@@ -26,7 +21,6 @@ describe.only('Adjudicate job', function() {
             }
         });
 
-        mongoose.connect(seekrits.get('mongoURI'));
         done();
     });
 

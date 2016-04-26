@@ -82,6 +82,8 @@ module.exports = function(grunt) {
             options: {
             },
             target: [
+                'client/**/*.js',
+                '!client/temp/constants.js',
                 'server/**/*.js',
                 '!server/**/*.spec.js',
                 '!server/diplomacy-godip/**/*.js'
@@ -247,7 +249,7 @@ module.exports = function(grunt) {
                 options: {
                     reporter: 'spec'
                 },
-                src: ['server/**/*.spec.js', '!server/diplomacy-godip/**/*.spec.js']
+                src: ['server/spec/**/*.spec.js']
             }
         }
     });
