@@ -2,14 +2,12 @@ describe('Adjudicate job', function() {
     'use strict';
 
     var expect = require('chai').expect,
-        mockgoose = require('mockgoose'),
-        mongoose = require('../../db')(),
+        // mockgoose = require('mockgoose'),
+        // mongoose = require('../../db')(),
         rewire = require('rewire'),
         sinon = require('sinon'),
         phonyJudge = sinon.stub(),
         job = rewire('../../jobs/adjudicate');
-
-    mockgoose(mongoose);
 
     before(function(done) {
         // Mock judge module.

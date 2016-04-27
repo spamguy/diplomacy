@@ -136,7 +136,7 @@ module.exports = function() {
                             if (!err) {
                                 return res.json({
                                     id: updatedUser._id,
-                                    token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresInMinutes: SESSION_LENGTH })
+                                    token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresIn: SESSION_LENGTH })
                                 });
                             }
                         });

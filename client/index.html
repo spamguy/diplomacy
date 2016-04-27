@@ -22,7 +22,7 @@
             <md-button class="md-raised md-primary" aria-label="Sign Up" ui-sref="main.signup" ng-if="!isAuthenticated">Sign Up</md-button>
 
             <div class="info" layout="row" layout-margin ng-if="isAuthenticated">
-                <div layout="column" layout-align="center end">
+                <div layout="column" layout-align="center end" hide-sm hide-xs>
                     <span class="email">{{currentUser.email}}</span>
                     <span class="points">{{currentUser.points}} points</span>
                 </div>

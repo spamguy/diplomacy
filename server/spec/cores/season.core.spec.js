@@ -3,19 +3,19 @@ describe('Season core', function() {
 
     var all = require('require-tree'),
         expect = require('chai').expect,
-        mockgoose = require('mockgoose'),
-        mongoose = require('../../db')(),
+        // mockgoose = require('mockgoose'),
+        // mongoose = require('../../db')(),
         SeasonCore = require('../../cores/season.core');
 
     // Register models.
     all('../../models');
 
     before(function(done) {
-        mockgoose = require('mockgoose');
-        mongoose = require('../../db')(function() {
-            mockgoose(mongoose);
-            done();
-        });
+        // mockgoose = require('mockgoose');
+        // mongoose = require('../../db')(function() {
+        //     mockgoose(mongoose);
+        done();
+        // });
     });
 
     describe('Create season from state', function() {

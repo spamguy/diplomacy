@@ -1,34 +1,36 @@
-<md-tabs md-border-bottom flex>
-    <md-tab>
-        <md-tab-label>Orders</md-tab-label>
-        <md-tab-body>
-            <div layout="row" layout-align="center" ng-if="$ctrl.game.status === 1 && $ctrl.currentPlayer">
-                <md-switch ng-model="$ctrl.currentPlayer.isReady" ng-change="$ctrl.setReadyState()">
-                    <span class="md-title">{{$ctrl.currentPlayer.isReady ? 'Ready!' : 'Not ready'}}</span>
-                </md-switch>
-            </div>
+<div layout="row" flex>
+    <md-tabs md-border-bottom flex>
+        <md-tab>
+            <md-tab-label>Orders</md-tab-label>
+            <md-tab-body>
+                <div layout="row" layout-align="center" ng-if="$ctrl.game.status === 1 && $ctrl.currentPlayer">
+                    <md-switch ng-model="$ctrl.currentPlayer.isReady" ng-change="$ctrl.setReadyState()">
+                        <span class="md-title">{{$ctrl.currentPlayer.isReady ? 'Ready!' : 'Not ready'}}</span>
+                    </md-switch>
+                </div>
 
-            <section ng-repeat="(code, power) in $ctrl.getPowerList()">
-                <md-subheader>{{power.name}}</md-subheader>
-                <md-divider></md-divider>
+                <section ng-repeat="(code, power) in $ctrl.getPowerList()">
+                    <md-subheader>{{power.name}}</md-subheader>
+                    <md-divider></md-divider>
+                    <md-list>
+                        <md-list-item ng-repeat="province in $ctrl.season.regions" ng-if="$ctrl.powerOwnsProvince(code, province)">
+                            <sg-province-list-item province="province" />
+                        </md-list-item>
+                    </md-list>
+                </section>
+            </md-tab-body>
+        </md-tab>
+
+        <md-tab>
+            <md-tab-label>Actions</md-tab-label>
+            <md-tab-body>
                 <md-list>
-                    <md-list-item ng-repeat="province in $ctrl.season.regions" ng-if="$ctrl.powerOwnsProvince(code, province)">
-                        <sg-province-list-item province="province" />
+                    <md-list-item ng-if="$ctrl.isGM($ctrl.game)" ng-click="$ctrl.actions.adjudicateNow($ctrl.season)">
+                        <div><span>Adjudicate now</span></div>
+                        <md-divider></md-divider>
                     </md-list-item>
                 </md-list>
-            </section>
-        </md-tab-body>
-    </md-tab>
-
-    <md-tab>
-        <md-tab-label>Actions</md-tab-label>
-        <md-tab-body>
-            <md-list>
-                <md-list-item ng-if="$ctrl.isGM($ctrl.game)" ng-click="$ctrl.actions.adjudicateNow($ctrl.season)">
-                    <div><span>Adjudicate now</span></div>
-                    <md-divider></md-divider>
-                </md-list-item>
-            </md-list>
-        </md-tab-body>
-    </md-tab>
-</md-tabs>
+            </md-tab-body>
+        </md-tab>
+    </md-tabs>
+</div>
