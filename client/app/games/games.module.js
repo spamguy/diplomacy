@@ -41,11 +41,21 @@ angular.module('games', [
         }
     })
     .state('games.view', {
-        url: '/{id:[0-9a-fA-F]{24}}',
+        url: '/{id:[0-9a-fA-F]{24}}/{year:int}/:season',
         controller: 'ViewController',
         templateUrl: 'app/games/view/view.html',
         data: {
             restricted: true
+        },
+        params: {
+            year: {
+                value: null,
+                squash: true
+            },
+            season: {
+                value: null,
+                squash: true
+            }
         },
         resolve: {
             variant: ['gameService', 'game', function(gameService, game) {
@@ -54,15 +64,8 @@ angular.module('games', [
             game: ['gameService', '$stateParams', function(gameService, $stateParams) {
                 return gameService.getGame($stateParams.id);
             }],
-            season: ['userService', 'gameService', 'game', function(userService, gameService, game) {
-                // FIXME: This approach is probably totally exploitable. This decision making needs to happen server-side.
-                // Identify whether current player is admin of this game.
-                var isAdmin = game.gm_id === userService.getCurrentUserID();
-
-                if (isAdmin)
-                    return gameService.getMoveData(game._id);
-                else
-                    return gameService.getMoveDataForCurrentUser(game._id);
+            season: ['userService', 'gameService', 'game', '$stateParams', function(userService, gameService, game, $stateParams) {
+                return gameService.getMoveData(game._id, $stateParams.year, $stateParams.season);
             }],
             svg: ['gameService', 'game', function(gameService, game) {
                 return gameService.getVariantSVG(game.variant);

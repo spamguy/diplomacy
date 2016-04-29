@@ -77,21 +77,7 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         getMoveData: function(gameID, year, season) {
-            var options = { gameID: gameID };
-            if (year)
-                options.year = year;
-            if (season)
-                options.season = season;
-
-            return $q(function(resolve) {
-                socketService.socket.emit('season:list', options, function(seasons) {
-                    resolve(seasons[0]);
-                });
-            });
-        },
-
-        getMoveDataForCurrentUser: function(gameID, year, season) {
-            var options = { gameID: gameID };
+            var options = options || { };
             if (year)
                 options.year = year;
             if (season)

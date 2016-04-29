@@ -9,14 +9,14 @@ module.exports = function() {
 
     app.io.route('season', {
         list: function(req, res) {
-            var gameID = req.data.gameID,
-                options = { gameID: gameID, lean: true },
+            var options = req.data,
                 userID = req.socket.decoded_token.id;
+            options.lean = true;
 
             async.waterfall([
                 // Fetch the game.
                 function(callback) {
-                    core.game.list(options, callback);
+                    core.game.list({ gameID: options.game_id }, callback);
                 },
 
                 // Fetch the matching seasons.
