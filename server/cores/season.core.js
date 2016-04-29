@@ -15,12 +15,16 @@ function SeasonCore(options) {
 SeasonCore.prototype.list = function(options, cb) {
     options = options || { };
     var Season = mongoose.model('Season'),
+        seasonParts = options.season ? options.season.split('-') : null,
+        seasonRegex = seasonParts
+            ? new RegExp('^' + seasonParts[0] + '[-\s]*' + seasonParts[1], 'i')
+            : null,
         query = Season
             .find(_.pick({
                 '_id': options.ID,
                 'game_id': options.gameID,
                 'year': options.year,
-                'season': options.season
+                'season': seasonRegex
             }, _.identity))
             .sort({ 'createdAt': -1 });
 
