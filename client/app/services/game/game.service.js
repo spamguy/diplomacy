@@ -78,10 +78,12 @@ angular.module('gameService', ['userService', 'socketService'])
 
         getMoveData: function(gameID, year, season) {
             var options = options || { };
-            if (year)
+
+            // Year and season must both be provided to be valid.
+            if (year && season) {
                 options.year = year;
-            if (season)
                 options.season = season;
+            }
 
             return $q(function(resolve) {
                 socketService.socket.emit('season:list', options, function(seasons) {
