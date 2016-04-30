@@ -38,8 +38,12 @@ angular.module('map.component')
 
     vm.regionReferenceDictionary = regionReferenceDictionary;
     vm.paths = { };
-    for (p = 0; p < paths.length; p++)
-        vm.paths[paths[p].id.toUpperCase()] = paths[p].getAttribute('d');
+
+    // Fill out region paths only if the season is active.
+    if (!vm.readonly) {
+        for (p = 0; p < paths.length; p++)
+            vm.paths[paths[p].id.toUpperCase()] = paths[p].getAttribute('d');
+    }
 
     vm.imagePath = 'variants/' + normalisedVariantName + '/' + normalisedVariantName + '.png';
     vm.viewBox = '0 0 ' + vm.getSVGAttribute('width') + ' ' + vm.getSVGAttribute('height');

@@ -1,4 +1,5 @@
-var mongoose = require('mongoose'),
+var _ = require('lodash'),
+    mongoose = require('mongoose'),
     timestamp = require('mongoose-timestamp'),
     OrderSchema = new mongoose.Schema({ }, { strict: false, _id: false }),
     SeasonSchema = new mongoose.Schema({
@@ -25,6 +26,21 @@ SeasonSchema.statics.getUnitOwnerInRegion = function(r, type, power) {
     else if (subregionWithUnit && unitMatchesFilters(subregionWithUnit.unit, type, power))
         return subregionWithUnit;
 
+    return null;
+};
+
+SeasonSchema.statics.getRegionNameForUnit = function(r) {
+    // Unit is in non-subregion.
+    if (!r.sr && r.unit)
+        return r.r;
+
+    for (var sr = 0; sr < r.sr.length; sr++) {
+        // Unit is in subregion.
+        if (r.sr[sr].unit)
+            return r.r + '/' + r.sr[sr].r;
+    }
+
+    // No unit.
     return null;
 };
 

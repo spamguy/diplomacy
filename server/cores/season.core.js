@@ -6,6 +6,9 @@ var mongoose = require('mongoose'),
     moment = require('moment'),
     winston = require('winston');
 
+// Log all the things.
+winston.transports.Console.level = 'debug';
+
 function SeasonCore(options) {
     options = options || { };
     if (options.core)
@@ -48,14 +51,16 @@ SeasonCore.prototype.create = function(season, cb) {
 };
 
 SeasonCore.prototype.createFromState = function(variant, game, season, state, cb) {
-    var indexedRegions = _.indexBy(season.toObject().regions, 'r'),
+    var SeasonSchema = mongoose.model('Season'),
+        indexedRegions = _.indexBy(season.toObject().regions, 'r'),
         unit;
 
     async.waterfall([
         // STEP 1: Mark up old season, keeping orders intact for posterity.
         function(callback) {
             var u,
-                destination;
+                resolution,
+                resolutionParts;
 
             // Move dislodged units from 'unit' to 'dislodged'.
             for (u in state.Dislodgeds()) {
@@ -67,10 +72,11 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
                 winston.debug('Marking %s:%s as dislodged', unit.Nation[0], u, { gameID: game._id.toString() });
             }
 
-            for (destination in state.Bounces()) {
-                for (u in state.Bounces()[destination]) {
-                    indexedRegions[u].unit.order.failed = true;
-                    winston.debug('Marking %s as bounced', u, { gameID: game._id.toString() });
+            for (resolution in state.Resolutions()) {
+                if (state.Resolutions()[resolution]) {
+                    resolutionParts = resolution.split('/');
+                    SeasonSchema.getUnitOwnerInRegion(indexedRegions[resolutionParts[0]]).unit.order.failed = true;
+                    winston.debug('Marking %s as failed', u, { gameID: game._id.toString() });
                 }
             }
 
@@ -83,38 +89,50 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
             );
         },
 
-        // STEP 2: Create new season using formatted old season.
+        // STEP 2: Create new season using state's list of units.
         function(season, callback) {
-            var SeasonSchema = mongoose.model('Season'),
-                newSeason = SeasonSchema(),
+            var newSeason = SeasonSchema(),
                 nextDeadline = moment(),
-                u,
-                region;
+                regionIndex,
+                unitIndex,
+                rComponents,
+                region,
+                unit,
+                godipUnit;
             newSeason.game_id = game._id;
 
-            // Resolve successes.
-            for (u in indexedRegions) {
-                region = SeasonSchema.getUnitOwnerInRegion(indexedRegions[u]);
-
-                /*
-                 * Skip:
-                 * - unitless regions
-                 * - units whose action failed
-                 * - units holding or supporting
-                 */
-                if (!region || region.unit.order.failed)
-                    continue;
-
-                // Move moving units to destination, but under a temp location for now.
+            // Wipe all units.
+            for (regionIndex in indexedRegions) {
+                region = SeasonSchema.getUnitOwnerInRegion(indexedRegions[regionIndex]);
+                if (region)
+                    delete region.unit;
             }
 
-            // Clear all orders.
-            for (u in indexedRegions) {
-                region = SeasonSchema.getUnitOwnerInRegion(indexedRegions[u]);
+            // Apply all units returned by godip.
+            for (unitIndex in state.Units()) {
+                godipUnit = state.Unit(unitIndex)[0];
+                unit = {
+                    type: godipUnit.Type === 'Fleet' ? 2 : 1,
+                    power: godipUnit.Nation[0]
+                };
+                rComponents = unitIndex.split('/');
 
-                // Skip: unitless regions.
-                if (!region)
-                    continue;
+                // Not in a subregion. Apply unit to topmost level.
+                if (rComponents.length === 1) {
+                    indexedRegions[rComponents[0]].unit = unit;
+                }
+                else {
+                    // In a subregion. Apply it to the corresponding object in sr: [].
+                    region = indexedRegions[rComponents[0]];
+                    for (regionIndex = 0; regionIndex < region.sr.length; regionIndex++) {
+                        if (region.sr[regionIndex].r === rComponents[1]) {
+                            region.sr[regionIndex].unit = unit;
+                            break;
+                        }
+                    }
+                }
+
+                winston.debug('%s\'s unit set to %s:%s', unitIndex, unit.power, unit.type);
             }
 
             nextDeadline.add(game.getClockFromSeason(game.season), 'hours');
@@ -124,7 +142,7 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
             newSeason.year = season.getNextSeasonYear(variant);
 
             // If no dislodges and no adjustments, skip this phase.
-            if (_.isEmpty(state.Dislodgeds())) {
+            if (_.contains(newSeason.season, 'Retreat') && _.isEmpty(state.Dislodgeds())) {
                 winston.info('Skipping %s %s phase: no dislodged units', newSeason.season, newSeason.year, { gameID: game._id });
 
                 newSeason.season = season.getNextSeasonSeason(variant);

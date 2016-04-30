@@ -54,7 +54,7 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
             scope.showMapDialog = function($event) {
                 var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
 
-                gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
+                gameService.getMoveData(scope.game._id).then(function(season) {
                     gameService.getVariant(scope.game.variant).then(function(variant) {
                         gameService.getVariantSVG(scope.game.variant).then(function(svg) {
                             $mdDialog.show({
@@ -76,7 +76,7 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 });
             };
 
-            gameService.getMoveDataForCurrentUser(scope.game._id).then(function(season) {
+            gameService.getMoveData(scope.game._id).then(function(season) {
                 switch (scope.game.status) {
                 case 0:
                     scope.seasonDescription = '(waiting on ' + (scope.game.maxPlayers - scope.game.players.length) + ' more players)';
