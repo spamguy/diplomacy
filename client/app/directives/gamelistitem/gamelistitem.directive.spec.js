@@ -16,7 +16,7 @@ describe('Game list item directive', function() {
         angular.mock.module('gamelistitem.directive');
 
         mockService = {
-            getMoveDataForCurrentUser: sinon.stub().returnsPromise()
+            getMoveData: sinon.stub().returnsPromise()
         };
         sampleSeason = {
             season: 'Spring Movement',
@@ -27,7 +27,7 @@ describe('Game list item directive', function() {
             _id: '123',
             points: 100
         };
-        mockService.getMoveDataForCurrentUser.resolves(sampleSeason);
+        mockService.getMoveData.resolves(sampleSeason);
 
         angular.mock.module('gameService', function($provide) {
             $provide.value('gameService', mockService);

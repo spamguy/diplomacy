@@ -62,7 +62,7 @@ describe('Province list item directive', function() {
     it('reports move orders', function() {
         scope.province.unit.order = {
             action: 'move',
-            y1: 'STP'
+            target: 'STP'
         };
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
@@ -72,7 +72,7 @@ describe('Province list item directive', function() {
     it('reports orders supporting a holding target', function() {
         scope.province.unit.order = {
             action: 'support',
-            y1: 'STP'
+            source: 'STP'
         };
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
@@ -82,8 +82,8 @@ describe('Province list item directive', function() {
     it('reports orders supporting a moving target', function() {
         scope.province.unit.order = {
             action: 'support',
-            y1: 'STP',
-            y2: 'LVN'
+            source: 'STP',
+            target: 'LVN'
         };
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
@@ -94,11 +94,12 @@ describe('Province list item directive', function() {
         scope.province.r = 'MOS';
         scope.province.unit.order = {
             action: 'convoy',
-            y1: ['BAR', 'NRG', 'NTH', 'DEN']
+            source: 'HEL',
+            target: 'NRG'
         };
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
-        expect($('div span', el).html()).to.equal('<strong>MOS</strong> ~ <strong>DEN</strong>');
+        expect($('div span', el).html()).to.equal('<strong>MOS</strong> ~ <strong>NRG</strong>');
     });
 
     it('reports disband orders', function() {

@@ -172,9 +172,9 @@ angular.module('map.component')
         vm.commandData = [];
     }
 
-    function onOrderSave(response, r, action, y1, y2) {
+    function onOrderSave(response, r, action, source, target) {
         if (response.status === 'ok') {
-            $scope.$parent.updateRegionData(r, action, y1, y2);
+            $scope.$parent.updateRegionData(r, action, source, target);
 
             renderForceDirectedGraph();
         }
@@ -280,7 +280,7 @@ angular.module('map.component')
             unitInRegion = gameService.getUnitOwnerInRegion(region);
 
             if (unitInRegion && unitInRegion.unit.order && unitInRegion.unit.order.action !== 'hold')
-                target = unitInRegion.unit.order.y1 || unitInRegion.unit.order.y2 || unitInRegion.r;
+                target = unitInRegion.unit.order.source || unitInRegion.unit.order.target || unitInRegion.r;
             else
                 continue;
 

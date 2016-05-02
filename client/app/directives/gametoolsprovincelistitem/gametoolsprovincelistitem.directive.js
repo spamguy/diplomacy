@@ -29,18 +29,18 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
                 if (unitOwner && unitOwner.unit.order) {
                     switch (unitOwner.unit.order.action) {
                     case 'move':
-                        provinceStatus += '→ <strong>' + unitOwner.unit.order.y1 + '</strong>';
+                        provinceStatus += '→ <strong>' + unitOwner.unit.order.target + '</strong>';
                         break;
                     case 'support':
-                        provinceStatus += 'supports <strong>' + unitOwner.unit.order.y1 + '</strong> ';
-                        if (unitOwner.unit.order.y2)
-                            provinceStatus += '→ <strong>' + unitOwner.unit.order.y2 + '</strong>';
+                        provinceStatus += 'supports <strong>' + unitOwner.unit.order.source + '</strong> ';
+                        if (unitOwner.unit.order.target)
+                            provinceStatus += '→ <strong>' + unitOwner.unit.order.target + '</strong>';
                         break;
                     case 'hold':
                         provinceStatus += 'holds';
                         break;
                     case 'convoy':
-                        provinceStatus += '~ <strong>' + _.last(unitOwner.unit.order.y1) + '</strong>';
+                        provinceStatus += '~ <strong>' + unitOwner.unit.order.target + '</strong>';
                         break;
                     case 'build':
                         provinceStatus += 'builds a'; break;

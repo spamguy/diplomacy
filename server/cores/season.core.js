@@ -172,9 +172,9 @@ SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {
             action: action
         };
         if (data[1])
-            setCommand.$set['regions.$.unit.order'].y1 = data[1];
+            setCommand.$set['regions.$.unit.order'].source = data[1];
         if (data[2])
-            setCommand.$set['regions.$.unit.order'].y2 = data[2];
+            setCommand.$set['regions.$.unit.order'].target = data[2];
     }
     else {
         // TODO: Build command.

@@ -22,16 +22,16 @@ angular.module('games')
         );
     }
 
-    function updateRegionData(r, action, y1, y2) {
+    function updateRegionData(r, action, source, target) {
         var region = _.find($scope.season.regions, 'r', r),
             unitInRegion = gameService.getUnitOwnerInRegion(region);
 
         // Update local data to reflect DB change.
         unitInRegion.unit.order = { action: action };
-        if (y1)
-            unitInRegion.unit.order.y1 = y1;
-        if (y2)
-            unitInRegion.unit.order.y2 = y2;
+        if (source)
+            unitInRegion.unit.order.source = source;
+        if (target)
+            unitInRegion.unit.order.target = target;
 
         $scope.$broadcast('orderChange', {
             r: r

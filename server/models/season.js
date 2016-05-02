@@ -1,14 +1,14 @@
 var _ = require('lodash'),
     mongoose = require('mongoose'),
     timestamp = require('mongoose-timestamp'),
-    OrderSchema = new mongoose.Schema({ }, { strict: false, _id: false }),
+    RegionSchema = require('./region'),
     SeasonSchema = new mongoose.Schema({
         game_id: mongoose.Schema.Types.ObjectId,
         year: Number,
         season: String,
         deadline: Date,
-        regions: [ OrderSchema ]
-    }, { useNestedStrict: true }); // See mongoose/mongoose in GitHub, ticket #3883.
+        regions: [ RegionSchema ]
+    });
 SeasonSchema.plugin(timestamp);
 
 /**
