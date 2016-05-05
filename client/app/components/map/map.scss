@@ -52,12 +52,12 @@ g.moveLayer .hold
  * SVG 1.x lameness: CSS must be defined on a per-marker basis. See http://stackoverflow.com/a/16665510/260460.
  * Supposedly made easier by SVG 2, but browser support is low to nil.
  */
-marker#move, marker#support
+marker#move, marker#support, marker#convoy
 {
     fill: #000;
 }
 
-marker#failedmove, marker#failedsupport
+marker#failedmove, marker#failedsupport, marker#failedconvoy
 {
     fill: #f00;
 }
@@ -80,7 +80,7 @@ g.mouseLayer path
         transition-property: fill, fill-opacity;
         transition-duration: 0.2s;
         transition-timing-function: linear;
-        fill: #c00;
+        fill: #a00;
         fill-opacity: 0.5;
     }
 }

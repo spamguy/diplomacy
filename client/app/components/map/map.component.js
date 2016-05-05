@@ -1,4 +1,4 @@
-angular.module('map.component', ['gameService'])
+angular.module('map.component', ['mapService'])
 .component('sgMap', {
     bindings: {
         variant: '<',
@@ -9,5 +9,9 @@ angular.module('map.component', ['gameService'])
         header: '<'
     },
     controller: 'MapController',
+    // controller: ['$scope', 'mapService', function($scope, MapService) {
+    //     var vm = this;
+    //     vm.service = new MapService(this.variant, this.game, this.season);
+    // }],
     templateUrl: 'app/components/map/map.tmpl.html'
 });

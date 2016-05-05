@@ -1,5 +1,5 @@
 angular.module('map.component')
-.controller('MapController', ['$location', '$scope', 'gameService', function($location, $scope, gameService) {
+.controller('MapController', ['$scope', 'gameService', 'mapService', function($scope, gameService, MapService) {
     var vm = this,
         normalisedVariantName = gameService.getNormalisedVariantName(vm.variant.name),
         paths = vm.svg.getElementsByTagName('path'),
@@ -21,23 +21,16 @@ angular.module('map.component')
         links = [],
         holds = [];
 
-    vm.getSVGAttribute = getSVGAttribute;
-    vm.isHeaderVisible = isHeaderVisible;
-    vm.inputCommand = inputCommand;
-    vm.getSCTransform = getSCTransform;
-    vm.getSCFill = getSCFill;
-    vm.getUnitFill = getUnitFill;
-    vm.getCoordinates = getCoordinates;
-    vm.changeAction = changeAction;
-    vm.onOrderSave = onOrderSave;
-
-    // Bail if vital info isn't present.
-    // TODO: Log and report absence of variant info.
-    if (!this.variant || !this.svg)
-        return;
-
-    vm.regionReferenceDictionary = regionReferenceDictionary;
     vm.paths = { };
+    vm.service = new MapService(this.variant, this.game, this.season);
+
+    vm.onOrderSave = function(response, r, action, source, target) {
+        if (response.status === 'ok') {
+            $scope.$parent.updateRegionData(r, action, source, target);
+
+            renderForceDirectedGraph();
+        }
+    };
 
     // Fill out region paths only if the season is active.
     if (!vm.readonly) {
@@ -46,17 +39,11 @@ angular.module('map.component')
     }
 
     vm.imagePath = 'variants/' + normalisedVariantName + '/' + normalisedVariantName + '.png';
-    vm.viewBox = '0 0 ' + vm.getSVGAttribute('width') + ' ' + vm.getSVGAttribute('height');
+    vm.viewBox = '0 0 ' + getSVGAttribute('width') + ' ' + getSVGAttribute('height');
 
     if (!this.season)
         return;
 
-    vm.canMove = _.contains(this.season.season.toLowerCase(), 'move');
-    vm.canRetreat = _.contains(this.season.season.toLowerCase(), 'retreat');
-    vm.canBuild = _.contains(this.season.season.toLowerCase(), 'adjust');
-    vm.scPath = $location.absUrl() + '#sc';
-    vm.commandData = [];
-    vm.currentAction = 'hold';
     vm.clickCount = 0;
 
     force = d3.layout.force()
@@ -65,126 +52,6 @@ angular.module('map.component')
         .on('tick', onForceDirectedGraphTick.bind(this)); // bind() forces function's scope to controller.
 
     renderForceDirectedGraph();
-
-    function getSVGAttribute(attr) {
-        return this.svg.documentElement.getAttribute(attr);
-    }
-
-    function isHeaderVisible() {
-        return this.header && this.season;
-    }
-
-    function getSCTransform(r) {
-        return 'translate(' +
-            regionReferenceDictionary[r.toUpperCase()].sc.x + ',' +
-            regionReferenceDictionary[r.toUpperCase()].sc.y + ') ' +
-            'scale(0.04)';
-    }
-
-    function getSCFill(r) {
-        var owner = _.find(vm.season.regions, 'r', r).sc;
-        return owner ? vm.variant.powers[owner].colour : '#bbbbbb';
-    }
-
-    function getUnitFill(r) {
-        var container = gameService.getUnitOwnerInRegion(r);
-        return this.variant.powers[container.unit.power].colour;
-    }
-
-    function getCoordinates(r, type) {
-        var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
-
-        if (subregionWithUnit) {
-            subregionWithUnit = _.find(regionReferenceDictionary[r.r].sr, 'r', subregionWithUnit.r);
-            return { x: subregionWithUnit.x, y: subregionWithUnit.y };
-        }
-
-        return { x: regionReferenceDictionary[r.r].x, y: regionReferenceDictionary[r.r].y };
-    }
-
-    function inputCommand(id) {
-        var r = id.toUpperCase().replace('-', '/'), // HTML IDs use - for subdivisions.
-            region = _.find(vm.season.regions, 'r', r.split('/')[0]),
-            ownerInRegion = gameService.getUnitOwnerInRegion(region),
-            unitInRegion,
-            overrideAction;
-
-        if (ownerInRegion)
-            unitInRegion = ownerInRegion.unit;
-
-        // TODO: Force armies to move to regions only.
-
-        // Users who try to control units that don't exist or don't own?
-        // We have ways of shutting the whole thing down.
-        if (vm.commandData.length === 0 &&
-            (!unitInRegion || unitInRegion.power !== gameService.getPowerOfCurrentUserInGame(vm.game)))
-            return;
-
-        vm.commandData.push(r);
-
-        switch (vm.currentAction) {
-        case 'hold':
-            // Don't bother retaining clicks. Just continue on to send the command.
-            break;
-        case 'move':
-            // Source, target.
-            if (vm.commandData.length < 2)
-                return;
-
-            // Don't move to yourself. Treat this as a hold.
-            if (vm.commandData[0] === vm.commandData[1]) {
-                vm.commandData.pop();
-                overrideAction = 'hold';
-            }
-            break;
-        case 'support':
-            // Don't support yourself. Treat this as a hold.
-            if (vm.commandData[0] === vm.commandData[1]) {
-                while (vm.commandData.length) vm.commandData.pop();
-                overrideAction = 'hold';
-            }
-            // Source, target, target of target.
-            else if (vm.commandData.length < 3) {
-                return;
-            }
-            // Source, holding target.
-            else if (vm.commandData[1] === vm.commandData[2]) {
-                vm.commandData.pop();
-            }
-            break;
-        case 'convoy':
-            break;
-        }
-
-        // Making it this far means there is a full set of commands to publish.
-        gameService.publishCommand(vm.currentAction, vm.commandData, vm.season,
-            function(response) {
-                vm.onOrderSave(response, vm.commandData[0], overrideAction || vm.currentAction, vm.commandData[1], vm.commandData[2]);
-                vm.commandData = [];
-            }
-        );
-    }
-
-    function changeAction(action) {
-        vm.currentAction = action;
-
-        // Reset any half-made orders.
-        vm.commandData = [];
-    }
-
-    function onOrderSave(response, r, action, source, target) {
-        if (response.status === 'ok') {
-            $scope.$parent.updateRegionData(r, action, source, target);
-
-            renderForceDirectedGraph();
-        }
-    }
-
-    function generateMarkerEnd(d) {
-        // See CSS file for why separate markers exist for failed orders.
-        var failed = d.target.failed ? 'failed' : '';
-        return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
-    }
 
     function onForceDirectedGraphTick(e, scope) {
         var regions = vm.season.regions;
@@ -201,8 +68,8 @@ angular.module('map.component')
                 targetRegion = _.find(regions, 'r', d.target.r),
                 unitInSourceRegion = gameService.getUnitOwnerInRegion(sourceRegion),
                 unitInTargetRegion = gameService.getUnitOwnerInRegion(targetRegion),
-                sourceCoordinates = getCoordinates(sourceRegion, unitInSourceRegion.unit.type),
-                targetCoordinates = getCoordinates(targetRegion, unitInSourceRegion.unit.type),
+                sourceCoordinates = vm.service.getCoordinates(sourceRegion, unitInSourceRegion.unit.type),
+                targetCoordinates = vm.service.getCoordinates(targetRegion, unitInSourceRegion.unit.type),
                 sx = sourceCoordinates.x,
                 sy = sourceCoordinates.y,
                 tx = targetCoordinates.x,
@@ -297,7 +164,7 @@ angular.module('map.component')
         moveLayerArrows = moveLayerArrows.data(links);
         moveLayerArrows.enter()
             .insert('svg:path')
-            .attr('marker-end', generateMarkerEnd)
+            .attr('marker-end', vm.service.generateMarkerEnd)
             .attr('class', function(d) {
                 var failed = d.target.failed ? 'failed ' : 'ok ';
                 return failed + 'link move';
@@ -319,5 +186,9 @@ angular.module('map.component')
         force.start();
         for (i = 20; i > 0; --i) force.tick();
         force.stop();
+    }
+
+    function getSVGAttribute(attr) {
+        return vm.svg.documentElement.getAttribute(attr);
     }
 }]);
