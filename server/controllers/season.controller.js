@@ -16,7 +16,7 @@ module.exports = function() {
             async.waterfall([
                 // Fetch the game.
                 function(callback) {
-                    core.game.list({ gameID: options.game_id }, callback);
+                    core.game.list({ gameID: options.gameID }, callback);
                 },
 
                 // Fetch the matching seasons.
