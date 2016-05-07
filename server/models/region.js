@@ -15,7 +15,9 @@ OrderSchema = new mongoose.Schema({
 }, { _id: false });
 
 UnitSchema = new mongoose.Schema({
-    type: Number,
+    type: {
+        type: String
+    },
     owner: String,
     order: OrderSchema
 }, { _id: false });

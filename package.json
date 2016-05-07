@@ -17,7 +17,7 @@
     "kue": "0.10.5",
     "lodash": "3.7.0",
     "moment": "~2.10.2",
-    "mongoose": "4.4.14",
+    "mongoose": "4.4.15",
     "mongoose-timestamp": "0.5.0",
     "nconf": "0.8.4",
     "nodemailer": "2.3.0",
