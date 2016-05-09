@@ -1,14 +1,47 @@
 var _ = require('lodash'),
     mongoose = require('mongoose'),
     timestamp = require('mongoose-timestamp'),
-    RegionSchema = require('./region'),
-    SeasonSchema = new mongoose.Schema({
-        game_id: mongoose.Schema.Types.ObjectId,
-        year: Number,
-        season: String,
-        deadline: Date,
-        regions: [ RegionSchema ]
-    });
+    OrderSchema,
+    UnitSchema,
+    RegionSchema,
+    SeasonSchema;
+
+OrderSchema = new mongoose.Schema({
+    source: String,
+    target: String,
+    action: String,
+    failed: Boolean,
+    details: String
+}, { _id: false });
+
+UnitSchema = new mongoose.Schema({
+    type: {
+        type: String
+    },
+    owner: String,
+    order: OrderSchema
+}, { _id: false });
+
+RegionSchema = new mongoose.Schema({
+    r: String,
+    unit: UnitSchema,
+    dislodged: UnitSchema,
+    sc: String
+}, { _id: false });
+RegionSchema.add({ sr: [ RegionSchema ] });
+
+SeasonSchema = new mongoose.Schema({
+    game_id: mongoose.Schema.Types.ObjectId,
+    year: Number,
+    season: String,
+    deadline: Date,
+    regions: [{
+        r: String,
+        unit: UnitSchema,
+        dislodged: UnitSchema,
+        sc: String
+    }]
+});
 SeasonSchema.plugin(timestamp);
 
 /**
