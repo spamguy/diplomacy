@@ -47,10 +47,10 @@ angular.module('mapService', ['gameService'])
         return this.variant.powers[container.unit.power].colour;
     }
 
-    function generateMarkerEnd(target) {
+    function generateMarkerEnd(d) {
         // See CSS file for why separate markers exist for failed orders.
-        var failed = target.failed ? 'failed' : '';
-        return 'url(' + $location.absUrl() + '#' + failed + target.action + ')';
+        var failed = d.target.failed ? 'failed' : '';
+        return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
     }
 
     function getCoordinatesForUnitInRegion(r, type) {
