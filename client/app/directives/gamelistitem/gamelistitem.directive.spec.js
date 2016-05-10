@@ -8,15 +8,21 @@ describe('Game list item directive', function() {
         mockService,
         sampleSeason,
         sampleUser,
-        httpBackend;
+        httpBackend,
+        playerState,
+        gmState;
 
     beforeEach(function() {
         angular.mock.module('templates');
         angular.mock.module('ui.router');
         angular.mock.module('gamelistitem.directive');
 
+        playerState = gmState = false;
+
         mockService = {
-            getMoveData: sinon.stub().returnsPromise()
+            getMoveData: sinon.stub().returnsPromise(),
+            isGM: function() { return gmState; },
+            isPlayer: function() { return playerState; }
         };
         sampleSeason = {
             season: 'Spring Movement',
@@ -146,14 +152,14 @@ describe('Game list item directive', function() {
         });
 
         it('is disabled if player is GM', function() {
-            scope.game.gm_id = '123';
+            gmState = true;
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="true" user="user"></sg-game-list-item>')(scope);
             scope.$digest();
             expect($('button', el)).to.be.disabled;
         });
 
         it('is disabled if player is in game already', function() {
-            scope.game.players.push({ player_id: '123' });
+            playerState = true;
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="true" user="user"></sg-game-list-item>')(scope);
             scope.$digest();
             expect($('button', el)).to.be.disabled;

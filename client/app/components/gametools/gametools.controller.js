@@ -1,16 +1,44 @@
 angular.module('gametools.component')
-.controller('GameToolsController', ['userService', 'gameService', '$scope', function(userService, gameService, $scope) {
-    var vm = this;
+.controller('GameToolsController', ['userService', 'gameService', '$mdDialog', '$scope', '$state', function(userService, gameService, $mdDialog, $scope, $state) {
+    var vm = this,
+        confirm;
 
-    vm.currentPlayer = _.find(vm.game.players, 'player_id', userService.getCurrentUserID());
-
+    vm.service = gameService;
     vm.powerOwnsProvince = powerOwnsProvince;
     vm.getPowerList = getPowerList;
     vm.setReadyState = setReadyState;
-    vm.isGM = gameService.isGM;
 
     vm.actions = {
-        adjudicateNow: gameService.adjudicateSeason
+        adjudicateNow: function() {
+            confirm = $mdDialog.confirm()
+                .title('Abort this game?')
+                .textContent('Are you sure you want to adjudicate the current season?')
+                .ariaLabel('Adjudicate now?')
+                .targetEvent(event)
+                .ok('OK')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function() {
+                gameService.adjudicateSeason(vm.season, function() {
+                    $state.go('profile.games');
+                });
+            });
+        },
+        endGame: function() {
+            confirm = $mdDialog.confirm()
+                .title('Abort this game?')
+                .htmlContent('<p>Are you sure you want to abort this game?</p><ul><li>Players will not receive credit.</li><li>You run the risk of being scorned by your peers.</ul>')
+                .ariaLabel('Really abort?')
+                .targetEvent(event)
+                .ok('OK')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function() {
+                gameService.endGame(vm.game, function() {
+                    $state.go('profile.games');
+                });
+            });
+        }
     };
 
     function powerOwnsProvince(code, province) {

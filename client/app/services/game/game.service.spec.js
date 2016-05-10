@@ -18,6 +18,7 @@ describe('gameService', function() {
         angular.mock.module('gameService');
 
         game = {
+            gm_id: '116',
             players: [{
                 player_id: '123',
                 power: 'Q'
@@ -61,6 +62,15 @@ describe('gameService', function() {
 
     it('gets the current player\'s power in a game', function() {
         expect(gameService.getPowerOfCurrentUserInGame(game)).to.equal('N');
+    });
+
+    it('identifies the user in a player role', function() {
+        expect(gameService.isPlayer(game)).to.be.true;
+        expect(gameService.isGM(game)).to.be.false;
+    });
+
+    it('identifies whether the current user participates in some way', function() {
+        expect(gameService.isParticipant(game)).to.be.true;
     });
 
     describe('getUnitOwnerInRegion()', function() {

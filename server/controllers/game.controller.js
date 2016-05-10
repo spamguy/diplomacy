@@ -365,6 +365,32 @@ module.exports = function() {
 
         stop: function(req, res) {
 
+        },
+
+        end: function(req, res) {
+            var gameID = req.data.gameID;
+
+            async.waterfall([
+                // Fetches the game to kill.
+                function(callback) {
+                    core.game.list({
+                        gameID: gameID
+                    }, function(err, games) { callback(err, games[0]); });
+                },
+
+                // Set game status to 2 (ended).
+                function(game, callback) {
+                    game.status = 2;
+                    core.game.update(game, callback);
+                },
+
+                // Announce end to players.
+                function(game, callback) {
+                }
+            ], function(err) {
+                if (err)
+                    app.logger.error(err);
+            });
         }
     });
 };

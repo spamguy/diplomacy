@@ -21,9 +21,9 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                     return 'You need a minimum of Đ' + scope.game.minimumScoreToJoin + ' to join.';
 
                 // User belongs to game already, whether as GM or user.
-                if (_.find(scope.game.players, _.matchesProperty('player_id', scope.user._id)))
+                if (gameService.isPlayer(scope.game))
                     return 'You already are a player in this game.';
-                if (scope.game.gm_id === scope.user._id)
+                if (gameService.isGM(scope.game))
                     return 'You GM this game.';
 
                 return null;

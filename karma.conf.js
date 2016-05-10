@@ -49,7 +49,7 @@ module.exports = function(config) {
             'client/app/**/*.tmpl.html'
         ],
         logLevel: 'INFO',
-        reporters: ['spec', 'coverage'],
+        reporters: ['dots', 'coverage'],
         autoWatch: false,
         singleRun: true,
         browsers: ['PhantomJS'],

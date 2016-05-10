@@ -137,6 +137,16 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         },
 
+        /**
+         * Ends a game and awards no wins.
+         * @param  {Object} game The game.
+         */
+        endGame: function(game) {
+            socketService.socket.emit('game:end', {
+                gameID: game._id
+            });
+        },
+
         getPowerOfCurrentUserInGame: function(game) {
             for (var p = 0; p < game.players.length; p++) {
                 if (game.players[p].player_id === userService.getCurrentUserID())
@@ -166,6 +176,14 @@ angular.module('gameService', ['userService', 'socketService'])
 
         isGM: function(game) {
             return game.gm_id === userService.getCurrentUserID();
+        },
+
+        isPlayer: function(game) {
+            return !!_.find(game.players, 'player_id', userService.getCurrentUserID());
+        },
+
+        isParticipant: function(game) {
+            return this.isGM(game) || this.isPlayer(game);
         }
     };
 

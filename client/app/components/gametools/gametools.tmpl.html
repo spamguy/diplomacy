@@ -3,7 +3,7 @@
         <md-tab>
             <md-tab-label>Orders</md-tab-label>
             <md-tab-body>
-                <div layout="row" layout-align="center" ng-if="$ctrl.game.status === 1 && $ctrl.currentPlayer">
+                <div layout="row" layout-align="center" ng-if="$ctrl.game.status === 1 && $ctrl.service.isPlayer($ctrl.game)">
                     <md-switch ng-model="$ctrl.currentPlayer.isReady" ng-change="$ctrl.setReadyState()">
                         <span class="md-title">{{$ctrl.currentPlayer.isReady ? 'Ready!' : 'Not ready'}}</span>
                     </md-switch>
@@ -21,14 +21,20 @@
             </md-tab-body>
         </md-tab>
 
-        <md-tab ng-disabled="$ctrl.game.status === 1">
+        <md-tab ng-disabled="$ctrl.game.status !== 1 || !$ctrl.service.isParticipant($ctrl.game)">
             <md-tab-label>Actions</md-tab-label>
             <md-tab-body>
                 <md-list>
-                    <md-list-item ng-if="$ctrl.isGM($ctrl.game)" ng-click="$ctrl.actions.adjudicateNow($ctrl.season)">
+                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.adjudicateNow($ctrl.season)">
                         <div><span>Adjudicate now</span></div>
                         <md-divider></md-divider>
                     </md-list-item>
+
+                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.endGame($ctrl.game)">
+                        <div><span>End game</span></div>
+                        <md-divider></md-divider>
+                    </md-list-item>
+
                 </md-list>
             </md-tab-body>
         </md-tab>
