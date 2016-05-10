@@ -386,10 +386,35 @@ module.exports = function() {
 
                 // Announce end to players.
                 function(game, callback) {
+                    async.each(game.players, function(player, eachCallback) {
+                        async.waterfall([
+                            function(wfCallback) {
+                                core.user.list({ ID: player.player_id }, function(err, players) { wfCallback(err, players[0]); });
+                            },
+
+                            function(player, wfCallback) {
+                                var emailOptions = {
+                                    subject: '[' + game.name + '] GAME OVER!',
+                                    gameName: game.name,
+                                    email: player.email
+                                };
+
+                                mailer.sendOne('abort', emailOptions, wfCallback);
+                            }
+                        ], eachCallback);
+                    }, function(err) { callback(err, game); });
+                },
+
+                function(game, callback) {
+                    // Broadcast end to subscribers.
+                    var gameData = { gamename: game.name };
+                    req.socket.broadcast.to(gameID).emit('game:end:announce', gameData);
                 }
             ], function(err) {
                 if (err)
                     app.logger.error(err);
+                else
+                    return res.json({ status: 'ok' });
             });
         }
     });

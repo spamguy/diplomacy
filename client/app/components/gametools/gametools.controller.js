@@ -11,7 +11,7 @@ angular.module('gametools.component')
     vm.actions = {
         adjudicateNow: function() {
             confirm = $mdDialog.confirm()
-                .title('Abort this game?')
+                .title('Adjudicate')
                 .textContent('Are you sure you want to adjudicate the current season?')
                 .ariaLabel('Adjudicate now?')
                 .targetEvent(event)
@@ -26,7 +26,7 @@ angular.module('gametools.component')
         },
         endGame: function() {
             confirm = $mdDialog.confirm()
-                .title('Abort this game?')
+                .title('Abort')
                 .htmlContent('<p>Are you sure you want to abort this game?</p><ul><li>Players will not receive credit.</li><li>You run the risk of being scorned by your peers.</ul>')
                 .ariaLabel('Really abort?')
                 .targetEvent(event)

@@ -21,11 +21,11 @@
             </md-tab-body>
         </md-tab>
 
-        <md-tab ng-disabled="$ctrl.game.status !== 1 || !$ctrl.service.isParticipant($ctrl.game)">
+        <md-tab ng-disabled="$ctrl.game.status > 1 || !$ctrl.service.isParticipant($ctrl.game)">
             <md-tab-label>Actions</md-tab-label>
             <md-tab-body>
                 <md-list>
-                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.adjudicateNow($ctrl.season)">
+                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game) && $ctrl.game.status === 1" ng-click="$ctrl.actions.adjudicateNow($ctrl.season)">
                         <div><span>Adjudicate now</span></div>
                         <md-divider></md-divider>
                     </md-list-item>
