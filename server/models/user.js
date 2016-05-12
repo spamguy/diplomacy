@@ -12,9 +12,21 @@ var hashOptions = {
         email: String,
         tempEmail: String,
         points: Number,
+        actionCount: {
+            type: Number,
+            default: 0
+        },
+        lateActionCount: {
+            type: Number,
+            default: 0
+        },
         timezone: Number
     });
 UserSchema.plugin(timestamp);
+
+UserSchema.virtual('netActionCount').get(function() {
+    return this.actionCount - this.lateActionCount;
+});
 
 UserSchema.statics.findByEmailAndToken = function(email, plaintextPassword, cb) {
     if (!email)

@@ -21,7 +21,7 @@
     </md-tab>
     <md-tab label="Mastering">
         <md-list>
-            <md-list-item ng-repeat="game in GMing" class="gameItem">
+            <md-list-item ng-repeat="game in GMing | filter: { status: 1 }" class="gameItem">
                 <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="currentUser" />
             </md-list-item>
         </md-list>

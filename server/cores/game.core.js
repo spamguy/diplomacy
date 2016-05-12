@@ -108,4 +108,19 @@ GameCore.prototype.resetAllReadyFlags = function(game, cb) {
     );
 };
 
+/**
+ * Sets a player's disabled status to true.
+ * @param  {String}   playerID The player's ID.
+ * @param  {String}   gameID   The game ID.
+ * @param  {Function} cb       The callback.
+ */
+GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
+    mongoose.model('Game').findOneAndUpdate(
+        { _id: gameID, 'players.player_id': playerID },
+        { $set: { 'players.$.disabled': true } },
+        { new: true },
+        cb
+    );
+};
+
 module.exports = GameCore;

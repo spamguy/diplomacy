@@ -147,6 +147,21 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         },
 
+        /**
+         * Removes a player from a game.
+         * @param  {String}   playerID The player ID.
+         * @param  {Object}   game     The game.
+         * @param  {Boolean}  punish   Whether to penalise the player.
+         * @param  {Function} callback A callback function.
+         */
+        removePlayer: function(playerID, game, punish, callback) {
+            socketService.socket.emit('game:leave', {
+                gameID: game._id,
+                playerID: playerID,
+                punish: punish
+            }, callback);
+        },
+
         getPowerOfCurrentUserInGame: function(game) {
             for (var p = 0; p < game.players.length; p++) {
                 if (game.players[p].player_id === userService.getCurrentUserID())
@@ -179,7 +194,7 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         isPlayer: function(game) {
-            return !!_.find(game.players, 'player_id', userService.getCurrentUserID());
+            return this.getPowerOfCurrentUserInGame(game) !== null;
         },
 
         isParticipant: function(game) {

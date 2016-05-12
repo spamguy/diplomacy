@@ -180,15 +180,36 @@ module.exports = function() {
 
         leave: function(req, res) {
             var gameID = req.data.gameID,
-                game = core.game.list({ gameID: gameID });
+                playerID = req.data.playerID,
+                punish = req.data.punish;
 
-            // mete out punishment to players leaving mid-game
+            async.waterfall([
+                // Toggle player's disabled flag.
+                function(callback) {
+                    core.game.disablePlayer(playerID, gameID, callback);
+                },
 
-            // broadcast leave to others subscribed to game
-            req.socket.broadcast.to(gameID).emit('user:leave:success', { gamename: game.name });
+                // Penalise players, if needed.
+                function(game, callback) {
+                    // Quitting is worth five 'latenesses'.
+                    var penaltyValue = punish ? 5 : 0;
+                    core.user.adjustActionCount(playerID, penaltyValue, callback);
+                },
 
-            // signal the game should handle the situation
-            req.socket.emit('game:stop', { gameID: gameID });
+                function(game, callback) {
+                    // Broadcast leave to others subscribed to game.
+                    var userPower = game.getPlayerByID(playerID).power,
+                        userPowerName = core.variant.get(game.variant).powers[userPower].name;
+
+                    req.socket.broadcast.to(gameID).emit('game:leave:success', {
+                        gamename: game.name,
+                        power: userPowerName
+                    });
+                }
+            ], function(err, game) {
+                if (err)
+                    app.logger.error(err);
+            });
         },
 
         watch: function(req, res) {

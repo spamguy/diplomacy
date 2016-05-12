@@ -20,6 +20,7 @@ var mongoose = require('mongoose'),
             _id: false,
             player_id: mongoose.Schema.Types.ObjectId,
             power: String,
+            disabled: Boolean,
             isReady: {
                 type: Boolean,
                 default: false
@@ -67,6 +68,15 @@ GameSchema.methods.getClockFromSeason = function(seasonName) {
         return this.adjustClock;
     else
         throw new Error('The season type could not be parsed from the name "' + seasonName + '".');
+};
+
+/**
+ * Finds a player in the game by its ID.
+ * @param  {String} playerID The player ID.
+ * @return {Object}          The matching player, or null.
+ */
+GameSchema.methods.getPlayerByID = function(playerID) {
+    return _.find(this.players, 'player_id', playerID);
 };
 
 GameSchema.set('toJSON', { virtuals: true });

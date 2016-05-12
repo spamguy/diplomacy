@@ -50,4 +50,19 @@ UserCore.prototype.getStubByEmail = function(email, cb) {
     }, cb);
 };
 
+UserCore.prototype.adjustActionCount = function(playerID, penalty, cb) {
+    if (penalty === 0)
+        cb(null);
+
+    mongoose.model('User').findOneAndUpdate(
+        { _id: playerID },
+        { $inc: {
+            actionCount: penalty,
+            lateActionCount: penalty
+        } },
+        { },
+        cb
+    );
+};
+
 module.exports = UserCore;

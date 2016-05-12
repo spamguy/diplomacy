@@ -64,7 +64,7 @@ describe('gameService', function() {
         expect(gameService.getPowerOfCurrentUserInGame(game)).to.equal('N');
     });
 
-    it('identifies the user in a player role', function() {
+    it('identifies the user in the correct game role', function() {
         expect(gameService.isPlayer(game)).to.be.true;
         expect(gameService.isGM(game)).to.be.false;
     });

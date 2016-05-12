@@ -25,16 +25,30 @@
             <md-tab-label>Actions</md-tab-label>
             <md-tab-body>
                 <md-list>
-                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game) && $ctrl.game.status === 1" ng-click="$ctrl.actions.adjudicateNow($ctrl.season)">
+                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game) && $ctrl.game.status === 1" ng-click="$ctrl.actions.adjudicateNow()">
                         <div><span>Adjudicate now</span></div>
                         <md-divider></md-divider>
                     </md-list-item>
 
-                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.endGame($ctrl.game)">
+                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.excusePlayer()">
+                        <div><span>Excuse player</span></div>
+                        <md-divider></md-divider>
+                    </md-list-item>
+
+                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.bootPlayer()">
+                        <div><span>Boot player</span></div>
+                        <md-divider></md-divider>
+                    </md-list-item>
+
+                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.endGame()">
                         <div><span>End game</span></div>
                         <md-divider></md-divider>
                     </md-list-item>
 
+                    <md-list-item ng-if="$ctrl.service.isPlayer($ctrl.game)" ng-click="$ctrl.actions.quitGame()">
+                        <div><span>Quit game</span></div>
+                        <md-divider></md-divider>
+                    </md-list-item>
                 </md-list>
             </md-tab-body>
         </md-tab>
