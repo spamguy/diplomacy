@@ -1,4 +1,4 @@
-angular.module('map.component', ['mapService'])
+angular.module('map.component', ['mapService', 'timer'])
 .component('sgMap', {
     bindings: {
         variant: '<',

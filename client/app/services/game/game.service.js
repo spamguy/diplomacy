@@ -1,3 +1,4 @@
+/* global moment */
 /**
  * @ngdoc service
  * @name gameService
@@ -199,6 +200,10 @@ angular.module('gameService', ['userService', 'socketService'])
 
         isParticipant: function(game) {
             return this.isGM(game) || this.isPlayer(game);
+        },
+
+        getFormattedDeadline: function(season) {
+            return moment(season.deadline).valueOf();
         }
     };
 
