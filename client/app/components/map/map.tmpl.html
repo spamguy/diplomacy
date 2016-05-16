@@ -2,7 +2,7 @@
     <md-toolbar class="md-toolbar-tools" id="mapToolbar" ng-if="$ctrl.season && $ctrl.header">
         <div layout="column" layout-align="center center">
             <div class="md-title">{{$ctrl.season.season}} {{$ctrl.season.year}}</div>
-            <div class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.service.getFormattedDeadline()">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
+            <div class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.season)">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
         </div>
         <span flex></span>
         <div ng-if="!$ctrl.readonly">

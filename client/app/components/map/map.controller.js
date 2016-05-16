@@ -23,6 +23,7 @@ angular.module('map.component')
 
     vm.paths = { };
     vm.service = new MapService(this.variant, this.game, this.season);
+    vm.getFormattedDeadline = gameService.getFormattedDeadline;
 
     vm.onOrderSave = function(response, r, action, source, target) {
         if (response.status === 'ok') {

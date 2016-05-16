@@ -18,7 +18,7 @@ angular.module('mapService', ['gameService'])
     service.prototype.getUnitFill = getUnitFill;
     service.prototype.getCoordinatesForUnitInRegion = getCoordinatesForUnitInRegion;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
-    service.prototype.setAction = setAction;
+    service.prototype.setCurrentAction = setCurrentAction;
     service.prototype.inputCommand = inputCommand;
     service.prototype.userCanMove = userCanMove;
     service.prototype.userCanAdjust = userCanAdjust;
@@ -64,7 +64,7 @@ angular.module('mapService', ['gameService'])
         return { x: regionReferenceDictionary[r.r].x, y: regionReferenceDictionary[r.r].y };
     }
 
-    function setAction(action) {
+    function setCurrentAction(action) {
         currentAction = action;
 
         // Reset any half-made orders.
@@ -126,6 +126,17 @@ angular.module('mapService', ['gameService'])
             }
             break;
         case 'convoy':
+            /*
+             * Don't convoy the convoyer.
+             * Don't convoy into the convoyer.
+             * Don't let the start equal the finish.
+             * In short, source, target, target of target should be distinct.
+             * Treat violations of the above as a hold.
+             */
+            if (commandData.length !== _.uniq(commandData).length) {
+                clearAllCommands();
+                overrideAction = 'hold';
+            }
             break;
         }
 
