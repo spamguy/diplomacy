@@ -289,7 +289,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('serve', [
-        'eslint',
+    //    'eslint',
         'ngconstant:mongo',
         'preprocess',
         'wiredep',

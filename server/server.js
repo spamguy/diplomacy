@@ -9,8 +9,6 @@ var path = require('path'),
     core = require('./cores/index'),
     app = express(),
     socketioJWT = require('socketio-jwt'),
-    mongoose = require('./db')(),
-    cachegoose = require('cachegoose'),
     seekrits = require('nconf')
         .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
         .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json'));
@@ -59,12 +57,6 @@ app.io.use(socketioJWT.authorize({
 
 app.io.on('error', function(err) {
     console.log('Unable to authenticate: ' + JSON.stringify(err));
-});
-
-cachegoose(mongoose, {
-    engine: 'redis',
-    host: 'localhost',
-    password: seekrits.get('redis:password')
 });
 
 app.listen(9000, function() {
