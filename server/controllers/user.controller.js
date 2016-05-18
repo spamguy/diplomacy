@@ -34,6 +34,7 @@ module.exports = function() {
         login: function(req, res) {
             auth.authenticate(req, function(err, user) {
                 if (err) {
+                    app.logger.error(err);
                     return res.status(400).json({
                         message: 'There was a problem logging you in. Please try again later.',
                         error: err

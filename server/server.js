@@ -13,9 +13,6 @@ var path = require('path'),
         .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
         .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json'));
 
-// Register models.
-all(path.join(__dirname, '/models'));
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

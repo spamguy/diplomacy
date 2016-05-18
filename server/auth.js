@@ -1,10 +1,9 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-    passport = require('passport'),
+var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     tokenAuth = function(username, password, done) {
-        mongoose.model('User').findByEmailAndToken(username, password, function(err, user) {
+        require('./cores').user.findByEmailAndToken(username, password, function(err, user) {
             if (err) return done(err);
             if (!user) return done(null, false);
             return done(null, user);
