@@ -3,7 +3,6 @@ var path = require('path'),
     bodyParser = require('body-parser'), // for crying out loud, STOP REMOVING THIS
     all = require('require-tree'),
     _ = require('lodash'),
-    winston = require('winston'),
     kue = require('kue'),
     controllers = all(path.join(__dirname, '/controllers')),
     core = require('./cores/index'),
@@ -24,11 +23,7 @@ app.queue = kue.createQueue({
 });
 
 // Add logging transports.
-app.logger = new (winston.Logger)({
-    transports: [
-        new (winston.transports.Console)()
-    ]
-});
+app.logger = require('./logger');
 
 all(path.join(__dirname, '/jobs'), {
     each: function(job) {

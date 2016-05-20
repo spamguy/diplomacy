@@ -8,7 +8,9 @@ var path = require('path'),
         seekrits.get('db:user'),
         seekrits.get('db:password'), {
             dialect: 'postgres',
-            logging: function(log) { require('winston').debug(log); }
+            logging: function(log) {
+                require('./logger').debug(log);
+            }
         }
     );
 

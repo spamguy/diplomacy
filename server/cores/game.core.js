@@ -1,6 +1,6 @@
 'use strict';
 
-var mongoose = require('mongoose'),
+var db = require('./../db'),
     _ = require('lodash'),
     NOT_STARTED = 0,
     STOPPED = 2;
@@ -9,45 +9,45 @@ function GameCore(options) {
     this.core = options.core;
 }
 
-GameCore.prototype.list = function(options, cb) {
-    options = options || { };
-    var Game = mongoose.model('Game'),
-        query = Game.find(_.pick({
-            '_id': options.gameID,
-            'gm_id': options.gmID,
-            'players.player_id': options.playerID,
-            'status': options.status
-        }, _.identity));
-
-    query.exec(function(err, games) {
-        if (err) {
-            console.error(err);
-            return cb(err);
-        }
-
-        cb(null, games);
-    });
-};
+// GameCore.prototype.list = function(options, cb) {
+//     options = options || { };
+//     var Game = mongoose.model('Game'),
+//         query = Game.find(_.pick({
+//             '_id': options.gameID,
+//             'gm_id': options.gmID,
+//             'players.player_id': options.playerID,
+//             'status': options.status
+//         }, _.identity));
+//
+//     query.exec(function(err, games) {
+//         if (err) {
+//             console.error(err);
+//             return cb(err);
+//         }
+//
+//         cb(null, games);
+//     });
+// };
 
 GameCore.prototype.listOpen = function(options, cb) {
-    options = options || { };
-    var Game = mongoose.model('Game'),
-        query = Game.find({ status: { $in: [NOT_STARTED, STOPPED] } })
-                    .where('this.players.length < this.maxPlayers');
-
-    query.exec(function(err, games) {
-        if (err) {
-            console.error(err);
-            return cb(err);
-        }
-
-        cb(null, games);
-    });
+    // options = options || { };
+    // var Game = mongoose.model('Game'),
+    //     query = Game.find({ status: { $in: [NOT_STARTED, STOPPED] } })
+    //                 .where('this.players.length < this.maxPlayers');
+    //
+    // query.exec(function(err, games) {
+    //     if (err) {
+    //         console.error(err);
+    //         return cb(err);
+    //     }
+    //
+    //     cb(null, games);
+    // });
 };
 
 GameCore.prototype.create = function(options, cb) {
     options = options || { };
-    var newGame = mongoose.model('Game')({
+    var newGame = db.models.Game.build({
         variant: options.variant,
         name: options.name,
         description: options.description,
@@ -57,8 +57,7 @@ GameCore.prototype.create = function(options, cb) {
         retreatClock: (options.retreat.days * 24) + options.retreat.hours + (options.retreat.minutes / 60),
         adjustClock: (options.adjust.days * 24) + options.adjust.hours + (options.adjust.minutes / 60),
         minimumScoreToJoin: options.minimumScoreToJoin,
-        gm_id: options.gmID,
-        players: [],
+        gmID: options.gmID,
         status: 0
     });
 
@@ -69,7 +68,7 @@ GameCore.prototype.create = function(options, cb) {
         newGame.password = '';
     }
 
-    newGame.save(function(err, data) { cb(err, data); });
+    newGame.save().nodeify(cb);
 };
 
 /**
@@ -78,34 +77,34 @@ GameCore.prototype.create = function(options, cb) {
  * @param  {Function} cb   The callback after execution.
  */
 GameCore.prototype.update = function(game, cb) {
-    game.save(function(err, data) { cb(err, data); });
+    game.update().nodeify(cb);
 };
 
 GameCore.prototype.addPlayer = function(game, player, cb) {
-    mongoose.model('Game').findOneAndUpdate(
-        { _id: game._id },
-        { $push: { 'players': player } },
-        { new: true },
-        cb
-    );
+    // mongoose.model('Game').findOneAndUpdate(
+    //     { _id: game._id },
+    //     { $push: { 'players': player } },
+    //     { new: true },
+    //     cb
+    // );
 };
 
 GameCore.prototype.setReadyFlag = function(gameID, userID, state, cb) {
-    mongoose.model('Game').findOneAndUpdate(
-        { _id: gameID, 'players.player_id': userID },
-        { $set: { 'players.$.isReady': state } },
-        { new: true },
-        cb
-    );
+    // mongoose.model('Game').findOneAndUpdate(
+    //     { _id: gameID, 'players.player_id': userID },
+    //     { $set: { 'players.$.isReady': state } },
+    //     { new: true },
+    //     cb
+    // );
 };
 
 GameCore.prototype.resetAllReadyFlags = function(game, cb) {
-    mongoose.model('Game').update(
-        { _id: game._id },
-        { $set: { 'players.isReady': false } },
-        { },
-        cb
-    );
+    // mongoose.model('Game').update(
+    //     { _id: game._id },
+    //     { $set: { 'players.isReady': false } },
+    //     { },
+    //     cb
+    // );
 };
 
 /**
@@ -115,12 +114,12 @@ GameCore.prototype.resetAllReadyFlags = function(game, cb) {
  * @param  {Function} cb       The callback.
  */
 GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
-    mongoose.model('Game').findOneAndUpdate(
-        { _id: gameID, 'players.player_id': playerID },
-        { $set: { 'players.$.disabled': true } },
-        { new: true },
-        cb
-    );
+    // mongoose.model('Game').findOneAndUpdate(
+    //     { _id: gameID, 'players.player_id': playerID },
+    //     { $set: { 'players.$.disabled': true } },
+    //     { new: true },
+    //     cb
+    // );
 };
 
 module.exports = GameCore;

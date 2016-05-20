@@ -131,16 +131,19 @@ CREATE TABLE seasons (
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE users (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    email character varying(100) NOT NULL,
-    password text NOT NULL,
-    password_salt text NOT NULL,
-    action_count integer DEFAULT 0,
-    failed_action_count integer DEFAULT 0,
-    timezone text
-);
-
+CREATE TABLE "public"."users" (
+	"id" UUid DEFAULT uuid_generate_v4() NOT NULL,
+	"email" Text,
+	"password" Text,
+	"password_salt" Text,
+	"action_count" Integer DEFAULT 0,
+	"failed_action_count" Integer DEFAULT 0,
+	"timezone" Text,
+	"temp_email" Text,
+	"updated_at" Timestamp Without Time Zone NOT NULL,
+	"created_at" Timestamp Without Time Zone,
+	PRIMARY KEY ( "id" ),
+	CONSTRAINT "users_email_key" UNIQUE( "email" ) );
 
 --
 -- Name: game_players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -268,19 +271,3 @@ ALTER TABLE ONLY season_units
 
 ALTER TABLE ONLY seasons
     ADD CONSTRAINT seasons_game_id_fkey FOREIGN KEY (game_id) REFERENCES games(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: -
---
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
-
-
---
--- PostgreSQL database dump complete
---
-

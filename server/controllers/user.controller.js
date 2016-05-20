@@ -7,7 +7,8 @@ var hashOptions = {
     },
     jwt = require('jsonwebtoken'),
     pbkdf2 = require('easy-pbkdf2')(hashOptions),
-    auth = require('../auth'),
+    passport = require('passport'),
+    LocalStrategy = require('passport-local').Strategy,
     mailer = require('../mailer/mailer'),
     async = require('async'),
     SESSION_LENGTH = 60 * 60 * 4; // Session length, in seconds.
@@ -32,7 +33,7 @@ module.exports = function() {
     // SOCKETS
     app.io.route('user', {
         login: function(req, res) {
-            auth.authenticate(req, function(err, user) {
+            authenticate(core.user, req, function(err, user) {
                 if (err) {
                     app.logger.error(err);
                     return res.status(400).json({
@@ -66,26 +67,24 @@ module.exports = function() {
 
             async.waterfall([
                 function(callback) {
-                    core.user.list({ email: email }, callback);
+                    core.user.getByEmail(email, callback);
                 },
 
-                function(users, callback) {
-                    if (users.length > 0)
-                        callback('A user with this email address already exists.');
+                function(user, callback) {
+                    if (user)
+                        callback(new Error('A user with this email address already exists.'));
                     else
                         core.user.getStubByEmail(email, callback);
                 },
 
-                function(users, callback) {
-                    var stubUser = null;
-                    if (users.length > 0) {
-                        stubUser = users[0];
-                        callback(null, stubUser);
-                    }
-                    else {
+                function(user, callback) {
+                    if (!user) {
                         core.user.create({
                             tempEmail: email
-                        }, function(err, user) { callback(err, user); });
+                        }, callback);
+                    }
+                    else {
+                        callback(null, user);
                     }
                 },
 
@@ -94,6 +93,7 @@ module.exports = function() {
                 }
             ], function(err) {
                 if (err) {
+                    app.logger.error(err);
                     return res.status(400).json({
                         error: err
                     });
@@ -101,48 +101,48 @@ module.exports = function() {
             });
         },
 
-        /*
-         * Fired after user visits validation page and clicks 'Save' button. Extends stub user object with:
-         * - password/salt
-         * - base points (0)
-         */
+        // Fired after user visits validation page and clicks 'Save' button. Extends stub user object with password/salt.
         verify: function(req, res, next) {
             var verifyToken = req.body.token,
-                salt = pbkdf2.generateSalt();
+                salt = pbkdf2.generateSalt(),
+                verifiedUser;
 
-            jwt.verify(verifyToken, app.seekrits.get('sessionSecret'), function(err, payload) {
-                if (err)
-                    console.error(err);
+            async.waterfall([
+                function(callback) {
+                    jwt.verify(verifyToken, app.seekrits.get('sessionSecret'), callback);
+                },
 
-                core.user.getStubByEmail(payload.email, function(err, users) {
-                    if (err)
-                        return new Error(err);
-                    var user = users[0];
-                    pbkdf2.secureHash(req.body.password, salt, function(err, hash, salt) {
-                        if (err)
-                            console.error(err);
+                function(payload, callback) {
+                    core.user.getStubByEmail(payload.email, callback);
+                },
 
-                        user.password = hash;
-                        user.passwordsalt = salt;
-                        user.points = 0;
-                        user.email = user.tempEmail; // promote tempEmail to email
-                        delete user.tempEmail;
+                function(user, callback) {
+                    verifiedUser = user;
+                    pbkdf2.secureHash(req.body.password, salt, callback);
+                },
 
-                        core.user.update(user, function(err, updatedUser) {
-                            var safeUser = {
-                                email: updatedUser.email,
-                                id: updatedUser._id
-                            };
+                function(hash, salt, callback) {
+                    verifiedUser.password = hash;
+                    verifiedUser.passwordSalt = salt;
+                    verifiedUser.email = verifiedUser.tempEmail; // Promote tempEmail to email.
+                    verifiedUser.tempEmail = null;
 
-                            if (!err) {
-                                return res.json({
-                                    id: updatedUser._id,
-                                    token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresIn: SESSION_LENGTH })
-                                });
-                            }
-                        });
+                    core.user.update(verifiedUser, callback);
+                }
+            ], function(err, updatedUser) {
+                if (err) {
+                    app.logger.error(err);
+                }
+                else {
+                    var safeUser = {
+                        email: updatedUser.email,
+                        id: updatedUser._id
+                    };
+                    return res.json({
+                        id: updatedUser._id,
+                        token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresIn: SESSION_LENGTH })
                     });
-                });
+                }
             });
         },
 
@@ -182,4 +182,22 @@ function sendVerifyEmail(seekrits, user, cb) {
             subject: 'Verify your email address with dipl.io'
         };
     mailer.sendOne('verify', options, cb);
+}
+
+function authenticate(userCore, req, cb) {
+    passport.use(new LocalStrategy({
+        usernameField: 'email'
+    }, function(username, password, done) {
+        userCore.getByEmail(username, password, function(err, maybeUser) {
+            if (err) return done(err);
+            if (!maybeUser) return done(null, false);
+
+            // Find user with username, then compare its hash against what was provided.
+            pbkdf2.verify(maybeUser.passwordSalt, maybeUser.password, password, function(err, isVerified) {
+                return done(err, isVerified);
+            });
+        });
+    }));
+
+    passport.authenticate('local', cb)(req);
 }

@@ -1,67 +1,58 @@
 'use strict';
 
-var db = require('./../db'),
-    _ = require('lodash');
+var db = require('./../db');
 
 function UserCore(options) {
     this.core = options.core;
 }
 
-UserCore.prototype.create = function(options, cb) {
-    db.models.User.build(options);
+UserCore.prototype.getByEmail = function(email, cb) {
+    if (!email)
+        cb(new Error('No email address was supplied.'));
 
-    user.save(cb);
-};
-
-UserCore.prototype.update = function(existingUser, cb) {
-    existingUser.save(cb);
-};
-
-UserCore.prototype.list = function(options, cb) {
-    // options = options || { };
-    // var User = mongoose.model('User'),
-    //     query = User.find(_.pick({
-    //         '_id': options.ID,
-    //         'username': options.username,
-    //         'password': options.password,
-    //         'email': options.email,
-    //         'tempEmail': options.tempEmail
-    //     }, _.identity));
-    //
-    // if (options.cache !== false)
-    //     query.cache(300);
-    //
-    // query.exec(function(err, users) {
-    //     if (err) {
-    //         console.error(err);
-    //         return cb(err);
-    //     }
-    //
-    //     cb(null, users);
-    // });
+    db.models.User.findOne({
+        where: { email: email },
+        attributes: ['passwordSalt', 'password']
+    }).nodeify(cb);
 };
 
 UserCore.prototype.getStubByEmail = function(email, cb) {
-    this.list({
-        tempEmail: email,
-        password: { '$exists': false },
-        cache: false
-    }, cb);
+    if (!email)
+        cb(new Error('No email address was supplied.'));
+
+    db.models.User.findOne({
+        where: {
+            $and: {
+                tempEmail: email,
+                password: null
+            }
+        }
+    }).nodeify(cb);
+};
+
+UserCore.prototype.create = function(options, cb) {
+    var user = db.models.User.build(options);
+
+    user.save().nodeify(cb);
+};
+
+UserCore.prototype.update = function(existingUser, cb) {
+    existingUser.update().nodeify(cb);
 };
 
 UserCore.prototype.adjustActionCount = function(playerID, penalty, cb) {
     if (penalty === 0)
         cb(null);
 
-    mongoose.model('User').findOneAndUpdate(
-        { _id: playerID },
-        { $inc: {
-            actionCount: penalty,
-            lateActionCount: penalty
-        } },
-        { },
-        cb
-    );
+    // mongoose.model('User').findOneAndUpdate(
+    //     { _id: playerID },
+    //     { $inc: {
+    //         actionCount: penalty,
+    //         lateActionCount: penalty
+    //     } },
+    //     { },
+    //     cb
+    // );
 };
 
 module.exports = UserCore;
