@@ -33,11 +33,11 @@ UserCore.prototype.getStubByEmail = function(email, cb) {
 UserCore.prototype.create = function(options, cb) {
     var user = db.models.User.build(options);
 
-    user.save().nodeify(cb);
+    this.save(user, cb);
 };
 
-UserCore.prototype.update = function(existingUser, cb) {
-    existingUser.update().nodeify(cb);
+UserCore.prototype.save = function(user, cb) {
+    user.save().nodeify(cb);
 };
 
 UserCore.prototype.adjustActionCount = function(playerID, penalty, cb) {

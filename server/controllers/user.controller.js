@@ -127,11 +127,14 @@ module.exports = function() {
                     verifiedUser.email = verifiedUser.tempEmail; // Promote tempEmail to email.
                     verifiedUser.tempEmail = null;
 
-                    core.user.update(verifiedUser, callback);
+                    core.user.save(verifiedUser, callback);
                 }
             ], function(err, updatedUser) {
                 if (err) {
                     app.logger.error(err);
+                    return res.status(400).json({
+                        error: err
+                    });
                 }
                 else {
                     var safeUser = {

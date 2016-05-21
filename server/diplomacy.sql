@@ -51,14 +51,15 @@ SET default_with_oids = false;
 -- Name: game_players; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE game_players (
-    user_id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    game_id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    power character(2) NOT NULL,
-    is_ready boolean DEFAULT false,
-    is_disabled boolean DEFAULT false
-);
-
+CREATE TABLE "public"."game_players" (
+	"user_id" UUid DEFAULT uuid_generate_v4() NOT NULL,
+	"game_id" UUid DEFAULT uuid_generate_v4() NOT NULL,
+	"power" Character Varying( 2 ) NOT NULL,
+	"is_ready" Boolean DEFAULT false,
+	"is_disabled" Boolean DEFAULT false,
+	"created_at" Timestamp Without Time Zone NOT NULL,
+	"updated_at" Timestamp Without Time Zone NOT NULL,
+	PRIMARY KEY ( "user_id", "game_id", "power" ) );
 
 --
 -- Name: game_provinces; Type: TABLE; Schema: public; Owner: -
@@ -76,15 +77,17 @@ CREATE TABLE game_provinces (
 -- Name: games; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE games (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    gm_id uuid,
-    name text,
-    "currentSeason" text,
-    "currentYear" text,
-    variant text
-);
-
+CREATE TABLE "public"."games" (
+	"id" UUid DEFAULT uuid_generate_v4() NOT NULL,
+	"gm_id" UUid,
+	"name" Text,
+	"current_season" Text,
+	"current_year" Text,
+	"variant" Text,
+	"description" Character Varying( 2044 ) NOT NULL,
+	"created_at" Timestamp Without Time Zone NOT NULL,
+	"updated_at" Timestamp Without Time Zone NOT NULL,
+	PRIMARY KEY ( "id" ) );
 
 --
 -- Name: season_supply_centres; Type: TABLE; Schema: public; Owner: -

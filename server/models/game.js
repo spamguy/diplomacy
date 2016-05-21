@@ -1,5 +1,4 @@
-var Sequelize = require('sequelize'),
-    User = require('./user');
+var Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
     return sequelize.define('game', {
@@ -12,14 +11,7 @@ module.exports = function(sequelize) {
             type: Sequelize.TEXT,
             allowNull: false
         },
-        description: Sequelize.TEXT,
-        gmID: {
-            type: Sequelize.UUID,
-            references: {
-                model: User,
-                key: 'id'
-            }
-        }
+        description: Sequelize.TEXT
     }, {
         underscored: true
     });
