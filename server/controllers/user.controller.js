@@ -191,7 +191,7 @@ function authenticate(userCore, req, cb) {
     passport.use(new LocalStrategy({
         usernameField: 'email'
     }, function(username, password, done) {
-        userCore.getByEmail(username, password, function(err, maybeUser) {
+        userCore.getByEmail(username, function(err, maybeUser) {
             if (err) return done(err);
             if (!maybeUser) return done(null, false);
 

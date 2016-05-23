@@ -6,6 +6,10 @@ function UserCore(options) {
     this.core = options.core;
 }
 
+UserCore.prototype.get = function(id, cb) {
+    db.models.User.findById(id).nodeify(cb);
+};
+
 UserCore.prototype.getByEmail = function(email, cb) {
     if (!email)
         cb(new Error('No email address was supplied.'));

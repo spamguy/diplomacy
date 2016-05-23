@@ -60,11 +60,21 @@ module.exports = function() {
 
     app.io.route('game', {
         userlist: function(req, res) {
-            var options = { playerID: req.data.playerID };
-            core.game.list(options, function(err, games) {
-                if (err)
-                    console.error(err);
-                return res.json(games);
+            async.waterfall([
+                function(callback) {
+                    core.user.get(req.data.playerID, callback);
+                },
+
+                function(user, callback) {
+                    user.getGames().nodeify(callback);
+                }
+            ], function(err, games) {
+                if (err) {
+                    app.logger.error(err);
+                    return res.status(400).json({ error: err });
+                }
+
+                return res.json(games.toJSON());
             });
         },
 
