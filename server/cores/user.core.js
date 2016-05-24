@@ -16,7 +16,7 @@ UserCore.prototype.getByEmail = function(email, cb) {
 
     db.models.User.findOne({
         where: { email: email },
-        attributes: ['passwordSalt', 'password']
+        attributes: ['id', 'email', 'passwordSalt', 'password']
     }).nodeify(cb);
 };
 

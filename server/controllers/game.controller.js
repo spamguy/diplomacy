@@ -74,15 +74,17 @@ module.exports = function() {
                     return res.status(400).json({ error: err });
                 }
 
-                return res.json(games.toJSON());
+                return res.json(games);
             });
         },
 
         usergmlist: function(req, res) {
-            var options = { gmID: req.data.gmID };
-            core.game.list(options, function(err, games) {
-                if (err)
-                    console.error(err);
+            core.game.findByGM(req.data.gmID, function(err, games) {
+                if (err) {
+                    app.logger.error(err);
+                    return res.status(400).json({ error: err });
+                }
+
                 return res.json(games);
             });
         },
@@ -224,41 +226,25 @@ module.exports = function() {
 
         watch: function(req, res) {
             var userID = req.socket.decoded_token.id,
-                gameID = req.data ? req.data.gameID : null,
                 watchedGames = 0;
 
             // Get list of subscribed games and join them as socket.io rooms.
-            async.parallel([
+            async.waterfall([
                 function(callback) {
-                    core.game.list({
-                        gameID: gameID,
-                        playerID: userID
-                    }, callback);
+                    core.user.get(userID, callback);
                 },
-
-                function(callback) {
-                    if (userID) {
-                        core.game.list({
-                            gmID: userID
-                        }, callback);
-                    }
-                    else {
-                        // No need to filter by user.
-                        callback(null, []);
-                    }
-                }
-            ], function(err, gamesArray) {
+            ], function(err, games) {
                 if (err)
-                    console.error(err);
+                    app.logger.error(err);
 
-                _.forEach(gamesArray, function(games) {
+                _.forEach(games, function(games) {
                     for (var g = 0; g < games.length; g++) {
                         req.socket.join(games[g]._id);
                         watchedGames++;
                     }
                 });
 
-                console.log(userID + ' now watching ' + watchedGames + ' room(s)');
+                app.logger.info(userID + ' now watching ' + watchedGames + ' room(s)');
             });
         },
 
@@ -269,10 +255,10 @@ module.exports = function() {
 
             core.game.create(game, function(err, savedGame) {
                 if (err) {
-                    console.error(err);
+                    app.logger.error(err);
                 }
                 else {
-                    console.log(req.socket.decoded_token.id + ' joined game room ' + savedGame._id);
+                    app.logger.info(req.socket.decoded_token.id + ' joined game room ' + savedGame._id);
                     req.socket.join(savedGame._id);
                     app.io.in(savedGame._id).emit('game:create:success', { gamename: savedGame.name });
                 }
@@ -280,35 +266,33 @@ module.exports = function() {
         },
 
         start: function(req, res) {
-            var nextSeasonDeadline = moment();
-            console.log('Starting game ' + req.data.gameID);
+            var nextSeasonDeadline = moment(),
+                game,
+                variant,
+                season;
+            app.logger.info('Starting game ' + req.data.gameID);
 
             async.waterfall([
                 // Fetches the game to start.
                 function(callback) {
-                    core.game.list({
-                        gameID: req.data.gameID
-                    }, function(err, games) { callback(err, games[0]); });
+                    core.game.get(req.data.gameID, callback);
                 },
 
                 // Fetches the game's most recent season, if there is one.
-                function(game, callback) {
-                    core.season.list({
-                        gameID: game._id
-                    }, function(err, seasons) {
-                        if (err)
-                            console.error(err);
-                        callback(null, game, seasons);
-                    });
+                function(_game, callback) {
+                    game = _game;
+                    core.season.getCurrentForGame(game.id, callback);
                 },
 
                 // Creates first season if previous step pulled up nothing.
-                function(game, seasons, callback) {
+                function(_season, callback) {
                     var variant = core.variant.get(game.variant),
                         clock,
                         defaultRegions,
                         firstSeason;
-                    if (!seasons || !seasons.length) {
+
+                    season = _season;
+                    if (!season) {
                         // Init regions.
                         defaultRegions = initRegions(variant);
 
@@ -316,7 +300,7 @@ module.exports = function() {
                         firstSeason = {
                             year: variant.startYear,
                             season: variant.seasons[0],
-                            game_id: game._id,
+                            game_id: game.id,
                             regions: defaultRegions
                         };
                         clock = game.getClockFromSeason(firstSeason.season);
@@ -327,16 +311,16 @@ module.exports = function() {
                         game.season = variant.seasons[0];
                         game.status = 1;
 
-                        core.season.create(firstSeason, function(err, newSeason) { callback(err, variant, game, newSeason); });
+                        core.season.create(firstSeason, callback);
                     }
                     else {
                         // Skip to next function.
-                        callback(null, variant, game, seasons[0]);
+                        callback(null);
                     }
                 },
 
                 // Assign powers to players.
-                function(variant, game, season, callback) {
+                function(callback) {
                     // TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
                     var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
                         shuffledSetIndex = 0,
@@ -347,7 +331,7 @@ module.exports = function() {
                         player = game.players[p];
 
                         player.power = shuffledSetOfPowers[shuffledSetIndex];
-                        console.log('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
+                        app.logger.info('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
                         shuffledSetIndex++;
                     }
 

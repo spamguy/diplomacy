@@ -50,11 +50,11 @@ module.exports = function() {
 
                 var safeUser = {
                     email: user.email,
-                    id: user._id
+                    id: user.id
                 };
 
                 return res.json({
-                    id: user._id,
+                    id: user.id,
                     email: user.email,
                     token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresIn: SESSION_LENGTH })
                 });
@@ -149,22 +149,16 @@ module.exports = function() {
             });
         },
 
-        list: function(req, res) {
-            var options = { ID: req.data.ID };
-            core.user.list(options, function(err, users) {
-                if (err)
-                    console.error(err);
-
-                var safeUsers = [],
-                    u;
-                for (u = 0; u < users.length; u++) {
-                    safeUsers.push({
-                        '_id': users[u]._id,
-                        'email': users[u].email,
-                        'points': users[u].points
+        get: function(req, res) {
+            core.user.get(req.data.ID, function(err, user) {
+                if (err) {
+                    app.logger.error(err);
+                    return res.status(400).json({
+                        error: err
                     });
                 }
-                return res.json(safeUsers);
+
+                return res.json(user.toJSON());
             });
         }
     });
@@ -193,11 +187,14 @@ function authenticate(userCore, req, cb) {
     }, function(username, password, done) {
         userCore.getByEmail(username, function(err, maybeUser) {
             if (err) return done(err);
-            if (!maybeUser) return done(null, false);
+            if (!maybeUser) return done(null, null);
 
             // Find user with username, then compare its hash against what was provided.
             pbkdf2.verify(maybeUser.passwordSalt, maybeUser.password, password, function(err, isVerified) {
-                return done(err, isVerified);
+                if (!isVerified)
+                    return done(err, null);
+                else
+                    return done(err, maybeUser);
             });
         });
     }));

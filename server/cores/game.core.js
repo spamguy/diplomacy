@@ -9,25 +9,18 @@ function GameCore(options) {
     this.core = options.core;
 }
 
-// GameCore.prototype.list = function(options, cb) {
-//     options = options || { };
-//     var Game = mongoose.model('Game'),
-//         query = Game.find(_.pick({
-//             '_id': options.gameID,
-//             'gm_id': options.gmID,
-//             'players.player_id': options.playerID,
-//             'status': options.status
-//         }, _.identity));
-//
-//     query.exec(function(err, games) {
-//         if (err) {
-//             console.error(err);
-//             return cb(err);
-//         }
-//
-//         cb(null, games);
-//     });
-// };
+GameCore.prototype.get = function(id, cb) {
+    db.models.Game.findOne({
+        where: { id: id },
+        include: [{ model: db.models.User, as: 'Players' }]
+    }).nodeify(cb);
+};
+
+GameCore.prototype.findByGM = function(id, cb) {
+    db.models.Game.findAll({
+        where: { gm_id: id }
+    }).nodeify(cb);
+};
 
 GameCore.prototype.listOpen = function(options, cb) {
     // options = options || { };

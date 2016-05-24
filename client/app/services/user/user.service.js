@@ -34,7 +34,7 @@ function(localStorageService, socketService, $q) {
 
         getUser: function(userID) {
             return $q(function(resolve) {
-                socketService.socket.emit('user:list', {
+                socketService.socket.emit('user:get', {
                     ID: userID
                 }, function(users) {
                     resolve(users[0]);
