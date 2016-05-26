@@ -60,15 +60,7 @@ module.exports = function() {
 
     app.io.route('game', {
         userlist: function(req, res) {
-            async.waterfall([
-                function(callback) {
-                    core.user.get(req.data.playerID, callback);
-                },
-
-                function(user, callback) {
-                    user.getGames().nodeify(callback);
-                }
-            ], function(err, games) {
+            core.game.findByPlayer(req.data.playerID, function(err, games) {
                 if (err) {
                     app.logger.error(err);
                     return res.status(400).json({ error: err });
@@ -230,16 +222,20 @@ module.exports = function() {
 
             // Get list of subscribed games and join them as socket.io rooms.
             async.waterfall([
+                // function(callback) {
+                //     core.user.get(userID, callback);
+                // },
+
                 function(callback) {
-                    core.user.get(userID, callback);
-                },
+                    core.game.findByPlayer(userID, callback);
+                }
             ], function(err, games) {
                 if (err)
                     app.logger.error(err);
 
                 _.forEach(games, function(games) {
                     for (var g = 0; g < games.length; g++) {
-                        req.socket.join(games[g]._id);
+                        req.socket.join(games[g].id);
                         watchedGames++;
                     }
                 });
@@ -253,14 +249,14 @@ module.exports = function() {
             if (!game)
                 throw new Error('No game data found.');
 
-            core.game.create(game, function(err, savedGame) {
+            core.game.create(req.socket.decoded_token.id, game, function(err, savedGame) {
                 if (err) {
                     app.logger.error(err);
                 }
                 else {
-                    app.logger.info(req.socket.decoded_token.id + ' joined game room ' + savedGame._id);
-                    req.socket.join(savedGame._id);
-                    app.io.in(savedGame._id).emit('game:create:success', { gamename: savedGame.name });
+                    app.logger.info(req.socket.decoded_token.id + ' joined game room ' + savedGame.id);
+                    req.socket.join(savedGame.id);
+                    app.io.in(savedGame.id).emit('game:create:success', { gamename: savedGame.name });
                 }
             });
         },
@@ -331,7 +327,7 @@ module.exports = function() {
                         player = game.players[p];
 
                         player.power = shuffledSetOfPowers[shuffledSetIndex];
-                        app.logger.info('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game._id);
+                        app.logger.info('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game.id);
                         shuffledSetIndex++;
                     }
 
@@ -341,7 +337,7 @@ module.exports = function() {
                 // Schedule adjudication and send out emails.
                 function(variant, game, season, callback) {
                     var job = app.queue.create('adjudicate', {
-                        seasonID: season._id
+                        seasonID: season.id
                     });
                     job.delay(nextSeasonDeadline.toDate())
                         .attempts(1000) // TODO: Obviously, do not constantly retry in production.
@@ -354,7 +350,7 @@ module.exports = function() {
                     async.each(game.players, function(player, err) {
                         var emailOptions = {
                             gameName: game.name,
-                            gameURL: path.join(app.seekrits.get('domain'), 'games', game._id.toString()),
+                            gameURL: path.join(app.seekrits.get('domain'), 'games', game.id.toString()),
                             subject: '[' + game.name + '] The game is starting!',
                             deadline: nextSeasonDeadline.format('dddd, MMMM Do [at] h:mm a'),
                             season: variant.seasons[season.season - 1],

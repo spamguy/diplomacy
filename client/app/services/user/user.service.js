@@ -36,8 +36,8 @@ function(localStorageService, socketService, $q) {
             return $q(function(resolve) {
                 socketService.socket.emit('user:get', {
                     ID: userID
-                }, function(users) {
-                    resolve(users[0]);
+                }, function(user) {
+                    resolve(user);
                 });
             });
         }

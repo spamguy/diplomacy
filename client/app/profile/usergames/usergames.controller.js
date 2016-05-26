@@ -30,9 +30,9 @@ angular.module('profile')
          *     3) Players see their own orders in current seasons.
          *     4) GMs see everything in current seasons.
         if (theGame.isAdmin)
-            $scope.moves[theGame._id] = gameService.getMoveData(theGame._id);//.then(movesToScopeCallback);
+            $scope.moves[theGame.id] = gameService.getMoveData(theGame.id);//.then(movesToScopeCallback);
         else
-            $scope.moves[theGame._id] = gameService.getMoveDataForCurrentUser(theGame._id, theGame.year, theGame.season);//.then(movesToScopeCallback);
+            $scope.moves[theGame.id] = gameService.getMoveDataForCurrentUser(theGame.id, theGame.year, theGame.season);//.then(movesToScopeCallback);
             */
     }
 

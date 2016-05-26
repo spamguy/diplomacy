@@ -12,13 +12,34 @@ function GameCore(options) {
 GameCore.prototype.get = function(id, cb) {
     db.models.Game.findOne({
         where: { id: id },
-        include: [{ model: db.models.User, as: 'Players' }]
+        include: [{
+            model: db.models.User,
+            as: 'players'
+        }, {
+            model: db.models.Season,
+            as: 'seasons'
+        }]
     }).nodeify(cb);
 };
 
 GameCore.prototype.findByGM = function(id, cb) {
     db.models.Game.findAll({
         where: { gm_id: id }
+    }).nodeify(cb);
+};
+
+GameCore.prototype.findByPlayer = function(id, cb) {
+    db.models.Game.findAll({
+        include: [{
+            model: db.models.User,
+            as: 'players',
+            through: {
+                where: {
+                    user_id: id
+                }
+            },
+            required: true
+        }]
     }).nodeify(cb);
 };
 
@@ -38,8 +59,7 @@ GameCore.prototype.listOpen = function(options, cb) {
     // });
 };
 
-GameCore.prototype.create = function(options, cb) {
-    options = options || { };
+GameCore.prototype.create = function(gmID, options, cb) {
     var newGame = db.models.Game.build({
         variant: options.variant,
         name: options.name,
@@ -50,7 +70,7 @@ GameCore.prototype.create = function(options, cb) {
         retreatClock: (options.retreat.days * 24) + options.retreat.hours + (options.retreat.minutes / 60),
         adjustClock: (options.adjust.days * 24) + options.adjust.hours + (options.adjust.minutes / 60),
         minimumScoreToJoin: options.minimumScoreToJoin,
-        gmID: options.gmID,
+        gm_id: gmID,
         status: 0
     });
 
@@ -61,7 +81,13 @@ GameCore.prototype.create = function(options, cb) {
         newGame.password = '';
     }
 
-    newGame.save().nodeify(cb);
+    // Get user to be GM.
+    this.core.user.get(gmID, function(err, user) {
+        if (err)
+            cb(err, null);
+
+        newGame.save().nodeify(cb);
+    });
 };
 
 /**
@@ -75,7 +101,7 @@ GameCore.prototype.update = function(game, cb) {
 
 GameCore.prototype.addPlayer = function(game, player, cb) {
     // mongoose.model('Game').findOneAndUpdate(
-    //     { _id: game._id },
+    //     { _id: game.id },
     //     { $push: { 'players': player } },
     //     { new: true },
     //     cb
@@ -93,7 +119,7 @@ GameCore.prototype.setReadyFlag = function(gameID, userID, state, cb) {
 
 GameCore.prototype.resetAllReadyFlags = function(game, cb) {
     // mongoose.model('Game').update(
-    //     { _id: game._id },
+    //     { _id: game.id },
     //     { $set: { 'players.isReady': false } },
     //     { },
     //     cb

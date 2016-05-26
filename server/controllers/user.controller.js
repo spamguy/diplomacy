@@ -139,10 +139,10 @@ module.exports = function() {
                 else {
                     var safeUser = {
                         email: updatedUser.email,
-                        id: updatedUser._id
+                        id: updatedUser.id
                     };
                     return res.json({
-                        id: updatedUser._id,
+                        id: updatedUser.id,
                         token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresIn: SESSION_LENGTH })
                     });
                 }
@@ -170,7 +170,7 @@ function sendVerifyEmail(seekrits, user, cb) {
     console.log('Sending verify email to ' + user.tempEmail);
     var safeUser = {
             email: user.tempEmail,
-            id: user._id
+            id: user.id
         },
         options = {
             email: user.tempEmail,

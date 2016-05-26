@@ -27,7 +27,7 @@ angular.module('games')
             visibility: 'public',
             press: 'white',
             minimumScoreToJoin: 0,
-            gmID: $scope.currentUser._id,
+            gmID: $scope.currentUser.id,
 
             save: function() {
                 gameService.getVariant($scope.game.variant).then(function(variant) {
@@ -41,8 +41,9 @@ angular.module('games')
 
     $scope.variants = variants;
 
-    $scope.minimumPointsToGM = 0;
+    $scope.minimumDedicationToGM = 0;
+    $scope.dedication = (($scope.currentUser.actionCount - $scope.currentUser.failedActionCount) / $scope.currentUser.actionCount) * 100;
     $scope.hasDecentScore = function() {
-        return $scope.currentUser.points >= $scope.minimumPointsToGM;
+        return $scope.dedication >= $scope.minimumDedicationToGM;
     };
 }]);

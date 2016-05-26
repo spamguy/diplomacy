@@ -22,7 +22,7 @@ module.exports = function(sequelize) {
         },
         actionCount: {
             type: Sequelize.INTEGER,
-            defaultValue: 0,
+            defaultValue: 1,
             field: 'action_count'
         },
         failedActionCount: {
@@ -31,8 +31,6 @@ module.exports = function(sequelize) {
             field: 'failed_action_count'
         }
     }, {
-        underscored: true,
-        instanceMethods: {
-        }
+        underscored: true
     });
 };

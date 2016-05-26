@@ -57,7 +57,7 @@ module.exports = {
                 async.each(game.players, function(player, err) {
                     var emailOptions = {
                         gameName: game.name,
-                        gameURL: path.join(seekrits.get('domain'), 'games', game._id.toString()),
+                        gameURL: path.join(seekrits.get('domain'), 'games', game.id.toString()),
                         subject: '[' + game.name + '] ' + oldSeason.season + ' ' + oldSeason.year + ' has been adjudicated',
                         deadline: oldSeason.deadline,
                         season: oldSeason.season,
@@ -84,7 +84,7 @@ module.exports = {
             if (err)
                 done(err);
             return done(null, {
-                gameID: game._id,
+                gameID: game.id,
                 gameName: game.name,
                 year: oldSeason.year,
                 season: oldSeason.season

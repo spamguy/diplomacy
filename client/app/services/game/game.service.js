@@ -78,7 +78,7 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         getMoveData: function(gameID, year, season) {
-            var options = gameID ? { gameID: gameID } : { };
+            var options = { gameID: gameID };
 
             // Year and season must both be provided to be valid.
             if (year && season) {
@@ -87,8 +87,8 @@ angular.module('gameService', ['userService', 'socketService'])
             }
 
             return $q(function(resolve) {
-                socketService.socket.emit('season:list', options, function(seasons) {
-                    resolve(seasons[0]);
+                socketService.socket.emit('season:get', options, function(seasons) {
+                    resolve(seasons);
                 });
             });
         },
@@ -105,7 +105,7 @@ angular.module('gameService', ['userService', 'socketService'])
          */
         joinGame: function(game, options, callback) {
             options = options || { };
-            options.gameID = game._id;
+            options.gameID = game.id;
             socketService.socket.emit('game:join', options, callback);
         },
 
@@ -118,7 +118,7 @@ angular.module('gameService', ['userService', 'socketService'])
          */
         publishCommand: function(action, command, season, callback) {
             socketService.socket.emit('season:setorder', {
-                seasonID: season._id,
+                seasonID: season.id,
                 command: command,
                 action: action
             }, callback);
@@ -126,14 +126,14 @@ angular.module('gameService', ['userService', 'socketService'])
 
         setReadyState: function(game, state) {
             socketService.socket.emit('season:toggleready', {
-                gameID: game._id,
+                gameID: game.id,
                 isReady: state
             });
         },
 
         adjudicateSeason: function(season) {
             socketService.socket.emit('season:adjudicate', {
-                seasonID: season._id,
+                seasonID: season.id,
                 gameID: season.game_id
             });
         },
@@ -144,7 +144,7 @@ angular.module('gameService', ['userService', 'socketService'])
          */
         endGame: function(game) {
             socketService.socket.emit('game:end', {
-                gameID: game._id
+                gameID: game.id
             });
         },
 
@@ -157,7 +157,7 @@ angular.module('gameService', ['userService', 'socketService'])
          */
         removePlayer: function(playerID, game, punish, callback) {
             socketService.socket.emit('game:leave', {
-                gameID: game._id,
+                gameID: game.id,
                 playerID: playerID,
                 punish: punish
             }, callback);

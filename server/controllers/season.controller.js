@@ -8,60 +8,53 @@ module.exports = function() {
         core = this.core;
 
     app.io.route('season', {
-        list: function(req, res) {
-            var options = req.data,
-                userID = req.socket.decoded_token.id;
-            options.lean = true;
+        get: function(req, res) {
+            var gameID = req.data.gameID,
+                year = req.data.year,
+                seasonIndex = req.data.seasonIndex,
+                userID = req.socket.decoded_token.id,
+                game;
 
             async.waterfall([
-                // Fetch the game.
                 function(callback) {
-                    core.game.list({ gameID: options.gameID }, callback);
+                    core.game.get(gameID, callback);
                 },
 
-                // Fetch the matching seasons.
-                function(games, callback) {
-                    core.season.list(options, function(err, seasons) {
-                        callback(err, games[0], seasons);
-                    });
-                }],
-
-                // Strip out movements the user shouldn't see.
-                function(err, game, seasons) {
-                    if (err)
-                        app.logger.error(err);
-
-                    var SeasonSchema = require('mongoose').model('Season'),
-                        r,
-                        s,
-                        season,
-                        region,
-                        isComplete = game.isComplete,
-                        isGM = game.gm_id.toString() === userID,
-                        currentSeason = game.season,
-                        currentYear = game.year,
-                        playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
-                        powerShortName;
-
-                    if (playerPower)
-                        powerShortName = playerPower.power;
-
-                    for (s = 0; s < seasons.length; s++) {
-                        season = seasons[s];
-
-                        // Incomplete games and active seasons are sanitised for players' protection.
-                        if (!isGM && !isComplete && season.year === currentYear && season.season === currentSeason) {
-                            for (r = 0; r < season.regions.length; r++) {
-                                region = SeasonSchema.getUnitOwnerInRegion(season.regions[r]);
-                                if (region && region.unit.power !== powerShortName)
-                                    delete region.unit.order;
-                            }
-                        }
-                    }
-
-                    return res.json(seasons);
+                function(_game, callback) {
+                    game = _game;
+                    core.season.get(game.id, seasonIndex, year, callback);
                 }
-            );
+            ], function(err, season) {
+                if (err)
+                    app.logger.error(err);
+
+                if (!season)
+                    return res.json(null);
+
+                var p,
+                    province,
+                    currentSeason = game.currentSeason,
+                    currentYear = game.currentYear,
+                    isComplete = game.isComplete,
+                    isGM = game.gm_id === userID,
+                    isActive = !isGM && !isComplete && season.year === currentYear && season.season === currentSeason,
+                    playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
+                    powerShortName;
+
+                if (playerPower)
+                    powerShortName = playerPower.power;
+
+                // Incomplete games and active seasons are sanitised for players' protection.
+                if (isActive) {
+                    for (p = 0; p < season.provinces.length; p++) {
+                        province = province[p];
+                        if (province.unitPower !== powerShortName)
+                            _.omit(province, ['unitTarget', 'unitSubTarget', 'unitAction']);
+                    }
+                }
+
+                return res.json(season.toJSON());
+            });
         },
 
         create: function(req, res) {

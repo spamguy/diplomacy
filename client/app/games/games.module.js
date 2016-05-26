@@ -65,7 +65,7 @@ angular.module('games', [
                 return gameService.getGame($stateParams.id);
             }],
             season: ['userService', 'gameService', 'game', '$stateParams', function(userService, gameService, game, $stateParams) {
-                return gameService.getMoveData(game._id, $stateParams.year, $stateParams.season);
+                return gameService.getMoveData(game.id, $stateParams.year, $stateParams.season);
             }],
             svg: ['gameService', 'game', function(gameService, game) {
                 return gameService.getVariantSVG(game.variant);
