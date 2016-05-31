@@ -11,61 +11,52 @@ function GameCore(options) {
 
 GameCore.prototype.get = function(id, cb) {
     db.models.Game.findOne({
-        where: { id: id }/*,
+        where: { id: id },
         include: [{
-            model: db.models.GamePlayer,
-            as: 'players',
-            include: [ db.models.User ]
+            model: db.models.User,
+            as: 'players'
         }, {
             model: db.models.Phase,
             as: 'currentPhase'
-        }]*/
+        }]
     }).nodeify(cb);
 };
 
 GameCore.prototype.findByGM = function(id, cb) {
     db.models.Game.findAll({
-        where: { gm_id: id }/*,
+        where: { gm_id: id },
         include: [{
-            model: db.models.GamePlayer,
-            as: 'players',
-            include: [ db.models.User ]
+            model: db.models.User,
+            as: 'players'
         }, {
             model: db.models.Phase,
             as: 'currentPhase'
-        }]*/
+        }]
     }).nodeify(cb);
 };
 
 GameCore.prototype.findByPlayer = function(id, cb) {
     db.models.Game.findAll({
-        /* include: [{
-            model: db.models.GamePlayer,
+        include: [{
+            model: db.models.User,
             as: 'players',
             through: {
                 where: {
                     user_id: id
                 }
-            },
-            required: true
-        }]*/
+            }
+        }]
     }).nodeify(cb);
 };
 
-GameCore.prototype.listOpen = function(options, cb) {
-    // options = options || { };
-    // var Game = mongoose.model('Game'),
-    //     query = Game.find({ status: { $in: [NOT_STARTED, STOPPED] } })
-    //                 .where('this.players.length < this.maxPlayers');
-    //
-    // query.exec(function(err, games) {
-    //     if (err) {
-    //         console.error(err);
-    //         return cb(err);
-    //     }
-    //
-    //     cb(null, games);
-    // });
+GameCore.prototype.listOpen = function(cb) {
+    db.models.Game.findAll({
+        where: { status: 0 },
+        include: [{
+            model: db.models.User,
+            as: 'players'
+        }]
+    }).nodeify(cb);
 };
 
 GameCore.prototype.create = function(gmID, options, cb) {

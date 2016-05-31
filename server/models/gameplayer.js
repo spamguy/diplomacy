@@ -16,7 +16,10 @@ module.exports = function(sequelize) {
             type: Sequelize.TEXT,
             field: 'power_preferences'
         },
-        power: Sequelize.STRING(2)
+        power: {
+            type: Sequelize.STRING(2),
+            defaultValue: '?'
+        }
     }, {
         underscored: true
     });

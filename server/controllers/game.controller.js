@@ -89,7 +89,7 @@ module.exports = function() {
         },
 
         listopen: function(req, res) {
-            core.game.listOpen({ }, function(err, games) {
+            core.game.listOpen(function(err, games) {
                 if (err)
                     console.error(err);
                 return res.json(games);
@@ -101,7 +101,8 @@ module.exports = function() {
                 playerID = req.socket.decoded_token.id,
                 // prefs = req.data.prefs,
                 game,
-                user;
+                user,
+                optionses = [];
 
             async.waterfall([
                 function(callback) {
@@ -113,7 +114,8 @@ module.exports = function() {
                     core.game.get(gameID, callback);
                 },
 
-                function(game, callback) {
+                function(_game, callback) {
+                    game = _game;
                     // Make sure this person is actually allowed to join.
                     if (game.minimumDedication > user.getDedication()) {
                         req.socket.emit('game:join:error', {
@@ -130,8 +132,9 @@ module.exports = function() {
                     game.addPlayer(user).nodeify(callback);
                 },
 
-                function(_game, callback) {
-                    game = _game;
+                function(result, callback) {
+                    var p,
+                        gameData = { gamename: game.name };
 
                     // Subscribe to game.
                     req.socket.join(gameID);
@@ -142,23 +145,31 @@ module.exports = function() {
                         return;
                     }
 
+                    // Broadcast join to other subscribers.
+                    req.socket.emit('game:join:success', gameData);
+                    req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
+
                     // Send join alert email to other subscribers.
-                    var emailOptions = {
+                    for (p = 0; p < game.players.length; p++) {
+                        optionses.push({
                             subject: '[' + game.name + '] A new player has joined',
                             gameName: game.name,
                             personInflection: pluralize('person', game.maxPlayers - game.players.length),
                             playerCount: game.players.length,
+                            email: game.players[p].email,
                             remainingSlots: game.maxPlayers - game.players.length
-                        },
-                        gameData;
-
-                    // Broadcast join to other subscribers.
-                    gameData = { gamename: game.name };
-                    req.socket.emit('game:join:success', gameData);
-                    req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
-                    return res.json({ status: 'ok' });
+                        });
+                    }
+                    mailer.sendMany('join', optionses, callback);
                 }
-            ]);
+            ], function(err, result) {
+                if (err) {
+                    app.logger.error(err);
+                    return res.status(400).json({ error: err });
+                }
+
+                return res.json('ok');
+            });
         },
 
         leave: function(req, res) {
