@@ -24,7 +24,7 @@
     "angular-socket-io": "~0.7.0",
     "angular-ui-router": "~0.2.13",
     "d3": "3.5.12",
-    "humanize-duration": "3.7.1",
+    "humanize-duration": "3.8.0",
     "lodash": "~3.10.1",
     "moment": "~2.11.1",
     "socket.io-client": "1.4.4",
@@ -38,6 +38,6 @@
   },
   "resolutions": {
     "angular": "~1.5.5",
-    "humanize-duration": "^3.7.1"
+    "humanize-duration": "^3.8.0"
   }
 }

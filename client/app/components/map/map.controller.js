@@ -22,7 +22,7 @@ angular.module('map.component')
         holds = [];
 
     vm.paths = { };
-    vm.service = new MapService(this.variant, this.game, this.season);
+    vm.service = new MapService(this.variant, this.game, this.phase);
     vm.getFormattedDeadline = gameService.getFormattedDeadline;
 
     vm.onOrderSave = function(response, r, action, source, target) {
@@ -33,7 +33,7 @@ angular.module('map.component')
         }
     };
 
-    // Fill out region paths only if the season is active.
+    // Fill out region paths only if the phase is active.
     if (!vm.readonly) {
         for (p = 0; p < paths.length; p++)
             vm.paths[paths[p].id.toUpperCase()] = paths[p].getAttribute('d');
@@ -42,7 +42,7 @@ angular.module('map.component')
     vm.imagePath = 'variants/' + normalisedVariantName + '/' + normalisedVariantName + '.png';
     vm.viewBox = '0 0 ' + getSVGAttribute('width') + ' ' + getSVGAttribute('height');
 
-    if (!this.season)
+    if (!this.phase)
         return;
 
     vm.clickCount = 0;
@@ -55,7 +55,7 @@ angular.module('map.component')
     renderForceDirectedGraph();
 
     function onForceDirectedGraphTick(e, scope) {
-        var regions = vm.season.regions;
+        var regions = vm.phase.regions;
         moveLayerArrows.attr('d', function(d) {
             /*
              * Let T -> target, T' -> target of target, and S -> source.
@@ -134,7 +134,7 @@ angular.module('map.component')
     function renderForceDirectedGraph() {
         // Reset link list and regenerate holding unit list.
         links = [];
-        holds = _.filter(vm.season.regions, function(r) {
+        holds = _.filter(vm.phase.regions, function(r) {
             if (r.unit && r.unit.order) {
                 if (r.unit.order.action === 'hold')
                     return true;
@@ -143,8 +143,8 @@ angular.module('map.component')
             }
         });
 
-        for (p = 0; p < vm.season.regions.length; p++) {
-            region = vm.season.regions[p];
+        for (p = 0; p < vm.phase.regions.length; p++) {
+            region = vm.phase.regions[p];
             unitInRegion = gameService.getUnitOwnerInRegion(region);
 
             if (unitInRegion && unitInRegion.unit.order && unitInRegion.unit.order.action !== 'hold')

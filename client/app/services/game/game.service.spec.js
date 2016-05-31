@@ -74,9 +74,9 @@ describe('gameService', function() {
     });
 
     describe('getUnitOwnerInRegion()', function() {
-        var season;
+        var phase;
         beforeEach(function() {
-            season = {
+            phase = {
                 regions: [{
                     r: 'BUD',
                     unit: {
@@ -109,27 +109,27 @@ describe('gameService', function() {
         });
 
         it('finds units in occupied regions/subregions', function() {
-            for (var i = 0; i < season.regions.length; i++)
-                expect(gameService.getUnitOwnerInRegion(season.regions[i])).not.to.be.null;
+            for (var i = 0; i < phase.regions.length; i++)
+                expect(gameService.getUnitOwnerInRegion(phase.regions[i])).not.to.be.null;
         });
 
         it('returns null in unoccupied regions', function() {
-            season.regions.push({ r: 'TRI' });
-            season.regions.push({ r: 'SPA', sr: [{ r: 'NC' }, { r: 'SC' }] });
-            for (var i = 0; i < season.regions.length; i++) {
+            phase.regions.push({ r: 'TRI' });
+            phase.regions.push({ r: 'SPA', sr: [{ r: 'NC' }, { r: 'SC' }] });
+            for (var i = 0; i < phase.regions.length; i++) {
                 if (i > 3)
-                    expect(gameService.getUnitOwnerInRegion(season.regions[i])).to.be.null;
+                    expect(gameService.getUnitOwnerInRegion(phase.regions[i])).to.be.null;
             }
         });
 
         it('filters by type if supplied', function() {
-            expect(gameService.getUnitOwnerInRegion(season.regions[0], 1)).not.to.be.null;
-            expect(gameService.getUnitOwnerInRegion(season.regions[0], 2)).to.be.null;
+            expect(gameService.getUnitOwnerInRegion(phase.regions[0], 1)).not.to.be.null;
+            expect(gameService.getUnitOwnerInRegion(phase.regions[0], 2)).to.be.null;
         });
 
         it('filters by power if supplied', function() {
-            expect(gameService.getUnitOwnerInRegion(season.regions[1], null, 'A')).not.to.be.null;
-            expect(gameService.getUnitOwnerInRegion(season.regions[1], null, 'I')).to.be.null;
+            expect(gameService.getUnitOwnerInRegion(phase.regions[1], null, 'A')).not.to.be.null;
+            expect(gameService.getUnitOwnerInRegion(phase.regions[1], null, 'I')).to.be.null;
         });
     });
 });

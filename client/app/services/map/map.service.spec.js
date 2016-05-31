@@ -6,7 +6,7 @@ describe('Map directive', function() {
         service,
         variant,
         game,
-        season;
+        phase;
 
     beforeEach(function() {
         variant = {
@@ -21,7 +21,7 @@ describe('Map directive', function() {
             }
         };
         game = { };
-        season = {
+        phase = {
             regions: [{
                 r: 'WAR',
                 sc: 'R',
@@ -45,7 +45,7 @@ describe('Map directive', function() {
             MapService = _mapService_;
         });
 
-        service = new MapService(variant, game, season);
+        service = new MapService(variant, game, phase);
     });
 
     it('selects a fill colour for a supply centre based on its owner', function() {
@@ -54,8 +54,8 @@ describe('Map directive', function() {
     });
 
     it('selects a fill colour for a unit based on its owner', function() {
-        expect(service.getUnitFill(season.regions[0])).to.equal('#141414');
-        expect(service.getUnitFill(season.regions[1])).to.equal('#555555');
+        expect(service.getUnitFill(phase.regions[0])).to.equal('#141414');
+        expect(service.getUnitFill(phase.regions[1])).to.equal('#555555');
     });
 
     it('generates the URL pointing to the supply centre SVG', function() {

@@ -4,14 +4,14 @@ angular.module('map.component', ['mapService', 'timer'])
         variant: '<',
         svg: '=',
         game: '=',
-        season: '=',
+        phase: '=',
         readonly: '<',
         header: '<'
     },
     controller: 'MapController',
     // controller: ['$scope', 'mapService', function($scope, MapService) {
     //     var vm = this;
-    //     vm.service = new MapService(this.variant, this.game, this.season);
+    //     vm.service = new MapService(this.variant, this.game, this.phase);
     // }],
     templateUrl: 'app/components/map/map.tmpl.html'
 });

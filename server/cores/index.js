@@ -2,7 +2,7 @@
 
 var UserCore = require('./user.core'),
     GameCore = require('./game.core'),
-    SeasonCore = require('./season.core'),
+    PhaseCore = require('./phase.core'),
     VariantCore = require('./variant.core'),
     EventEmitter = require('events').EventEmitter;
 
@@ -17,7 +17,7 @@ function Core() {
         core: this
     });
 
-    this.season = new SeasonCore({
+    this.phase = new PhaseCore({
         core: this
     });
 

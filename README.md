@@ -15,7 +15,7 @@
 3. The project will bring together the best characteristics of previous Diplomacy implementations.
 4. The project will be fully unit-tested. (This is for my own good and reparations against many years of crimes against testability.)
 5. The project will keep the good, dedicated players in and the lame quitters out.
-6. Rapid games (< 15 minutes per season) will be possible without page refreshes.
+6. Rapid games (< 15 minutes per phase) will be possible without page refreshes.
 
 # Technology
 The application as a whole consists of three parts:

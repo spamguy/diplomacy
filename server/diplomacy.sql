@@ -14,28 +14,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: -
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
@@ -48,21 +48,25 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: game_players; Type: TABLE; Schema: public; Owner: -
+-- Name: game_players; Type: TABLE; Schema: public; Owner: woram
 --
 
-CREATE TABLE "public"."game_players" (
-	"user_id" UUid DEFAULT uuid_generate_v4() NOT NULL,
-	"game_id" UUid DEFAULT uuid_generate_v4() NOT NULL,
-	"power" Character Varying( 2 ) NOT NULL,
-	"is_ready" Boolean DEFAULT false,
-	"is_disabled" Boolean DEFAULT false,
-	"created_at" Timestamp Without Time Zone NOT NULL,
-	"updated_at" Timestamp Without Time Zone NOT NULL,
-	PRIMARY KEY ( "user_id", "game_id", "power" ) );
+CREATE TABLE game_players (
+    user_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    game_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    power character varying(2) NOT NULL,
+    is_ready boolean DEFAULT false,
+    is_disabled boolean DEFAULT false,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    power_preferences text
+);
+
+
+ALTER TABLE game_players OWNER TO woram;
 
 --
--- Name: game_provinces; Type: TABLE; Schema: public; Owner: -
+-- Name: game_provinces; Type: TABLE; Schema: public; Owner: woram
 --
 
 CREATE TABLE game_provinces (
@@ -73,83 +77,98 @@ CREATE TABLE game_provinces (
 );
 
 
---
--- Name: games; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE "public"."games" (
-	"id" UUid DEFAULT uuid_generate_v4() NOT NULL,
-	"gm_id" UUid,
-	"name" Text,
-	"current_season" Text,
-	"current_year" Text,
-	"variant" Text,
-	"description" Character Varying( 2044 ) NOT NULL,
-	"created_at" Timestamp Without Time Zone NOT NULL,
-	"updated_at" Timestamp Without Time Zone NOT NULL,
-	PRIMARY KEY ( "id" ) );
+ALTER TABLE game_provinces OWNER TO woram;
 
 --
--- Name: season_supply_centres; Type: TABLE; Schema: public; Owner: -
+-- Name: games; Type: TABLE; Schema: public; Owner: woram
 --
 
-CREATE TABLE season_supply_centres (
+CREATE TABLE games (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    game_province_id uuid,
-    season_id uuid,
-    power character(2)
+    gm_id uuid,
+    name text,
+    variant text,
+    description character varying(2044),
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    move_clock numeric(2,0) NOT NULL,
+    retreat_clock numeric(2,0) DEFAULT 24 NOT NULL,
+    adjust_clock numeric(2,0) DEFAULT 24 NOT NULL,
+    password text,
+    password_salt text,
+    status smallint DEFAULT 0 NOT NULL,
+    max_players smallint DEFAULT 0 NOT NULL,
+    minimum_dedication smallint DEFAULT 0 NOT NULL,
+    current_phase_id uuid
 );
 
 
+ALTER TABLE games OWNER TO woram;
+
 --
--- Name: season_units; Type: TABLE; Schema: public; Owner: -
+-- Name: phase_provinces; Type: TABLE; Schema: public; Owner: woram
 --
 
-CREATE TABLE season_units (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    season_id uuid NOT NULL,
-    source_id uuid NOT NULL,
-    target_id uuid,
-    action text,
-    failed boolean DEFAULT false,
-    details text
+CREATE TABLE phase_provinces (
+    phase_id uuid NOT NULL,
+    province_key character varying(2044) NOT NULL,
+    subprovince_key character varying(2044) NOT NULL,
+    supply_centre character varying(2),
+    unit_type smallint,
+    unit_owner character varying(2),
+    unit_action smallint,
+    unit_target character varying(2044),
+    is_failed boolean DEFAULT false NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    unit_subtarget character varying(2044),
+    unit_target_of_target character varying(2044),
+    unit_subtarget_of_target character varying(2044)
 );
 
 
+ALTER TABLE phase_provinces OWNER TO woram;
+
 --
--- Name: seasons; Type: TABLE; Schema: public; Owner: -
+-- Name: phases; Type: TABLE; Schema: public; Owner: woram
 --
 
-CREATE TABLE seasons (
+CREATE TABLE phases (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    year integer NOT NULL,
-    season text NOT NULL,
-    "seasonIndex" integer DEFAULT 0,
+    year smallint DEFAULT 1901 NOT NULL,
+    season text DEFAULT 'Spring Movement'::text NOT NULL,
+    season_index smallint DEFAULT 0,
     game_id uuid NOT NULL,
-    deadline date
+    deadline timestamp with time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
---
--- Name: users; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE "public"."users" (
-	"id" UUid DEFAULT uuid_generate_v4() NOT NULL,
-	"email" Text,
-	"password" Text,
-	"password_salt" Text,
-	"action_count" Integer DEFAULT 0,
-	"failed_action_count" Integer DEFAULT 0,
-	"timezone" Text,
-	"temp_email" Text,
-	"updated_at" Timestamp Without Time Zone NOT NULL,
-	"created_at" Timestamp Without Time Zone,
-	PRIMARY KEY ( "id" ),
-	CONSTRAINT "users_email_key" UNIQUE( "email" ) );
+ALTER TABLE phases OWNER TO woram;
 
 --
--- Name: game_players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users; Type: TABLE; Schema: public; Owner: woram
+--
+
+CREATE TABLE users (
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    email text,
+    password text,
+    password_salt text,
+    action_count integer DEFAULT 1,
+    failed_action_count integer DEFAULT 0,
+    timezone text,
+    temp_email text,
+    updated_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone
+);
+
+
+ALTER TABLE users OWNER TO woram;
+
+--
+-- Name: game_players_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
 --
 
 ALTER TABLE ONLY game_players
@@ -157,7 +176,7 @@ ALTER TABLE ONLY game_players
 
 
 --
--- Name: game_provinces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: game_provinces_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
 --
 
 ALTER TABLE ONLY game_provinces
@@ -165,7 +184,7 @@ ALTER TABLE ONLY game_provinces
 
 
 --
--- Name: games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: games_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
 --
 
 ALTER TABLE ONLY games
@@ -173,31 +192,23 @@ ALTER TABLE ONLY games
 
 
 --
--- Name: season_supply_centres_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: season_provinces_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
 --
 
-ALTER TABLE ONLY season_supply_centres
-    ADD CONSTRAINT season_supply_centres_pkey PRIMARY KEY (id);
-
-
---
--- Name: season_units_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY season_units
-    ADD CONSTRAINT season_units_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY phase_provinces
+    ADD CONSTRAINT season_provinces_pkey PRIMARY KEY (phase_id, province_key, subprovince_key);
 
 
 --
--- Name: seasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: seasons_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
 --
 
-ALTER TABLE ONLY seasons
+ALTER TABLE ONLY phases
     ADD CONSTRAINT seasons_pkey PRIMARY KEY (id);
 
 
 --
--- Name: users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users_email_key; Type: CONSTRAINT; Schema: public; Owner: woram
 --
 
 ALTER TABLE ONLY users
@@ -205,7 +216,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
 --
 
 ALTER TABLE ONLY users
@@ -213,7 +224,23 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: game_provinces_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: game_players_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
+--
+
+ALTER TABLE ONLY game_players
+    ADD CONSTRAINT game_players_game_id_fkey FOREIGN KEY (game_id) REFERENCES games(id) MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: game_players_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
+--
+
+ALTER TABLE ONLY game_players
+    ADD CONSTRAINT game_players_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: game_provinces_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
 --
 
 ALTER TABLE ONLY game_provinces
@@ -221,7 +248,15 @@ ALTER TABLE ONLY game_provinces
 
 
 --
--- Name: games_gm_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: games_current_phase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
+--
+
+ALTER TABLE ONLY games
+    ADD CONSTRAINT games_current_phase_id_fkey FOREIGN KEY (current_phase_id) REFERENCES phases(id) MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: games_gm_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
 --
 
 ALTER TABLE ONLY games
@@ -229,48 +264,16 @@ ALTER TABLE ONLY games
 
 
 --
--- Name: season_supply_centres_game_province_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: season_provinces_phase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
 --
 
-ALTER TABLE ONLY season_supply_centres
-    ADD CONSTRAINT season_supply_centres_game_province_id_fkey FOREIGN KEY (game_province_id) REFERENCES game_provinces(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: season_supply_centres_season_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY season_supply_centres
-    ADD CONSTRAINT season_supply_centres_season_id_fkey FOREIGN KEY (season_id) REFERENCES seasons(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY phase_provinces
+    ADD CONSTRAINT season_provinces_phase_id_fkey FOREIGN KEY (phase_id) REFERENCES phases(id) MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: season_units_season_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: seasons_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
 --
 
-ALTER TABLE ONLY season_units
-    ADD CONSTRAINT season_units_season_id_fkey FOREIGN KEY (season_id) REFERENCES seasons(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: season_units_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY season_units
-    ADD CONSTRAINT season_units_source_id_fkey FOREIGN KEY (source_id) REFERENCES game_provinces(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: season_units_target_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY season_units
-    ADD CONSTRAINT season_units_target_id_fkey FOREIGN KEY (target_id) REFERENCES game_provinces(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: seasons_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY seasons
+ALTER TABLE ONLY phases
     ADD CONSTRAINT seasons_game_id_fkey FOREIGN KEY (game_id) REFERENCES games(id) ON UPDATE CASCADE ON DELETE CASCADE;

@@ -7,7 +7,7 @@ angular.module('games')
             name: null,
             description: null,
             year: null,
-            season: null,
+            phase: null,
             variant: 'Standard',
             move: {
                 days: 1,

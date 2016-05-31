@@ -31,6 +31,11 @@ module.exports = function(sequelize) {
             field: 'failed_action_count'
         }
     }, {
-        underscored: true
+        underscored: true,
+        instanceMethods: {
+            getDedication: function() {
+                return ((this.actionCount - this.failedActionCount) / this.actionCount) * 100;
+            }
+        }
     });
 };

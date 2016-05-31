@@ -54,7 +54,7 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
             scope.showMapDialog = function($event) {
                 var useFullScreen = $mdMedia('sm') || $mdMedia('xs');
 
-                gameService.getMoveData(scope.game.id).then(function(season) {
+                gameService.getMoveData(scope.game.id).then(function(phase) {
                     gameService.getVariant(scope.game.variant).then(function(variant) {
                         gameService.getVariantSVG(scope.game.variant).then(function(svg) {
                             $mdDialog.show({
@@ -65,7 +65,7 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                                 controller: 'GameListItemMapController',
                                 clickOutsideToClose: true,
                                 locals: {
-                                    season: season,
+                                    phase: phase,
                                     variant: variant,
                                     game: scope.game,
                                     svg: svg
@@ -76,19 +76,19 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 });
             };
 
-            gameService.getMoveData(scope.game.id).then(function(season) {
+            gameService.getMoveData(scope.game.id).then(function(phase) {
                 switch (scope.game.status) {
                 case 0:
-                    scope.seasonDescription = '(waiting on ' + (scope.game.maxPlayers - scope.game.players.length) + ' more players)';
+                    scope.phaseDescription = '(waiting on ' + (scope.game.maxPlayers - scope.game.players.length) + ' more players)';
                     scope.readableTimer = humanizeDuration(scope.game.moveClock * 60 * 60 * 1000) + ' deadline';
                     break;
                 case 1:
-                    var timeUntilDeadline = new Date(season.deadline).getTime() - new Date().getTime();
-                    scope.seasonDescription = season.season + ' ' + season.year;
+                    var timeUntilDeadline = new Date(phase.deadline).getTime() - new Date().getTime();
+                    scope.phaseDescription = phase.phase + ' ' + phase.year;
                     scope.readableTimer = humanizeDuration(timeUntilDeadline, { largest: 2, round: true });
                     break;
                 case 2:
-                    scope.seasonDescription = 'Complete';
+                    scope.phaseDescription = 'Complete';
                     scope.readableTimer = 'Complete';
                     break;
                 }
@@ -96,8 +96,8 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
         }
     };
 }])
-.controller('GameListItemMapController', ['$scope', '$mdDialog', 'season', 'variant', 'game', 'svg', function($scope, $mdDialog, season, variant, game, svg) {
-    $scope.season = season;
+.controller('GameListItemMapController', ['$scope', '$mdDialog', 'phase', 'variant', 'game', 'svg', function($scope, $mdDialog, phase, variant, game, svg) {
+    $scope.phase = phase;
     $scope.variant = variant;
     $scope.game = game;
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');

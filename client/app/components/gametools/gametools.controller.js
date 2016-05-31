@@ -12,14 +12,14 @@ angular.module('gametools.component')
         adjudicateNow: function() {
             confirm = $mdDialog.confirm()
                 .title('Adjudicate')
-                .textContent('Are you sure you want to adjudicate the current season?')
+                .textContent('Are you sure you want to adjudicate the current phase?')
                 .ariaLabel('Adjudicate now?')
                 .targetEvent(event)
                 .ok('OK')
                 .cancel('Cancel');
 
             $mdDialog.show(confirm).then(function() {
-                gameService.adjudicateSeason(vm.season, function() {
+                gameService.adjudicatePhase(vm.phase, function() {
                     $state.go('profile.games');
                 });
             });

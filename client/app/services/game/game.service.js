@@ -63,8 +63,8 @@ angular.module('gameService', ['userService', 'socketService'])
 
         getGame: function(gameID) {
             return $q(function(resolve) {
-                socketService.socket.emit('game:list', { gameID: gameID }, function(games) {
-                    resolve(games[0]);
+                socketService.socket.emit('game:get', { gameID: gameID }, function(game) {
+                    resolve(game);
                 });
             });
         },
@@ -77,18 +77,18 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         },
 
-        getMoveData: function(gameID, year, season) {
+        getMoveData: function(gameID, year, phase) {
             var options = { gameID: gameID };
 
-            // Year and season must both be provided to be valid.
-            if (year && season) {
+            // Year and phase must both be provided to be valid.
+            if (year && phase) {
                 options.year = year;
-                options.season = season;
+                options.phase = phase;
             }
 
             return $q(function(resolve) {
-                socketService.socket.emit('season:get', options, function(seasons) {
-                    resolve(seasons);
+                socketService.socket.emit('phase:get', options, function(phases) {
+                    resolve(phases);
                 });
             });
         },
@@ -113,28 +113,28 @@ angular.module('gameService', ['userService', 'socketService'])
          * Updates orders for a single unit.
          * @param  {String} action  The action.
          * @param  {Object} command The unit's new command.
-         * @param  {Object} season  The season being modified.
+         * @param  {Object} phase  The phase being modified.
          * @param  {Function} callback The callback to execute after completion.
          */
-        publishCommand: function(action, command, season, callback) {
-            socketService.socket.emit('season:setorder', {
-                seasonID: season.id,
+        publishCommand: function(action, command, phase, callback) {
+            socketService.socket.emit('phase:setorder', {
+                phaseID: phase.id,
                 command: command,
                 action: action
             }, callback);
         },
 
         setReadyState: function(game, state) {
-            socketService.socket.emit('season:toggleready', {
+            socketService.socket.emit('phase:toggleready', {
                 gameID: game.id,
                 isReady: state
             });
         },
 
-        adjudicateSeason: function(season) {
-            socketService.socket.emit('season:adjudicate', {
-                seasonID: season.id,
-                gameID: season.game_id
+        adjudicatePhase: function(phase) {
+            socketService.socket.emit('phase:adjudicate', {
+                phaseID: phase.id,
+                gameID: phase.game_id
             });
         },
 
@@ -202,8 +202,8 @@ angular.module('gameService', ['userService', 'socketService'])
             return this.isGM(game) || this.isPlayer(game);
         },
 
-        getFormattedDeadline: function(season) {
-            return moment(season.deadline).valueOf();
+        getFormattedDeadline: function(phase) {
+            return moment(phase.deadline).valueOf();
         }
     };
 

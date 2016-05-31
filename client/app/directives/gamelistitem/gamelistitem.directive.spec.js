@@ -6,7 +6,7 @@ describe('Game list item directive', function() {
         compile,
         scope,
         mockService,
-        sampleSeason,
+        samplePhase,
         sampleUser,
         httpBackend,
         playerState,
@@ -24,8 +24,8 @@ describe('Game list item directive', function() {
             isGM: function() { return gmState; },
             isPlayer: function() { return playerState; }
         };
-        sampleSeason = {
-            season: 'Spring Movement',
+        samplePhase = {
+            phase: 'Spring Movement',
             year: 1901,
             deadline: moment.utc().add({ days: 1, hours: 2, minutes: 3 })
         };
@@ -33,7 +33,7 @@ describe('Game list item directive', function() {
             _id: '123',
             points: 100
         };
-        mockService.getMoveData.resolves(sampleSeason);
+        mockService.getMoveData.resolves(samplePhase);
 
         angular.mock.module('gameService', function($provide) {
             $provide.value('gameService', mockService);
@@ -90,25 +90,25 @@ describe('Game list item directive', function() {
         expect($('h2.md-subhead', el)).to.have.lengthOf(0);
     });
 
-    describe('Season description', function() {
-        it('displays the correct season and year during active games', function() {
+    describe('Phase description', function() {
+        it('displays the correct phase and year during active games', function() {
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
             scope.$digest();
-            expect($('#seasonDescription', el)).to.have.text('Spring Movement 1901');
+            expect($('#phaseDescription', el)).to.have.text('Spring Movement 1901');
         });
 
         it('displays the number of remaining needed players during new games', function() {
             scope.game.status = 0;
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
             scope.$digest();
-            expect($('#seasonDescription', el)).to.have.text('(waiting on 7 more players)');
+            expect($('#phaseDescription', el)).to.have.text('(waiting on 7 more players)');
         });
 
         it('displays a completion message if the game is over', function() {
             scope.game.status = 2;
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
             scope.$digest();
-            expect($('#seasonDescription', el)).to.have.text('Complete');
+            expect($('#phaseDescription', el)).to.have.text('Complete');
         });
     });
 
@@ -119,7 +119,7 @@ describe('Game list item directive', function() {
     });
 
     it('rounds off seconds in deadline', function() {
-        sampleSeason.deadline = moment.utc().add({ minutes: 3, seconds: 12, milliseconds: 144 });
+        samplePhase.deadline = moment.utc().add({ minutes: 3, seconds: 12, milliseconds: 144 });
         el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
         scope.$digest();
         expect(el.isolateScope().readableTimer).to.equal('3 minutes, 12 seconds');

@@ -1,8 +1,8 @@
 <div class="md-whiteframe-2dp">
-    <md-toolbar class="md-toolbar-tools" id="mapToolbar" ng-if="$ctrl.season && $ctrl.header">
+    <md-toolbar class="md-toolbar-tools" id="mapToolbar" ng-if="$ctrl.phase && $ctrl.header">
         <div layout="column" layout-align="center center">
-            <div class="md-title">{{$ctrl.season.season}} {{$ctrl.season.year}}</div>
-            <div class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.season)">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
+            <div class="md-title">{{$ctrl.phase.phase}} {{$ctrl.phase.year}}</div>
+            <div class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.phase)">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
         </div>
         <span flex></span>
         <div ng-if="!$ctrl.readonly">
@@ -37,7 +37,7 @@
         </div>
     </md-toolbar>
 
-    <div class="mapContainer" ng-class="{'notStarted': !$ctrl.season}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
+    <div class="mapContainer" ng-class="{'notStarted': !$ctrl.phase}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
         <svg width="100%" ng-attr-view_box="{{$ctrl.viewBox}}">
             <defs>
                 <marker id="move" viewBox="0 -5 10 10" markerWidth="6" markerHeight="6" orient="auto">
@@ -65,7 +65,7 @@
 
             <g class="scLayer">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                     ng-repeat="region in $ctrl.season.regions | filter: { sc: '!!' }"
+                     ng-repeat="region in $ctrl.phase.regions | filter: { sc: '!!' }"
                      xlink:href="" ng-href="{{$ctrl.service.getSCPath()}}"
                      ng-attr-transform="{{$ctrl.service.getSCTransform(region.r)}}"
                      ng-attr-fill="{{$ctrl.service.getSCFill(region.r)}}"
@@ -84,7 +84,7 @@
             </g>
 
             <g class="unitLayer">
-                <circle ng-repeat="region in $ctrl.season.regions | hasUnit:1"
+                <circle ng-repeat="region in $ctrl.phase.regions | hasUnit:1"
                         id="{{region.r}}-army"
                         r="8"
                         stroke="#000"
@@ -94,7 +94,7 @@
                         ng-attr-fill="{{$ctrl.service.getUnitFill(region)}}">
                 </circle>
 
-                <rect ng-repeat="region in $ctrl.season.regions | hasUnit:2"
+                <rect ng-repeat="region in $ctrl.phase.regions | hasUnit:2"
                       id="{{region.r}}-fleet"
                       height="8"
                       width="16"

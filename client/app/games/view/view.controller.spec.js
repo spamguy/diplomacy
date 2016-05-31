@@ -6,7 +6,7 @@ describe('Game view controller', function() {
         mockGameService,
         variant,
         game,
-        season,
+        phase,
         svg,
         createController;
 
@@ -14,7 +14,7 @@ describe('Game view controller', function() {
         variant = {
 
         };
-        season = {
+        phase = {
 
         };
         game = {
@@ -38,11 +38,11 @@ describe('Game view controller', function() {
 
         inject(function($controller, $rootScope) {
             scope = $rootScope.$new();
-            createController = function(theVariant, theGame, theSeason, theSVG) {
+            createController = function(theVariant, theGame, thePhase, theSVG) {
                 return $controller('ViewController', {
                     $scope: scope,
                     variant: theVariant,
-                    season: theSeason,
+                    phase: thePhase,
                     game: theGame,
                     svg: theSVG
                 });
@@ -52,14 +52,14 @@ describe('Game view controller', function() {
 
     describe('Read-only status', function() {
         it('is read-only for GMs', function() {
-            createController(variant, game, season, svg);
+            createController(variant, game, phase, svg);
             scope.$digest();
             expect(scope.readonly).to.be.true;
         });
 
         it('is not read-only for players', function() {
             game.gm_id = '666';
-            createController(variant, game, season, svg);
+            createController(variant, game, phase, svg);
             scope.$digest();
             expect(scope.readonly).to.be.false;
         });

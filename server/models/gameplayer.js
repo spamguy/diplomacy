@@ -12,6 +12,10 @@ module.exports = function(sequelize) {
             type: Sequelize.BOOLEAN,
             field: 'is_disabled'
         },
+        powerPreferences: {
+            type: Sequelize.TEXT,
+            field: 'power_preferences'
+        },
         power: Sequelize.STRING(2)
     }, {
         underscored: true

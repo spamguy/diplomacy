@@ -44,7 +44,7 @@ describe('Game tools component', function() {
             scope.game = {
                 players: []
             };
-            scope.season = {
+            scope.phase = {
                 regions: [{
                     r: 'BUD',
                     unit: {
@@ -79,7 +79,7 @@ describe('Game tools component', function() {
 
     it('lists all powers when viewing as a GM', function() {
         scope.game.gm_id = '12345';
-        el = compile('<sg-game-tools variant="variant" game="game" season="season" />')(scope);
+        el = compile('<sg-game-tools variant="variant" game="game" phase="phase" />')(scope);
         scope.$digest();
         expect($('div.md-subheader', el)).to.have.lengthOf(4);
     });
@@ -89,7 +89,7 @@ describe('Game tools component', function() {
             player_id: '12345',
             power: 'F'
         });
-        el = compile('<sg-game-tools variant="variant" game="game" season="season" />')(scope);
+        el = compile('<sg-game-tools variant="variant" game="game" phase="phase" />')(scope);
         scope.$digest();
         expect($('div.md-subheader', el)).to.have.lengthOf(1);
         expect($('div.md-subheader', el).html()).to.contain('France');

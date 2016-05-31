@@ -25,14 +25,14 @@ angular.module('profile')
 
         /*
          * Identify the extent of each game's move data to get, given these rules:
-         *     1) Old seasons are fully exposed: old positions, moves, resolution.
-         *     2) Current seasons expose old positions.
-         *     3) Players see their own orders in current seasons.
-         *     4) GMs see everything in current seasons.
+         *     1) Old phases are fully exposed: old positions, moves, resolution.
+         *     2) Current phases expose old positions.
+         *     3) Players see their own orders in current phases.
+         *     4) GMs see everything in current phases.
         if (theGame.isAdmin)
             $scope.moves[theGame.id] = gameService.getMoveData(theGame.id);//.then(movesToScopeCallback);
         else
-            $scope.moves[theGame.id] = gameService.getMoveDataForCurrentUser(theGame.id, theGame.year, theGame.season);//.then(movesToScopeCallback);
+            $scope.moves[theGame.id] = gameService.getMoveDataForCurrentUser(theGame.id, theGame.year, theGame.phase);//.then(movesToScopeCallback);
             */
     }
 

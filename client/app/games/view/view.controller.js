@@ -1,17 +1,17 @@
 'use strict';
 
 angular.module('games')
-.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'season', 'svg', '$mdDialog', function($scope, userService, gameService, variant, game, season, svg, $mdDialog) {
+.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'phase', 'svg', '$mdDialog', function($scope, userService, gameService, variant, game, phase, svg, $mdDialog) {
     $scope.updateRegionData = updateRegionData;
 
     $scope.variant = variant;
     $scope.game = game;
-    $scope.season = season;
+    $scope.phase = phase;
     $scope.readonly = userService.getCurrentUserID() === game.gm_id;
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
 
     // Point out games that haven't started yet.
-    if (!season && game.status === 0) {
+    if (!phase && game.status === 0) {
         $mdDialog.show(
             $mdDialog.alert()
                 .parent(angular.element(document.body))
@@ -24,7 +24,7 @@ angular.module('games')
     }
 
     function updateRegionData(r, action, source, target) {
-        var region = _.find($scope.season.regions, 'r', r),
+        var region = _.find($scope.phase.regions, 'r', r),
             unitInRegion = gameService.getUnitOwnerInRegion(region);
 
         // Update local data to reflect DB change.

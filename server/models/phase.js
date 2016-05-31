@@ -1,7 +1,7 @@
 var Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
-    return sequelize.define('season', {
+    return sequelize.define('phase', {
         id: {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV4,

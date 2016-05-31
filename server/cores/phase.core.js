@@ -9,41 +9,41 @@ var db = require('./../db'),
 // Log all the things.
 winston.transports.Console.level = 'debug';
 
-function SeasonCore(options) {
+function PhaseCore(options) {
     options = options || { };
     if (options.core)
         this.core = options.core;
 }
 
-SeasonCore.prototype.get = function(gameID, seasonIndex, year, cb) {
+PhaseCore.prototype.get = function(gameID, phaseIndex, year, cb) {
     var whereClause = {
         game_id: gameID
     };
 
-    if (seasonIndex)
-        whereClause.seasonIndex = seasonIndex;
+    if (phaseIndex)
+        whereClause.phaseIndex = phaseIndex;
     if (year)
         whereClause.year = year;
-    db.models.Season.findOne({
+    db.models.Phase.findOne({
         where: whereClause,
         order: [['created_at', 'DESC']],
-        include: [{ model: db.models.SeasonProvince, as: 'provinces' }]
+        include: [{ model: db.models.PhaseProvince, as: 'provinces' }]
     }).nodeify(cb);
 };
 
-SeasonCore.prototype.create = function(season, cb) {
-    var newSeason = db.models.Season.build(season);
+PhaseCore.prototype.create = function(t, phase, cb) {
+    var newPhase = db.models.Phase.build(phase);
 
-    newSeason.save().nodeify(cb);
+    newPhase.save({ transaction: t }).nodeify(cb);
 };
 
-SeasonCore.prototype.createFromState = function(variant, game, season, state, cb) {
-    // var SeasonSchema = mongoose.model('Season'),
-    //     indexedRegions = _.indexBy(season.toObject().regions, 'r'),
+PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) {
+    // var PhaseSchema = mongoose.model('Phase'),
+    //     indexedRegions = _.indexBy(phase.toObject().regions, 'r'),
     //     unit;
     //
     // async.waterfall([
-    //     // STEP 1: Mark up old season, keeping orders intact for posterity.
+    //     // STEP 1: Mark up old phase, keeping orders intact for posterity.
     //     function(callback) {
     //         var u,
     //             resolution,
@@ -62,13 +62,13 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
     //         for (resolution in state.Resolutions()) {
     //             if (state.Resolutions()[resolution]) {
     //                 resolutionParts = resolution.split('/');
-    //                 SeasonSchema.getUnitOwnerInRegion(indexedRegions[resolutionParts[0]]).unit.order.failed = true;
+    //                 PhaseSchema.getUnitOwnerInRegion(indexedRegions[resolutionParts[0]]).unit.order.failed = true;
     //                 winston.debug('Marking %s as failed', u, { gameID: game.id.toString() });
     //             }
     //         }
     //
-    //         mongoose.model('Season').findOneAndUpdate(
-    //             { '_id': season.id },
+    //         mongoose.model('Phase').findOneAndUpdate(
+    //             { '_id': phase.id },
     //             { '$set': {
     //                 'regions': _.values(indexedRegions)
     //             } },
@@ -76,9 +76,9 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
     //         );
     //     },
     //
-    //     // STEP 2: Create new season using state's list of units.
-    //     function(season, callback) {
-    //         var newSeason = SeasonSchema(),
+    //     // STEP 2: Create new phase using state's list of units.
+    //     function(phase, callback) {
+    //         var newPhase = PhaseSchema(),
     //             nextDeadline = moment(),
     //             regionIndex,
     //             unitIndex,
@@ -86,11 +86,11 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
     //             region,
     //             unit,
     //             godipUnit;
-    //         newSeason.game_id = game.id;
+    //         newPhase.game_id = game.id;
     //
     //         // Wipe all units.
     //         for (regionIndex in indexedRegions) {
-    //             region = SeasonSchema.getUnitOwnerInRegion(indexedRegions[regionIndex]);
+    //             region = PhaseSchema.getUnitOwnerInRegion(indexedRegions[regionIndex]);
     //             if (region)
     //                 delete region.unit;
     //         }
@@ -122,32 +122,32 @@ SeasonCore.prototype.createFromState = function(variant, game, season, state, cb
     //             winston.debug('%s\'s unit set to %s:%s', unitIndex, unit.power, unit.type);
     //         }
     //
-    //         nextDeadline.add(game.getClockFromSeason(game.season), 'hours');
-    //         newSeason.deadline = nextDeadline;
-    //         newSeason.regions = _.values(indexedRegions);
-    //         newSeason.season = season.getNextSeasonSeason(variant);
-    //         newSeason.year = season.getNextSeasonYear(variant);
+    //         nextDeadline.add(game.getClockFromPhase(game.phase), 'hours');
+    //         newPhase.deadline = nextDeadline;
+    //         newPhase.regions = _.values(indexedRegions);
+    //         newPhase.phase = phase.getNextPhasePhase(variant);
+    //         newPhase.year = phase.getNextPhaseYear(variant);
     //
     //         // If no dislodges and no adjustments, skip this phase.
-    //         if (_.contains(newSeason.season, 'Retreat') && _.isEmpty(state.Dislodgeds())) {
-    //             winston.info('Skipping %s %s phase: no dislodged units', newSeason.season, newSeason.year, { gameID: game.id });
+    //         if (_.contains(newPhase.phase, 'Retreat') && _.isEmpty(state.Dislodgeds())) {
+    //             winston.info('Skipping %s %s phase: no dislodged units', newPhase.phase, newPhase.year, { gameID: game.id });
     //
-    //             newSeason.season = season.getNextSeasonSeason(variant);
-    //             newSeason.year = season.getNextSeasonYear(variant);
+    //             newPhase.phase = phase.getNextPhasePhase(variant);
+    //             newPhase.year = phase.getNextPhaseYear(variant);
     //         }
     //
-    //         newSeason.save(callback);
+    //         newPhase.save(callback);
     //     },
     //
-    //     function(season, callback) {
-    //         game.season = season.season;
-    //         game.year = season.year;
+    //     function(phase, callback) {
+    //         game.phase = phase.phase;
+    //         game.year = phase.year;
     //         game.save(callback);
     //     }
     // ], cb);
 };
 
-SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {
+PhaseCore.prototype.setOrder = function(phaseID, data, action, cb) {
     var targetFullName = data[1],
         targetOfTargetFullName = data[2],
         splitTarget = targetFullName ? targetFullName.split('/') : null,
@@ -157,7 +157,7 @@ SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {
         targetOfTarget = splitTargetOfTarget ? splitTargetOfTarget[0] : null,
         subTargetOfTarget = splitTargetOfTarget && splitTargetOfTarget.length > 1 ? splitTargetOfTarget[1] : null;
 
-    db.models.Season.update({
+    db.models.Phase.update({
         unitAction: action,
         unitTarget: target,
         unitSubTarget: subTarget,
@@ -166,4 +166,4 @@ SeasonCore.prototype.setOrder = function(seasonID, data, action, cb) {
     }).nodeify(cb);
 };
 
-module.exports = SeasonCore;
+module.exports = PhaseCore;

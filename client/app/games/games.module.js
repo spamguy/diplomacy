@@ -41,7 +41,7 @@ angular.module('games', [
         }
     })
     .state('games.view', {
-        url: '/{id:[0-9a-fA-F]{24}}/{year:int}/:season',
+        url: '/{id:[0-9a-fA-F]{24}}/{year:int}/:phase',
         controller: 'ViewController',
         templateUrl: 'app/games/view/view.html',
         data: {
@@ -52,7 +52,7 @@ angular.module('games', [
                 value: null,
                 squash: true
             },
-            season: {
+            phase: {
                 value: null,
                 squash: true
             }
@@ -64,8 +64,8 @@ angular.module('games', [
             game: ['gameService', '$stateParams', function(gameService, $stateParams) {
                 return gameService.getGame($stateParams.id);
             }],
-            season: ['userService', 'gameService', 'game', '$stateParams', function(userService, gameService, game, $stateParams) {
-                return gameService.getMoveData(game.id, $stateParams.year, $stateParams.season);
+            phase: ['userService', 'gameService', 'game', '$stateParams', function(userService, gameService, game, $stateParams) {
+                return gameService.getMoveData(game.id, $stateParams.year, $stateParams.phase);
             }],
             svg: ['gameService', 'game', function(gameService, game) {
                 return gameService.getVariantSVG(game.variant);

@@ -1,62 +1,61 @@
 'use strict';
 
-var path = require('path'),
-    _ = require('lodash'),
+var _ = require('lodash'),
     pluralize = require('pluralize'),
     async = require('async'),
-    moment = require('moment'),
+    path = require('path'),
     mailer = require('../mailer/mailer');
 
 module.exports = function() {
     var app = this.app,
-        core = this.core,
-        initRegions = function(variant) {
-            var regions = [],
-                vr,
-                variantRegion,
-                baseRegion,
-                subregion,
-                sr;
-
-            for (vr = 0; vr < variant.regions.length; vr++) {
-                variantRegion = variant.regions[vr];
-                baseRegion = { r: variantRegion.r };
-
-                // Add subregions.
-                if (variantRegion.sr) {
-                    baseRegion.sr = [];
-                    for (sr = 0; sr < variantRegion.sr.length; sr++)
-                        baseRegion.sr.push({ r: variantRegion.sr[sr].r });
-                }
-
-                // Add a SC marker, colour it, and put the default unit there.
-                if (variantRegion.default) {
-                    baseRegion.sc = variantRegion.default.power;
-
-                    // Default unit is in a subregion.
-                    if (variantRegion.default.sr) {
-                        subregion = _.find(baseRegion.sr, 'r', variantRegion.default.sr);
-                        subregion.unit = {
-                            power: variantRegion.default.power,
-                            type: variantRegion.default.type
-                        };
-                    }
-                    else {
-                        baseRegion.unit = {
-                            power: variantRegion.default.power,
-                            type: variantRegion.default.type
-                        };
-                    }
-                }
-                else if (variantRegion.sc) { // Add an uncoloured SC marker.
-                    baseRegion.sc = null;
-                }
-
-                regions.push(baseRegion);
-            }
-
-            return regions;
-        };
+        core = this.core;
+        // initRegions = function(variant) {
+        //     var regions = [],
+        //         vr,
+        //         variantRegion,
+        //         baseRegion,
+        //         subregion,
+        //         sr;
+        //
+        //     for (vr = 0; vr < variant.regions.length; vr++) {
+        //         variantRegion = variant.regions[vr];
+        //         baseRegion = { r: variantRegion.r };
+        //
+        //         // Add subregions.
+        //         if (variantRegion.sr) {
+        //             baseRegion.sr = [];
+        //             for (sr = 0; sr < variantRegion.sr.length; sr++)
+        //                 baseRegion.sr.push({ r: variantRegion.sr[sr].r });
+        //         }
+        //
+        //         // Add a SC marker, colour it, and put the default unit there.
+        //         if (variantRegion.default) {
+        //             baseRegion.sc = variantRegion.default.power;
+        //
+        //             // Default unit is in a subregion.
+        //             if (variantRegion.default.sr) {
+        //                 subregion = _.find(baseRegion.sr, 'r', variantRegion.default.sr);
+        //                 subregion.unit = {
+        //                     power: variantRegion.default.power,
+        //                     type: variantRegion.default.type
+        //                 };
+        //             }
+        //             else {
+        //                 baseRegion.unit = {
+        //                     power: variantRegion.default.power,
+        //                     type: variantRegion.default.type
+        //                 };
+        //             }
+        //         }
+        //         else if (variantRegion.sc) { // Add an uncoloured SC marker.
+        //             baseRegion.sc = null;
+        //         }
+        //
+        //         regions.push(baseRegion);
+        //     }
+        //
+        //     return regions;
+        // };
 
     app.io.route('game', {
         userlist: function(req, res) {
@@ -81,12 +80,11 @@ module.exports = function() {
             });
         },
 
-        list: function(req, res) {
-            var options = { gameID: req.data.gameID };
-            core.game.list(options, function(err, games) {
+        get: function(req, res) {
+            core.game.get(req.data.gameID, function(err, game) {
                 if (err)
                     console.error(err);
-                return res.json(games);
+                return res.json(game);
             });
         },
 
@@ -101,85 +99,66 @@ module.exports = function() {
         join: function(req, res) {
             var gameID = req.data.gameID,
                 playerID = req.socket.decoded_token.id,
-                prefs = req.data.prefs;
+                // prefs = req.data.prefs,
+                game,
+                user;
 
-            core.user.list({ ID: playerID }, function(err, players) {
-                if (err)
-                    console.error(err);
-                var player = players[0];
+            async.waterfall([
+                function(callback) {
+                    core.user.get(playerID, callback);
+                },
 
-                core.game.list({ gameID: gameID }, function(err, games) {
-                    if (err)
-                        console.error(err);
-                    var game = games[0],
-                        newPlayer;
+                function(_user, callback) {
+                    user = _user;
+                    core.game.get(gameID, callback);
+                },
 
+                function(game, callback) {
                     // Make sure this person is actually allowed to join.
-                    if (game.minimumScoreToJoin > player.points) {
+                    if (game.minimumDedication > user.getDedication()) {
                         req.socket.emit('game:join:error', {
-                            error: 'Your dedication score of ' + player.points + ' does not meet this game\'s minimum requirement of ' + game.minimumScoreToJoin + ' to join.'
+                            error: 'Your ' + user.getDedication() + '% dedication does not meet this game\'s minimum requirement of ' + game.minimumDedication + '% to join.'
                         });
                     }
-                    else if (_.find(game.players, _.matchesProperty('player_id', playerID.toString()))) {
+                    else if (_.find(game.players, 'player_id', playerID)) {
                         req.socket.emit('game:join:error', {
                             error: 'You already are participating in this game.'
                         });
                     }
 
                     // Join.
-                    newPlayer = { player_id: playerID, isReady: false };
-                    if (prefs)
-                        newPlayer.prefs = prefs;
-                    core.game.addPlayer(game, newPlayer, function(err, game) {
-                        if (err)
-                            console.log(err);
+                    game.addPlayer(user).nodeify(callback);
+                },
 
-                        // Subscribe to game.
-                        req.socket.join(gameID);
+                function(_game, callback) {
+                    game = _game;
 
-                        // If everyone is here, signal the game can (re)start.
-                        if (game.players.length === game.maxPlayers) {
-                            req.io.route('game:start', { gameID: gameID });
-                        }
-                        else {
-                            // Send join alert email to other subscribers.
-                            var emailOptions = {
-                                    subject: '[' + game.name + '] A new player has joined',
-                                    gameName: game.name,
-                                    personInflection: pluralize('person', game.maxPlayers - game.players.length),
-                                    playerCount: game.players.length,
-                                    remainingSlots: game.maxPlayers - game.players.length
-                                },
-                                playerFetchCallback = function(err, user) {
-                                    if (err)
-                                        console.error(err);
+                    // Subscribe to game.
+                    req.socket.join(gameID);
 
-                                    emailOptions.email = user[0].email;
-                                    mailer.sendOne('join', emailOptions, function(err) {
-                                        if (err)
-                                            console.error(err);
-                                    });
-                                },
-                                p,
-                                gameData;
+                    // If everyone is here, signal the game can (re)start.
+                    if (game.players.length === game.maxPlayers) {
+                        req.io.route('game:start', { gameID: gameID });
+                        return;
+                    }
 
-                            // Fetch email addresses of subscribed players.
-                            // TODO: Rewrite with async.
-                            for (p = 0; p < game.players.length; p++) {
-                                core.user.list({
-                                    ID: game.players[p].player_id
-                                }, playerFetchCallback);
-                            }
+                    // Send join alert email to other subscribers.
+                    var emailOptions = {
+                            subject: '[' + game.name + '] A new player has joined',
+                            gameName: game.name,
+                            personInflection: pluralize('person', game.maxPlayers - game.players.length),
+                            playerCount: game.players.length,
+                            remainingSlots: game.maxPlayers - game.players.length
+                        },
+                        gameData;
 
-                            // Broadcast join to other subscribers.
-                            gameData = { gamename: game.name };
-                            req.socket.emit('game:join:success', gameData);
-                            req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
-                            return res.json({ status: 'ok' });
-                        }
-                    });
-                });
-            });
+                    // Broadcast join to other subscribers.
+                    gameData = { gamename: game.name };
+                    req.socket.emit('game:join:success', gameData);
+                    req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
+                    return res.json({ status: 'ok' });
+                }
+            ]);
         },
 
         leave: function(req, res) {
@@ -262,117 +241,46 @@ module.exports = function() {
         },
 
         start: function(req, res) {
-            var nextSeasonDeadline = moment(),
-                game,
-                variant,
-                season;
             app.logger.info('Starting game ' + req.data.gameID);
 
             async.waterfall([
-                // Fetches the game to start.
                 function(callback) {
-                    core.game.get(req.data.gameID, callback);
+                    core.game.start(app.queue, req.data.gameID, callback);
                 },
 
-                // Fetches the game's most recent season, if there is one.
-                function(_game, callback) {
-                    game = _game;
-                    core.season.getCurrentForGame(game.id, callback);
-                },
-
-                // Creates first season if previous step pulled up nothing.
-                function(_season, callback) {
-                    var variant = core.variant.get(game.variant),
-                        clock,
-                        defaultRegions,
-                        firstSeason;
-
-                    season = _season;
-                    if (!season) {
-                        // Init regions.
-                        defaultRegions = initRegions(variant);
-
-                        // Create first season.
-                        firstSeason = {
-                            year: variant.startYear,
-                            season: variant.seasons[0],
-                            game_id: game.id,
-                            regions: defaultRegions
-                        };
-                        clock = game.getClockFromSeason(firstSeason.season);
-                        nextSeasonDeadline.add(clock, 'hours');
-                        firstSeason.deadline = nextSeasonDeadline;
-
-                        game.year = variant.startYear;
-                        game.season = variant.seasons[0];
-                        game.status = 1;
-
-                        core.season.create(firstSeason, callback);
-                    }
-                    else {
-                        // Skip to next function.
-                        callback(null);
-                    }
-                },
-
-                // Assign powers to players.
-                function(callback) {
-                    // TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
-                    var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
-                        shuffledSetIndex = 0,
-                        p,
-                        player;
+                function(variant, game, callback) {
+                    var optionses = [],
+                        p;
 
                     for (p = 0; p < game.players.length; p++) {
-                        player = game.players[p];
-
-                        player.power = shuffledSetOfPowers[shuffledSetIndex];
-                        app.logger.info('Player ' + player.player_id + ' assigned ' + player.power + ' in game ' + game.id);
-                        shuffledSetIndex++;
+                        optionses.push({
+                            gameName: game.name,
+                            gameURL: path.join(this.seekrits.get('domain'), 'games', game.id),
+                            subject: '[' + game.name + '] The game is starting!',
+                            deadline: game.currentPhase.deadline.format('dddd, MMMM Do [at] h:mm a'),
+                            phase: game.currentPhase.phase,
+                            year: game.currentPhase.year,
+                            email: game.players[p].user.email,
+                            powerDesignation: 'You have been selected to play ' + variant.powers[game.players[p].power].name +
+                                ' in the game ' + game.name + '. You can start playing right now by visiting the game page at '
+                        });
                     }
 
-                    core.game.update(game, function(err, savedGame) { callback(err, variant, savedGame, season); });
-                },
-
-                // Schedule adjudication and send out emails.
-                function(variant, game, season, callback) {
-                    var job = app.queue.create('adjudicate', {
-                        seasonID: season.id
-                    });
-                    job.delay(nextSeasonDeadline.toDate())
-                        .attempts(1000) // TODO: Obviously, do not constantly retry in production.
-                        .backoff({ delay: 'exponential' })
-                        .save(function(err) {
-                            if (err)
-                                callback(err);
-                        });
-
-                    async.each(game.players, function(player, err) {
-                        var emailOptions = {
-                            gameName: game.name,
-                            gameURL: path.join(app.seekrits.get('domain'), 'games', game.id.toString()),
-                            subject: '[' + game.name + '] The game is starting!',
-                            deadline: nextSeasonDeadline.format('dddd, MMMM Do [at] h:mm a'),
-                            season: variant.seasons[season.season - 1],
-                            year: season.year
-                        };
-
-                        core.user.list({ ID: player.player_id }, function(err, users) {
-                            if (err)
-                                console.error(err);
-                            emailOptions.email = users[0].email;
-                            // if (player.power === '*')
-                            //    emailOptions.powerDesignation = 'You are the GM for this game. You can watch the action at ';
-                            // else
-                            emailOptions.powerDesignation = 'You have been selected to play ' + variant.powers[player.power].name + ' in the game ' + game.name + '. You can start playing right now by visiting the game page at ';
-                            mailer.sendOne('gamestart', emailOptions, function(err) { console.error(err); });
-                        });
-                    });
-
-                    // TODO: Email the GM too.
+                    mailer.sendMany('gamestart', optionses, callback);
                 }
-            ]);
+            ], function(err) {
+                if (err) {
+                    app.logger(err);
+                    res.status(400).json({ error: err });
+                }
+            });
         },
+
+        // function(player, callback) {
+        //         // app.logger.info('Player ' + player.user.email + ' assigned ' + player.power + ' in game ' + game.id);
+        //         // Announce game start to room.
+        //     });
+        // },
 
         stop: function(req, res) {
 

@@ -3,8 +3,8 @@ module.exports = function(sequelize) {
         User: require('./user')(sequelize),
         Game: require('./game')(sequelize),
         GamePlayer: require('./gameplayer')(sequelize),
-        Season: require('./season')(sequelize),
-        SeasonProvince: require('./seasonprovince')(sequelize)
+        Phase: require('./phase')(sequelize),
+        PhaseProvince: require('./phaseprovince')(sequelize)
     };
 
     models.Game.belongsToMany(models.User, { through: models.GamePlayer, as: 'players' });
@@ -12,11 +12,13 @@ module.exports = function(sequelize) {
 
     models.Game.belongsTo(models.User, { foreignKey: 'gm_id', as: 'GM' });
 
-    models.Season.belongsTo(models.Game);
-    models.Game.hasMany(models.Season);
+    models.Phase.belongsTo(models.Game);
+    models.Game.hasMany(models.Phase);
 
-    models.SeasonProvince.belongsTo(models.Season, { foreignKey: 'season_id' });
-    models.Season.hasMany(models.SeasonProvince, { as: 'provinces' });
+    models.Game.belongsTo(models.Phase, { foreignKey: 'current_phase_id', as: 'currentPhase' });
+
+    models.PhaseProvince.belongsTo(models.Phase, { foreignKey: 'phase_id' });
+    models.Phase.hasMany(models.PhaseProvince, { as: 'provinces' });
 
     return models;
 };

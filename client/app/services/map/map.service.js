@@ -5,10 +5,10 @@ angular.module('mapService', ['gameService'])
     var regionReferenceDictionary,
         currentAction = 'hold',
         commandData = [],
-        service = function(variant, game, season) {
+        service = function(variant, game, phase) {
             this.variant = variant;
             this.game = game;
-            this.season = season;
+            this.phase = phase;
 
             regionReferenceDictionary = _.indexBy(this.variant.regions, 'r');
         };
@@ -31,7 +31,7 @@ angular.module('mapService', ['gameService'])
     // PRIVATE FUNCTIONS
 
     function getSCFill(r) {
-        var owner = _.find(this.season.regions, 'r', r).sc;
+        var owner = _.find(this.phase.regions, 'r', r).sc;
         return owner ? this.variant.powers[owner].colour : '#bbbbbb';
     }
 
@@ -77,7 +77,7 @@ angular.module('mapService', ['gameService'])
 
     function inputCommand(id, callback) {
         var r = id.toUpperCase().replace('-', '/'), // HTML IDs use - for subdivisions.
-            region = _.find(this.season.regions, 'r', r.split('/')[0]),
+            region = _.find(this.phase.regions, 'r', r.split('/')[0]),
             ownerInRegion = gameService.getUnitOwnerInRegion(region),
             unitInRegion,
             overrideAction;
@@ -141,7 +141,7 @@ angular.module('mapService', ['gameService'])
         }
 
         // Making it this far means there is a full set of commands to publish.
-        gameService.publishCommand(currentAction, commandData, this.season,
+        gameService.publishCommand(currentAction, commandData, this.phase,
             function(response) {
                 callback(response, commandData[0], overrideAction || currentAction, commandData[1], commandData[2]);
                 clearAllCommands();
@@ -150,15 +150,15 @@ angular.module('mapService', ['gameService'])
     }
 
     function userCanMove() {
-        return _.contains(this.season.season.toLowerCase(), 'move');
+        return _.contains(this.phase.phase.toLowerCase(), 'move');
     }
 
     function userCanRetreat() {
-        return _.contains(this.season.season.toLowerCase(), 'retreat');
+        return _.contains(this.phase.phase.toLowerCase(), 'retreat');
     }
 
     function userCanAdjust() {
-        return _.contains(this.season.season.toLowerCase(), 'adjust');
+        return _.contains(this.phase.phase.toLowerCase(), 'adjust');
     }
 
     function getSCPath() {

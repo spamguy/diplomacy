@@ -1,11 +1,11 @@
 var Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
-    return sequelize.define('season_province', {
-        seasonID: {
+    return sequelize.define('phase_province', {
+        phaseID: {
             type: Sequelize.UUID,
             primaryKey: true,
-            field: 'season_id',
+            field: 'phase_id',
             notNull: true
         },
         provinceKey: {

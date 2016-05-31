@@ -13,7 +13,7 @@
                     <md-subheader>{{power.name}}</md-subheader>
                     <md-divider></md-divider>
                     <md-list>
-                        <md-list-item ng-repeat="province in $ctrl.season.regions" ng-if="$ctrl.powerOwnsProvince(code, province)">
+                        <md-list-item ng-repeat="province in $ctrl.phase.regions" ng-if="$ctrl.powerOwnsProvince(code, province)">
                             <sg-province-list-item province="province" />
                         </md-list-item>
                     </md-list>

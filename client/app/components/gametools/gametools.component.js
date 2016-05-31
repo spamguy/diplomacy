@@ -3,7 +3,7 @@ angular.module('gametools.component', ['userService', 'gameService'])
     templateUrl: 'app/components/gametools/gametools.tmpl.html',
     bindings: {
         game: '=',
-        season: '<',
+        phase: '<',
         variant: '='
     },
     controller: 'GameToolsController'
