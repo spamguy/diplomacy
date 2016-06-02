@@ -1,9 +1,7 @@
 'use strict';
 
 var db = require('./../db'),
-    _ = require('lodash'),
     async = require('async'),
-    moment = require('moment'),
     winston = require('winston');
 
 // Log all the things.
@@ -31,15 +29,66 @@ PhaseCore.prototype.get = function(gameID, phaseIndex, year, cb) {
     }).nodeify(cb);
 };
 
-PhaseCore.prototype.create = function(t, phase, cb) {
-    var newPhase = db.models.Phase.build(phase);
+PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
+    var newPhase = db.models.Phase.build({
+        year: variant.startYear,
+        phase: variant.phases[0],
+        game_id: game.id,
+        deadline: deadline
+    });
 
-    newPhase.save({ transaction: t }).nodeify(cb);
+    async.waterfall([
+        // Save new phase.
+        function(callback) {
+            newPhase.save({ transaction: t }).nodeify(cb);
+        },
+
+        // Generate region data for this phase, using variant template.
+        function(phase, callback) {
+            this.generatePhaseProvinces(t, variant, newPhase, true, callback);
+        }
+    ]);
+};
+
+/**
+ * Bulk inserts provinces based on phase data or variant data.
+ * @param  {Transaction} t           The transaction.
+ * @param  {Object}      variant     The variant template.
+ * @param  {Phase}       phase       The phase owning the new provinces.
+ * @param  {Boolean}     useDefault  Whether to use variant info to set data.
+ * @param  {Function}    cb          The callback.
+ */
+PhaseCore.prototype.generatePhaseProvinces = function(t, variant, phase, useDefault, cb) {
+    var p,
+        sp,
+        provincesToInsert = [];
+
+    for (p = 0; p < variant.provinces.length; p++) {
+        provincesToInsert.push({
+            phaseID: phase.id,
+            provinceKey: variant.provinces[p].p,
+            subProvinceKey: null
+        });
+
+        if (variant.provinces[p].sp) {
+            for (sp = 0; sp < variant.provinces.length; sp++) {
+                provincesToInsert.push({
+                    phaseID: phase.id,
+                    provinceKey: variant.provinces[p].p,
+                    subProvinceKey: variant.provinces[p].sp[sp].p,
+                    unitX: variant.provinces[p].sp[sp].x,
+                    unitY: variant.provinces[p].sp[sp].y
+                });
+            }
+        }
+    }
+
+    db.models.PhaseProvince.bulkCreate(provincesToInsert, { transaction: t }).nodeify(cb);
 };
 
 PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) {
     // var PhaseSchema = mongoose.model('Phase'),
-    //     indexedRegions = _.indexBy(phase.toObject().regions, 'r'),
+    //     indexedProvinces = _.indexBy(phase.toObject().provinces, 'r'),
     //     unit;
     //
     // async.waterfall([
@@ -52,7 +101,7 @@ PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) 
     //         // Move dislodged units from 'unit' to 'dislodged'.
     //         for (u in state.Dislodgeds()) {
     //             unit = state.Dislodgeds()[u];
-    //             indexedRegions[u].dislodged = {
+    //             indexedProvinces[u].dislodged = {
     //                 power: unit.Nation[0],
     //                 type: unit.Type === 'Fleet' ? 2 : 1
     //             };
@@ -62,7 +111,7 @@ PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) 
     //         for (resolution in state.Resolutions()) {
     //             if (state.Resolutions()[resolution]) {
     //                 resolutionParts = resolution.split('/');
-    //                 PhaseSchema.getUnitOwnerInRegion(indexedRegions[resolutionParts[0]]).unit.order.failed = true;
+    //                 PhaseSchema.getUnitOwnerInProvince(indexedProvinces[resolutionParts[0]]).unit.order.failed = true;
     //                 winston.debug('Marking %s as failed', u, { gameID: game.id.toString() });
     //             }
     //         }
@@ -70,7 +119,7 @@ PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) 
     //         mongoose.model('Phase').findOneAndUpdate(
     //             { '_id': phase.id },
     //             { '$set': {
-    //                 'regions': _.values(indexedRegions)
+    //                 'provinces': _.values(indexedProvinces)
     //             } },
     //             callback
     //         );
@@ -80,19 +129,19 @@ PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) 
     //     function(phase, callback) {
     //         var newPhase = PhaseSchema(),
     //             nextDeadline = moment(),
-    //             regionIndex,
+    //             provinceIndex,
     //             unitIndex,
     //             rComponents,
-    //             region,
+    //             province,
     //             unit,
     //             godipUnit;
     //         newPhase.game_id = game.id;
     //
     //         // Wipe all units.
-    //         for (regionIndex in indexedRegions) {
-    //             region = PhaseSchema.getUnitOwnerInRegion(indexedRegions[regionIndex]);
-    //             if (region)
-    //                 delete region.unit;
+    //         for (provinceIndex in indexedProvinces) {
+    //             province = PhaseSchema.getUnitOwnerInProvince(indexedProvinces[provinceIndex]);
+    //             if (province)
+    //                 delete province.unit;
     //         }
     //
     //         // Apply all units returned by godip.
@@ -104,16 +153,16 @@ PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) 
     //             };
     //             rComponents = unitIndex.split('/');
     //
-    //             // Not in a subregion. Apply unit to topmost level.
+    //             // Not in a subprovince. Apply unit to topmost level.
     //             if (rComponents.length === 1) {
-    //                 indexedRegions[rComponents[0]].unit = unit;
+    //                 indexedProvinces[rComponents[0]].unit = unit;
     //             }
     //             else {
-    //                 // In a subregion. Apply it to the corresponding object in sr: [].
-    //                 region = indexedRegions[rComponents[0]];
-    //                 for (regionIndex = 0; regionIndex < region.sr.length; regionIndex++) {
-    //                     if (region.sr[regionIndex].r === rComponents[1]) {
-    //                         region.sr[regionIndex].unit = unit;
+    //                 // In a subprovince. Apply it to the corresponding object in sr: [].
+    //                 province = indexedProvinces[rComponents[0]];
+    //                 for (provinceIndex = 0; provinceIndex < province.sr.length; provinceIndex++) {
+    //                     if (province.sr[provinceIndex].r === rComponents[1]) {
+    //                         province.sr[provinceIndex].unit = unit;
     //                         break;
     //                     }
     //                 }
@@ -124,7 +173,7 @@ PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) 
     //
     //         nextDeadline.add(game.getClockFromPhase(game.phase), 'hours');
     //         newPhase.deadline = nextDeadline;
-    //         newPhase.regions = _.values(indexedRegions);
+    //         newPhase.provinces = _.values(indexedProvinces);
     //         newPhase.phase = phase.getNextPhasePhase(variant);
     //         newPhase.year = phase.getNextPhaseYear(variant);
     //

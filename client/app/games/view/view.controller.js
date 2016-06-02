@@ -2,7 +2,7 @@
 
 angular.module('games')
 .controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'phase', 'svg', '$mdDialog', function($scope, userService, gameService, variant, game, phase, svg, $mdDialog) {
-    $scope.updateRegionData = updateRegionData;
+    $scope.updateProvinceData = updateProvinceData;
 
     $scope.variant = variant;
     $scope.game = game;
@@ -23,16 +23,16 @@ angular.module('games')
         );
     }
 
-    function updateRegionData(r, action, source, target) {
-        var region = _.find($scope.phase.regions, 'r', r),
-            unitInRegion = gameService.getUnitOwnerInRegion(region);
+    function updateProvinceData(r, action, source, target) {
+        var province = _.find($scope.phase.provinces, 'r', r),
+            unitInProvince = gameService.getUnitOwnerInProvince(province);
 
         // Update local data to reflect DB change.
-        unitInRegion.unit.order = { action: action };
+        unitInProvince.unit.order = { action: action };
         if (source)
-            unitInRegion.unit.order.source = source;
+            unitInProvince.unit.order.source = source;
         if (target)
-            unitInRegion.unit.order.target = target;
+            unitInProvince.unit.order.target = target;
 
         $scope.$broadcast('orderChange', {
             r: r

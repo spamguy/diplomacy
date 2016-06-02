@@ -23,7 +23,7 @@ describe('Map component', function() {
             scope.phase = {
                 year: 1901,
                 phase: 'Spring Movement',
-                regions: [{ r: 'A' }, { r: 'B' }]
+                provinces: [{ r: 'A' }, { r: 'B' }]
             };
             scope.game = {
                 name: 'That Game'

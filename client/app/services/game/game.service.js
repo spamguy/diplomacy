@@ -173,19 +173,19 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         /**
-         * Gets a unit's most precise location within a region.
-         * @param  {Object} r     The region.
+         * Gets a unit's most precise location within a province.
+         * @param  {Object} r     The province.
          * @param  {Integer} [type] The unit type by which to filter.
          * @param  {String} [power] The power by which to filter.
-         * @return {Object}       The region or subregion with a unit present, or null.
+         * @return {Object}       The province or subprovince with a unit present, or null.
          */
-        getUnitOwnerInRegion: function(r, type, power) {
-            var subregionWithUnit = _.find(r.sr, 'unit');
+        getUnitOwnerInProvince: function(r, type, power) {
+            var subprovinceWithUnit = _.find(r.sr, 'unit');
 
             if (r.unit && unitMatchesFilters(r.unit, type, power))
                 return r;
-            else if (subregionWithUnit && unitMatchesFilters(subregionWithUnit.unit, type, power))
-                return subregionWithUnit;
+            else if (subprovinceWithUnit && unitMatchesFilters(subprovinceWithUnit.unit, type, power))
+                return subprovinceWithUnit;
 
             return null;
         },

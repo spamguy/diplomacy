@@ -42,19 +42,26 @@ GameCore.prototype.findByPlayer = function(id, cb) {
             as: 'players',
             through: {
                 where: {
-                    user_id: id
+                    $and: {
+                        user_id: id,
+                        'game_player.isDisabled': false
+                    }
                 }
-            }
+            },
+            required: true
         }]
     }).nodeify(cb);
 };
 
 GameCore.prototype.listOpen = function(cb) {
     db.models.Game.findAll({
-        where: { status: 0 },
+        where: {
+            status: { $in: [0, 2] }
+        },
         include: [{
             model: db.models.User,
-            as: 'players'
+            as: 'players',
+            where: { 'game_player.isDisabled': false }
         }]
     }).nodeify(cb);
 };
@@ -99,31 +106,18 @@ GameCore.prototype.update = function(game, cb) {
     game.update().nodeify(cb);
 };
 
-GameCore.prototype.addPlayer = function(game, player, cb) {
-    // mongoose.model('Game').findOneAndUpdate(
-    //     { _id: game.id },
-    //     { $push: { 'players': player } },
-    //     { new: true },
-    //     cb
-    // );
-};
-
 GameCore.prototype.setReadyFlag = function(gameID, userID, state, cb) {
-    // mongoose.model('Game').findOneAndUpdate(
-    //     { _id: gameID, 'players.player_id': userID },
-    //     { $set: { 'players.$.isReady': state } },
-    //     { new: true },
-    //     cb
-    // );
+    db.models.GamePlayer.update(
+        { is_ready: state },
+        { where: { game_id: gameID, user_id: userID } }
+    ).nodeify(cb);
 };
 
 GameCore.prototype.resetAllReadyFlags = function(game, cb) {
-    // mongoose.model('Game').update(
-    //     { _id: game.id },
-    //     { $set: { 'players.isReady': false } },
-    //     { },
-    //     cb
-    // );
+    db.models.GamePlayer.update(
+        { is_ready: false },
+        { where: { game_id: game.id } }
+    ).nodeify(cb);
 };
 
 /**
@@ -133,12 +127,15 @@ GameCore.prototype.resetAllReadyFlags = function(game, cb) {
  * @param  {Function} cb       The callback.
  */
 GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
-    // mongoose.model('Game').findOneAndUpdate(
-    //     { _id: gameID, 'players.player_id': playerID },
-    //     { $set: { 'players.$.disabled': true } },
-    //     { new: true },
-    //     cb
-    // );
+    async.waterfall([
+        function(callback) {
+            this.get(gameID, callback);
+        },
+
+        function(_game, callback) {
+            _.find(_game.players, 'player_id', playerID).setIsDisabled(true, callback);
+        }
+    ]);
 };
 
 GameCore.prototype.start = function(queue, gameID, cb) {
@@ -167,15 +164,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 transaction = t;
                 if (!game.currentPhase) {
                     nextPhaseDeadline.add(game.getClockFromPhase(variant.phases[0]), 'hours');
-
-                    // Create first phase.
-                    firstPhase = {
-                        year: variant.startYear,
-                        phase: variant.phases[0],
-                        game_id: game.id,
-                        deadline: nextPhaseDeadline
-                    };
-                    this.core.phase.create(t, firstPhase, callback);
+                    this.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline, callback);
                 }
                 else {
                     callback(null, phase);

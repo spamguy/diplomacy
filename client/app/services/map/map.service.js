@@ -2,7 +2,7 @@ angular.module('mapService', ['gameService'])
 .service('mapService', ['$location', 'gameService', function($location, gameService) {
     'use strict';
 
-    var regionReferenceDictionary,
+    var provinceReferenceDictionary,
         currentAction = 'hold',
         commandData = [],
         service = function(variant, game, phase) {
@@ -10,13 +10,13 @@ angular.module('mapService', ['gameService'])
             this.game = game;
             this.phase = phase;
 
-            regionReferenceDictionary = _.indexBy(this.variant.regions, 'r');
+            provinceReferenceDictionary = _.indexBy(this.variant.provinces, 'r');
         };
 
     service.prototype.getSCFill = getSCFill;
     service.prototype.getSCTransform = getSCTransform;
     service.prototype.getUnitFill = getUnitFill;
-    service.prototype.getCoordinatesForUnitInRegion = getCoordinatesForUnitInRegion;
+    service.prototype.getCoordinatesForUnitInProvince = getCoordinatesForUnitInProvince;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
     service.prototype.setCurrentAction = setCurrentAction;
     service.prototype.inputCommand = inputCommand;
@@ -31,19 +31,19 @@ angular.module('mapService', ['gameService'])
     // PRIVATE FUNCTIONS
 
     function getSCFill(r) {
-        var owner = _.find(this.phase.regions, 'r', r).sc;
+        var owner = _.find(this.phase.provinces, 'r', r).sc;
         return owner ? this.variant.powers[owner].colour : '#bbbbbb';
     }
 
     function getSCTransform(r) {
         return 'translate(' +
-            regionReferenceDictionary[r.toUpperCase()].sc.x + ',' +
-            regionReferenceDictionary[r.toUpperCase()].sc.y + ') ' +
+            provinceReferenceDictionary[r.toUpperCase()].sc.x + ',' +
+            provinceReferenceDictionary[r.toUpperCase()].sc.y + ') ' +
             'scale(0.04)';
     }
 
     function getUnitFill(r) {
-        var container = gameService.getUnitOwnerInRegion(r);
+        var container = gameService.getUnitOwnerInProvince(r);
         return this.variant.powers[container.unit.power].colour;
     }
 
@@ -53,15 +53,15 @@ angular.module('mapService', ['gameService'])
         return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
     }
 
-    function getCoordinatesForUnitInRegion(r, type) {
-        var subregionWithUnit = _.find(r.sr, { unit: { type: type } });
+    function getCoordinatesForUnitInProvince(r, type) {
+        var subprovinceWithUnit = _.find(r.sr, { unit: { type: type } });
 
-        if (subregionWithUnit) {
-            subregionWithUnit = _.find(regionReferenceDictionary[r.r].sr, 'r', subregionWithUnit.r);
-            return { x: subregionWithUnit.x, y: subregionWithUnit.y };
+        if (subprovinceWithUnit) {
+            subprovinceWithUnit = _.find(provinceReferenceDictionary[r.r].sr, 'r', subprovinceWithUnit.r);
+            return { x: subprovinceWithUnit.x, y: subprovinceWithUnit.y };
         }
 
-        return { x: regionReferenceDictionary[r.r].x, y: regionReferenceDictionary[r.r].y };
+        return { x: provinceReferenceDictionary[r.r].x, y: provinceReferenceDictionary[r.r].y };
     }
 
     function setCurrentAction(action) {
@@ -77,20 +77,20 @@ angular.module('mapService', ['gameService'])
 
     function inputCommand(id, callback) {
         var r = id.toUpperCase().replace('-', '/'), // HTML IDs use - for subdivisions.
-            region = _.find(this.phase.regions, 'r', r.split('/')[0]),
-            ownerInRegion = gameService.getUnitOwnerInRegion(region),
-            unitInRegion,
+            province = _.find(this.phase.provinces, 'r', r.split('/')[0]),
+            ownerInProvince = gameService.getUnitOwnerInProvince(province),
+            unitInProvince,
             overrideAction;
 
-        if (ownerInRegion)
-            unitInRegion = ownerInRegion.unit;
+        if (ownerInProvince)
+            unitInProvince = ownerInProvince.unit;
 
-        // TODO: Force armies to move to regions only.
+        // TODO: Force armies to move to provinces only.
 
         // Users who try to control units that don't exist or don't own?
         // We have ways of shutting the whole thing down.
         if (commandData.length === 0 &&
-            (!unitInRegion || unitInRegion.power !== gameService.getPowerOfCurrentUserInGame(this.game)))
+            (!unitInProvince || unitInProvince.power !== gameService.getPowerOfCurrentUserInGame(this.game)))
             return;
 
         commandData.push(r);

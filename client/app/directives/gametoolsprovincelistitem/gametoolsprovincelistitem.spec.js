@@ -35,7 +35,7 @@ describe('Province list item directive', function() {
         expect($('div span', el).html()).to.contain('MOS');
     });
 
-    it('prints subregions', function() {
+    it('prints subprovinces', function() {
         scope.province = {
             r: 'STP',
             sr: [{

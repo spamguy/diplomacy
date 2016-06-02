@@ -98,6 +98,8 @@ module.exports = function() {
                         error: err
                     });
                 }
+
+                return res.json('ok');
             });
         },
 
@@ -167,7 +169,6 @@ module.exports = function() {
 // PRIVATE FUNCTIONS
 
 function sendVerifyEmail(seekrits, user, cb) {
-    console.log('Sending verify email to ' + user.tempEmail);
     var safeUser = {
             email: user.tempEmail,
             id: user.id

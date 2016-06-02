@@ -46,6 +46,14 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
                     .hideDelay(5000)
             );
         });
+
+        socket.on('game:start:announce', function(data) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .textContent('The game ' + data.gamename + ' has started!')
+                    .hideDelay(5000)
+            );
+        });
     };
 
     return self;

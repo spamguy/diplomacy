@@ -66,20 +66,6 @@ CREATE TABLE game_players (
 ALTER TABLE game_players OWNER TO woram;
 
 --
--- Name: game_provinces; Type: TABLE; Schema: public; Owner: woram
---
-
-CREATE TABLE game_provinces (
-    game_id uuid NOT NULL,
-    key text NOT NULL,
-    name text NOT NULL,
-    id uuid DEFAULT uuid_generate_v4() NOT NULL
-);
-
-
-ALTER TABLE game_provinces OWNER TO woram;
-
---
 -- Name: games; Type: TABLE; Schema: public; Owner: woram
 --
 
@@ -123,7 +109,11 @@ CREATE TABLE phase_provinces (
     updated_at timestamp without time zone NOT NULL,
     unit_subtarget character varying(2044),
     unit_target_of_target character varying(2044),
-    unit_subtarget_of_target character varying(2044)
+    unit_subtarget_of_target character varying(2044),
+    supply_centre_x smallint,
+    supply_centre_y smallint,
+    unit_x smallint DEFAULT 0 NOT NULL,
+    unit_y smallint DEFAULT 0 NOT NULL
 );
 
 
@@ -173,14 +163,6 @@ ALTER TABLE users OWNER TO woram;
 
 ALTER TABLE ONLY game_players
     ADD CONSTRAINT game_players_pkey PRIMARY KEY (user_id, game_id, power);
-
-
---
--- Name: game_provinces_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
---
-
-ALTER TABLE ONLY game_provinces
-    ADD CONSTRAINT game_provinces_pkey PRIMARY KEY (id);
 
 
 --
@@ -240,14 +222,6 @@ ALTER TABLE ONLY game_players
 
 
 --
--- Name: game_provinces_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
---
-
-ALTER TABLE ONLY game_provinces
-    ADD CONSTRAINT game_provinces_game_id_fkey FOREIGN KEY (game_id) REFERENCES games(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
 -- Name: games_current_phase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
 --
 
@@ -277,3 +251,8 @@ ALTER TABLE ONLY phase_provinces
 
 ALTER TABLE ONLY phases
     ADD CONSTRAINT seasons_game_id_fkey FOREIGN KEY (game_id) REFERENCES games(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- PostgreSQL database dump complete
+--

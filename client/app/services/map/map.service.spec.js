@@ -10,7 +10,7 @@ describe('Map directive', function() {
 
     beforeEach(function() {
         variant = {
-            regions: [],
+            provinces: [],
             powers: {
                 R: {
                     colour: '#141414'
@@ -22,7 +22,7 @@ describe('Map directive', function() {
         };
         game = { };
         phase = {
-            regions: [{
+            provinces: [{
                 r: 'WAR',
                 sc: 'R',
                 unit: {
@@ -54,8 +54,8 @@ describe('Map directive', function() {
     });
 
     it('selects a fill colour for a unit based on its owner', function() {
-        expect(service.getUnitFill(phase.regions[0])).to.equal('#141414');
-        expect(service.getUnitFill(phase.regions[1])).to.equal('#555555');
+        expect(service.getUnitFill(phase.provinces[0])).to.equal('#141414');
+        expect(service.getUnitFill(phase.provinces[1])).to.equal('#555555');
     });
 
     it('generates the URL pointing to the supply centre SVG', function() {

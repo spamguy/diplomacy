@@ -9,52 +9,52 @@ var _ = require('lodash'),
 module.exports = function() {
     var app = this.app,
         core = this.core;
-        // initRegions = function(variant) {
-        //     var regions = [],
+        // initProvinces = function(variant) {
+        //     var provinces = [],
         //         vr,
-        //         variantRegion,
-        //         baseRegion,
-        //         subregion,
+        //         variantProvince,
+        //         baseProvince,
+        //         subprovince,
         //         sr;
         //
-        //     for (vr = 0; vr < variant.regions.length; vr++) {
-        //         variantRegion = variant.regions[vr];
-        //         baseRegion = { r: variantRegion.r };
+        //     for (vr = 0; vr < variant.provinces.length; vr++) {
+        //         variantProvince = variant.provinces[vr];
+        //         baseProvince = { r: variantProvince.r };
         //
-        //         // Add subregions.
-        //         if (variantRegion.sr) {
-        //             baseRegion.sr = [];
-        //             for (sr = 0; sr < variantRegion.sr.length; sr++)
-        //                 baseRegion.sr.push({ r: variantRegion.sr[sr].r });
+        //         // Add subprovinces.
+        //         if (variantProvince.sr) {
+        //             baseProvince.sr = [];
+        //             for (sr = 0; sr < variantProvince.sr.length; sr++)
+        //                 baseProvince.sr.push({ r: variantProvince.sr[sr].r });
         //         }
         //
         //         // Add a SC marker, colour it, and put the default unit there.
-        //         if (variantRegion.default) {
-        //             baseRegion.sc = variantRegion.default.power;
+        //         if (variantProvince.default) {
+        //             baseProvince.sc = variantProvince.default.power;
         //
-        //             // Default unit is in a subregion.
-        //             if (variantRegion.default.sr) {
-        //                 subregion = _.find(baseRegion.sr, 'r', variantRegion.default.sr);
-        //                 subregion.unit = {
-        //                     power: variantRegion.default.power,
-        //                     type: variantRegion.default.type
+        //             // Default unit is in a subprovince.
+        //             if (variantProvince.default.sr) {
+        //                 subprovince = _.find(baseProvince.sr, 'r', variantProvince.default.sr);
+        //                 subprovince.unit = {
+        //                     power: variantProvince.default.power,
+        //                     type: variantProvince.default.type
         //                 };
         //             }
         //             else {
-        //                 baseRegion.unit = {
-        //                     power: variantRegion.default.power,
-        //                     type: variantRegion.default.type
+        //                 baseProvince.unit = {
+        //                     power: variantProvince.default.power,
+        //                     type: variantProvince.default.type
         //                 };
         //             }
         //         }
-        //         else if (variantRegion.sc) { // Add an uncoloured SC marker.
-        //             baseRegion.sc = null;
+        //         else if (variantProvince.sc) { // Add an uncoloured SC marker.
+        //             baseProvince.sc = null;
         //         }
         //
-        //         regions.push(baseRegion);
+        //         provinces.push(baseProvince);
         //     }
         //
-        //     return regions;
+        //     return provinces;
         // };
 
     app.io.route('game', {
@@ -175,30 +175,38 @@ module.exports = function() {
         leave: function(req, res) {
             var gameID = req.data.gameID,
                 playerID = req.data.playerID,
-                punish = req.data.punish;
+                punish = req.data.punish,
+                game;
 
             async.waterfall([
-                // Toggle player's disabled flag.
                 function(callback) {
+                    core.game.get(gameID, callback);
+                },
+
+                // Toggle player's disabled flag.
+                function(_game, callback) {
+                    game = _game;
                     core.game.disablePlayer(playerID, gameID, callback);
                 },
 
                 // Penalise players, if needed.
-                function(game, callback) {
+                function(callback) {
                     // Quitting is worth five 'latenesses'.
                     var penaltyValue = punish ? 5 : 0;
                     core.user.adjustActionCount(playerID, penaltyValue, callback);
                 },
 
-                function(game, callback) {
-                    // Broadcast leave to others subscribed to game.
-                    var userPower = game.getPlayerByID(playerID).power,
+                // Broadcast leave to others subscribed to game.
+                function(result, callback) {
+                    var userPower = _.find(game.players, 'id', playerID).power,
                         userPowerName = core.variant.get(game.variant).powers[userPower].name;
 
                     req.socket.broadcast.to(gameID).emit('game:leave:success', {
                         gamename: game.name,
                         power: userPowerName
                     });
+
+                    game.setStatus(2).nodeify(callback);
                 }
             ], function(err, game) {
                 if (err)
@@ -260,6 +268,8 @@ module.exports = function() {
                 },
 
                 function(variant, game, callback) {
+                    app.logger.info('Players selected for game ' + game.id,
+                        _.map(game.players, function(v) { return _.pick(v, ['power', 'email']); }));
                     var optionses = [],
                         p;
 
@@ -277,6 +287,9 @@ module.exports = function() {
                         });
                     }
 
+                    // Broadcast start to subscribers.
+                    req.socket.broadcast.to(game.id).emit('game:start:announce', { gamename: game.name });
+
                     mailer.sendMany('gamestart', optionses, callback);
                 }
             ], function(err) {
@@ -286,12 +299,6 @@ module.exports = function() {
                 }
             });
         },
-
-        // function(player, callback) {
-        //         // app.logger.info('Player ' + player.user.email + ' assigned ' + player.power + ' in game ' + game.id);
-        //         // Announce game start to room.
-        //     });
-        // },
 
         stop: function(req, res) {
 

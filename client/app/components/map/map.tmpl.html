@@ -65,10 +65,10 @@
 
             <g class="scLayer">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                     ng-repeat="region in $ctrl.phase.regions | filter: { sc: '!!' }"
+                     ng-repeat="province in $ctrl.phase.provinces | filter: { sc: '!!' }"
                      xlink:href="" ng-href="{{$ctrl.service.getSCPath()}}"
-                     ng-attr-transform="{{$ctrl.service.getSCTransform(region.r)}}"
-                     ng-attr-fill="{{$ctrl.service.getSCFill(region.r)}}"
+                     ng-attr-transform="{{$ctrl.service.getSCTransform(province.r)}}"
+                     ng-attr-fill="{{$ctrl.service.getSCFill(province.r)}}"
                      class="sc">
                 </use>
             </g>
@@ -84,25 +84,25 @@
             </g>
 
             <g class="unitLayer">
-                <circle ng-repeat="region in $ctrl.phase.regions | hasUnit:1"
-                        id="{{region.r}}-army"
+                <circle ng-repeat="province in $ctrl.phase.provinces | hasUnit:1"
+                        id="{{province.r}}-army"
                         r="8"
                         stroke="#000"
                         stroke-width="1px"
-                        ng-attr-cx="{{$ctrl.service.getCoordinatesForUnitInRegion(region, 1).x}}"
-                        ng-attr-cy="{{$ctrl.service.getCoordinatesForUnitInRegion(region, 1).y}}"
-                        ng-attr-fill="{{$ctrl.service.getUnitFill(region)}}">
+                        ng-attr-cx="{{$ctrl.service.getCoordinatesForUnitInProvince(province, 1).x}}"
+                        ng-attr-cy="{{$ctrl.service.getCoordinatesForUnitInProvince(province, 1).y}}"
+                        ng-attr-fill="{{$ctrl.service.getUnitFill(province)}}">
                 </circle>
 
-                <rect ng-repeat="region in $ctrl.phase.regions | hasUnit:2"
-                      id="{{region.r}}-fleet"
+                <rect ng-repeat="province in $ctrl.phase.provinces | hasUnit:2"
+                      id="{{province.r}}-fleet"
                       height="8"
                       width="16"
                       stroke="#000"
                       stroke-width="1px"
-                      ng-attr-x="{{$ctrl.service.getCoordinatesForUnitInRegion(region, 2).x - 16/2}}"
-                      ng-attr-y="{{$ctrl.service.getCoordinatesForUnitInRegion(region, 2).y - 8/2}}"
-                      ng-attr-fill="{{$ctrl.service.getUnitFill(region)}}">
+                      ng-attr-x="{{$ctrl.service.getCoordinatesForUnitInProvince(province, 2).x - 16/2}}"
+                      ng-attr-y="{{$ctrl.service.getCoordinatesForUnitInProvince(province, 2).y - 8/2}}"
+                      ng-attr-fill="{{$ctrl.service.getUnitFill(province)}}">
                 </rect>
             </g>
 

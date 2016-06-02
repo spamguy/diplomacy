@@ -9,7 +9,7 @@ describe('hasUnit filter', function() {
         });
     });
 
-    it('filters regions by the presence of a unit', function() {
+    it('filters provinces by the presence of a unit', function() {
         expect(
             filter([
                 { r: 'SPA', sc: [{ r: 'NC' }, { r: 'SC' }] }

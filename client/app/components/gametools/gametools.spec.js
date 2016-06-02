@@ -45,7 +45,7 @@ describe('Game tools component', function() {
                 players: []
             };
             scope.phase = {
-                regions: [{
+                provinces: [{
                     r: 'BUD',
                     unit: {
                         power: 'A',

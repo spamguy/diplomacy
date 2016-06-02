@@ -17,14 +17,14 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
             });
 
             function generateProvinceStatus() {
-                var unitOwner = gameService.getUnitOwnerInRegion(scope.province),
-                    regionName = scope.province.r,
+                var unitOwner = gameService.getUnitOwnerInProvince(scope.province),
+                    provinceName = scope.province.r,
                     provinceStatus;
 
-                // Unit is in a subregion if region mentions subregions but unit owner does not.
+                // Unit is in a subprovince if province mentions subprovinces but unit owner does not.
                 if (unitOwner && scope.province.sr && !unitOwner.sr)
-                    regionName += '/' + unitOwner.r;
-                provinceStatus = '<strong>' + regionName + '</strong> ';
+                    provinceName += '/' + unitOwner.r;
+                provinceStatus = '<strong>' + provinceName + '</strong> ';
 
                 if (unitOwner && unitOwner.unit.order) {
                     switch (unitOwner.unit.order.action) {
