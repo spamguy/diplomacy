@@ -129,6 +129,7 @@ module.exports = function() {
                     }
 
                     // Join.
+                    game.players.push(user);
                     game.addPlayer(user).nodeify(callback);
                 },
 

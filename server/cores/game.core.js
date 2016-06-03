@@ -61,7 +61,8 @@ GameCore.prototype.listOpen = function(cb) {
         include: [{
             model: db.models.User,
             as: 'players',
-            where: { '$players.game_player.is_disabled$': false }
+            where: { '$players.game_player.is_disabled$': false },
+            required: false
         }]
     }).nodeify(cb);
 };
@@ -139,23 +140,28 @@ GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
 };
 
 GameCore.prototype.start = function(queue, gameID, cb) {
+    var self = this; // Keep the correct scope in mind.
     db.sequelize.transaction(function(t) {
         var game,
             phase,
-            variant = this.core.variant.get(game.variant),
-            firstPhase,
+            variant,
             transaction,
             nextPhaseDeadline = moment();
 
         async.waterfall([
             // Fetch the game to start.
             function(callback) {
-                this.get(gameID, callback);
+                self.get(gameID, callback);
             },
 
             // Start the transaction.
             function(_game, callback) {
                 game = _game;
+                self.core.variant.get(game.variant);
+            },
+
+            function(_variant, callback) {
+                variant = _variant;
                 db.sequelize.transaction().nodeify(cb);
             },
 
@@ -164,7 +170,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 transaction = t;
                 if (!game.currentPhase) {
                     nextPhaseDeadline.add(game.getClockFromPhase(variant.phases[0]), 'hours');
-                    this.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline, callback);
+                    self.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline, callback);
                 }
                 else {
                     callback(null, phase);
