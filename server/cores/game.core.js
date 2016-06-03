@@ -98,15 +98,6 @@ GameCore.prototype.create = function(gmID, options, cb) {
     });
 };
 
-/**
- * Updates an existing game.
- * @param  {Object}   game The game.
- * @param  {Function} cb   The callback after execution.
- */
-GameCore.prototype.update = function(game, cb) {
-    game.update().nodeify(cb);
-};
-
 GameCore.prototype.setReadyFlag = function(gameID, userID, state, cb) {
     db.models.GamePlayer.update(
         { is_ready: state },
@@ -158,8 +149,6 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 game = _game;
                 variant = self.core.variant.get(game.variant);
 
-                debugger;
-
                 if (!game.currentPhase) {
                     nextPhaseDeadline.add(game.getClockFromPhase(variant.phases[0]), 'hours');
                     self.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline, callback);
@@ -207,7 +196,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 game.current_phase_id = phase.id;
                 game.status = 1;
 
-                this.update(t, game, callback);
+                game.save({ transaction: t }).nodeify(callback);
             }
         ], function(err, _game) {
             if (err) {

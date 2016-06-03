@@ -45,9 +45,9 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
 
         // Generate region data for this phase, using variant template.
         function(phase, callback) {
-            this.generatePhaseProvinces(t, variant, newPhase, true, callback);
+            this.generatePhaseProvinces(t, variant, phase, true, callback);
         }
-    ]);
+    ], cb);
 };
 
 /**
@@ -63,7 +63,10 @@ PhaseCore.prototype.generatePhaseProvinces = function(t, variant, phase, useDefa
         sp,
         provincesToInsert = [];
 
+    winston.debug(variant.provinces);
+
     for (p = 0; p < variant.provinces.length; p++) {
+        winston.debug('Building new province', { phaseID: phase.id, key: variant.provinces[p].p });
         provincesToInsert.push({
             phaseID: phase.id,
             provinceKey: variant.provinces[p].p,
@@ -178,7 +181,7 @@ PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) 
     //         newPhase.year = phase.getNextPhaseYear(variant);
     //
     //         // If no dislodges and no adjustments, skip this phase.
-    //         if (_.contains(newPhase.phase, 'Retreat') && _.isEmpty(state.Dislodgeds())) {
+    //         if (_.includes(newPhase.phase, 'Retreat') && _.isEmpty(state.Dislodgeds())) {
     //             winston.info('Skipping %s %s phase: no dislodged units', newPhase.phase, newPhase.year, { gameID: game.id });
     //
     //             newPhase.phase = phase.getNextPhasePhase(variant);

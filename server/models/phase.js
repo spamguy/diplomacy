@@ -16,7 +16,8 @@ module.exports = function(sequelize) {
             type: Sequelize.INTEGER,
             allowNull: false,
             defaultValue: 1901
-        }
+        },
+        deadline: Sequelize.DATE
     }, {
         underscored: true
     });

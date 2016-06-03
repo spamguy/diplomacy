@@ -1,4 +1,5 @@
-var Sequelize = require('sequelize');
+var _ = require('lodash'),
+    Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
     return sequelize.define('game', {
@@ -47,6 +48,18 @@ module.exports = function(sequelize) {
             field: 'max_players'
         }
     }, {
-        underscored: true
+        underscored: true,
+        instanceMethods: {
+            getClockFromPhase: function(phaseName) {
+                if (_.includes(phaseName.toLowerCase(), 'move'))
+                    return this.moveClock;
+                else if (_.includes(phaseName.toLowerCase(), 'retreat'))
+                    return this.retreatClock;
+                else if (_.includes(phaseName.toLowerCase(), 'adjust'))
+                    return this.adjustClock;
+                else
+                    throw new Error('The phase type could not be parsed from the name "' + phaseName + '".');
+            }
+        }
     });
 };

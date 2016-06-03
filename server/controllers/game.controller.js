@@ -221,10 +221,6 @@ module.exports = function() {
 
             // Get list of subscribed games and join them as socket.io rooms.
             async.waterfall([
-                // function(callback) {
-                //     core.user.get(userID, callback);
-                // },
-
                 function(callback) {
                     core.game.findByPlayer(userID, callback);
                 }
@@ -261,6 +257,7 @@ module.exports = function() {
         },
 
         start: function(req, res) {
+            var variant;
             app.logger.info('Starting game ' + req.data.gameID);
 
             async.waterfall([
@@ -268,7 +265,8 @@ module.exports = function() {
                     core.game.start(app.queue, req.data.gameID, callback);
                 },
 
-                function(variant, game, callback) {
+                function(game, callback) {
+                    variant = core.variant.get(game.variant);
                     app.logger.info('Players selected for game ' + game.id,
                         _.map(game.players, function(v) { return _.pick(v, ['power', 'email']); }));
                     var optionses = [],
@@ -277,7 +275,7 @@ module.exports = function() {
                     for (p = 0; p < game.players.length; p++) {
                         optionses.push({
                             gameName: game.name,
-                            gameURL: path.join(this.seekrits.get('domain'), 'games', game.id),
+                            gameURL: path.join(app.seekrits.get('domain'), 'games', game.id),
                             subject: '[' + game.name + '] The game is starting!',
                             deadline: game.currentPhase.deadline.format('dddd, MMMM Do [at] h:mm a'),
                             phase: game.currentPhase.phase,
