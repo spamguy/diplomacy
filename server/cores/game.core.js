@@ -140,12 +140,11 @@ GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
 };
 
 GameCore.prototype.start = function(queue, gameID, cb) {
-    var self = this; // Keep the correct scope in mind.
-    db.sequelize.transaction(function(t) {
-        var game,
-            phase,
+    var self = this,
+        game; // Keep the correct scope in mind.
+    db.sequelize.transaction().nodeify(function(dummy, t) {
+        var phase,
             variant,
-            transaction,
             nextPhaseDeadline = moment();
 
         async.waterfall([
@@ -154,20 +153,13 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 self.get(gameID, callback);
             },
 
-            // Start the transaction.
+            // Creates first phase if previous step pulled up nothing.
             function(_game, callback) {
                 game = _game;
-                self.core.variant.get(game.variant);
-            },
+                variant = self.core.variant.get(game.variant);
 
-            function(_variant, callback) {
-                variant = _variant;
-                db.sequelize.transaction().nodeify(cb);
-            },
+                debugger;
 
-            // Creates first phase if previous step pulled up nothing.
-            function(t, callback) {
-                transaction = t;
                 if (!game.currentPhase) {
                     nextPhaseDeadline.add(game.getClockFromPhase(variant.phases[0]), 'hours');
                     self.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline, callback);
@@ -194,7 +186,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 }
 
                 async.each(game.players, function(player, eachCallback) {
-                    player.save({ transaction: transaction }).nodeify(eachCallback);
+                    player.save({ transaction: t }).nodeify(eachCallback);
                 }, callback);
             },
 
@@ -219,12 +211,12 @@ GameCore.prototype.start = function(queue, gameID, cb) {
             }
         ], function(err, _game) {
             if (err) {
-                transaction.rollback();
+                t.rollback();
                 cb(err, null);
             }
             else {
-                transaction.commit();
-                cb(null, _game);
+                t.commit();
+                cb(err, _game);
             }
         });
     });

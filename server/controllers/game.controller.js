@@ -295,7 +295,7 @@ module.exports = function() {
                 }
             ], function(err) {
                 if (err) {
-                    app.logger(err);
+                    app.logger.error(err);
                     res.status(400).json({ error: err });
                 }
             });
