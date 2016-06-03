@@ -44,7 +44,7 @@ GameCore.prototype.findByPlayer = function(id, cb) {
                 where: {
                     $and: {
                         user_id: id,
-                        'game_player.isDisabled': false
+                        isDisabled: false
                     }
                 }
             },
@@ -61,7 +61,7 @@ GameCore.prototype.listOpen = function(cb) {
         include: [{
             model: db.models.User,
             as: 'players',
-            where: { 'game_player.isDisabled': false }
+            where: { '$players.game_player.is_disabled$': false }
         }]
     }).nodeify(cb);
 };
