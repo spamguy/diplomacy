@@ -30,24 +30,31 @@ PhaseCore.prototype.get = function(gameID, phaseIndex, year, cb) {
 };
 
 PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
-    var newPhase = db.models.Phase.build({
-        year: variant.startYear,
-        phase: variant.phases[0],
-        game_id: game.id,
-        deadline: deadline
-    });
+    var self = this,
+        newPhase = db.models.Phase.build({
+            year: variant.startYear,
+            phase: variant.phases[0],
+            game_id: game.id,
+            deadline: deadline
+        });
 
     async.waterfall([
         // Save new phase.
         function(callback) {
-            newPhase.save({ transaction: t }).nodeify(cb);
+            newPhase.save({ transaction: t }).nodeify(callback);
         },
 
         // Generate region data for this phase, using variant template.
         function(phase, callback) {
-            this.generatePhaseProvinces(t, variant, phase, true, callback);
+            newPhase = phase;
+            self.generatePhaseProvinces(t, variant, phase, true, callback);
         }
-    ], cb);
+    ], function(err, result) {
+        if (err)
+            cb(err, null);
+        else
+            cb(null, newPhase);
+    });
 };
 
 /**
@@ -63,10 +70,7 @@ PhaseCore.prototype.generatePhaseProvinces = function(t, variant, phase, useDefa
         sp,
         provincesToInsert = [];
 
-    winston.debug(variant.provinces);
-
     for (p = 0; p < variant.provinces.length; p++) {
-        winston.debug('Building new province', { phaseID: phase.id, key: variant.provinces[p].p });
         provincesToInsert.push({
             phaseID: phase.id,
             provinceKey: variant.provinces[p].p,
@@ -74,7 +78,7 @@ PhaseCore.prototype.generatePhaseProvinces = function(t, variant, phase, useDefa
         });
 
         if (variant.provinces[p].sp) {
-            for (sp = 0; sp < variant.provinces.length; sp++) {
+            for (sp = 0; sp < variant.provinces[p].sp.length; sp++) {
                 provincesToInsert.push({
                     phaseID: phase.id,
                     provinceKey: variant.provinces[p].p,

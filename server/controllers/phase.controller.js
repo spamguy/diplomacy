@@ -38,7 +38,7 @@ module.exports = function() {
                     isComplete = game.isComplete,
                     isGM = game.gm_id === userID,
                     isActive = !isGM && !isComplete && phase.year === currentYear && phase.phase === currentPhase,
-                    playerPower = _.find(game.players, function(p) { return p.player_id.toString() === userID.toString(); }),
+                    playerPower = _.find(game.players, function(p) { return p.user_id === userID; }),
                     powerShortName;
 
                 if (playerPower)

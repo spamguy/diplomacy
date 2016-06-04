@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash'),
+    moment = require('moment'),
     pluralize = require('pluralize'),
     async = require('async'),
     path = require('path'),
@@ -228,14 +229,12 @@ module.exports = function() {
                 if (err)
                     app.logger.error(err);
 
-                _.forEach(games, function(games) {
-                    for (var g = 0; g < games.length; g++) {
-                        req.socket.join(games[g].id);
-                        watchedGames++;
-                    }
+                _.forEach(games, function(game) {
+                    req.socket.join(game.id);
+                    watchedGames++;
                 });
 
-                app.logger.info(userID + ' now watching ' + watchedGames + ' room(s)');
+                app.logger.info(userID + ' now watching ' + watchedGames + ' ' + pluralize('room', watchedGames));
             });
         },
 
@@ -277,11 +276,11 @@ module.exports = function() {
                             gameName: game.name,
                             gameURL: path.join(app.seekrits.get('domain'), 'games', game.id),
                             subject: '[' + game.name + '] The game is starting!',
-                            deadline: game.currentPhase.deadline.format('dddd, MMMM Do [at] h:mm a'),
+                            deadline: moment(game.currentPhase.deadline).format('dddd, MMMM Do [at] h:mm a'),
                             phase: game.currentPhase.phase,
                             year: game.currentPhase.year,
-                            email: game.players[p].user.email,
-                            powerDesignation: 'You have been selected to play ' + variant.powers[game.players[p].power].name +
+                            email: game.players[p].email,
+                            powerDesignation: 'You have been selected to play ' + variant.powers[game.players[p].game_player.power].name +
                                 ' in the game ' + game.name + '. You can start playing right now by visiting the game page at '
                         });
                     }

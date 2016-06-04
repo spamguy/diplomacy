@@ -158,9 +158,19 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 }
             },
 
-            // Assign powers to players.
+            // Link the new season and set the status to active. Do this last to conveniently pass game back to controller.
             function(_phase, callback) {
                 phase = _phase;
+
+                game.current_phase_id = phase.id;
+                game.status = 1;
+
+                game.save({ transaction: t }).nodeify(callback);
+            },
+
+            // Assign powers to players.
+            function(_game, callback) {
+                game = _game;
 
                 // TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
                 var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
@@ -170,12 +180,12 @@ GameCore.prototype.start = function(queue, gameID, cb) {
 
                 for (p = 0; p < game.players.length; p++) {
                     player = game.players[p];
-                    player.power = shuffledSetOfPowers[shuffledSetIndex];
+                    player.game_player.power = shuffledSetOfPowers[shuffledSetIndex];
                     shuffledSetIndex++;
                 }
 
                 async.each(game.players, function(player, eachCallback) {
-                    player.save({ transaction: t }).nodeify(eachCallback);
+                    player.game_player.save({ transaction: t }).nodeify(eachCallback);
                 }, callback);
             },
 
@@ -187,25 +197,19 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 job.delay(nextPhaseDeadline.toDate())
                     .backoff({ delay: 'exponential' })
                     .save(callback);
-            },
+            }
 
             // TODO: Email the GM too.
-
-            // Link the new season and set the status to active. Do this last to conveniently pass game back to controller.
-            function(callback) {
-                game.current_phase_id = phase.id;
-                game.status = 1;
-
-                game.save({ transaction: t }).nodeify(callback);
-            }
-        ], function(err, _game) {
+        ], function(err, result) {
             if (err) {
                 t.rollback();
                 cb(err, null);
             }
             else {
                 t.commit();
-                cb(err, _game);
+                game.reload().then(function(game) {
+                    cb(err, game);
+                });
             }
         });
     });
