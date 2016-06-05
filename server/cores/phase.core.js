@@ -47,7 +47,7 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
         // Generate region data for this phase, using variant template.
         function(phase, callback) {
             newPhase = phase;
-            self.generatePhaseProvinces(t, variant, phase, true, callback);
+            self.generatePhaseProvincesFromTemplate(t, variant, phase, callback);
         }
     ], function(err, result) {
         if (err)
@@ -62,29 +62,39 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
  * @param  {Transaction} t           The transaction.
  * @param  {Object}      variant     The variant template.
  * @param  {Phase}       phase       The phase owning the new provinces.
- * @param  {Boolean}     useDefault  Whether to use variant info to set data.
  * @param  {Function}    cb          The callback.
  */
-PhaseCore.prototype.generatePhaseProvinces = function(t, variant, phase, useDefault, cb) {
+PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, phase, cb) {
     var p,
         sp,
-        provincesToInsert = [];
+        provincesToInsert = [],
+        province;
 
     for (p = 0; p < variant.provinces.length; p++) {
+        province = variant.provinces[p];
         provincesToInsert.push({
             phaseID: phase.id,
-            provinceKey: variant.provinces[p].p,
-            subProvinceKey: null
+            provinceKey: province.p,
+            subProvinceKey: null,
+            supplyCentre: province.default ? province.default.power : null,
+            supplyCentreX: province.sc ? province.sc.x : null,
+            supplyCentreY: province.sc ? province.sc.y : null,
+            unitType: province.default && !province.default.sp ? province.default.type : null,
+            unitOwner: province.default && !province.default.sp ? province.default.power : null,
+            unitX: province.x,
+            unitY: province.y
         });
 
         if (variant.provinces[p].sp) {
-            for (sp = 0; sp < variant.provinces[p].sp.length; sp++) {
+            for (sp = 0; sp < province.sp.length; sp++) {
                 provincesToInsert.push({
                     phaseID: phase.id,
-                    provinceKey: variant.provinces[p].p,
-                    subProvinceKey: variant.provinces[p].sp[sp].p,
-                    unitX: variant.provinces[p].sp[sp].x,
-                    unitY: variant.provinces[p].sp[sp].y
+                    provinceKey: province.p,
+                    subProvinceKey: province.sp[sp].p,
+                    unitX: province.sp[sp].x,
+                    unitY: province.sp[sp].y,
+                    unitType: province.default && province.default.sp ? province.default.type : null,
+                    unitOwner: province.default && province.default.sp ? province.default.power : null
                 });
             }
         }

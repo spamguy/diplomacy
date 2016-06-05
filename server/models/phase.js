@@ -19,6 +19,24 @@ module.exports = function(sequelize) {
         },
         deadline: Sequelize.DATE
     }, {
-        underscored: true
+        underscored: true,
+        instanceMethods: {
+            toJSON: function(isAdmin) {
+                var out = this.get(),
+                    provinces = { },
+                    p;
+
+                for (p = 0; p < out.provinces.length; p++) {
+                    provinces[out.provinces[p].provinceKey] = {
+                        isFailed: out.provinces[p].isFailed,
+                        isAdmin: isAdmin
+                    };
+                }
+
+                out.provinces = provinces;
+
+                return out;
+            }
+        }
     });
 };

@@ -24,19 +24,19 @@ module.exports = function(sequelize) {
             allowNull: false
         },
         moveClock: {
-            type: Sequelize.DECIMAL,
+            type: Sequelize.DECIMAL(6, 2),
             defaultValue: 24.0,
             allowNull: false,
             field: 'move_clock'
         },
         retreatClock: {
-            type: Sequelize.DECIMAL,
+            type: Sequelize.DECIMAL(6, 2),
             defaultValue: 24.0,
             allowNull: false,
             field: 'retreat_clock'
         },
         adjustClock: {
-            type: Sequelize.DECIMAL,
+            type: Sequelize.DECIMAL(6, 2),
             defaultValue: 24.0,
             allowNull: false,
             field: 'adjust_clock'

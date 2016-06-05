@@ -41,7 +41,7 @@ angular.module('games', [
         }
     })
     .state('games.view', {
-        url: '/{id:[0-9a-fA-F]{24}}/{year:int}/:phase',
+        url: '/{id}/{year:int}/:phase',
         controller: 'ViewController',
         templateUrl: 'app/games/view/view.html',
         data: {

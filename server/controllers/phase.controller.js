@@ -45,15 +45,15 @@ module.exports = function() {
                     powerShortName = playerPower.power;
 
                 // Incomplete games and active phases are sanitised for players' protection.
-                if (isActive) {
-                    for (p = 0; p < phase.provinces.length; p++) {
-                        province = province[p];
-                        if (province.unitPower !== powerShortName)
-                            _.omit(province, ['unitTarget', 'unitSubTarget', 'unitAction']);
-                    }
-                }
+                // if (isActive) {
+                //     for (p = 0; p < phase.provinces.length; p++) {
+                //         province = province[p];
+                //         if (province.unitPower !== powerShortName)
+                //             _.omit(province, ['unitTarget', 'unitSubTarget', 'unitAction']);
+                //     }
+                // }
 
-                return res.json(phase.toJSON());
+                return res.json(phase.toJSON(isActive));
             });
         },
 
