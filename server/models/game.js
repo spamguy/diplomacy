@@ -59,6 +59,10 @@ module.exports = function(sequelize) {
                     return this.adjustClock;
                 else
                     throw new Error('The phase type could not be parsed from the name "' + phaseName + '".');
+            },
+
+            currentPhase: function() {
+                return this.phases[0];
             }
         }
     });

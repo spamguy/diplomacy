@@ -15,8 +15,6 @@ module.exports = function(sequelize) {
     models.Phase.belongsTo(models.Game);
     models.Game.hasMany(models.Phase);
 
-    models.Game.belongsTo(models.Phase, { foreignKey: 'current_phase_id', as: 'currentPhase' });
-
     models.PhaseProvince.belongsTo(models.Phase, { foreignKey: 'phase_id' });
     models.Phase.hasMany(models.PhaseProvince, { as: 'provinces' });
 

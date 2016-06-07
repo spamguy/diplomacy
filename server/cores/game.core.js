@@ -17,8 +17,9 @@ GameCore.prototype.get = function(id, cb) {
             as: 'players'
         }, {
             model: db.models.Phase,
-            as: 'currentPhase'
-        }]
+            as: 'phases'
+        }],
+        order: [[db.models.Phase, 'created_at', 'DESC']]
     }).nodeify(cb);
 };
 
@@ -30,8 +31,9 @@ GameCore.prototype.findByGM = function(id, cb) {
             as: 'players'
         }, {
             model: db.models.Phase,
-            as: 'currentPhase'
-        }]
+            as: 'phases'
+        }],
+        order: [[db.models.Phase, 'created_at', 'DESC']]
     }).nodeify(cb);
 };
 
