@@ -76,23 +76,24 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 });
             };
 
-            gameService.getMoveData(scope.game.id).then(function(phase) {
-                switch (scope.game.status) {
-                case 0:
-                    scope.phaseDescription = '(waiting on ' + (scope.game.maxPlayers - scope.game.players.length) + ' more players)';
-                    scope.readableTimer = humanizeDuration(scope.game.moveClock * 60 * 60 * 1000) + ' deadline';
-                    break;
-                case 1:
-                    var timeUntilDeadline = new Date(phase.deadline).getTime() - new Date().getTime();
-                    scope.phaseDescription = phase.phase + ' ' + phase.year;
-                    scope.readableTimer = humanizeDuration(timeUntilDeadline, { largest: 2, round: true });
-                    break;
-                case 2:
-                    scope.phaseDescription = 'Complete';
-                    scope.readableTimer = 'Complete';
-                    break;
-                }
-            });
+            // gameService.getMoveData(scope.game.id).then(function(phase) {
+            switch (scope.game.status) {
+            case 0:
+                scope.phaseDescription = '(waiting on ' + (scope.game.maxPlayers - scope.game.players.length) + ' more players)';
+                scope.readableTimer = humanizeDuration(scope.game.moveClock * 60 * 60 * 1000) + ' deadline';
+                break;
+            case 1:
+                var currentPhase = scope.game.phases[0],
+                    timeUntilDeadline = new Date(currentPhase.deadline).getTime() - new Date().getTime();
+                scope.phaseDescription = currentPhase.season + ' ' + currentPhase.year;
+                scope.readableTimer = humanizeDuration(timeUntilDeadline, { largest: 2, round: true });
+                break;
+            case 2:
+                scope.phaseDescription = 'Complete';
+                scope.readableTimer = 'Complete';
+                break;
+            }
+            // });
         }
     };
 }])

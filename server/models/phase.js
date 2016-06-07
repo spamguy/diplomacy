@@ -22,7 +22,7 @@ module.exports = function(sequelize) {
         underscored: true,
         instanceMethods: {
             toJSON: function(isAdmin) {
-                var out = this.get(),
+                var out = this.get({ plain: true }),
                     provinces = { },
                     p;
 

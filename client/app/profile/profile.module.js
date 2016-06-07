@@ -35,7 +35,7 @@ angular.module('profile', [
         templateUrl: 'app/profile/verify/verify.html'
     })
     .state('profile.view', {
-        url: '/{id:[0-9a-fA-F]{24}}',
+        url: '/:id',
         templateUrl: 'app/profile/view/view.html',
         controller: 'ProfileViewController',
         data: {

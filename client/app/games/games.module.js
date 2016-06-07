@@ -41,22 +41,22 @@ angular.module('games', [
         }
     })
     .state('games.view', {
-        url: '/{id}/{year:int}/:phase',
+        url: '/{id}/{phase:int}',
         controller: 'ViewController',
         templateUrl: 'app/games/view/view.html',
         data: {
             restricted: true
         },
-        params: {
-            year: {
-                value: null,
-                squash: true
-            },
-            phase: {
-                value: null,
-                squash: true
-            }
-        },
+        // params: {
+        //     year: {
+        //         value: null,
+        //         squash: true
+        //     },
+        //     phase: {
+        //         value: null,
+        //         squash: true
+        //     }
+        // },
         resolve: {
             variant: ['gameService', 'game', function(gameService, game) {
                 return gameService.getVariant(game.variant);
@@ -64,9 +64,9 @@ angular.module('games', [
             game: ['gameService', '$stateParams', function(gameService, $stateParams) {
                 return gameService.getGame($stateParams.id);
             }],
-            phase: ['userService', 'gameService', 'game', '$stateParams', function(userService, gameService, game, $stateParams) {
-                return gameService.getMoveData(game.id, $stateParams.year, $stateParams.phase);
-            }],
+            // phase: ['userService', 'gameService', 'game', '$stateParams', function(userService, gameService, game, $stateParams) {
+            //     return gameService.getMoveData(game.id, $stateParams.year, $stateParams.phase);
+            // }],
             svg: ['gameService', 'game', function(gameService, game) {
                 return gameService.getVariantSVG(game.variant);
             }]

@@ -63,6 +63,21 @@ module.exports = function(sequelize) {
 
             currentPhase: function() {
                 return this.phases[0];
+            },
+
+            // Filter out identifying information in gunboat games.
+            toJSON: function(isAnonymous, userID) {
+                var out = this.get({ plain: true }),
+                    p;
+
+                for (p = 0; p < out.players.length; p++) {
+                    if (isAnonymous && userID !== out.players[p].id) {
+                        delete out.players[p].id;
+                        delete out.players[p].email;
+                    }
+                }
+
+                return out;
             }
         }
     });

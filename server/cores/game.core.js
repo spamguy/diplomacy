@@ -62,6 +62,7 @@ GameCore.prototype.listOpen = function(cb) {
         },
         include: [{
             model: db.models.User,
+            attributes: ['id', 'email'],
             as: 'players',
             where: { '$players.game_player.is_disabled$': false },
             required: false

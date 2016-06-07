@@ -66,7 +66,7 @@ module.exports = function() {
                     return res.status(400).json({ error: err });
                 }
 
-                return res.json(games);
+                return res.json(_.map(games, function(m) { return m.toJSON(true); }));
             });
         },
 
@@ -77,7 +77,7 @@ module.exports = function() {
                     return res.status(400).json({ error: err });
                 }
 
-                return res.json(games);
+                return res.json(_.map(games, function(m) { return m.toJSON(true); }));
             });
         },
 
@@ -85,7 +85,7 @@ module.exports = function() {
             core.game.get(req.data.gameID, function(err, game) {
                 if (err)
                     console.error(err);
-                return res.json(game);
+                return res.json(game.toJSON(true));
             });
         },
 
@@ -93,7 +93,7 @@ module.exports = function() {
             core.game.listOpen(function(err, games) {
                 if (err)
                     console.error(err);
-                return res.json(games);
+                return res.json(_.map(games, function(m) { return m.toJSON(true); }));
             });
         },
 

@@ -25,7 +25,7 @@
     "angular-ui-router": "~0.2.13",
     "d3": "3.5.12",
     "humanize-duration": "3.8.0",
-    "lodash": "~3.10.1",
+    "lodash": "4.13.1",
     "moment": "2.13.0",
     "socket.io-client": "1.4.4",
     "v-accordion": "1.5.1",

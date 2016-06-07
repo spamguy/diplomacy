@@ -78,6 +78,8 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         getMoveData: function(gameID, year, phase) {
+            console.warn('This method is deprecated. Moves should already be present in the game data.');
+
             var options = { gameID: gameID };
 
             // Year and phase must both be provided to be valid.
