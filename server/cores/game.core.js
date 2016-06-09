@@ -38,21 +38,12 @@ GameCore.prototype.findByGM = function(id, cb) {
 };
 
 GameCore.prototype.findByPlayer = function(id, cb) {
-    db.models.Game.findAll({
-        include: [{
-            model: db.models.User,
-            as: 'players',
-            through: {
-                where: {
-                    $and: {
-                        user_id: id,
-                        isDisabled: false
-                    }
-                }
-            },
-            required: true
-        }]
-    }).nodeify(cb);
+    this.core.user.get(id, function(err, user) {
+        if (err)
+            cb(err, null);
+
+        return cb(null, user.games());
+    });
 };
 
 GameCore.prototype.listOpen = function(cb) {

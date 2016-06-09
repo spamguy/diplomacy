@@ -1,41 +1,26 @@
-var Sequelize = require('sequelize');
+module.exports = function(bookshelf) {
+    var user,
+        users;
 
-module.exports = function(sequelize) {
-    return sequelize.define('user', {
-        id: {
-            type: Sequelize.UUID,
-            defaultValue: Sequelize.UUIDV4,
-            primaryKey: true
+    user = bookshelf.Model.extend({
+        tableName: 'users',
+        hasTimestamps: true,
+
+        games: function() {
+            return this.belongsToMany('Game', 'game_players', 'user_id', 'game_id');
         },
-        email: {
-            type: Sequelize.TEXT,
-            unique: true
-        },
-        tempEmail: {
-            type: Sequelize.TEXT,
-            field: 'temp_email'
-        },
-        password: Sequelize.TEXT,
-        passwordSalt: {
-            type: Sequelize.TEXT,
-            field: 'password_salt'
-        },
-        actionCount: {
-            type: Sequelize.INTEGER,
-            defaultValue: 1,
-            field: 'action_count'
-        },
-        failedActionCount: {
-            type: Sequelize.INTEGER,
-            defaultValue: 0,
-            field: 'failed_action_count'
-        }
-    }, {
-        underscored: true,
-        instanceMethods: {
-            getDedication: function() {
-                return ((this.actionCount - this.failedActionCount) / this.actionCount) * 100;
-            }
+
+        getDedication: function() {
+            return ((this.get('actionCount') - this.get('failedActionCount')) / this.get('actionCount')) * 100;
         }
     });
+
+    users = bookshelf.Collection.extend({
+        model: user
+    });
+
+    return {
+        User: bookshelf.model('User', user),
+        Users: bookshelf.collection('Users', users)
+    };
 };

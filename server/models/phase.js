@@ -1,42 +1,22 @@
-var Sequelize = require('sequelize');
+module.exports = function(bookshelf) {
+    var phase,
+        phases;
 
-module.exports = function(sequelize) {
-    return sequelize.define('phase', {
-        id: {
-            type: Sequelize.UUID,
-            defaultValue: Sequelize.UUIDV4,
-            primaryKey: true
-        },
-        season: {
-            type: Sequelize.TEXT,
-            allowNull: false,
-            defaultValue: 'Spring Movement'
-        },
-        year: {
-            type: Sequelize.INTEGER,
-            allowNull: false,
-            defaultValue: 1901
-        },
-        deadline: Sequelize.DATE
-    }, {
-        underscored: true,
-        instanceMethods: {
-            toJSON: function(isAdmin) {
-                var out = this.get({ plain: true }),
-                    provinces = { },
-                    p;
+    phase = bookshelf.Model.extend({
+        tableName: 'phases',
+        hasTimestamps: true,
 
-                for (p = 0; p < out.provinces.length; p++) {
-                    provinces[out.provinces[p].provinceKey] = {
-                        isFailed: out.provinces[p].isFailed,
-                        isAdmin: isAdmin
-                    };
-                }
-
-                out.provinces = provinces;
-
-                return out;
-            }
+        game: function() {
+            return this.belongsTo('Game');
         }
     });
+
+    phases = bookshelf.Collection.extend({
+        model: phase
+    });
+
+    return {
+        Phase: bookshelf.model('Phase', phase),
+        Phases: bookshelf.collection('Phases', phases)
+    };
 };

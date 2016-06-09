@@ -79,7 +79,7 @@ module.exports = function() {
 
                 function(user, callback) {
                     if (!user) {
-                        core.user.create({
+                        core.user.save({
                             tempEmail: email
                         }, callback);
                     }
@@ -191,7 +191,7 @@ function authenticate(userCore, req, cb) {
             if (!maybeUser) return done(null, null);
 
             // Find user with username, then compare its hash against what was provided.
-            pbkdf2.verify(maybeUser.passwordSalt, maybeUser.password, password, function(err, isVerified) {
+            pbkdf2.verify(maybeUser.get('passwordSalt'), maybeUser.get('password'), password, function(err, isVerified) {
                 if (!isVerified)
                     return done(err, null);
                 else

@@ -7,41 +7,34 @@ function UserCore(options) {
 }
 
 UserCore.prototype.get = function(id, cb) {
-    db.models.User.findById(id).nodeify(cb);
+    db.models.User
+        .where('id', id)
+        .fetch({ withRelated: ['games'] })
+        .asCallback(cb);
 };
 
 UserCore.prototype.getByEmail = function(email, cb) {
     if (!email)
         cb(new Error('No email address was supplied.'));
 
-    db.models.User.findOne({
-        where: { email: email },
-        attributes: ['id', 'email', 'passwordSalt', 'password']
-    }).nodeify(cb);
+    db.models.User
+        .where('email', email)
+        .fetch({ columns: ['id', 'email', 'password', 'password_salt'] })
+        .asCallback(cb);
 };
 
 UserCore.prototype.getStubByEmail = function(email, cb) {
     if (!email)
         cb(new Error('No email address was supplied.'));
 
-    db.models.User.findOne({
-        where: {
-            $and: {
-                tempEmail: email,
-                password: null
-            }
-        }
-    }).nodeify(cb);
+    db.models.User
+        .where({ tempEmail: email, password: null })
+        .fetch()
+        .asCallback(cb);
 };
 
-UserCore.prototype.create = function(options, cb) {
-    var user = db.models.User.build(options);
-
-    this.save(user, cb);
-};
-
-UserCore.prototype.save = function(user, cb) {
-    user.save().nodeify(cb);
+UserCore.prototype.save = function(options, cb) {
+    db.models.User.save(options).asCallback(cb);
 };
 
 UserCore.prototype.adjustActionCount = function(playerID, penalty, cb) {

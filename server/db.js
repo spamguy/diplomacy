@@ -2,18 +2,18 @@ var path = require('path'),
     seekrits = require('nconf')
         .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
         .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
-    Sequelize = require('sequelize'),
-    sequelize = new Sequelize(
-        seekrits.get('db:name'),
-        seekrits.get('db:user'),
-        seekrits.get('db:password'), {
-            dialect: 'postgres',
-            logging: function(log) {
-                require('./logger').debug(log);
-            }
+    knex = require('knex')({
+        debug: true,
+        client: 'postgresql',
+        connection: {
+            host: '127.0.0.1',
+            database: seekrits.get('db:name'),
+            user: seekrits.get('db:user'),
+            password: seekrits.get('db:password')
         }
-    );
+    }),
+    bookshelf = require('bookshelf')(knex);
 
-module.exports.Sequelize = Sequelize;
-module.exports.sequelize = sequelize;
-module.exports.models = require('./models')(sequelize);
+bookshelf.plugin(['bookshelf-camelcase', 'registry']);
+
+module.exports.models = require('./models').init(bookshelf);
