@@ -10,31 +10,17 @@ function GameCore(options) {
 }
 
 GameCore.prototype.get = function(id, cb) {
-    db.models.Game.findOne({
-        where: { id: id },
-        include: [{
-            model: db.models.User,
-            as: 'players'
-        }, {
-            model: db.models.Phase,
-            as: 'phases'
-        }],
-        order: [[db.models.Phase, 'created_at', 'DESC']]
-    }).nodeify(cb);
+    db.models.Game
+        .where('id', id)
+        .fetch({ withRelated: ['players', 'phases'] })
+        .asCallback(cb);
 };
 
 GameCore.prototype.findByGM = function(id, cb) {
-    db.models.Game.findAll({
-        where: { gm_id: id },
-        include: [{
-            model: db.models.User,
-            as: 'players'
-        }, {
-            model: db.models.Phase,
-            as: 'phases'
-        }],
-        order: [[db.models.Phase, 'created_at', 'DESC']]
-    }).nodeify(cb);
+    db.models.Game
+        .where('gm_id', id)
+        .fetchAll({ withRelated: ['players', 'phases'] })
+        .asCallback(cb);
 };
 
 GameCore.prototype.findByPlayer = function(id, cb) {
@@ -42,7 +28,7 @@ GameCore.prototype.findByPlayer = function(id, cb) {
         if (err)
             cb(err, null);
 
-        return cb(null, user.games());
+        return cb(null, user.related('games'));
     });
 };
 
@@ -127,7 +113,7 @@ GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
 GameCore.prototype.start = function(queue, gameID, cb) {
     var self = this,
         game; // Keep the correct scope in mind.
-    db.sequelize.transaction().nodeify(function(dummy, t) {
+    db.bookshelf.transaction().nodeify(function(e, t) {
         var phase,
             variant,
             nextPhaseDeadline = moment();
@@ -159,7 +145,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 game.current_phase_id = phase.id;
                 game.status = 1;
 
-                game.save({ transaction: t }).nodeify(callback);
+                game.save(null, { transacting: t }).asCallback(callback);
             },
 
             // Assign powers to players.

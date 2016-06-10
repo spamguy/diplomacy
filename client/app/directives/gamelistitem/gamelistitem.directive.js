@@ -30,9 +30,7 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
             };
 
             scope.goToGame = function() {
-                // Don't warp to games if you don't already belong.
-                if (!scope.joinable)
-                    $state.go('games.view', { id: scope.game.id });
+                $state.go('games.view', { id: scope.game.id });
             };
 
             scope.showJoinDialog = function(event) {

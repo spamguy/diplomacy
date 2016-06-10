@@ -9,7 +9,7 @@ function UserCore(options) {
 UserCore.prototype.get = function(id, cb) {
     db.models.User
         .where('id', id)
-        .fetch({ withRelated: ['games'] })
+        .fetch({ withRelated: ['games.players', 'games.phases'] })
         .asCallback(cb);
 };
 

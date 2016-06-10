@@ -11,17 +11,17 @@
     </md-tab>
     <md-tab label="Inactive Games">
         <md-list>
-            <md-list-item ng-repeat="game in playing.concat(GMing) | filter: { status: 0 }" class="gameItem">
+            <md-list-item ng-repeat="game in playing | filter: { status: 0 }" class="gameItem">
                 <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="currentUser" />
             </md-list-item>
         </md-list>
-        <div layout="row" layout-align="center center" layout-margin ng-if="!(playing.concat(GMing) | filter: { status: 0 }).length">
+        <div layout="row" layout-align="center center" layout-margin ng-if="!(playing | filter: { status: 0 }).length">
             <h1 class="md-display-1">Nothing here.</h1>
         </div>
     </md-tab>
     <md-tab label="Mastering">
         <md-list>
-            <md-list-item ng-repeat="game in GMing | filter: { status: 1 }" class="gameItem">
+            <md-list-item ng-repeat="game in GMing" class="gameItem">
                 <sg-game-list-item game="game" variant="variants[game.variant]" joinable="false" user="currentUser" />
             </md-list-item>
         </md-list>

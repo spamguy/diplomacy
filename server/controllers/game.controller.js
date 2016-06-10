@@ -66,7 +66,7 @@ module.exports = function() {
                     return res.status(400).json({ error: err });
                 }
 
-                return res.json(_.map(games, function(m) { return m.toJSON(true); }));
+                return res.json(games.toJSON());
             });
         },
 
@@ -77,7 +77,7 @@ module.exports = function() {
                     return res.status(400).json({ error: err });
                 }
 
-                return res.json(_.map(games, function(m) { return m.toJSON(true); }));
+                return res.json(games.toJSON());
             });
         },
 
@@ -130,8 +130,7 @@ module.exports = function() {
                     }
 
                     // Join.
-                    game.players.push(user);
-                    game.addPlayer(user).nodeify(callback);
+                    game.players().attach(user.get('id'));
                 },
 
                 function(result, callback) {
@@ -142,7 +141,7 @@ module.exports = function() {
                     req.socket.join(gameID);
 
                     // If everyone is here, signal the game can (re)start.
-                    if (game.players.length === game.maxPlayers) {
+                    if (game.related('players').length === game.maxPlayers) {
                         req.io.route('game:start', { gameID: gameID });
                         return;
                     }
@@ -229,8 +228,8 @@ module.exports = function() {
                 if (err)
                     app.logger.error(err);
 
-                _.forEach(games, function(game) {
-                    req.socket.join(game.id);
+                games.each(function(game) {
+                    req.socket.join(game.get('id'));
                     watchedGames++;
                 });
 

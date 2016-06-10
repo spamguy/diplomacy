@@ -3,7 +3,7 @@ angular.module('map.component')
     var vm = this,
         normalisedVariantName = gameService.getNormalisedVariantName(vm.variant.name),
         paths = vm.svg.getElementsByTagName('path'),
-        provinceReferenceDictionary = _.indexBy(this.variant.provinces, 'r'),
+        provinceReferenceDictionary = _.keyBy(this.variant.provinces, 'r'),
         p,
         i,
         province,

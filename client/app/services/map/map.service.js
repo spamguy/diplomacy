@@ -10,7 +10,7 @@ angular.module('mapService', ['gameService'])
             this.game = game;
             this.phase = phase;
 
-            provinceReferenceDictionary = _.indexBy(this.variant.provinces, 'r');
+            provinceReferenceDictionary = _.keyBy(this.variant.provinces, 'r');
         };
 
     service.prototype.getSCFill = getSCFill;

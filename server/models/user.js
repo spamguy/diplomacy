@@ -7,7 +7,11 @@ module.exports = function(bookshelf) {
         hasTimestamps: true,
 
         games: function() {
-            return this.belongsToMany('Game', 'game_players', 'user_id', 'game_id');
+            return this.belongsToMany('Game', 'game_players').withPivot(['power']);
+        },
+
+        GMedGames: function() {
+            return this.hasMany('Game', 'gm_id');
         },
 
         getDedication: function() {

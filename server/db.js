@@ -16,4 +16,5 @@ var path = require('path'),
 
 bookshelf.plugin(['bookshelf-camelcase', 'registry']);
 
+module.exports.bookshelf = bookshelf;
 module.exports.models = require('./models').init(bookshelf);
