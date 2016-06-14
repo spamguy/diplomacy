@@ -19,7 +19,11 @@ GameCore.prototype.get = function(id, cb) {
 GameCore.prototype.findByGM = function(id, cb) {
     db.models.Game
         .where('gm_id', id)
-        .fetchAll({ withRelated: ['players', 'phases'] })
+        .fetchAll({ withRelated: ['players', {
+            phases: function(query) {
+                query.orderBy('created_at').limit(1);
+            }
+        }] })
         .asCallback(cb);
 };
 
@@ -33,18 +37,25 @@ GameCore.prototype.findByPlayer = function(id, cb) {
 };
 
 GameCore.prototype.listOpen = function(cb) {
-    db.models.Game.findAll({
-        where: {
-            status: { $in: [0, 2] }
-        },
-        include: [{
-            model: db.models.User,
-            attributes: ['id', 'email'],
-            as: 'players',
-            where: { '$players.game_player.is_disabled$': false },
-            required: false
-        }]
-    }).nodeify(cb);
+    db.models.Game
+        .query(function(query) {
+            query.select('g.*')
+                .from('games AS g')
+                .leftOuterJoin(function() {
+                    this.select('game_id', db.bookshelf.knex.raw('coalesce(count(*), 0) as "player_count"'))
+                        .from('game_players')
+                        .groupBy('game_id')
+                        .as('gp');
+                }, 'gp.game_id', 'g.id')
+                .where('player_count', '<', db.bookshelf.knex.raw('g.max_players'))
+                .orWhereNull('player_count');
+        })
+        .fetchAll({ withRelated: {
+            phases: function(query) {
+                query.orderBy('created_at').limit(1);
+            }
+        } })
+        .asCallback(cb);
 };
 
 GameCore.prototype.create = function(gmID, options, cb) {

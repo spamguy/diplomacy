@@ -9,7 +9,11 @@ function UserCore(options) {
 UserCore.prototype.get = function(id, cb) {
     db.models.User
         .where('id', id)
-        .fetch({ withRelated: ['games.players', 'games.phases'] })
+        .fetch({ withRelated: ['games.players', {
+            'games.phases': function(query) {
+                query.orderBy('created_at', 'desc').limit(1);
+            }
+        }]})
         .asCallback(cb);
 };
 

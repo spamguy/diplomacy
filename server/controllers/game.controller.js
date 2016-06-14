@@ -93,7 +93,7 @@ module.exports = function() {
             core.game.listOpen(function(err, games) {
                 if (err)
                     console.error(err);
-                return res.json(_.map(games, function(m) { return m.toJSON(true); }));
+                return res.json(games.toJSON());
             });
         },
 
