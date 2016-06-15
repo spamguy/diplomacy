@@ -66,7 +66,7 @@ module.exports = function() {
                     return res.status(400).json({ error: err });
                 }
 
-                return res.json(games.toJSON());
+                return res.json(games.toJSON({ currentUserID: req.socket.decoded_token.id }));
             });
         },
 
@@ -77,7 +77,7 @@ module.exports = function() {
                     return res.status(400).json({ error: err });
                 }
 
-                return res.json(games.toJSON());
+                return res.json(games.toJSON({ currentUserID: req.socket.decoded_token.id }));
             });
         },
 
@@ -85,7 +85,7 @@ module.exports = function() {
             core.game.get(req.data.gameID, function(err, game) {
                 if (err)
                     console.error(err);
-                return res.json(game.toJSON(true));
+                return res.json(game.toJSON({ currentUserID: req.socket.decoded_token.id }));
             });
         },
 
@@ -93,7 +93,7 @@ module.exports = function() {
             core.game.listOpen(function(err, games) {
                 if (err)
                     console.error(err);
-                return res.json(games.toJSON());
+                return res.json(games.toJSON({ currentUserID: req.socket.decoded_token.id }));
             });
         },
 
@@ -130,18 +130,24 @@ module.exports = function() {
                     }
 
                     // Join.
-                    game.players().attach(user.get('id'));
+                    game.related('players').attach({
+                        user_id: user.get('id'),
+                        game_id: game.get('id'),
+                        power: '?',
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    }).asCallback(callback);
                 },
 
                 function(result, callback) {
                     var p,
-                        gameData = { gamename: game.name };
+                        gameData = { gamename: game.get('name') };
 
                     // Subscribe to game.
                     req.socket.join(gameID);
 
                     // If everyone is here, signal the game can (re)start.
-                    if (game.related('players').length === game.maxPlayers) {
+                    if (game.related('players').length === game.get('maxPlayers')) {
                         req.io.route('game:start', { gameID: gameID });
                         return;
                     }
@@ -151,14 +157,14 @@ module.exports = function() {
                     req.socket.broadcast.to(gameID).emit('game:join:announce', gameData);
 
                     // Send join alert email to other subscribers.
-                    for (p = 0; p < game.players.length; p++) {
+                    for (p = 0; p < game.related('players').length; p++) {
                         optionses.push({
-                            subject: '[' + game.name + '] A new player has joined',
-                            gameName: game.name,
-                            personInflection: pluralize('person', game.maxPlayers - game.players.length),
-                            playerCount: game.players.length,
-                            email: game.players[p].email,
-                            remainingSlots: game.maxPlayers - game.players.length
+                            subject: '[' + game.get('name') + '] A new player has joined',
+                            gameName: game.get('name'),
+                            personInflection: pluralize('person', game.get('maxPlayers') - game.related('players').length),
+                            playerCount: game.related('players').length,
+                            email: game.related('players').at(p).get('email'),
+                            remainingSlots: game.get('maxPlayers') - game.related('players').length
                         });
                     }
                     mailer.sendMany('join', optionses, callback);

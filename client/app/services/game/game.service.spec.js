@@ -20,16 +20,16 @@ describe('gameService', function() {
         game = {
             gm_id: '116',
             players: [{
-                player_id: '123',
+                id: '123',
                 power: 'Q'
             }, {
-                player_id: '456',
+                id: '456',
                 power: 'Z'
             }, {
-                player_id: '789',
+                id: '789',
                 power: 'N'
             }, {
-                player_id: '666',
+                id: '666',
                 power: 'B'
             }]
         };

@@ -31,6 +31,6 @@ describe('Games module', function() {
     });
 
     it('resolves game URLs with phase parameters', function() {
-        expect($state.href('games.view', { id: '55d33430c9e0fa7a0c762b9a', year: 1901, phase: 'spring-movement' })).to.equal('#/games/55d33430c9e0fa7a0c762b9a/1901/spring-movement');
+        expect($state.href('games.view', { id: '55d33430c9e0fa7a0c762b9a', phase: 2 })).to.equal('#/games/55d33430c9e0fa7a0c762b9a/2');
     });
 });

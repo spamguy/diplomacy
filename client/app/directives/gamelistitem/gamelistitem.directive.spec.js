@@ -24,13 +24,8 @@ describe('Game list item directive', function() {
             isGM: function() { return gmState; },
             isPlayer: function() { return playerState; }
         };
-        samplePhase = {
-            phase: 'Spring Movement',
-            year: 1901,
-            deadline: moment.utc().add({ days: 1, hours: 2, minutes: 3 })
-        };
         sampleUser = {
-            _id: '123',
+            id: '123',
             points: 100
         };
         mockService.getMoveData.resolves(samplePhase);
@@ -57,6 +52,11 @@ describe('Game list item directive', function() {
                 minimumScoreToJoin: 1,
                 gm_id: '666',
                 players: [ ],
+                phases: [{
+                    season: 'Spring Movement',
+                    year: 1901,
+                    deadline: moment.utc().add({ days: 1, hours: 2, minutes: 3 })
+                }],
                 status: 1,
                 maxPlayers: 7
             };
@@ -119,7 +119,7 @@ describe('Game list item directive', function() {
     });
 
     it('rounds off seconds in deadline', function() {
-        samplePhase.deadline = moment.utc().add({ minutes: 3, seconds: 12, milliseconds: 144 });
+        scope.game.phases[0].deadline = moment.utc().add({ minutes: 3, seconds: 12, milliseconds: 144 });
         el = compile('<sg-game-list-item game="game" variant="variant" joinable="false" user="user"></sg-game-list-item>')(scope);
         scope.$digest();
         expect(el.isolateScope().readableTimer).to.equal('3 minutes, 12 seconds');

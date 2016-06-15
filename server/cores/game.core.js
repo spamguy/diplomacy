@@ -50,11 +50,11 @@ GameCore.prototype.listOpen = function(cb) {
                 .where('player_count', '<', db.bookshelf.knex.raw('g.max_players'))
                 .orWhereNull('player_count');
         })
-        .fetchAll({ withRelated: {
+        .fetchAll({ withRelated: ['players', {
             phases: function(query) {
                 query.orderBy('created_at').limit(1);
             }
-        } })
+        }]})
         .asCallback(cb);
 };
 
@@ -124,7 +124,7 @@ GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
 GameCore.prototype.start = function(queue, gameID, cb) {
     var self = this,
         game; // Keep the correct scope in mind.
-    db.bookshelf.transaction().nodeify(function(e, t) {
+    db.bookshelf.transaction().asCallback(function(e, t) {
         var phase,
             variant,
             nextPhaseDeadline = moment();

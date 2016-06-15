@@ -19,8 +19,10 @@ module.exports = function(bookshelf) {
         },
 
         toJSON: function(options) {
-            var obfuscate = this.get('pressType') === 0;
+            var obfuscate = this.get('pressType') === 0,
+                currentUserID;
             options = options || { };
+            currentUserID = options.currentUserID;
 
             return {
                 id: this.get('id'),
@@ -34,8 +36,9 @@ module.exports = function(bookshelf) {
                 adjustClock: this.get('adjustClock'),
                 pressType: this.get('pressType'),
                 players: this.related('players').map(function(player) {
+                    var isPlayer = player.get('id') === currentUserID;
                     return {
-                        id: obfuscate ? null : player.get('id'),
+                        id: obfuscate && !isPlayer ? null : player.get('id'),
                         power: player.pivot.get('power')
                     };
                 }),

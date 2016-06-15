@@ -20,19 +20,21 @@ describe('Map directive', function() {
                 }
             }
         };
-        game = { };
-        phase = {
-            provinces: [{
-                r: 'WAR',
-                sc: 'R',
-                unit: {
-                    power: 'R'
-                }
-            }, {
-                r: 'RUM',
-                sc: null,
-                unit: {
-                    power: 'A'
+        game = {
+            phases: [{
+                provinces: {
+                    WAR: {
+                        sc: 'R',
+                        unit: {
+                            power: 'R'
+                        }
+                    },
+                    RUM: {
+                        sc: null,
+                        unit: {
+                            power: 'A'
+                        }
+                    }
                 }
             }]
         };
@@ -45,7 +47,7 @@ describe('Map directive', function() {
             MapService = _mapService_;
         });
 
-        service = new MapService(variant, game, phase);
+        service = new MapService(variant, game, 0);
     });
 
     it('selects a fill colour for a supply centre based on its owner', function() {
@@ -54,8 +56,8 @@ describe('Map directive', function() {
     });
 
     it('selects a fill colour for a unit based on its owner', function() {
-        expect(service.getUnitFill(phase.provinces[0])).to.equal('#141414');
-        expect(service.getUnitFill(phase.provinces[1])).to.equal('#555555');
+        expect(service.getUnitFill('WAR')).to.equal('#141414');
+        expect(service.getUnitFill('RUM')).to.equal('#555555');
     });
 
     it('generates the URL pointing to the supply centre SVG', function() {

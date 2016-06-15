@@ -31,7 +31,7 @@ PhaseCore.prototype.get = function(gameID, phaseIndex, year, cb) {
 
 PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
     var self = this,
-        newPhase = db.models.Phase.build({
+        newPhase = new db.models.Phase({
             year: variant.startYear,
             phase: variant.phases[0],
             game_id: game.id,
@@ -41,7 +41,7 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
     async.waterfall([
         // Save new phase.
         function(callback) {
-            newPhase.save({ transaction: t }).nodeify(callback);
+            newPhase.save({ transacting: t }).asCallback(callback);
         },
 
         // Generate region data for this phase, using variant template.

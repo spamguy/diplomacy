@@ -2,21 +2,18 @@ angular.module('mapService', ['gameService'])
 .service('mapService', ['$location', 'gameService', function($location, gameService) {
     'use strict';
 
-    var provinceReferenceDictionary,
-        currentAction = 'hold',
+    var currentAction = 'hold',
         commandData = [],
-        service = function(variant, game, phase) {
+        service = function(variant, game, phaseIndex) {
             this.variant = variant;
             this.game = game;
-            this.phase = phase;
-
-            provinceReferenceDictionary = _.keyBy(this.variant.provinces, 'r');
+            this.phaseIndex = phaseIndex;
         };
 
     service.prototype.getSCFill = getSCFill;
     service.prototype.getSCTransform = getSCTransform;
     service.prototype.getUnitFill = getUnitFill;
-    service.prototype.getCoordinatesForUnitInProvince = getCoordinatesForUnitInProvince;
+    // service.prototype.getCoordinatesForUnitInProvince = getCoordinatesForUnitInProvince;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
     service.prototype.setCurrentAction = setCurrentAction;
     service.prototype.inputCommand = inputCommand;
@@ -31,20 +28,19 @@ angular.module('mapService', ['gameService'])
     // PRIVATE FUNCTIONS
 
     function getSCFill(r) {
-        var owner = _.find(this.phase.provinces, 'r', r).sc;
+        var owner = this.game.phases[this.phaseIndex].provinces[r].sc;
         return owner ? this.variant.powers[owner].colour : '#bbbbbb';
     }
 
     function getSCTransform(r) {
         return 'translate(' +
-            provinceReferenceDictionary[r.toUpperCase()].sc.x + ',' +
-            provinceReferenceDictionary[r.toUpperCase()].sc.y + ') ' +
+            this.game.phases[this.phaseIndex].provinces[r].sc.x + ',' +
+            this.game.phases[this.phaseIndex].provinces[r].sc.y + ') ' +
             'scale(0.04)';
     }
 
     function getUnitFill(r) {
-        var container = gameService.getUnitOwnerInProvince(r);
-        return this.variant.powers[container.unit.power].colour;
+        return this.variant.powers[this.game.phases[this.phaseIndex].provinces[r].unit.power].colour;
     }
 
     function generateMarkerEnd(d) {
@@ -53,16 +49,16 @@ angular.module('mapService', ['gameService'])
         return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
     }
 
-    function getCoordinatesForUnitInProvince(r, type) {
-        var subprovinceWithUnit = _.find(r.sr, { unit: { type: type } });
-
-        if (subprovinceWithUnit) {
-            subprovinceWithUnit = _.find(provinceReferenceDictionary[r.r].sr, 'r', subprovinceWithUnit.r);
-            return { x: subprovinceWithUnit.x, y: subprovinceWithUnit.y };
-        }
-
-        return { x: provinceReferenceDictionary[r.r].x, y: provinceReferenceDictionary[r.r].y };
-    }
+    // function getCoordinatesForUnitInProvince(r, type) {
+    //     var subprovinceWithUnit = _.find(r.sr, { unit: { type: type } });
+    //
+    //     if (subprovinceWithUnit) {
+    //         subprovinceWithUnit = this.game.phases[this.phaseIndex].provinces[r].sr, 'r', subprovinceWithUnit.r);
+    //         return { x: subprovinceWithUnit.x, y: subprovinceWithUnit.y };
+    //     }
+    //
+    //     return { x: provinceReferenceDictionary[r.r].x, y: provinceReferenceDictionary[r.r].y };
+    // }
 
     function setCurrentAction(action) {
         currentAction = action;
@@ -77,7 +73,7 @@ angular.module('mapService', ['gameService'])
 
     function inputCommand(id, callback) {
         var r = id.toUpperCase().replace('-', '/'), // HTML IDs use - for subdivisions.
-            province = _.find(this.phase.provinces, 'r', r.split('/')[0]),
+            province = this.game.phase,
             ownerInProvince = gameService.getUnitOwnerInProvince(province),
             unitInProvince,
             overrideAction;
