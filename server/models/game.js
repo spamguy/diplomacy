@@ -1,5 +1,6 @@
 module.exports = function(bookshelf) {
-    var game,
+    var _ = require('lodash'),
+        game,
         games;
 
     game = bookshelf.Model.extend({
@@ -16,6 +17,17 @@ module.exports = function(bookshelf) {
 
         phases: function() {
             return this.hasMany('Phase');
+        },
+
+        getClockFromPhase: function(phaseName) {
+            if (_.includes(phaseName.toLowerCase(), 'move'))
+                return this.get('moveClock');
+            else if (_.includes(phaseName.toLowerCase(), 'retreat'))
+                return this.get('retreatClock');
+            else if (_.includes(phaseName.toLowerCase(), 'adjust'))
+                return this.get('adjustClock');
+            else
+                throw new Error('The phase type could not be parsed from the name "' + phaseName + '".');
         },
 
         toJSON: function(options) {

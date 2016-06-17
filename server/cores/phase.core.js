@@ -33,15 +33,15 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
     var self = this,
         newPhase = new db.models.Phase({
             year: variant.startYear,
-            phase: variant.phases[0],
-            game_id: game.id,
+            season: variant.phases[0],
+            game_id: game.get('id'),
             deadline: deadline
         });
 
     async.waterfall([
         // Save new phase.
         function(callback) {
-            newPhase.save({ transacting: t }).asCallback(callback);
+            newPhase.save(null, { transacting: t }).asCallback(callback);
         },
 
         // Generate region data for this phase, using variant template.
@@ -65,42 +65,43 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
  * @param  {Function}    cb          The callback.
  */
 PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, phase, cb) {
-    var p,
-        sp,
-        provincesToInsert = [],
-        province;
-
-    for (p = 0; p < variant.provinces.length; p++) {
-        province = variant.provinces[p];
-        provincesToInsert.push({
-            phaseID: phase.id,
-            provinceKey: province.p,
-            subProvinceKey: null,
-            supplyCentre: province.default ? province.default.power : null,
-            supplyCentreX: province.sc ? province.sc.x : null,
-            supplyCentreY: province.sc ? province.sc.y : null,
-            unitType: province.default && !province.default.sp ? province.default.type : null,
-            unitOwner: province.default && !province.default.sp ? province.default.power : null,
-            unitX: province.x,
-            unitY: province.y
-        });
-
-        if (variant.provinces[p].sp) {
-            for (sp = 0; sp < province.sp.length; sp++) {
-                provincesToInsert.push({
+    async.each(variant.provinces, function(province, eachCallback) {
+        async.parallel([
+            function(parallelCallback) {
+                new db.models.PhaseProvince({
                     phaseID: phase.id,
                     provinceKey: province.p,
-                    subProvinceKey: province.sp[sp].p,
-                    unitX: province.sp[sp].x,
-                    unitY: province.sp[sp].y,
-                    unitType: province.default && province.default.sp ? province.default.type : null,
-                    unitOwner: province.default && province.default.sp ? province.default.power : null
-                });
-            }
-        }
-    }
+                    subprovinceKey: null,
+                    supplyCentre: province.default ? province.default.power : null,
+                    supplyCentreX: province.sc ? province.sc.x : null,
+                    supplyCentreY: province.sc ? province.sc.y : null,
+                    unitType: province.default && !province.default.sp ? province.default.type : null,
+                    unitOwner: province.default && !province.default.sp ? province.default.power : null,
+                    unitX: province.x,
+                    unitY: province.y
+                }).save(null, { transacting: t }).asCallback(parallelCallback);
+            },
 
-    db.models.PhaseProvince.bulkCreate(provincesToInsert, { transaction: t }).nodeify(cb);
+            function(parallelCallback) {
+                if (province.sp) {
+                    async.each(province.sp, function(sp, eachEachCallback) {
+                        new db.models.PhaseProvince({
+                            phaseID: phase.id,
+                            provinceKey: province.p,
+                            subprovinceKey: sp.p,
+                            unitX: sp.x,
+                            unitY: sp.y,
+                            unitType: province.default && province.default.sp ? province.default.type : null,
+                            unitOwner: province.default && province.default.sp ? province.default.power : null
+                        }).save(null, { transacting: t }).asCallback(eachEachCallback);
+                    }, parallelCallback);
+                }
+                else {
+                    parallelCallback(null);
+                }
+            }
+        ], eachCallback);
+    }, cb);
 };
 
 PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) {

@@ -124,7 +124,7 @@ GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
 GameCore.prototype.start = function(queue, gameID, cb) {
     var self = this,
         game; // Keep the correct scope in mind.
-    db.bookshelf.transaction().asCallback(function(e, t) {
+    db.bookshelf.transaction(function(t) {
         var phase,
             variant,
             nextPhaseDeadline = moment();
@@ -138,9 +138,9 @@ GameCore.prototype.start = function(queue, gameID, cb) {
             // Creates first phase if previous step pulled up nothing.
             function(_game, callback) {
                 game = _game;
-                variant = self.core.variant.get(game.variant);
+                variant = self.core.variant.get(game.get('variant'));
 
-                if (!game.currentPhase) {
+                if (!game.get('currentPhase')) {
                     nextPhaseDeadline.add(game.getClockFromPhase(variant.phases[0]), 'hours');
                     self.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline, callback);
                 }
@@ -152,11 +152,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
             // Link the new season and set the status to active. Do this last to conveniently pass game back to controller.
             function(_phase, callback) {
                 phase = _phase;
-
-                game.current_phase_id = phase.id;
-                game.status = 1;
-
-                game.save(null, { transacting: t }).asCallback(callback);
+                game.save({ status: 1 }, { transacting: t }).asCallback(callback);
             },
 
             // Assign powers to players.
@@ -164,26 +160,26 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 game = _game;
 
                 // TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
-                var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers)),
-                    shuffledSetIndex = 0,
-                    p,
-                    player;
+                var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers));
 
-                for (p = 0; p < game.players.length; p++) {
-                    player = game.players[p];
-                    player.game_player.power = shuffledSetOfPowers[shuffledSetIndex];
-                    shuffledSetIndex++;
-                }
+                // game.related('players').each(function(player) {
+                //     player.game_player.power = shuffledSetOfPowers[shuffledSetIndex];
+                //     shuffledSetIndex++;
+                // }
 
-                async.each(game.players, function(player, eachCallback) {
-                    player.game_player.save({ transaction: t }).nodeify(eachCallback);
+                async.forEachOf(game.related('players'), function(player, p, eachCallback) {
+                    game.related('players').updatePivot({ power: shuffledSetOfPowers[p] }, {
+                        transacting: t,
+                        query: { where: { user_id: game.related('players').at(p).get('id') } }
+                    }).asCallback(eachCallback);
+                    // player.game_player.save({ transaction: t }).nodeify(eachCallback);
                 }, callback);
             },
 
             // Schedule adjudication.
             function(callback) {
                 var job = queue.create('adjudicate', {
-                    phaseID: phase.id
+                    phaseID: phase.get('id')
                 });
                 job.delay(nextPhaseDeadline.toDate())
                     .backoff({ delay: 'exponential' })
@@ -191,18 +187,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
             }
 
             // TODO: Email the GM too.
-        ], function(err, result) {
-            if (err) {
-                t.rollback();
-                cb(err, null);
-            }
-            else {
-                t.commit();
-                game.reload().then(function(game) {
-                    cb(err, game);
-                });
-            }
-        });
+        ], cb);
     });
 };
 

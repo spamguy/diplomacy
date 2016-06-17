@@ -8,6 +8,10 @@ module.exports = function(bookshelf) {
 
         game: function() {
             return this.belongsTo('Game');
+        },
+
+        provinces: function() {
+            return this.hasMany('PhaseProvince');
         }
     });
 

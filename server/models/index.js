@@ -1,6 +1,6 @@
 module.exports.init = function(bookshelf) {
     var _ = require('lodash'),
-        models = ['user', 'game', 'phase'],
+        models = ['user', 'game', 'phase', 'phaseprovince'],
         out = { },
         m;
 

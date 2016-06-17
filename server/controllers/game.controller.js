@@ -139,7 +139,13 @@ module.exports = function() {
                     }).asCallback(callback);
                 },
 
+                // Refresh game and associations.
                 function(result, callback) {
+                    core.game.get(game.id, callback);
+                },
+
+                function(_game, callback) {
+                    game = _game;
                     var p,
                         gameData = { gamename: game.get('name') };
 
@@ -270,28 +276,27 @@ module.exports = function() {
                 },
 
                 function(game, callback) {
-                    variant = core.variant.get(game.variant);
-                    app.logger.info('Players selected for game ' + game.id,
-                        _.map(game.players, function(v) { return _.pick(v, ['power', 'email']); }));
-                    var optionses = [],
-                        p;
+                    variant = core.variant.get(game.get('variant'));
+                    app.logger.info('Players selected for game ' + game.get('id'),
+                        game.related('players').map(function(v) { return _.pick(v, ['power', 'email']); }));
+                    var optionses = [];
 
-                    for (p = 0; p < game.players.length; p++) {
+                    game.related('players').each(function(player) {
                         optionses.push({
-                            gameName: game.name,
+                            gameName: game.get('name'),
                             gameURL: path.join(app.seekrits.get('domain'), 'games', game.id),
-                            subject: '[' + game.name + '] The game is starting!',
-                            deadline: moment(game.currentPhase.deadline).format('dddd, MMMM Do [at] h:mm a'),
-                            phase: game.currentPhase.phase,
-                            year: game.currentPhase.year,
-                            email: game.players[p].email,
-                            powerDesignation: 'You have been selected to play ' + variant.powers[game.players[p].game_player.power].name +
-                                ' in the game ' + game.name + '. You can start playing right now by visiting the game page at '
+                            subject: '[' + game.get('name') + '] The game is starting!',
+                            deadline: moment(game.related('phases').at(0).get('deadline')).format('dddd, MMMM Do [at] h:mm a'),
+                            season: game.related('phases').at(0).get('season'),
+                            year: game.related('phases').at(0).get('year'),
+                            email: player.get('email'),
+                            powerDesignation: 'You have been selected to play ' + variant.powers[player.get('power')].name +
+                                ' in the game ' + game.get('name') + '. You can start playing right now by visiting the game page at '
                         });
-                    }
+                    });
 
                     // Broadcast start to subscribers.
-                    req.socket.broadcast.to(game.id).emit('game:start:announce', { gamename: game.name });
+                    req.socket.broadcast.to(game.get('id')).emit('game:start:announce', { gamename: game.get('name') });
 
                     mailer.sendMany('gamestart', optionses, callback);
                 }
