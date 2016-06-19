@@ -290,7 +290,7 @@ module.exports = function() {
                             season: game.related('phases').at(0).get('season'),
                             year: game.related('phases').at(0).get('year'),
                             email: player.get('email'),
-                            powerDesignation: 'You have been selected to play ' + variant.powers[player.get('power')].name +
+                            powerDesignation: 'You have been selected to play ' + variant.powers[player.pivot.get('power')].name +
                                 ' in the game ' + game.get('name') + '. You can start playing right now by visiting the game page at '
                         });
                     });

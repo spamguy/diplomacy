@@ -177,7 +177,8 @@ GameCore.prototype.start = function(queue, gameID, cb) {
             },
 
             // Schedule adjudication.
-            function(callback) {
+            function(_game, callback) {
+                game = _game;
                 var job = queue.create('adjudicate', {
                     phaseID: phase.get('id')
                 });
@@ -187,7 +188,16 @@ GameCore.prototype.start = function(queue, gameID, cb) {
             }
 
             // TODO: Email the GM too.
-        ], cb);
+        ], function(err, result) {
+            if (!err) {
+                t.commit();
+                cb(null);
+            }
+            else {
+                t.rollback();
+                cb(err);
+            }
+        });
     });
 };
 
