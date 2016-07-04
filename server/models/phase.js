@@ -1,5 +1,6 @@
 module.exports = function(bookshelf) {
-    var phase,
+    var _ = require('lodash'),
+        phase,
         phases;
 
     phase = bookshelf.Model.extend({
@@ -12,6 +13,16 @@ module.exports = function(bookshelf) {
 
         provinces: function() {
             return this.hasMany('PhaseProvince');
+        },
+
+        toJSON: function(options) {
+            return {
+                id: this.get('id'),
+                year: this.get('year'),
+                season: this.get('season'),
+                isActive: this.get('isActive'),
+                provinces: _.keyBy(this.related('provinces').toJSON(), 'provinceKey')
+            };
         }
     });
 

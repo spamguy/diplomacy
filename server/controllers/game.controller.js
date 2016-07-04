@@ -153,10 +153,8 @@ module.exports = function() {
                     req.socket.join(gameID);
 
                     // If everyone is here, signal the game can (re)start.
-                    if (game.related('players').length === game.get('maxPlayers')) {
+                    if (game.related('players').length === game.get('maxPlayers'))
                         req.io.route('game:start', { gameID: gameID });
-                        return;
-                    }
 
                     // Broadcast join to other subscribers.
                     req.socket.emit('game:join:success', gameData);
@@ -284,7 +282,7 @@ module.exports = function() {
                     game.related('players').each(function(player) {
                         optionses.push({
                             gameName: game.get('name'),
-                            gameURL: path.join(app.seekrits.get('domain'), 'games', game.id),
+                            gameURL: path.join(app.seekrits.get('domain'), 'games', game.get('id')),
                             subject: '[' + game.get('name') + '] The game is starting!',
                             deadline: moment(game.related('phases').at(0).get('deadline')).format('dddd, MMMM Do [at] h:mm a'),
                             season: game.related('phases').at(0).get('season'),

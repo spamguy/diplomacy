@@ -12,7 +12,7 @@ function GameCore(options) {
 GameCore.prototype.get = function(id, cb) {
     db.models.Game
         .where('id', id)
-        .fetch({ withRelated: ['players', 'phases'] })
+        .fetch({ withRelated: ['players', 'phases', 'phases.provinces'] })
         .asCallback(cb);
 };
 
@@ -162,23 +162,16 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                 // TODO: Consider player preferences. See: http://rosettacode.org/wiki/Stable_marriage_problem
                 var shuffledSetOfPowers = _.shuffle(_.keys(variant.powers));
 
-                // game.related('players').each(function(player) {
-                //     player.game_player.power = shuffledSetOfPowers[shuffledSetIndex];
-                //     shuffledSetIndex++;
-                // }
-
                 async.forEachOf(game.related('players'), function(player, p, eachCallback) {
                     game.related('players').updatePivot({ power: shuffledSetOfPowers[p] }, {
                         transacting: t,
                         query: { where: { user_id: game.related('players').at(p).get('id') } }
                     }).asCallback(eachCallback);
-                    // player.game_player.save({ transaction: t }).nodeify(eachCallback);
                 }, callback);
             },
 
             // Schedule adjudication.
-            function(_game, callback) {
-                game = _game;
+            function(callback) {
                 var job = queue.create('adjudicate', {
                     phaseID: phase.get('id')
                 });
@@ -191,7 +184,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
         ], function(err, result) {
             if (!err) {
                 t.commit();
-                cb(null);
+                self.get(gameID, cb);
             }
             else {
                 t.rollback();

@@ -54,7 +54,7 @@ module.exports = function(bookshelf) {
                         power: player.pivot.get('power')
                     };
                 }),
-                phases: this.related('phases').toJSON()
+                phases: this.related('phases').toJSON(options)
             };
         }
     });
