@@ -12,15 +12,15 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "angular": "1.5.5",
-    "angular-animate": "1.5.5",
-    "angular-aria": "1.5.5",
+    "angular": "1.5.7",
+    "angular-animate": "1.5.7",
+    "angular-aria": "1.5.7",
     "angular-hotkeys": "0.2.2",
     "angular-jwt": "~0.0.6",
     "angular-local-storage": "~0.1.5",
     "angular-material": "1.1.0-rc4",
-    "angular-messages": "1.5.5",
-    "angular-sanitize": "1.5.5",
+    "angular-messages": "1.5.7",
+    "angular-sanitize": "1.5.7",
     "angular-socket-io": "~0.7.0",
     "angular-ui-router": "~0.2.13",
     "d3": "3.5.12",
@@ -34,7 +34,7 @@
   "devDependencies": {
     "angular-socket.io-mock": "~1.1.0",
     "jquery": "2.2.0",
-    "angular-mocks": "1.5.5"
+    "angular-mocks": "1.5.7"
   },
   "resolutions": {
     "angular": "~1.5.5",
