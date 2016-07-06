@@ -17,16 +17,14 @@ describe('Map component', function() {
             compile = $compile;
             scope = $rootScope;
 
-            scope.variant = {
-                name: 'Standard'
-            };
-            scope.phase = {
-                year: 1901,
-                phase: 'Spring Movement',
-                provinces: [{ r: 'A' }, { r: 'B' }]
-            };
             scope.game = {
-                name: 'That Game'
+                name: 'That Game',
+                phases: [{
+                    provinces: {
+                        STP: {
+                        }
+                    }
+                }]
             };
             scope.readonly = true;
             scope.svg = new DOMParser().parseFromString('<svg height="1" width="1"><g id="mouseLayer"></g></svg>', 'image/svg+xml');
@@ -35,20 +33,20 @@ describe('Map component', function() {
 
     describe('Map header', function() {
         it('is invisible when \'header\' flag is false', function() {
-            el = compile('<sg-map game="game" variant="variant" phase="phase" readonly="readonly" svg="svg" header="false" />')(scope);
+            el = compile('<sg-map game="game" readonly="readonly" svg="svg" header="false" />')(scope);
             scope.$digest();
             expect($('#mapToolbar', el)).to.have.lengthOf(0);
         });
 
         it('is invisible when there is no phase data', function() {
-            scope.phase = null;
-            el = compile('<sg-map game="game" variant="variant" phase="phase" readonly="readonly" svg="svg" header="true" />')(scope);
+            scope.game.phases = null;
+            el = compile('<sg-map game="game" readonly="readonly" svg="svg" header="true" />')(scope);
             scope.$digest();
             expect($('#mapToolbar', el)).to.have.lengthOf(0);
         });
 
         it('is visible when \'header\' flag is true and phase data is present', function() {
-            el = compile('<sg-map game="game" variant="variant" phase="phase" readonly="readonly" svg="svg" header="true" />')(scope);
+            el = compile('<sg-map game="game" readonly="readonly" svg="svg" header="true" />')(scope);
             scope.$digest();
             expect($('#mapToolbar', el)).to.have.lengthOf(1);
         });
@@ -56,7 +54,7 @@ describe('Map component', function() {
 
     describe('SVG element', function() {
         it('creates an SVG element with expected attributes', function() {
-            el = compile('<sg-map game="game" variant="variant" phase="phase" readonly="readonly" svg="svg" />')(scope);
+            el = compile('<sg-map game="game" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
             expect($('svg', el)).to.have.lengthOf(1);
             expect($('svg', el)).to.have.prop('viewBox');
@@ -65,13 +63,13 @@ describe('Map component', function() {
         it('is slightly transparent when no phase is passed in', function() {
             scope.phase = null;
 
-            el = compile('<sg-map game="game" variant="variant" phase="phase" readonly="readonly" svg="svg" />')(scope);
+            el = compile('<sg-map game="game" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
             expect($('div.mapContainer', el)).to.have.class('notStarted');
         });
 
         it('is fully visible when a phase is passed in', function() {
-            el = compile('<sg-map game="game" variant="variant" phase="phase" readonly="readonly" svg="svg" />')(scope);
+            el = compile('<sg-map game="game" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
             expect($('svg', el)).to.not.have.css('notStarted');
         });

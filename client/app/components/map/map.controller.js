@@ -1,13 +1,12 @@
 angular.module('map.component')
 .controller('MapController', ['$scope', 'gameService', 'mapService', function($scope, gameService, MapService) {
     var vm = this,
-        normalisedVariantName = gameService.getNormalisedVariantName(vm.variant.name),
+        phase = this.game.phases ? this.game.phases[this.phaseIndex] : null,
+        normalisedVariantName = gameService.getNormalisedVariantName(vm.game.variant),
         paths = vm.svg.getElementsByTagName('path'),
-        provinceReferenceDictionary = _.keyBy(this.variant.provinces, 'r'),
         p,
         i,
         province,
-        unitInProvince,
         target,
         moveLayer = d3.select('svg g.moveLayer'),
         moveLayerArrows = moveLayer.selectAll('path'),
@@ -22,7 +21,7 @@ angular.module('map.component')
         holds = [];
 
     vm.paths = { };
-    vm.service = new MapService(this.variant, this.game, this.phase);
+    vm.service = new MapService(this.game, this.phaseIndex);
     vm.getFormattedDeadline = gameService.getFormattedDeadline;
 
     vm.onOrderSave = function(response, r, action, source, target) {
@@ -42,20 +41,19 @@ angular.module('map.component')
     vm.imagePath = 'variants/' + normalisedVariantName + '/' + normalisedVariantName + '.png';
     vm.viewBox = '0 0 ' + getSVGAttribute('width') + ' ' + getSVGAttribute('height');
 
-    if (!this.phase)
+    if (!phase)
         return;
 
     vm.clickCount = 0;
 
     force = d3.layout.force()
-        .nodes(provinceReferenceDictionary)
+        .nodes(vm.game)
         .links(links)
         .on('tick', onForceDirectedGraphTick.bind(this)); // bind() forces function's scope to controller.
 
     renderForceDirectedGraph();
 
     function onForceDirectedGraphTick(e, scope) {
-        var provinces = vm.phase.provinces;
         moveLayerArrows.attr('d', function(d) {
             /*
              * Let T -> target, T' -> target of target, and S -> source.
@@ -65,16 +63,12 @@ angular.module('map.component')
              * In all other cases T as an endpoint is fine.
              */
 
-            var sourceProvince = _.find(provinces, 'r', d.source.r),
-                targetProvince = _.find(provinces, 'r', d.target.r),
-                unitInSourceProvince = gameService.getUnitOwnerInProvince(sourceProvince),
-                unitInTargetProvince = gameService.getUnitOwnerInProvince(targetProvince),
-                sourceCoordinates = vm.service.getCoordinatesForUnitInProvince(sourceProvince, unitInSourceProvince.unit.type),
-                targetCoordinates = vm.service.getCoordinatesForUnitInProvince(targetProvince, unitInSourceProvince.unit.type),
-                sx = sourceCoordinates.x,
-                sy = sourceCoordinates.y,
-                tx = targetCoordinates.x,
-                ty = targetCoordinates.y,
+            var sourceProvince = phase.provinces[d.source.p],
+                targetProvince = phase.provinces[d.target.p],
+                sx = sourceProvince.unitLocation.x,
+                sy = sourceProvince.unitLocation.y,
+                tx = targetProvince.unitLocation.x,
+                ty = targetProvince.unitLocation.y,
                 dx,
                 dy,
                 action = d.target.action,
@@ -90,8 +84,8 @@ angular.module('map.component')
                 else
                     tx -= 20;
             }
-            else if (unitInTargetProvince && unitInTargetProvince.unit.order) {
-                actionOfTarget = unitInTargetProvince.unit.order.action;
+            else if (targetProvince.unit && targetProvince.unit.targetOfTarget) {
+                actionOfTarget = targetProvince.unit.action;
 
                 if (action !== 'support') {
                     evenMorePadding = -2;
@@ -134,30 +128,27 @@ angular.module('map.component')
     function renderForceDirectedGraph() {
         // Reset link list and regenerate holding unit list.
         links = [];
-        holds = _.filter(vm.phase.provinces, function(r) {
-            if (r.unit && r.unit.order) {
-                if (r.unit.order.action === 'hold')
-                    return true;
-                else
-                    return false;
-            }
+        holds = _.filter(phase.provinces, function(p) {
+            if (p.unit && p.unit.action === 'hold')
+                return true;
+            else
+                return false;
         });
 
-        for (p = 0; p < vm.phase.provinces.length; p++) {
-            province = vm.phase.provinces[p];
-            unitInProvince = gameService.getUnitOwnerInProvince(province);
+        for (p in phase.provinces) {
+            province = phase.provinces[p];
 
-            if (unitInProvince && unitInProvince.unit.order && unitInProvince.unit.order.action !== 'hold')
-                target = unitInProvince.unit.order.source || unitInProvince.unit.order.target || unitInProvince.r;
+            if (province.unit && province.unit.action !== 'hold')
+                target = province.unit.source || province.unit.target;
             else
                 continue;
 
             links.push({
                 source: _.defaults(province, { fixed: true }),
-                target: _.defaults(provinceReferenceDictionary[target.split('/')[0]], {
+                target: _.defaults(phase.provinces[target], {
                     fixed: true, // To keep d3 from treating this map like a true force graph.
-                    action: unitInProvince.unit.order.action,
-                    failed: unitInProvince.unit.order.failed
+                    action: province.unit.action,
+                    failed: province.unit.failed
                 })
             });
         }
@@ -179,8 +170,8 @@ angular.module('map.component')
             .insert('svg:circle')
             .attr('id', function(d) { return d.r + '-hold'; })
             .attr('class', 'hold')
-            .attr('cx', function(d) { return provinceReferenceDictionary[d.r].x; })
-            .attr('cy', function(d) { return provinceReferenceDictionary[d.r].y; })
+            .attr('cx', function(d) { return phase.provinces[d.p].unitLocation.x; })
+            .attr('cy', function(d) { return phase.provinces[d.r].unitLocation.y; })
             .attr('r', unitRadiusPlusPadding);
         moveLayerHolds.exit().remove();
 

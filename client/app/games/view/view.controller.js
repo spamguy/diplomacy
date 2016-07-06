@@ -1,13 +1,14 @@
 'use strict';
 
 angular.module('games')
-.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'svg', '$mdDialog', function($scope, userService, gameService, variant, game, svg, $mdDialog) {
+.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'svg', '$mdDialog', '$stateParams', function($scope, userService, gameService, variant, game, svg, $mdDialog, $stateParams) {
     $scope.updateProvinceData = updateProvinceData;
 
     $scope.variant = variant;
     $scope.game = game;
     $scope.readonly = userService.getCurrentUserID() === game.gm_id;
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
+    $scope.phaseIndex = $stateParams.phase || 0;
 
     // Point out games that haven't started yet.
     if (game.status === 0) {

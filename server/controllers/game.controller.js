@@ -10,53 +10,6 @@ var _ = require('lodash'),
 module.exports = function() {
     var app = this.app,
         core = this.core;
-        // initProvinces = function(variant) {
-        //     var provinces = [],
-        //         vr,
-        //         variantProvince,
-        //         baseProvince,
-        //         subprovince,
-        //         sr;
-        //
-        //     for (vr = 0; vr < variant.provinces.length; vr++) {
-        //         variantProvince = variant.provinces[vr];
-        //         baseProvince = { r: variantProvince.r };
-        //
-        //         // Add subprovinces.
-        //         if (variantProvince.sr) {
-        //             baseProvince.sr = [];
-        //             for (sr = 0; sr < variantProvince.sr.length; sr++)
-        //                 baseProvince.sr.push({ r: variantProvince.sr[sr].r });
-        //         }
-        //
-        //         // Add a SC marker, colour it, and put the default unit there.
-        //         if (variantProvince.default) {
-        //             baseProvince.sc = variantProvince.default.power;
-        //
-        //             // Default unit is in a subprovince.
-        //             if (variantProvince.default.sr) {
-        //                 subprovince = _.find(baseProvince.sr, 'r', variantProvince.default.sr);
-        //                 subprovince.unit = {
-        //                     power: variantProvince.default.power,
-        //                     type: variantProvince.default.type
-        //                 };
-        //             }
-        //             else {
-        //                 baseProvince.unit = {
-        //                     power: variantProvince.default.power,
-        //                     type: variantProvince.default.type
-        //                 };
-        //             }
-        //         }
-        //         else if (variantProvince.sc) { // Add an uncoloured SC marker.
-        //             baseProvince.sc = null;
-        //         }
-        //
-        //         provinces.push(baseProvince);
-        //     }
-        //
-        //     return provinces;
-        // };
 
     app.io.route('game', {
         userlist: function(req, res) {

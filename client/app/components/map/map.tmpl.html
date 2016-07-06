@@ -1,8 +1,8 @@
 <div class="md-whiteframe-2dp">
-    <md-toolbar class="md-toolbar-tools" id="mapToolbar" ng-if="$ctrl.phase && $ctrl.header">
+    <md-toolbar class="md-toolbar-tools" id="mapToolbar" ng-if="$ctrl.game.phases[0] && $ctrl.header">
         <div layout="column" layout-align="center center">
-            <div class="md-title">{{$ctrl.phase.phase}} {{$ctrl.phase.year}}</div>
-            <div class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.phase)">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
+            <div class="md-title">{{$ctrl.game.phases[0].season}} {{$ctrl.game.phases[0].year}}</div>
+            <div class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.game.phases[0])">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
         </div>
         <span flex></span>
         <div ng-if="!$ctrl.readonly">
@@ -37,7 +37,7 @@
         </div>
     </md-toolbar>
 
-    <div class="mapContainer" ng-class="{'notStarted': !$ctrl.phase}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
+    <div class="mapContainer" ng-class="{'notStarted': !$ctrl.game.phases}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
         <svg width="100%" ng-attr-view_box="{{$ctrl.viewBox}}">
             <defs>
                 <marker id="move" viewBox="0 -5 10 10" markerWidth="6" markerHeight="6" orient="auto">
@@ -65,27 +65,27 @@
 
             <g class="scLayer">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                     ng-repeat="province in $ctrl.phase.provinces | filter: { sc: '!!' }"
-                     xlink:href="" ng-href="{{$ctrl.service.getSCPath()}}"
-                     ng-attr-transform="{{$ctrl.service.getSCTransform(province.r)}}"
-                     ng-attr-fill="{{$ctrl.service.getSCFill(province.r)}}"
+                     ng-repeat="(key, value) in $ctrl.phase.provinces | filter:$ctrl.service.provinceHasSC"
+                     xlink:href="" ng-href="{{$ctrl.service.getSCPath(value)}}"
+                     ng-attr-transform="{{$ctrl.service.getSCTransform(value)}}"
+                     ng-attr-fill="{{value.sc.fill}}"
                      class="sc">
                 </use>
             </g>
             <!-- TODO: Don't hard-code transform attribute -->
             <!-- TODO: Break into separate component -->
             <g class="mouseLayer" transform="translate(8,4)">
-                <path ng-repeat="(r, d) in $ctrl.paths"
-                      id="{{r}}"
+                <path ng-repeat="(p, d) in $ctrl.paths"
+                      id="{{p}}"
                       ng-attr-d="{{d}}"
-                      ng-click="$ctrl.service.inputCommand(r, $ctrl.onOrderSave)"
-                      ng-class="{'clicked': $ctrl.commandData.indexOf('{{r.toUpperCase()}}') >= 0}">
+                      ng-click="$ctrl.service.inputCommand(p, $ctrl.onOrderSave)"
+                      ng-class="{'clicked': $ctrl.commandData.indexOf('{{p}}') >= 0}">
                 </path>
             </g>
 
             <g class="unitLayer">
-                <circle ng-repeat="province in $ctrl.phase.provinces | hasUnit:1"
-                        id="{{province.r}}-army"
+                <circle ng-repeat="(key, value) in $ctrl.game.phases[0].provinces | filter:$ctrl.service.provinceHasUnit:1"
+                        id="{{province.p}}-army"
                         r="8"
                         stroke="#000"
                         stroke-width="1px"
@@ -94,8 +94,8 @@
                         ng-attr-fill="{{$ctrl.service.getUnitFill(province)}}">
                 </circle>
 
-                <rect ng-repeat="province in $ctrl.phase.provinces | hasUnit:2"
-                      id="{{province.r}}-fleet"
+                <rect ng-repeat="(key, value) in $ctrl.game.phases[0].provinces | filter:$ctrl.service.provinceHasUnit:2"
+                      id="{{province.p.replace('/', '-')}}-fleet"
                       height="8"
                       width="16"
                       stroke="#000"

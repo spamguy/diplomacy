@@ -4,43 +4,30 @@ angular.module('mapService', ['gameService'])
 
     var currentAction = 'hold',
         commandData = [],
-        service = function(variant, game, phaseIndex) {
-            this.variant = variant;
+        service = function(game, phaseIndex) {
             this.game = game;
             this.phaseIndex = phaseIndex;
+            this.phase = game.phases ? game.phases[phaseIndex] : null;
         };
 
-    service.prototype.getSCFill = getSCFill;
     service.prototype.getSCTransform = getSCTransform;
-    service.prototype.getUnitFill = getUnitFill;
-    // service.prototype.getCoordinatesForUnitInProvince = getCoordinatesForUnitInProvince;
+    service.prototype.getSCPath = getSCPath;
+    service.prototype.provinceHasSC = provinceHasSC;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
     service.prototype.setCurrentAction = setCurrentAction;
     service.prototype.inputCommand = inputCommand;
     service.prototype.userCanMove = userCanMove;
     service.prototype.userCanAdjust = userCanAdjust;
     service.prototype.userCanRetreat = userCanRetreat;
-    service.prototype.getSCPath = getSCPath;
     service.prototype.isActionCurrent = isActionCurrent;
+    service.prototype.provinceHasUnit = provinceHasUnit;
 
     return service;
 
     // PRIVATE FUNCTIONS
 
-    function getSCFill(r) {
-        var owner = this.game.phases[this.phaseIndex].provinces[r].sc;
-        return owner ? this.variant.powers[owner].colour : '#bbbbbb';
-    }
-
-    function getSCTransform(r) {
-        return 'translate(' +
-            this.game.phases[this.phaseIndex].provinces[r].sc.x + ',' +
-            this.game.phases[this.phaseIndex].provinces[r].sc.y + ') ' +
-            'scale(0.04)';
-    }
-
-    function getUnitFill(r) {
-        return this.variant.powers[this.game.phases[this.phaseIndex].provinces[r].unit.power].colour;
+    function getSCTransform(p) {
+        return 'translate' + this.phase.provinces[p].sc.location + ' scale(0.04)';
     }
 
     function generateMarkerEnd(d) {
@@ -48,17 +35,6 @@ angular.module('mapService', ['gameService'])
         var failed = d.target.failed ? 'failed' : '';
         return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
     }
-
-    // function getCoordinatesForUnitInProvince(r, type) {
-    //     var subprovinceWithUnit = _.find(r.sr, { unit: { type: type } });
-    //
-    //     if (subprovinceWithUnit) {
-    //         subprovinceWithUnit = this.game.phases[this.phaseIndex].provinces[r].sr, 'r', subprovinceWithUnit.r);
-    //         return { x: subprovinceWithUnit.x, y: subprovinceWithUnit.y };
-    //     }
-    //
-    //     return { x: provinceReferenceDictionary[r.r].x, y: provinceReferenceDictionary[r.r].y };
-    // }
 
     function setCurrentAction(action) {
         currentAction = action;
@@ -72,24 +48,19 @@ angular.module('mapService', ['gameService'])
     }
 
     function inputCommand(id, callback) {
-        var r = id.toUpperCase().replace('-', '/'), // HTML IDs use - for subdivisions.
-            province = this.game.phase,
-            ownerInProvince = gameService.getUnitOwnerInProvince(province),
-            unitInProvince,
+        var p = id.toUpperCase().replace('-', '/'), // HTML IDs use - for subdivisions.
+            province = this.phase.provinces[p],
             overrideAction;
-
-        if (ownerInProvince)
-            unitInProvince = ownerInProvince.unit;
 
         // TODO: Force armies to move to provinces only.
 
         // Users who try to control units that don't exist or don't own?
         // We have ways of shutting the whole thing down.
         if (commandData.length === 0 &&
-            (!unitInProvince || unitInProvince.power !== gameService.getPowerOfCurrentUserInGame(this.game)))
+            (!province.unit || province.unit.owner !== gameService.getPowerOfCurrentUserInGame(this.game)))
             return;
 
-        commandData.push(r);
+        commandData.push(p);
 
         switch (currentAction) {
         case 'hold':
@@ -163,5 +134,13 @@ angular.module('mapService', ['gameService'])
 
     function isActionCurrent(action) {
         return action === currentAction;
+    }
+
+    function provinceHasSC(input) {
+        return input.sc !== null;
+    }
+
+    function provinceHasUnit(input, unitType) {
+        return input.unit !== null && input.unit.type === unitType;
     }
 }]);

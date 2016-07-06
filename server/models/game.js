@@ -31,9 +31,11 @@ module.exports = function(bookshelf) {
         },
 
         toJSON: function(options) {
+            // FIXME: Resolved state and user role also affect whether to obfuscate.
             var obfuscate = this.get('pressType') === 0,
                 currentUserID;
             options = options || { };
+            options.obfuscate = obfuscate;
             currentUserID = options.currentUserID;
 
             return {

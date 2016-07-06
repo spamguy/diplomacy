@@ -21,7 +21,7 @@ module.exports = function(bookshelf) {
                 year: this.get('year'),
                 season: this.get('season'),
                 isActive: this.get('isActive'),
-                provinces: _.keyBy(this.related('provinces').toJSON(), 'provinceKey')
+                provinces: _.keyBy(this.related('provinces').toJSON(options), 'p')
             };
         }
     });
