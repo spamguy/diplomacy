@@ -45,6 +45,7 @@ angular.module('map.component')
         return;
 
     vm.clickCount = 0;
+    vm.provinceArray = _.values(phase.provinces);
 
     force = d3.layout.force()
         .nodes(vm.game)
@@ -138,7 +139,7 @@ angular.module('map.component')
         for (p in phase.provinces) {
             province = phase.provinces[p];
 
-            if (province.unit && province.unit.action !== 'hold')
+            if (province.unit && province.unit.action && province.unit.action !== 'hold')
                 target = province.unit.source || province.unit.target;
             else
                 continue;

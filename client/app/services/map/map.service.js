@@ -12,7 +12,6 @@ angular.module('mapService', ['gameService'])
 
     service.prototype.getSCTransform = getSCTransform;
     service.prototype.getSCPath = getSCPath;
-    service.prototype.provinceHasSC = provinceHasSC;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
     service.prototype.setCurrentAction = setCurrentAction;
     service.prototype.inputCommand = inputCommand;
@@ -20,14 +19,13 @@ angular.module('mapService', ['gameService'])
     service.prototype.userCanAdjust = userCanAdjust;
     service.prototype.userCanRetreat = userCanRetreat;
     service.prototype.isActionCurrent = isActionCurrent;
-    service.prototype.provinceHasUnit = provinceHasUnit;
 
     return service;
 
     // PRIVATE FUNCTIONS
 
     function getSCTransform(p) {
-        return 'translate' + this.phase.provinces[p].sc.location + ' scale(0.04)';
+        return 'translate(' + p.sc.location.x + ',' + p.sc.location.y + ') scale(0.04)';
     }
 
     function generateMarkerEnd(d) {
@@ -117,15 +115,15 @@ angular.module('mapService', ['gameService'])
     }
 
     function userCanMove() {
-        return _.contains(this.phase.season, 'move');
+        return _.includes(this.phase.season, 'move');
     }
 
     function userCanRetreat() {
-        return _.contains(this.phase.season, 'retreat');
+        return _.includes(this.phase.season, 'retreat');
     }
 
     function userCanAdjust() {
-        return _.contains(this.phase.season, 'adjust');
+        return _.includes(this.phase.season, 'adjust');
     }
 
     function getSCPath() {
@@ -134,13 +132,5 @@ angular.module('mapService', ['gameService'])
 
     function isActionCurrent(action) {
         return action === currentAction;
-    }
-
-    function provinceHasSC(input) {
-        return input.sc !== null;
-    }
-
-    function provinceHasUnit(input, unitType) {
-        return input.unit !== null && input.unit.type === unitType;
     }
 }]);

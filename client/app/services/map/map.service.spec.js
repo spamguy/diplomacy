@@ -4,27 +4,18 @@ describe('Map directive', function() {
     var location,
         MapService,
         service,
-        variant,
-        game,
-        phase;
+        game;
 
     beforeEach(function() {
-        variant = {
-            provinces: [],
-            powers: {
-                R: {
-                    colour: '#141414'
-                },
-                A: {
-                    colour: '#555555'
-                }
-            }
-        };
         game = {
+            variant: 'Standard',
             phases: [{
                 provinces: {
                     WAR: {
-                        sc: 'R',
+                        sc: {
+                            owner: 'R',
+                            fill: '#141414'
+                        },
                         unit: {
                             power: 'R'
                         }
@@ -47,7 +38,7 @@ describe('Map directive', function() {
             MapService = _mapService_;
         });
 
-        service = new MapService(variant, game, 0);
+        service = new MapService(game, 0);
     });
 
     it('generates the URL pointing to the supply centre SVG', function() {

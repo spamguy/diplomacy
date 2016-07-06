@@ -1,5 +1,6 @@
 module.exports = function(bookshelf) {
-    var province,
+    var _ = require('lodash'),
+        province,
         provinces;
 
     province = bookshelf.Model.extend({
@@ -30,7 +31,7 @@ module.exports = function(bookshelf) {
                     targetOfTarget: obfuscate ? null : this.getFullName(this.get('unitTargetOfTarget'), this.get('unitSubtargetOfTarget')),
                     actionOfTarget: obfuscate ? null : this.get('unitActionOfTarget')
                 } : null,
-                sc = this.get('supplyCentre') ? {
+                sc = !_.isUndefined(this.get('supplyCentre')) ? {
                     owner: this.get('supplyCentre'),
                     fill: this.get('supplyCentreFill'),
                     location: this.get('supplyCentreLocation')
