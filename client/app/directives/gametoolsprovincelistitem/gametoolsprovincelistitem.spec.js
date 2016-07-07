@@ -17,13 +17,11 @@ describe('Province list item directive', function() {
             compile = $compile;
 
             scope.province = {
-                r: 'MOS',
+                p: 'MOS',
                 unit: {
                     type: 1,
                     power: 'R',
-                    order: {
-                        action: 'hold'
-                    }
+                    target: 'SEV'
                 }
             };
         });
@@ -35,24 +33,6 @@ describe('Province list item directive', function() {
         expect($('div span', el).html()).to.contain('MOS');
     });
 
-    it('prints subprovinces', function() {
-        scope.province = {
-            r: 'STP',
-            sr: [{
-                r: 'NC',
-                unit: {
-                    type: 2,
-                    power: 'R'
-                }
-            }, {
-                r: 'SC'
-            }]
-        };
-        el = compile('<sg-province-list-item province="province" />')(scope);
-        scope.$digest();
-        expect($('div span', el).html()).to.contain('STP/NC');
-    });
-
     it('reports hold orders', function() {
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
@@ -60,59 +40,55 @@ describe('Province list item directive', function() {
     });
 
     it('reports move orders', function() {
-        scope.province.unit.order = {
-            action: 'move',
-            target: 'STP'
-        };
+        scope.province.unit.action = 'move';
+        scope.province.unit.target = 'SEV';
+
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> → <strong>STP</strong>');
     });
 
     it('reports orders supporting a holding target', function() {
-        scope.province.unit.order = {
-            action: 'support',
-            source: 'STP'
-        };
+        scope.province.unit.action = 'support';
+        scope.province.unit.source = 'STP';
+        scope.province.unit.target = null;
+
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> supports <strong>STP</strong> ');
     });
 
     it('reports orders supporting a moving target', function() {
-        scope.province.unit.order = {
-            action: 'support',
-            source: 'STP',
-            target: 'LVN'
-        };
+        scope.province.unit.action = 'support';
+        scope.province.unit.source = 'STP';
+        scope.province.unit.target = 'LVN';
+
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> supports <strong>STP</strong> → <strong>LVN</strong>');
     });
 
     it('reports convoy orders', function() {
-        scope.province.r = 'MOS';
-        scope.province.unit.order = {
-            action: 'convoy',
-            source: 'HEL',
-            target: 'NRG'
-        };
+        scope.province.p = 'MOS';
+        scope.province.unit.action = 'convoy';
+        scope.province.unit.source = 'HEL';
+        scope.province.unit.target = 'NRG';
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> ~ <strong>NRG</strong>');
     });
 
     it('reports disband orders', function() {
-        scope.province.unit.order = {
-            action: 'disband'
-        };
+        scope.province.unit.action = 'disband';
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> disbands');
     });
 
     it('reports units still needing orders', function() {
-        delete scope.province.unit.order;
+        scope.province.unit.action = null;
+        scope.province.unit.source = null;
+        scope.province.unit.target = null;
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> <em>awaiting orders</em>');
