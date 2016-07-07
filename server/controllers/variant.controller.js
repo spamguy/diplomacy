@@ -19,6 +19,15 @@ module.exports = function() {
 
                 return res.json(nameList);
             });
+        },
+
+        powers: function(req, res) {
+            var variant = req.data.variant,
+                variantJSON = JSON.parse(
+                    fs.readFileSync(path.join('variants', variant, variant + '.json'))
+                );
+
+            return res.json(variantJSON.powers);
         }
     });
 };

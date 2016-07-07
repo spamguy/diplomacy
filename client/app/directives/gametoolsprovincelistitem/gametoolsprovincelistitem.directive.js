@@ -17,30 +17,30 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
             });
 
             function generateProvinceStatus() {
-                var unitOwner = gameService.getUnitOwnerInProvince(scope.province),
-                    provinceName = scope.province.r,
+                var unit = scope.province.unit,
+                    provinceName = scope.province.p,
                     provinceStatus;
 
                 // Unit is in a subprovince if province mentions subprovinces but unit owner does not.
-                if (unitOwner && scope.province.sr && !unitOwner.sr)
-                    provinceName += '/' + unitOwner.r;
+                // if (unitOwner && scope.province.sr && !unitOwner.sr)
+                    // provinceName += '/' + unitOwner.r;
                 provinceStatus = '<strong>' + provinceName + '</strong> ';
 
-                if (unitOwner && unitOwner.unit.order) {
-                    switch (unitOwner.unit.order.action) {
+                if (unit && unit.action) {
+                    switch (unit.action) {
                     case 'move':
-                        provinceStatus += '→ <strong>' + unitOwner.unit.order.target + '</strong>';
+                        provinceStatus += '→ <strong>' + unit.target + '</strong>';
                         break;
                     case 'support':
-                        provinceStatus += 'supports <strong>' + unitOwner.unit.order.source + '</strong> ';
-                        if (unitOwner.unit.order.target)
-                            provinceStatus += '→ <strong>' + unitOwner.unit.order.target + '</strong>';
+                        provinceStatus += 'supports <strong>' + unit.order.source + '</strong> ';
+                        if (unit.order.target)
+                            provinceStatus += '→ <strong>' + unit.order.target + '</strong>';
                         break;
                     case 'hold':
                         provinceStatus += 'holds';
                         break;
                     case 'convoy':
-                        provinceStatus += '~ <strong>' + unitOwner.unit.order.target + '</strong>';
+                        provinceStatus += '~ <strong>' + unit.order.target + '</strong>';
                         break;
                     case 'build':
                         provinceStatus += 'builds a'; break;

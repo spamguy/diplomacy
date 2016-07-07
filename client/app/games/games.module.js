@@ -54,14 +54,14 @@ angular.module('games', [
             }
         },
         resolve: {
-            variant: ['gameService', 'game', function(gameService, game) {
-                return gameService.getVariant(game.variant);
-            }],
             game: ['gameService', '$stateParams', function(gameService, $stateParams) {
                 return gameService.getGame($stateParams.id);
             }],
             svg: ['gameService', 'game', function(gameService, game) {
                 return gameService.getVariantSVG(game.variant);
+            }],
+            powers: ['gameService', 'game', function(gameService, game) {
+                return gameService.getPowerData(game.variant);
             }]
         }
     });

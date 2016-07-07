@@ -65,7 +65,7 @@ angular.module('gametools.component')
     };
 
     function powerOwnsProvince(code, province) {
-        return gameService.getUnitOwnerInProvince(province, null, code);
+        return province.sc && province.sc.owner === code;
     }
 
     function getPowerList() {

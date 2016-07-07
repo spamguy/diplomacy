@@ -206,6 +206,15 @@ angular.module('gameService', ['userService', 'socketService'])
 
         getFormattedDeadline: function(phase) {
             return moment(phase.deadline).valueOf();
+        },
+
+        getPowerData: function(variant) {
+            var options = { variant: this.getNormalisedVariantName(variant) };
+            return $q(function(resolve) {
+                socketService.socket.emit('variant:powers', options, function(powers) {
+                    resolve(powers);
+                });
+            });
         }
     };
 

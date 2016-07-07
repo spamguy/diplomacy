@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('games')
-.controller('ViewController', ['$scope', 'userService', 'gameService', 'variant', 'game', 'svg', '$mdDialog', '$stateParams', function($scope, userService, gameService, variant, game, svg, $mdDialog, $stateParams) {
+.controller('ViewController', ['$scope', 'userService', 'gameService', 'game', 'svg', 'powers', '$mdDialog', '$stateParams', function($scope, userService, gameService, game, svg, powers, $mdDialog, $stateParams) {
     $scope.updateProvinceData = updateProvinceData;
 
-    $scope.variant = variant;
+    $scope.powers = powers;
     $scope.game = game;
     $scope.readonly = userService.getCurrentUserID() === game.gm_id;
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');

@@ -8,54 +8,41 @@ module.exports = function() {
         core = this.core;
 
     app.io.route('phase', {
-        get: function(req, res) {
-            var gameID = req.data.gameID,
-                year = req.data.year,
-                phaseIndex = req.data.phaseIndex,
-                userID = req.socket.decoded_token.id,
-                game;
-
-            async.waterfall([
-                function(callback) {
-                    core.game.get(gameID, callback);
-                },
-
-                function(_game, callback) {
-                    game = _game;
-                    core.phase.get(game.id, phaseIndex, year, callback);
-                }
-            ], function(err, phase) {
-                if (err)
-                    app.logger.error(err);
-
-                if (!phase)
-                    return res.json(null);
-
-                var p,
-                    province,
-                    currentPhase = game.currentPhase,
-                    currentYear = game.currentYear,
-                    isComplete = game.isComplete,
-                    isGM = game.gm_id === userID,
-                    isActive = !isGM && !isComplete && phase.year === currentYear && phase.phase === currentPhase,
-                    playerPower = _.find(game.players, function(p) { return p.user_id === userID; }),
-                    powerShortName;
-
-                if (playerPower)
-                    powerShortName = playerPower.power;
-
-                // Incomplete games and active phases are sanitised for players' protection.
-                // if (isActive) {
-                //     for (p = 0; p < phase.provinces.length; p++) {
-                //         province = province[p];
-                //         if (province.unitPower !== powerShortName)
-                //             _.omit(province, ['unitTarget', 'unitSubTarget', 'unitAction']);
-                //     }
-                // }
-
-                return res.json(phase.toJSON(isActive));
-            });
-        },
+        // get: function(req, res) {
+        //     var gameID = req.data.gameID,
+        //         year = req.data.year,
+        //         phaseIndex = req.data.phaseIndex,
+        //         userID = req.socket.decoded_token.id,
+        //         game;
+        //
+        //     async.waterfall([
+        //         function(callback) {
+        //             core.game.get(gameID, callback);
+        //         },
+        //
+        //         function(_game, callback) {
+        //             game = _game;
+        //             core.phase.get(game.id, phaseIndex, year, callback);
+        //         }
+        //     ], function(err, phase) {
+        //         if (err)
+        //             app.logger.error(err);
+        //
+        //         if (!phase)
+        //             return res.json(null);
+        //
+        //         var isComplete = game.isComplete,
+        //             isGM = game.gm_id === userID,
+        //             isActive = !isGM && !isComplete && phase.year === currentYear && phase.phase === currentPhase,
+        //             playerPower = _.find(game.players, function(p) { return p.user_id === userID; }),
+        //             powerShortName;
+        //
+        //         if (playerPower)
+        //             powerShortName = playerPower.power;
+        //
+        //         return res.json(phase.toJSON(isActive));
+        //     });
+        // },
 
         create: function(req, res) {
             var phase = req.data.phase;

@@ -89,9 +89,9 @@
                         r="8"
                         stroke="#000"
                         stroke-width="1px"
-                        ng-attr-cx="{{$ctrl.service.getCoordinatesForUnitInProvince(province, 1).x}}"
-                        ng-attr-cy="{{$ctrl.service.getCoordinatesForUnitInProvince(province, 1).y}}"
-                        ng-attr-fill="{{$ctrl.service.getUnitFill(province)}}">
+                        ng-attr-cx="{{province.unitLocation.x}}"
+                        ng-attr-cy="{{province.unitLocation.y}}"
+                        ng-attr-fill="{{province.unit.fill}}">
                 </circle>
 
                 <rect ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:2"
@@ -100,9 +100,9 @@
                       width="16"
                       stroke="#000"
                       stroke-width="1px"
-                      ng-attr-x="{{$ctrl.service.getCoordinatesForUnitInProvince(province, 2).x - 16/2}}"
-                      ng-attr-y="{{$ctrl.service.getCoordinatesForUnitInProvince(province, 2).y - 8/2}}"
-                      ng-attr-fill="{{$ctrl.service.getUnitFill(province)}}">
+                      ng-attr-x="{{province.unitLocation.x - 16/2}}"
+                      ng-attr-y="{{province.unitLocation.y - 8/2}}"
+                      ng-attr-fill="{{province.unit.fill}}">
                 </rect>
             </g>
 
