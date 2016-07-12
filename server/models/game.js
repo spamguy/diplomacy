@@ -19,6 +19,12 @@ module.exports = function(bookshelf) {
             return this.hasMany('Phase');
         },
 
+        isEverybodyReady: function() {
+            return _.every(this.related('players'), function(p) {
+                return p.pivot.get('isReady');
+            });
+        },
+
         getClockFromPhase: function(phaseName) {
             if (_.includes(phaseName.toLowerCase(), 'move'))
                 return this.get('moveClock');
@@ -52,7 +58,7 @@ module.exports = function(bookshelf) {
                 players: this.related('players').map(function(player) {
                     var isPlayer = player.get('id') === currentUserID;
                     return {
-                        id: obfuscate && !isPlayer ? null : player.get('id'),
+                        player_id: obfuscate && !isPlayer ? null : player.get('id'),
                         power: player.pivot.get('power')
                     };
                 }),

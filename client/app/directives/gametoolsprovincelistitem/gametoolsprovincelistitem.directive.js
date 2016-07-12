@@ -21,9 +21,6 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
                     provinceName = scope.province.p,
                     provinceStatus;
 
-                // Unit is in a subprovince if province mentions subprovinces but unit owner does not.
-                // if (unitOwner && scope.province.sr && !unitOwner.sr)
-                    // provinceName += '/' + unitOwner.r;
                 provinceStatus = '<strong>' + provinceName + '</strong> ';
 
                 if (unit && unit.action) {

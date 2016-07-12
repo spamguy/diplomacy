@@ -34,6 +34,7 @@ describe('Province list item directive', function() {
     });
 
     it('reports hold orders', function() {
+        scope.province.unit.action = 'hold';
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> holds');
@@ -45,7 +46,7 @@ describe('Province list item directive', function() {
 
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
-        expect($('div span', el).html()).to.equal('<strong>MOS</strong> → <strong>STP</strong>');
+        expect($('div span', el).html()).to.equal('<strong>MOS</strong> → <strong>SEV</strong>');
     });
 
     it('reports orders supporting a holding target', function() {

@@ -11,7 +11,7 @@ module.exports = {
                 .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
                 .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
             mailer = require('../mailer/mailer'),
-            phaseID = job.data.phaseID,
+            gameID = job.data.gameID,
             judgePath = path.join(seekrits.get('judgePath'), 'diplomacy-godip');
 
         if (require('file-exists')(judgePath + '.js')) {
@@ -23,32 +23,27 @@ module.exports = {
         }
 
         async.waterfall([
-            // Fetches the phase in question.
-            function(callback) {
-                core.phase.list({ ID: phaseID }, function(err, phases) { callback(err, phases[0]); });
-            },
-
             // Fetches the game in question.
             function(phase, callback) {
-                core.game.list({ gameID: phase.game_id }, function(err, games) { callback(err, games[0], phase); });
+                core.game.get(gameID, callback);
             },
 
             // Verifies all players are ready. Fetches the variant, adjudicates, and persists the outcome.
-            function(game, phase, callback) {
+            function(game, callback) {
                 // Not everyone is ready. Handling this situation deserves its own block.
-                if (!game.ignoreLateOrders && !game.isEverybodyReady) {
+                if (!game.get('ignoreLateOrders') && !game.isEverybodyReady()) {
                     handleLatePhase();
                     callback(new Error('Not adjudicating: some players are not ready'));
                 }
 
                 var variant = core.variant.get(game.variant),
-                    phaseObject = phase.toObject(),
+                    phase = game.related('phases').at(0),
                     nextState;
 
                 // Godip expects a phase type.
-                phaseObject.phaseType = phaseObject.phase.split(' ')[1];
+                phase.phaseType = phase.get('season').split(' ')[1];
 
-                nextState = global.state.NextFromJS(variant, phaseObject);
+                nextState = global.state.NextFromJS(variant, phase);
                 core.phase.createFromState(variant, game, phase, nextState, function(err, s) { callback(err, variant, game, phase, s); });
             },
 
@@ -56,14 +51,14 @@ module.exports = {
             function(variant, game, oldPhase, newPhase, callback) {
                 async.each(game.players, function(player, err) {
                     var emailOptions = {
-                        gameName: game.name,
-                        gameURL: path.join(seekrits.get('domain'), 'games', game.id.toString()),
-                        subject: '[' + game.name + '] ' + oldPhase.phase + ' ' + oldPhase.year + ' has been adjudicated',
-                        deadline: oldPhase.deadline,
-                        phase: oldPhase.phase,
-                        year: oldPhase.year,
-                        nextPhase: oldPhase.getNextPhasePhase(variant),
-                        nextYear: oldPhase.getNextPhaseYear(variant)
+                        gameName: game.get('name'),
+                        gameURL: path.join(seekrits.get('domain'), 'games', game.get('id')),
+                        subject: '[' + game.get('name') + '] ' + oldPhase.get('season') + ' ' + oldPhase.get('year') + ' has been adjudicated',
+                        deadline: oldPhase.get('deadline'),
+                        phase: oldPhase.get('season'),
+                        year: oldPhase.get('year')
+                        // nextPhase: oldPhase.getNextPhaseSeason(variant),
+                        // nextYear: oldPhase.getNextPhaseYear(variant)
                     };
 
                     core.user.list({ ID: player.player_id }, function(err, users) {
@@ -84,10 +79,10 @@ module.exports = {
             if (err)
                 done(err);
             return done(null, {
-                gameID: game.id,
-                gameName: game.name,
-                year: oldPhase.year,
-                phase: oldPhase.phase
+                gameID: game.get('id'),
+                gameName: game.get('name'),
+                year: oldPhase.get('year'),
+                phase: oldPhase.get('season')
             });
         });
     }
