@@ -25,53 +25,49 @@ describe('Game tools component', function() {
             compile = $compile;
             scope = $rootScope.$new();
 
-            scope.variant = {
-                powers: {
-                    'A': {
-                        name: 'Austria'
-                    },
-                    'E': {
-                        name: 'England'
-                    },
-                    'F': {
-                        name: 'France'
-                    },
-                    'I': {
-                        name: 'Italy'
-                    }
+            scope.powers = {
+                'A': {
+                    name: 'Austria'
+                },
+                'E': {
+                    name: 'England'
+                },
+                'F': {
+                    name: 'France'
+                },
+                'I': {
+                    name: 'Italy'
                 }
             };
             scope.game = {
-                players: []
-            };
-            scope.phase = {
-                provinces: [{
-                    r: 'BUD',
-                    unit: {
-                        power: 'A',
-                        type: 1
-                    }
-                }, {
-                    r: 'HUN',
-                    unit: {
-                        power: 'A',
-                        type: 1
-                    }
-                }, {
-                    r: 'ROM',
-                    unit: {
-                        power: 'I',
-                        type: 1
-                    }
-                }, {
-                    r: 'BUL',
-                    sr: [{
-                        r: 'EC',
-                        unit: {
-                            power: 'A',
-                            type: 2
+                players: [],
+                phases: [{
+                    provinces: {
+                        'BUD': {
+                            unit: {
+                                power: 'A',
+                                type: 1
+                            }
+                        },
+                        'HUN': {
+                            unit: {
+                                power: 'A',
+                                type: 1
+                            }
+                        },
+                        'ROM': {
+                            unit: {
+                                power: 'I',
+                                type: 1
+                            }
+                        },
+                        'BUL': {
+                            unit: {
+                                power: 'A',
+                                type: 1
+                            }
                         }
-                    }]
+                    }
                 }]
             };
         });
@@ -79,7 +75,7 @@ describe('Game tools component', function() {
 
     it('lists all powers when viewing as a GM', function() {
         scope.game.gm_id = '12345';
-        el = compile('<sg-game-tools variant="variant" game="game" phase="phase" />')(scope);
+        el = compile('<sg-game-tools powers="powers" game="game" phase-index="0" />')(scope);
         scope.$digest();
         expect($('div.md-subheader', el)).to.have.lengthOf(4);
     });
@@ -89,7 +85,7 @@ describe('Game tools component', function() {
             player_id: '12345',
             power: 'F'
         });
-        el = compile('<sg-game-tools variant="variant" game="game" phase="phase" />')(scope);
+        el = compile('<sg-game-tools powers="powers" game="game" phase-index="0" />')(scope);
         scope.$digest();
         expect($('div.md-subheader', el)).to.have.lengthOf(1);
         expect($('div.md-subheader', el).html()).to.contain('France');

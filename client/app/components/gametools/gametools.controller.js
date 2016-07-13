@@ -74,12 +74,12 @@ angular.module('gametools.component')
 
         if (currentUser === vm.game.gm_id) {
             // GMs see everyone.
-            return vm.variant.powers;
+            return vm.powers;
         }
         else {
             for (p = 0; p < vm.game.players.length; p++) {
                 if (vm.game.players[p].player_id === currentUser)
-                    return _.pick(vm.variant.powers, [vm.game.players[p].power]);
+                    return _.pick(vm.powers, [vm.game.players[p].power]);
             }
         }
     }

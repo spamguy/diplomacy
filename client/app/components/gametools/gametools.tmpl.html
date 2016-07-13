@@ -9,7 +9,7 @@
                     </md-switch>
                 </div>
 
-                <section ng-repeat="(code, power) in $ctrl.powers">
+                <section ng-repeat="(code, power) in $ctrl.getPowerList()">
                     <md-subheader>{{power.name}}</md-subheader>
                     <md-divider></md-divider>
                     <md-list>

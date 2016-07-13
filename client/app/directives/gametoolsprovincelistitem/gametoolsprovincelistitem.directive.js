@@ -12,7 +12,7 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
 
             scope.$on('orderChange', function(event, data) {
                 // FIXME: This can't be the best way to refresh this directive...can it?
-                if (data.r === scope.province.r)
+                if (data.p === scope.province.p)
                     scope.provinceStatus = generateProvinceStatus();
             });
 
@@ -21,9 +21,6 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
                     provinceName = scope.province.p,
                     provinceStatus;
 
-                // Unit is in a subprovince if province mentions subprovinces but unit owner does not.
-                // if (unitOwner && scope.province.sr && !unitOwner.sr)
-                    // provinceName += '/' + unitOwner.r;
                 provinceStatus = '<strong>' + provinceName + '</strong> ';
 
                 if (unit && unit.action) {
@@ -32,15 +29,15 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
                         provinceStatus += '→ <strong>' + unit.target + '</strong>';
                         break;
                     case 'support':
-                        provinceStatus += 'supports <strong>' + unit.order.source + '</strong> ';
-                        if (unit.order.target)
-                            provinceStatus += '→ <strong>' + unit.order.target + '</strong>';
+                        provinceStatus += 'supports <strong>' + unit.source + '</strong> ';
+                        if (unit.target)
+                            provinceStatus += '→ <strong>' + unit.target + '</strong>';
                         break;
                     case 'hold':
                         provinceStatus += 'holds';
                         break;
                     case 'convoy':
-                        provinceStatus += '~ <strong>' + unit.order.target + '</strong>';
+                        provinceStatus += '~ <strong>' + unit.target + '</strong>';
                         break;
                     case 'build':
                         provinceStatus += 'builds a'; break;

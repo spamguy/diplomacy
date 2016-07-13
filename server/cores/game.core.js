@@ -173,7 +173,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
             // Schedule adjudication.
             function(callback) {
                 var job = queue.create('adjudicate', {
-                    phaseID: phase.get('id')
+                    gameID: game.get('id')
                 });
                 job.delay(nextPhaseDeadline.toDate())
                     .backoff({ delay: 'exponential' })
