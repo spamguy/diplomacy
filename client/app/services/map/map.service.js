@@ -55,7 +55,7 @@ angular.module('mapService', ['gameService'])
         // Users who try to control units that don't exist or don't own?
         // We have ways of shutting the whole thing down.
         if (commandData.length === 0 &&
-            (!province.unit || province.unit.owner !== gameService.getPowerOfCurrentUserInGame(this.game)))
+            (!province.unit || province.unit.owner !== gameService.getCurrentUserInGame(this.game).power))
             return;
 
         commandData.push(p);

@@ -85,6 +85,6 @@ angular.module('gametools.component')
     }
 
     function setReadyState() {
-        gameService.setReadyState(vm.game, vm.currentPlayer.isReady);
+        gameService.setReadyState(vm.game, gameService.getCurrentUserInGame(vm.game).isReady);
     }
 }]);

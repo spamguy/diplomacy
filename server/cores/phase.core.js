@@ -13,22 +13,6 @@ function PhaseCore(options) {
         this.core = options.core;
 }
 
-PhaseCore.prototype.get = function(gameID, phaseIndex, year, cb) {
-    var whereClause = {
-        game_id: gameID
-    };
-
-    if (phaseIndex)
-        whereClause.phaseIndex = phaseIndex;
-    if (year)
-        whereClause.year = year;
-    db.models.Phase.findOne({
-        where: whereClause,
-        order: [['created_at', 'DESC']],
-        include: [{ model: db.models.PhaseProvince, as: 'provinces' }]
-    }).nodeify(cb);
-};
-
 PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
     var self = this,
         newPhase = new db.models.Phase({
@@ -104,7 +88,21 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
     }, cb);
 };
 
-PhaseCore.prototype.createFromState = function(variant, game, phase, state, cb) {
+PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
+    var self = this;
+    db.bookshelf.transaction(function(t) {
+        async.waterfall([
+        ], function(err, result) {
+            if (!err) {
+                t.commit();
+                self.get(game.get('id'), cb);
+            }
+            else {
+                t.rollback();
+                cb(err);
+            }
+        });
+    });
     // var PhaseSchema = mongoose.model('Phase'),
     //     indexedProvinces = _.indexBy(phase.toObject().provinces, 'r'),
     //     unit;

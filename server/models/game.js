@@ -8,7 +8,7 @@ module.exports = function(bookshelf) {
         hasTimestamps: true,
 
         players: function() {
-            return this.belongsToMany('User', 'game_players', 'game_id', 'user_id').withPivot(['power']);
+            return this.belongsToMany('User', 'game_players', 'game_id', 'user_id').withPivot(['power', 'is_ready']);
         },
 
         GM: function() {
@@ -21,7 +21,7 @@ module.exports = function(bookshelf) {
 
         isEverybodyReady: function() {
             return _.every(this.related('players'), function(p) {
-                return p.pivot.get('isReady');
+                return p.pivot.get('is_ready');
             });
         },
 
@@ -59,6 +59,7 @@ module.exports = function(bookshelf) {
                     var isPlayer = player.get('id') === currentUserID;
                     return {
                         player_id: obfuscate && !isPlayer ? null : player.get('id'),
+                        isReady: obfuscate && !isPlayer ? null : player.pivot.get('is_ready'),
                         power: player.pivot.get('power')
                     };
                 }),

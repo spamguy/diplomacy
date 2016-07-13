@@ -1,49 +1,12 @@
 'use strict';
 
-var _ = require('lodash'),
-    async = require('async');
+var async = require('async');
 
 module.exports = function() {
     var app = this.app,
         core = this.core;
 
     app.io.route('phase', {
-        // get: function(req, res) {
-        //     var gameID = req.data.gameID,
-        //         year = req.data.year,
-        //         phaseIndex = req.data.phaseIndex,
-        //         userID = req.socket.decoded_token.id,
-        //         game;
-        //
-        //     async.waterfall([
-        //         function(callback) {
-        //             core.game.get(gameID, callback);
-        //         },
-        //
-        //         function(_game, callback) {
-        //             game = _game;
-        //             core.phase.get(game.id, phaseIndex, year, callback);
-        //         }
-        //     ], function(err, phase) {
-        //         if (err)
-        //             app.logger.error(err);
-        //
-        //         if (!phase)
-        //             return res.json(null);
-        //
-        //         var isComplete = game.isComplete,
-        //             isGM = game.gm_id === userID,
-        //             isActive = !isGM && !isComplete && phase.year === currentYear && phase.phase === currentPhase,
-        //             playerPower = _.find(game.players, function(p) { return p.user_id === userID; }),
-        //             powerShortName;
-        //
-        //         if (playerPower)
-        //             powerShortName = playerPower.power;
-        //
-        //         return res.json(phase.toJSON(isActive));
-        //     });
-        // },
-
         create: function(req, res) {
             var phase = req.data.phase;
 
@@ -79,33 +42,42 @@ module.exports = function() {
                 gameID = req.data.gameID;
             app.logger.info('Player ' + playerID + ' has set ready flag to ' + isReady + ' in game ' + gameID);
 
-            core.game.setReadyFlag(gameID, playerID, isReady, function(err, game) {
+            async.waterfall([
+                function(callback) {
+                    core.game.setReadyFlag(gameID, playerID, isReady, callback);
+                },
+
+                function(callback) {
+                    core.game.get(gameID, callback);
+                },
+
+                function(game, callback) {
+                    // IS EVERYBODY READY?!
+                    // TODO: Delete any existing adjudication schedules.
+                    // TODO: Schedule near-immediate adjudication.
+                    if (game.isEverybodyReady())
+                        app.logger.info('Everybody is ready in game ' + gameID + '. Scheduling adjudication.');
+                }
+            ], function(err) {
                 if (err)
                     app.logger.info(err);
-
-                // IS EVERYBODY READY?!
-                // TODO: Delete any existing adjudication schedules.
-                // TODO: Schedule near-immediate adjudication.
-                if (game.isEverybodyReady)
-                    app.logger.info('Everybody is ready in game ' + gameID + '. Scheduling adjudication.');
             });
         },
 
         adjudicate: function(req, res) {
             var playerID = req.socket.decoded_token.id,
-                gameID = req.data.gameID,
-                phaseID = req.data.phaseID;
+                gameID = req.data.gameID;
 
             async.waterfall([
                 function(callback) {
-                    core.game.list({ gameID: gameID }, callback);
+                    core.game.get(gameID, callback);
                 },
 
-                function(games, callback) {
-                    if (games[0].gm_id.toString() !== playerID)
+                function(game, callback) {
+                    if (game.gm_id !== playerID)
                         callback(new Error('You are not authorized to schedule adjudications for this game.'));
                     var job = app.queue.create('adjudicate', {
-                        phaseID: phaseID
+                        gameID: gameID
                     });
 
                     job.on('complete', function(err, result) {
@@ -117,7 +89,7 @@ module.exports = function() {
 
                     job.backoff({ delay: 'exponential' })
                         .save(function(err) {
-                            app.logger.info('Manual adjudication started', { gameID: gameID, phaseID: phaseID });
+                            app.logger.info('Manual adjudication started', { gameID: gameID });
                             callback(err);
                         });
                 }

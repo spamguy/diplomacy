@@ -44,7 +44,7 @@ module.exports = {
                 phase.phaseType = phase.get('season').split(' ')[1];
 
                 nextState = global.state.NextFromJS(variant, phase);
-                core.phase.createFromState(variant, game, phase, nextState, function(err, s) { callback(err, variant, game, phase, s); });
+                core.phase.createFromState(variant, game, nextState, callback);
             },
 
             // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.

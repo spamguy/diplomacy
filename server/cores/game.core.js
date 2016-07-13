@@ -90,17 +90,17 @@ GameCore.prototype.create = function(gmID, options, cb) {
 };
 
 GameCore.prototype.setReadyFlag = function(gameID, userID, state, cb) {
-    db.models.GamePlayer.update(
-        { is_ready: state },
-        { where: { game_id: gameID, user_id: userID } }
-    ).nodeify(cb);
+    db.bookshelf.knex('game_players')
+        .where({ 'user_id': userID, 'game_id': gameID })
+        .update({ 'is_ready': state })
+        .asCallback(cb);
 };
 
 GameCore.prototype.resetAllReadyFlags = function(game, cb) {
-    db.models.GamePlayer.update(
-        { is_ready: false },
-        { where: { game_id: game.id } }
-    ).nodeify(cb);
+    db.bookshelf.knex('game_players')
+        .where({ 'game_id': game.get('id') })
+        .update({ 'is_ready': false })
+        .asCallback(cb);
 };
 
 /**
@@ -110,15 +110,10 @@ GameCore.prototype.resetAllReadyFlags = function(game, cb) {
  * @param  {Function} cb       The callback.
  */
 GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
-    async.waterfall([
-        function(callback) {
-            this.get(gameID, callback);
-        },
-
-        function(_game, callback) {
-            _.find(_game.players, 'player_id', playerID).setIsDisabled(true, callback);
-        }
-    ]);
+    db.bookshelf.knex('game_players')
+        .where({ 'user_id': playerID, 'game_id': gameID })
+        .update({ 'is_disabled': true })
+        .asCallback(cb);
 };
 
 GameCore.prototype.start = function(queue, gameID, cb) {

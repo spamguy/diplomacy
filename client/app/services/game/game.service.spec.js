@@ -60,8 +60,8 @@ describe('gameService', function() {
         expect(socket.emits).to.contain.keys('game:create');
     });
 
-    it('gets the current player\'s power in a game', function() {
-        expect(gameService.getPowerOfCurrentUserInGame(game)).to.equal('N');
+    it('gets the current user\'s player in a game', function() {
+        expect(gameService.getCurrentUserInGame(game).power).to.equal('N');
     });
 
     it('identifies the user in the correct game role', function() {

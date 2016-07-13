@@ -165,10 +165,10 @@ angular.module('gameService', ['userService', 'socketService'])
             }, callback);
         },
 
-        getPowerOfCurrentUserInGame: function(game) {
+        getCurrentUserInGame: function(game) {
             for (var p = 0; p < game.players.length; p++) {
                 if (game.players[p].player_id === userService.getCurrentUserID())
-                    return game.players[p].power;
+                    return game.players[p];
             }
 
             return null;
@@ -197,7 +197,7 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         isPlayer: function(game) {
-            return this.getPowerOfCurrentUserInGame(game) !== null;
+            return this.getCurrentUserInGame(game) !== null;
         },
 
         isParticipant: function(game) {
