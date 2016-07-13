@@ -14,28 +14,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner:
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
@@ -48,7 +48,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: game_players; Type: TABLE; Schema: public; Owner: woram
+-- Name: game_players; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE game_players (
@@ -63,10 +63,8 @@ CREATE TABLE game_players (
 );
 
 
-ALTER TABLE game_players OWNER TO woram;
-
 --
--- Name: games; Type: TABLE; Schema: public; Owner: woram
+-- Name: games; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE games (
@@ -84,25 +82,22 @@ CREATE TABLE games (
     password_salt text,
     status smallint DEFAULT 0 NOT NULL,
     max_players smallint DEFAULT 0 NOT NULL,
-    minimum_dedication smallint DEFAULT 0 NOT NULL,
-    current_phase_id uuid
+    minimum_dedication smallint DEFAULT 0 NOT NULL
 );
 
 
-ALTER TABLE games OWNER TO woram;
-
 --
--- Name: phase_provinces; Type: TABLE; Schema: public; Owner: woram
+-- Name: phase_provinces; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE phase_provinces (
     phase_id uuid NOT NULL,
     province_key character varying(2044) NOT NULL,
-    subprovince_key character varying(2044) NOT NULL,
+    subprovince_key character varying(2044),
     supply_centre character varying(2),
     unit_type smallint,
     unit_owner character varying(2),
-    unit_action smallint,
+    unit_action character varying,
     unit_target character varying(2044),
     is_failed boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -110,17 +105,19 @@ CREATE TABLE phase_provinces (
     unit_subtarget character varying(2044),
     unit_target_of_target character varying(2044),
     unit_subtarget_of_target character varying(2044),
-    supply_centre_x smallint,
-    supply_centre_y smallint,
-    unit_x smallint DEFAULT 0 NOT NULL,
-    unit_y smallint DEFAULT 0 NOT NULL
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    unit_fill character varying(7),
+    supply_centre_fill character varying(2044),
+    supply_centre_location point,
+    unit_location point,
+    unit_action_of_target character varying(2044),
+    unit_source character varying(2044),
+    unit_subsource character varying(2044)
 );
 
 
-ALTER TABLE phase_provinces OWNER TO woram;
-
 --
--- Name: phases; Type: TABLE; Schema: public; Owner: woram
+-- Name: phases; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE phases (
@@ -135,10 +132,8 @@ CREATE TABLE phases (
 );
 
 
-ALTER TABLE phases OWNER TO woram;
-
 --
--- Name: users; Type: TABLE; Schema: public; Owner: woram
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE users (
@@ -155,10 +150,8 @@ CREATE TABLE users (
 );
 
 
-ALTER TABLE users OWNER TO woram;
-
 --
--- Name: game_players_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
+-- Name: game_players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY game_players
@@ -166,7 +159,7 @@ ALTER TABLE ONLY game_players
 
 
 --
--- Name: games_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
+-- Name: games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY games
@@ -174,15 +167,23 @@ ALTER TABLE ONLY games
 
 
 --
--- Name: season_provinces_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
+-- Name: provinces_in_phase; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY phase_provinces
-    ADD CONSTRAINT season_provinces_pkey PRIMARY KEY (phase_id, province_key, subprovince_key);
+    ADD CONSTRAINT provinces_in_phase UNIQUE (phase_id, province_key, subprovince_key);
 
 
 --
--- Name: seasons_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
+-- Name: season_provinces_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY phase_provinces
+    ADD CONSTRAINT season_provinces_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: seasons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY phases
@@ -190,7 +191,7 @@ ALTER TABLE ONLY phases
 
 
 --
--- Name: users_email_key; Type: CONSTRAINT; Schema: public; Owner: woram
+-- Name: users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
@@ -198,7 +199,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: woram
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
@@ -206,7 +207,15 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: game_players_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
+-- Name: yearSeasonInGame; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY phases
+    ADD CONSTRAINT "yearSeasonInGame" UNIQUE (year, season, season_index, game_id);
+
+
+--
+-- Name: game_players_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY game_players
@@ -214,7 +223,7 @@ ALTER TABLE ONLY game_players
 
 
 --
--- Name: game_players_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
+-- Name: game_players_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY game_players
@@ -222,15 +231,7 @@ ALTER TABLE ONLY game_players
 
 
 --
--- Name: games_current_phase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
---
-
-ALTER TABLE ONLY games
-    ADD CONSTRAINT games_current_phase_id_fkey FOREIGN KEY (current_phase_id) REFERENCES phases(id) MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: games_gm_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
+-- Name: games_gm_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY games
@@ -238,7 +239,7 @@ ALTER TABLE ONLY games
 
 
 --
--- Name: season_provinces_phase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
+-- Name: season_provinces_phase_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY phase_provinces
@@ -246,7 +247,7 @@ ALTER TABLE ONLY phase_provinces
 
 
 --
--- Name: seasons_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: woram
+-- Name: seasons_game_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY phases
@@ -254,5 +255,16 @@ ALTER TABLE ONLY phases
 
 
 --
+-- Name: public; Type: ACL; Schema: -; Owner: -
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM spamguy;
+GRANT ALL ON SCHEMA public TO spamguy;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
 -- PostgreSQL database dump complete
 --
+
