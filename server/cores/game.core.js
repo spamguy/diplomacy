@@ -59,16 +59,15 @@ GameCore.prototype.listOpen = function(cb) {
 };
 
 GameCore.prototype.create = function(gmID, options, cb) {
-    var newGame = db.models.Game.build({
+    var newGame = new db.models.Game({
         variant: options.variant,
         name: options.name,
         description: options.description,
         maxPlayers: options.maxPlayers,
-        visibility: options.visibility,
         moveClock: (options.move.days * 24) + options.move.hours + (options.move.minutes / 60),
         retreatClock: (options.retreat.days * 24) + options.retreat.hours + (options.retreat.minutes / 60),
         adjustClock: (options.adjust.days * 24) + options.adjust.hours + (options.adjust.minutes / 60),
-        minimumScoreToJoin: options.minimumScoreToJoin,
+        minimumDedication: options.minimumScoreToJoin,
         gm_id: gmID,
         status: 0
     });
@@ -85,7 +84,7 @@ GameCore.prototype.create = function(gmID, options, cb) {
         if (err)
             cb(err, null);
 
-        newGame.save().nodeify(cb);
+        newGame.save().asCallback(cb);
     });
 };
 

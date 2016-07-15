@@ -210,9 +210,9 @@ module.exports = function() {
                     app.logger.error(err);
                 }
                 else {
-                    app.logger.info(req.socket.decoded_token.id + ' joined game room ' + savedGame.id);
-                    req.socket.join(savedGame.id);
-                    app.io.in(savedGame.id).emit('game:create:success', { gamename: savedGame.name });
+                    app.logger.info(req.socket.decoded_token.id + ' joined game room ' + savedGame.get('id'));
+                    req.socket.join(savedGame.get('id'));
+                    app.io.in(savedGame.get('id')).emit('game:create:success', { gamename: savedGame.get('name') });
                 }
             });
         },

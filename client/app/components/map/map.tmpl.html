@@ -1,5 +1,5 @@
 <div class="md-whiteframe-2dp">
-    <md-toolbar class="md-toolbar-tools" id="mapToolbar" ng-if="$ctrl.game.phases && $ctrl.header">
+    <md-toolbar class="md-toolbar-tools" id="mapToolbar" ng-if="$ctrl.game.phases.length > 0 && $ctrl.header">
         <div layout="column" layout-align="center center">
             <div class="md-title">{{$ctrl.game.phases[$ctrl.phaseIndex].season}} {{$ctrl.game.phases[$ctrl.phaseIndex].year}}</div>
             <div class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.game.phases[$ctrl.phaseIndex])">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>

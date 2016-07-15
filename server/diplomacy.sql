@@ -75,9 +75,10 @@ CREATE TABLE games (
     description character varying(2044),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    move_clock numeric(2,0) NOT NULL,
-    retreat_clock numeric(2,0) DEFAULT 24 NOT NULL,
-    adjust_clock numeric(2,0) DEFAULT 24 NOT NULL,
+    move_clock numeric(8,2) NOT NULL,
+    retreat_clock numeric(8,2) DEFAULT 24 NOT NULL,
+    adjust_clock numeric(8,2) DEFAULT 24 NOT NULL,
+    press_type smallint DEFAULT 0 NOT NULL,
     password text,
     password_salt text,
     status smallint DEFAULT 0 NOT NULL,
@@ -267,4 +268,3 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
-

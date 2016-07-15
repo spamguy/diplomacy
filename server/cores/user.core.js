@@ -32,28 +32,20 @@ UserCore.prototype.getStubByEmail = function(email, cb) {
         cb(new Error('No email address was supplied.'));
 
     db.models.User
-        .where({ tempEmail: email, password: null })
+        .where({ 'temp_email': email, password: null })
         .fetch()
         .asCallback(cb);
 };
 
 UserCore.prototype.save = function(options, cb) {
-    db.models.User.save(options).asCallback(cb);
+    new db.models.User(options)
+        .save()
+        .asCallback(cb);
 };
 
 UserCore.prototype.adjustActionCount = function(playerID, penalty, cb) {
     if (penalty === 0)
         cb(null);
-
-    // mongoose.model('User').findOneAndUpdate(
-    //     { _id: playerID },
-    //     { $inc: {
-    //         actionCount: penalty,
-    //         lateActionCount: penalty
-    //     } },
-    //     { },
-    //     cb
-    // );
 };
 
 module.exports = UserCore;

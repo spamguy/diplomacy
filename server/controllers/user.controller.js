@@ -124,12 +124,12 @@ module.exports = function() {
                 },
 
                 function(hash, salt, callback) {
-                    verifiedUser.password = hash;
-                    verifiedUser.passwordSalt = salt;
-                    verifiedUser.email = verifiedUser.tempEmail; // Promote tempEmail to email.
-                    verifiedUser.tempEmail = null;
-
-                    core.user.save(verifiedUser, callback);
+                    verifiedUser.save({
+                        password: hash,
+                        passwordSalt: salt,
+                        email: verifiedUser.get('tempEmail'),
+                        tempEmail: null
+                    }).asCallback(callback);
                 }
             ], function(err, updatedUser) {
                 if (err) {
@@ -140,11 +140,11 @@ module.exports = function() {
                 }
                 else {
                     var safeUser = {
-                        email: updatedUser.email,
-                        id: updatedUser.id
+                        email: updatedUser.get('email'),
+                        id: updatedUser.get('id')
                     };
                     return res.json({
-                        id: updatedUser.id,
+                        id: updatedUser.get('id'),
                         token: jwt.sign(safeUser, app.seekrits.get('sessionSecret'), { expiresIn: SESSION_LENGTH })
                     });
                 }
@@ -170,11 +170,11 @@ module.exports = function() {
 
 function sendVerifyEmail(seekrits, user, cb) {
     var safeUser = {
-            email: user.tempEmail,
-            id: user.id
+            email: user.get('tempEmail'),
+            id: user.get('id')
         },
         options = {
-            email: user.tempEmail,
+            email: user.get('tempEmail'),
             token: jwt.sign(safeUser, seekrits.get('sessionSecret'), { expiresIn: 24 * 60 * 60 }),
             baseURL: seekrits.get('domain'),
             subject: 'Verify your email address with dipl.io'
