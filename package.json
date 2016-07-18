@@ -1,6 +1,6 @@
 {
   "name": "diplomacy",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "server/server.js",
   "dependencies": {
     "async": "1.5.2",
