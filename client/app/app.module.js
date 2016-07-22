@@ -17,6 +17,8 @@ angular.module('diplomacy', [
 ])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider',
 function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider) {
+    $urlRouterProvider.otherwise('/main/home');
+
     // Material design theme definitions.
     $mdThemingProvider.theme('default')
         .primaryPalette('indigo', {
