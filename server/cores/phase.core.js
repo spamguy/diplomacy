@@ -57,12 +57,10 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
                     provinceKey: province.p,
                     subprovinceKey: null,
                     supplyCentre: province.default ? province.default.power : null,
-                    supplyCentreX: province.sc ? province.sc.x : null,
-                    supplyCentreY: province.sc ? province.sc.y : null,
+                    supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
                     unitType: province.default && !province.default.sp ? province.default.type : null,
                     unitOwner: province.default && !province.default.sp ? province.default.power : null,
-                    unitX: province.x,
-                    unitY: province.y
+                    unitLocation: '(' + province.x + ',' + province.y + ')'
                 }).save(null, { transacting: t }).asCallback(parallelCallback);
             },
 
@@ -73,8 +71,7 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
                             phaseID: phase.id,
                             provinceKey: province.p,
                             subprovinceKey: sp.p,
-                            unitX: sp.x,
-                            unitY: sp.y,
+                            unitLocation: '(' + sp.x + ',' + sp.y + ')',
                             unitType: province.default && province.default.sp ? province.default.type : null,
                             unitOwner: province.default && province.default.sp ? province.default.power : null
                         }).save(null, { transacting: t }).asCallback(eachEachCallback);

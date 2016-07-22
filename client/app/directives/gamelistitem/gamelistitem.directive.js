@@ -17,8 +17,8 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 // Breaking this down into individual rules to avoid one monstrous if() statement.
 
                 // User doesn't have enough points.
-                if (scope.game.minimumScoreToJoin > scope.user.points)
-                    return 'You need a minimum of Đ' + scope.game.minimumScoreToJoin + ' to join.';
+                if (scope.game.minimumScoreToJoin > scope.user.actionCount)
+                    return 'You need a minimum reliability of ' + scope.game.minimumScoreToJoin + ' to join.';
 
                 // User belongs to game already, whether as GM or user.
                 if (gameService.isPlayer(scope.game))
