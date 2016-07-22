@@ -9,12 +9,12 @@ $am-light-blue-grey: #ECEFF1;
 
 @font-face
 {
-    font-family: 'Sears Tower Regular';
-    src: url('../assets/fonts/searstower_regular_macroman/Sears_Tower-webfont.eot');
-    src: url('../assets/fonts/searstower_regular_macroman/Sears_Tower-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../assets/fonts/searstower_regular_macroman/Sears_Tower-webfont.woff') format('woff'),
-         url('../assets/fonts/searstower_regular_macroman/Sears_Tower-webfont.ttf') format('truetype'),
-         url('../assets/fonts/searstower_regular_macroman/Sears_Tower-webfont.svg#sears_towerregular') format('svg');
+    font-family: 'Kingthings Trypewriter';
+    src: url('../assets/fonts/kingthingstrypewriter_regular_macroman/Kingthings_Trypewriter_2-webfont.eot');
+    src: url('../assets/fonts/kingthingstrypewriter_regular_macroman/Kingthings_Trypewriter_2-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../assets/fonts/kingthingstrypewriter_regular_macroman/Kingthings_Trypewriter_2-webfont.woff') format('woff'),
+         url('../assets/fonts/kingthingstrypewriter_regular_macroman/Kingthings_Trypewriter_2-webfont.ttf') format('truetype'),
+         url('../assets/fonts/kingthingstrypewriter_regular_macroman/Kingthings_Trypewriter_2-webfont.svg#kingthings_trypewriter_2Rg') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -44,19 +44,24 @@ footer
     padding: 20px;
 }
 
-.headline
+.stab
 {
-    font-size: 48pt;
-    font-family: 'Sears Tower Regular';
-    display: block;
+    color: #da2721;
 }
 
 span.logo
 {
-    font-family: 'Sears Tower Regular';
+    font-family: 'Kingthings Trypewriter';
     text-transform: lowercase;
     font-size: 24pt;
     color: #000;
+}
+
+md-toolbar h1
+{
+    font-family: 'Kingthings Trypewriter';
+    line-height: 4px;
+    padding-left: 15px;
 }
 
 .info
@@ -76,17 +81,6 @@ span.logo
 .tab-pane
 {
     padding: 0 10px 10px 10px;
-}
-
-md-toolbar.miniToolbar
-{
-    min-height: 30px;
-    border-radius: 3px 3px 0 0;
-
-    h1, h2, h3, h4, h5, h6
-    {
-        line-height: 4px;
-    }
 }
 
 .md-whiteframe-2dp

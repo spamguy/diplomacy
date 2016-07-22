@@ -9,6 +9,7 @@ angular.module('diplomacy.main', [
     'loginService',
     'gameService',
     'socketService'
+    // 'angularTypewrite'
 ])
 .config(['$stateProvider', function($stateProvider) {
     $stateProvider
