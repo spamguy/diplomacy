@@ -3,6 +3,8 @@
 angular.module('userService', ['LocalStorageModule'])
 .factory('userService', ['localStorageService', 'socketService', '$q',
 function(localStorageService, socketService, $q) {
+    var _user;
+
     return {
         isAuthenticated: function() {
             return !!localStorageService.get('token');
@@ -21,15 +23,21 @@ function(localStorageService, socketService, $q) {
         },
 
         getCurrentUser: function() {
-            var currentUserID = this.getCurrentUserID();
-            if (!currentUserID)
-                return null;
-
-            return this.getUser(currentUserID);
+            return _user;
         },
 
-        setCurrentUser: function(userID) {
-            localStorageService.set('currentUserID', userID);
+        setCurrentUser: function(userID, force) {
+            if (userID)
+                localStorageService.set('currentUserID', userID);
+            else
+                userID = this.getCurrentUserID();
+
+            // Populate or refresh user.
+            if (!_user || force) {
+                this.getUser(userID).then(function(user) {
+                    _user = user;
+                });
+            }
         },
 
         getUser: function(userID) {
@@ -40,6 +48,11 @@ function(localStorageService, socketService, $q) {
                     resolve(user);
                 });
             });
+        },
+
+        clearUser: function() {
+            localStorageService.clearAll();
+            _user = null;
         }
     };
 }]);

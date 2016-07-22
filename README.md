@@ -20,5 +20,5 @@
 # Technology
 The application as a whole consists of three parts:
  * The website. Developed using AngularJS and PostgreSQL.
- * The adjudicator, responsible for taking a set of moves and resolving them. Developed in raw JavaScript.
+ * The adjudicator, responsible for taking a set of moves and resolving them. Adapted from zond/godip and interpreted into JavaScript.
  * The server, responsible for scheduling adjudication events and dispensing the website. Developed with NodeJS/Express.

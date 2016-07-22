@@ -4,16 +4,9 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
     'use strict';
 
     var socket,
-        isAuthenticated,
-        self = {
-            getAuthenticated: function() {
-                return isAuthenticated;
-            }
-        };
+        self = { };
 
     self.initialize = function() {
-        isAuthenticated = false;
-
         self.socket = socket = socketFactory({
             prefix: 'socket/',
             ioSocket: io.connect(CONST.socketEndpoint, {

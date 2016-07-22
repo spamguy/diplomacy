@@ -16,14 +16,14 @@
     <!-- endbuild -->
 </head>
 <body ng-controller="AppController">
-    <md-toolbar style="background-color:transparent;" ng-if="isAuthenticated">
+    <md-toolbar style="background-color:transparent;" ng-if="isAuthenticated()">
         <div class="md-toolbar-tools">
             <span class="md-primary logo"><a ui-sref="main.home">dipl<span class="stab">.</span>io</a></span>
             <span flex></span>
             <div class="info" layout="row" layout-margin>
                 <div layout="column" layout-align="center end" hide-sm hide-xs>
-                    <span class="email">{{currentUser.email}}</span>
-                    <span class="points">{{currentUser.points}} points</span>
+                    <span class="email">{{theUser().email}}</span>
+                    <span class="points">{{theUser().actionCount}} points</span>
                 </div>
 
                 <md-menu md-position-mode="target-right target">

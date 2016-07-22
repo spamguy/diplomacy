@@ -6,7 +6,7 @@ angular.module('loginService', [ ])
         validLoginCallback: function(data) {
             data = data.data; // data? data!
 
-            userService.setCurrentUser(data.id, data.email);
+            userService.setCurrentUser(data.id);
             userService.setToken(data.token);
 
             // Subscribe to all associated games after authenticating.
