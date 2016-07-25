@@ -64,18 +64,12 @@ md-toolbar h1
     padding-left: 15px;
 }
 
-.info
+div.info span.email
 {
     color: #000;
-    .points
-    {
-        font-size: 10pt;
-    }
-    span.email
-    {
-        font-family: 'Sears Tower Regular';
-        font-size: 14pt;
-    }
+    font-family: 'Kingthings Trypewriter';
+    font-size: 14pt;
+    padding-top: 4px;
 }
 
 .tab-pane

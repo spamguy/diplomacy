@@ -4,7 +4,7 @@ angular.module('diplomacy')
 
     return function(provinces, unitType) {
         return _.filter(provinces, function(p) {
-            return p.sc !== undefined;
+            return p.sc !== null;
         });
     };
 }]);

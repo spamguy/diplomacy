@@ -52,14 +52,18 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
     async.each(variant.provinces, function(province, eachCallback) {
         async.parallel([
             function(parallelCallback) {
+                var scOwner = province.default ? province.default.power : null,
+                    owner = province.default && !province.default.sp ? province.default.power : null;
                 new db.models.PhaseProvince({
                     phaseID: phase.id,
                     provinceKey: province.p,
                     subprovinceKey: null,
-                    supplyCentre: province.default ? province.default.power : null,
+                    supplyCentre: scOwner,
                     supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
+                    supplyCentreFill: province.sc && scOwner ? variant.powers[owner].colour : null,
+                    unitFill: owner ? variant.powers[owner].colour : null,
                     unitType: province.default && !province.default.sp ? province.default.type : null,
-                    unitOwner: province.default && !province.default.sp ? province.default.power : null,
+                    unitOwner: owner,
                     unitLocation: '(' + province.x + ',' + province.y + ')'
                 }).save(null, { transacting: t }).asCallback(parallelCallback);
             },

@@ -21,10 +21,7 @@
             <span class="md-primary logo"><a ui-sref="main.home">dipl<span class="stab">.</span>io</a></span>
             <span flex></span>
             <div class="info" layout="row" layout-margin>
-                <div layout="column" layout-align="center end" hide-sm hide-xs>
-                    <span class="email">{{theUser().email}}</span>
-                    <span class="points">{{theUser().actionCount}} points</span>
-                </div>
+                <span class="email">{{theUser().email}}</span>
 
                 <md-menu md-position-mode="target-right target">
                     <md-icon md-menu-origin md-svg-icon="account" ng-click="$mdOpenMenu($event)" class="svg48px"></md-icon>
