@@ -162,17 +162,17 @@ angular.module('map.component')
                 var failed = d.target.failed ? 'failed ' : 'ok ';
                 return failed + 'link move';
             })
-            .attr('id', function(d) { return d.source.r + '-link'; });
+            .attr('id', function(d) { return d.source.p + '-link'; });
         moveLayerArrows.exit().remove();
 
         // Append circles to units perceived to or actually holding.
         moveLayerHolds = moveLayerHolds.data(holds);
         moveLayerHolds.enter()
             .insert('svg:circle')
-            .attr('id', function(d) { return d.r + '-hold'; })
+            .attr('id', function(d) { return d.p + '-hold'; })
             .attr('class', 'hold')
             .attr('cx', function(d) { return phase.provinces[d.p].unitLocation.x; })
-            .attr('cy', function(d) { return phase.provinces[d.r].unitLocation.y; })
+            .attr('cy', function(d) { return phase.provinces[d.p].unitLocation.y; })
             .attr('r', unitRadiusPlusPadding);
         moveLayerHolds.exit().remove();
 

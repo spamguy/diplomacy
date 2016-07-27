@@ -46,6 +46,7 @@ module.exports = function(bookshelf) {
 
             return {
                 id: this.get('id'),
+                gmID: this.get('gmId'),
                 name: this.get('name'),
                 description: this.get('description'),
                 status: this.get('status'),

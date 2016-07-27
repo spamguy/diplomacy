@@ -7,6 +7,7 @@ angular.module('games')
     $scope.powers = powers;
     $scope.game = game;
     $scope.readonly = userService.getCurrentUserID() === game.gm_id;
+    $scope.currentUserInGame = gameService.getCurrentUserInGame(game);
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
     $scope.phaseIndex = $stateParams.phase || 0;
 
@@ -23,19 +24,16 @@ angular.module('games')
         );
     }
 
-    function updateProvinceData(r, action, source, target) {
-        var province = _.find($scope.phase.provinces, 'r', r),
-            unitInProvince = gameService.getUnitOwnerInProvince(province);
-
+    function updateProvinceData(p, action, source, target) {
         // Update local data to reflect DB change.
-        unitInProvince.unit.order = { action: action };
+        $scope.game.phases[0].provinces[p].unit.action = action;
         if (source)
-            unitInProvince.unit.order.source = source;
+            $scope.game.phases[0].provinces[p].unit.source = source;
         if (target)
-            unitInProvince.unit.order.target = target;
+            $scope.game.phases[0].provinces[p].unit.target = target;
 
         $scope.$broadcast('orderChange', {
-            r: r
+            p: p
         });
     }
 }]);

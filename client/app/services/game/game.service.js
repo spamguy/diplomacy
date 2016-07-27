@@ -193,7 +193,7 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         isGM: function(game) {
-            return game.gmId === userService.getCurrentUserID();
+            return game.gmID === userService.getCurrentUserID();
         },
 
         isPlayer: function(game) {

@@ -1,5 +1,5 @@
 angular.module('gametools.component')
-.controller('GameToolsController', ['userService', 'gameService', '$mdDialog', '$scope', '$state', function(userService, gameService, $mdDialog, $scope, $state) {
+.controller('GameToolsController', ['userService', 'gameService', '$mdDialog', '$state', function(userService, gameService, $mdDialog, $state) {
     var vm = this,
         confirm;
 
@@ -7,6 +7,7 @@ angular.module('gametools.component')
     vm.powerOwnsProvince = powerOwnsProvince;
     vm.getPowerList = getPowerList;
     vm.setReadyState = setReadyState;
+    vm.currentUserInGame = gameService.getCurrentUserInGame(vm.game);
 
     vm.actions = {
         adjudicateNow: function() {
@@ -69,16 +70,13 @@ angular.module('gametools.component')
     }
 
     function getPowerList() {
-        var currentUser = userService.getCurrentUserID(),
-            p;
-
-        if (currentUser === vm.game.gm_id) {
-            // GMs see everyone.
+        var p;
+        if (gameService.isGM(vm.game)) { // GMs see everyone.
             return vm.powers;
         }
         else {
             for (p = 0; p < vm.game.players.length; p++) {
-                if (vm.game.players[p].player_id === currentUser)
+                if (vm.game.players[p].player_id === userService.getCurrentUserID())
                     return _.pick(vm.powers, [vm.game.players[p].power]);
             }
         }

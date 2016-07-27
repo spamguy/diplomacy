@@ -57,10 +57,14 @@ span.logo
     color: #000;
 }
 
-md-toolbar h1
+h1.typewriter
 {
     font-family: 'Kingthings Trypewriter';
     line-height: 4px;
+}
+
+md-toolbar h1
+{
     padding-left: 15px;
 }
 

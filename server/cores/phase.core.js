@@ -76,8 +76,8 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
                             provinceKey: province.p,
                             subprovinceKey: sp.p,
                             unitLocation: '(' + sp.x + ',' + sp.y + ')',
-                            unitType: province.default && province.default.sp ? province.default.type : null,
-                            unitOwner: province.default && province.default.sp ? province.default.power : null
+                            unitType: province.default && province.default.sp === sp.p ? province.default.type : null,
+                            unitOwner: province.default && province.default.sp === sp.p ? province.default.power : null
                         }).save(null, { transacting: t }).asCallback(eachEachCallback);
                     }, parallelCallback);
                 }
@@ -93,6 +93,18 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
     var self = this;
     db.bookshelf.transaction(function(t) {
         async.waterfall([
+            // STEP 1: Mark up old phase, keeping orders intact for posterity.
+            function(callback) {
+                // Mark units as dislodged.
+                async.forEachOf(state.Dislodgeds(), function(unit, key, cb) {
+                    self.setDislodged(game.related('phases').at(0), unit, t, cb);
+                });
+
+                async.forEachOf(state.Resolutions(), function(resolution, key, cb) {
+                    if (state.Resolutions()[resolution])
+                        self.setFailed(game.related('phases').at(0), resolution, key, cb);
+                });
+            }
         ], function(err, result) {
             if (!err) {
                 t.commit();
@@ -214,7 +226,9 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
 };
 
 PhaseCore.prototype.setOrder = function(phaseID, data, action, cb) {
-    var targetFullName = data[1],
+    var province = data[0].split('/'),
+        subprovince = null,
+        targetFullName = data[1],
         targetOfTargetFullName = data[2],
         splitTarget = targetFullName ? targetFullName.split('/') : null,
         splitTargetOfTarget = targetOfTargetFullName ? targetOfTargetFullName.split('/') : null,
@@ -223,13 +237,72 @@ PhaseCore.prototype.setOrder = function(phaseID, data, action, cb) {
         targetOfTarget = splitTargetOfTarget ? splitTargetOfTarget[0] : null,
         subTargetOfTarget = splitTargetOfTarget && splitTargetOfTarget.length > 1 ? splitTargetOfTarget[1] : null;
 
-    db.models.Phase.update({
-        unitAction: action,
-        unitTarget: target,
-        unitSubTarget: subTarget,
-        unitTargetOfTarget: targetOfTarget,
-        unitSubTargetOfTarget: subTargetOfTarget
-    }).nodeify(cb);
+    if (province[1])
+        subprovince = province[1];
+
+    db.bookshelf.knex('phase_provinces')
+        .where({
+            'phase_id': phaseID,
+            'province_key': province[0],
+            'subprovince_key': subprovince
+        })
+        .update({
+            'unit_action': action,
+            'unit_target': target,
+            'unit_subtarget': subTarget,
+            'unit_target_of_target': targetOfTarget,
+            'unit_subtarget_of_target': subTargetOfTarget,
+            'updated_at': new Date()
+        })
+        .asCallback(cb);
+};
+
+/**
+ * Marks a phase province's sitting unit as dislodged.
+ * @param  {Phase}   phase     The phase.
+ * @param  {String}   province The province key.
+ * @param  {Object}   unit     The Godip-generated unit.
+ * @param  {Transaction}   t   The transaction.
+ * @param  {Function} cb       The callback.
+ */
+PhaseCore.prototype.setDislodged = function(phase, province, unit, t, cb) {
+    var provinceArray = province.split('/'),
+        provinceToUpdate = {
+            phaseID: phase.get('id'),
+            unitOwner: unit.Nation[0],
+            provinceKey: provinceArray[0]
+        };
+
+    if (provinceArray[1])
+        provinceToUpdate.subprovinceKey = provinceArray[1];
+
+    winston.debug('Marking %s:%s as dislodged', province, unit.Nation[0], { phaseID: phase.get('id') });
+
+    new db.models.PhaseProvince(provinceToUpdate).save('is_dislodged', true).asCallback(cb);
+};
+
+/**
+ * Marks a phase province's unit's order as failed.
+ * @param  {Phase}   phase     The phase.
+ * @param  {String}   province The province key.
+ * @param  {Object}   resolution     The Godip-generated resolution.
+ * @param  {Transaction}   t   The transaction.
+ * @param  {Function} cb       The callback.
+ */
+PhaseCore.prototype.setFailed = function(phase, province, resolution, t, cb) {
+    var provinceArray = province.split('/'),
+        provinceToUpdate = {
+            phaseID: phase.get('id'),
+            unitOwner: resolution.Nation[0],
+            provinceKey: provinceArray[0]
+        };
+
+    if (provinceArray[1])
+        provinceToUpdate.subprovinceKey = provinceArray[1];
+
+    winston.debug('Marking %s:%s as failed', province, resolution.Nation[0], { phaseID: phase.get('id') });
+
+    new db.models.PhaseProvince(provinceToUpdate).save('is_failed', true).asCallback(cb);
 };
 
 module.exports = PhaseCore;
