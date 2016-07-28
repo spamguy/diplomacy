@@ -26,6 +26,7 @@ describe('Map component', function() {
                     deadline: '2020-10-10',
                     provinces: {
                         STP: {
+                            sc: null
                         }
                     }
                 }]

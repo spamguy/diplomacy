@@ -39,10 +39,23 @@ module.exports = function(bookshelf) {
         toJSON: function(options) {
             // FIXME: Resolved state and user role also affect whether to obfuscate.
             var obfuscate = this.get('pressType') === 0,
-                currentUserID;
+                currentUserID,
+                players;
             options = options || { };
             options.obfuscate = obfuscate;
             currentUserID = options.currentUserID;
+
+            players = this.related('players').map(function(player) {
+                var isPlayer = player.get('id') === currentUserID;
+                if (isPlayer)
+                    options.currentPlayerPower = player.pivot.get('power');
+
+                return {
+                    player_id: obfuscate && !isPlayer ? null : player.get('id'),
+                    isReady: obfuscate && !isPlayer ? null : player.pivot.get('is_ready'),
+                    power: player.pivot.get('power')
+                };
+            });
 
             return {
                 id: this.get('id'),
@@ -56,14 +69,7 @@ module.exports = function(bookshelf) {
                 retreatClock: this.get('retreatClock'),
                 adjustClock: this.get('adjustClock'),
                 pressType: this.get('pressType'),
-                players: this.related('players').map(function(player) {
-                    var isPlayer = player.get('id') === currentUserID;
-                    return {
-                        player_id: obfuscate && !isPlayer ? null : player.get('id'),
-                        isReady: obfuscate && !isPlayer ? null : player.pivot.get('is_ready'),
-                        power: player.pivot.get('power')
-                    };
-                }),
+                players: players,
                 phases: this.related('phases').toJSON(options)
             };
         }

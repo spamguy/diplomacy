@@ -74,7 +74,7 @@ describe('Game tools component', function() {
     });
 
     it('lists all powers when viewing as a GM', function() {
-        scope.game.gm_id = '12345';
+        scope.game.gmID = '12345';
         el = compile('<sg-game-tools powers="powers" game="game" phase-index="0" />')(scope);
         scope.$digest();
         expect($('div.md-subheader', el)).to.have.lengthOf(4);

@@ -18,7 +18,7 @@ module.exports = function(bookshelf) {
         },
 
         toJSON: function(options) {
-            var obfuscate = options.obfuscate,
+            var obfuscate = options.obfuscate && options.currentPlayerPower !== this.get('unitOwner'),
                 unit = this.get('unitOwner') ? {
                     type: this.get('unitType'),
                     owner: this.get('unitOwner'),

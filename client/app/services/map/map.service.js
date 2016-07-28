@@ -19,6 +19,7 @@ angular.module('mapService', ['gameService'])
     service.prototype.userCanAdjust = userCanAdjust;
     service.prototype.userCanRetreat = userCanRetreat;
     service.prototype.isActionCurrent = isActionCurrent;
+    service.prototype.isInPendingCommand = isInPendingCommand;
 
     return service;
 
@@ -132,5 +133,9 @@ angular.module('mapService', ['gameService'])
 
     function isActionCurrent(action) {
         return action === currentAction;
+    }
+
+    function isInPendingCommand(province) {
+        return commandData.indexOf(province) >= 0;
     }
 }]);

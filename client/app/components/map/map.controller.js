@@ -6,8 +6,6 @@ angular.module('map.component')
         paths = vm.svg.getElementsByTagName('path'),
         p,
         i,
-        province,
-        target,
         moveLayer = d3.select('svg g.moveLayer'),
         moveLayerArrows = moveLayer.selectAll('path'),
         moveLayerHolds = moveLayer.selectAll('circle'),
@@ -127,31 +125,34 @@ angular.module('map.component')
      * Builds force directed graph.
      */
     function renderForceDirectedGraph() {
+        var target,
+            province;
+
         // Reset link list and regenerate holding unit list.
         links = [];
-        holds = _.filter(phase.provinces, function(p) {
-            if (p.unit && p.unit.action === 'hold')
-                return true;
-            else
-                return false;
-        });
+        holds = [];
 
         for (p in phase.provinces) {
             province = phase.provinces[p];
 
-            if (province.unit && province.unit.action && province.unit.action !== 'hold')
-                target = province.unit.source || province.unit.target;
-            else
+            // Nothing to render for provinces without units or units without orders.
+            if (!province.unit || !province.unit.action)
                 continue;
 
-            links.push({
-                source: _.defaults(province, { fixed: true }),
-                target: _.defaults(phase.provinces[target], {
-                    fixed: true, // To keep d3 from treating this map like a true force graph.
-                    action: province.unit.action,
-                    failed: province.unit.failed
-                })
-            });
+            if (province.unit.action === 'hold') {
+                holds.push(province);
+            }
+            else {
+                target = province.unit.source || province.unit.target;
+                links.push({
+                    source: _.defaults(province, { fixed: true }),
+                    target: _.defaults(phase.provinces[target], {
+                        fixed: true, // To keep d3 from treating this map like a true force graph.
+                        action: province.unit.action,
+                        failed: province.unit.failed
+                    })
+                });
+            }
         }
 
         moveLayerArrows = moveLayerArrows.data(links);

@@ -22,7 +22,12 @@ describe('Game view controller', function() {
             getCurrentUserID: function() { return '123'; }
         };
         mockGameService = {
-
+            getCurrentUserInGame: function(game) {
+                return {
+                    player_id: '123',
+                    power: 'G'
+                };
+            }
         };
         angular.mock.module('userService', function($provide) {
             $provide.value('userService', mockUserService);

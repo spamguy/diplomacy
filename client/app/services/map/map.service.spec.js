@@ -10,6 +10,7 @@ describe('Map directive', function() {
         game = {
             variant: 'Standard',
             phases: [{
+                season: 'Spring Movement',
                 provinces: {
                     WAR: {
                         sc: {
@@ -41,8 +42,32 @@ describe('Map directive', function() {
         service = new MapService(game, 0);
     });
 
+    it('retains game and phase index data', function() {
+        expect(service.game).to.not.be.null;
+        expect(service.phaseIndex).to.equal(0);
+    });
+
     it('generates the URL pointing to the supply centre SVG', function() {
         location.path('/games/1234');
         expect(service.getSCPath()).to.match(/\/games\/1234#sc$/);
+    });
+
+    it('sets and verifies the current action', function() {
+        service.setCurrentAction('convoy');
+        expect(service.isActionCurrent('convoy')).to.be.true;
+    });
+
+    it('checks if the user can move this season', function() {
+        expect(service.userCanMove()).to.be.true;
+    });
+
+    it('checks if the user can adjust this season', function() {
+        game.phases[0].season = 'Winter Adjustment';
+        expect(service.userCanAdjust()).to.be.true;
+    });
+
+    it('checks if the user can retreat this season', function() {
+        game.phases[0].season = 'Fall Retreat';
+        expect(service.userCanRetreat()).to.be.true;
     });
 });

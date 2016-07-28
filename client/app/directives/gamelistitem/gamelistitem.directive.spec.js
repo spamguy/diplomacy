@@ -26,7 +26,7 @@ describe('Game list item directive', function() {
         };
         sampleUser = {
             id: '123',
-            points: 100
+            actionCount: 100
         };
         mockService.getMoveData.resolves(samplePhase);
 
@@ -49,7 +49,7 @@ describe('Game list item directive', function() {
                 description: 'This is a test game.',
                 variant: 'Standard',
                 movementClock: 24,
-                minimumScoreToJoin: 1,
+                minimumDedication: 1,
                 gm_id: '666',
                 players: [ ],
                 phases: [{
@@ -145,7 +145,7 @@ describe('Game list item directive', function() {
             expect($('button', el)).not.to.be.disabled;
 
             // PART II: -1 points.
-            sampleUser.points = -1;
+            sampleUser.actionCount = -1;
             el = compile('<sg-game-list-item game="game" variant="variant" joinable="true" user="user"></sg-game-list-item>')(scope);
             scope.$digest();
             expect($('button', el)).to.be.disabled;

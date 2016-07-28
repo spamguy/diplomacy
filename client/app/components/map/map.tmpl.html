@@ -79,7 +79,7 @@
                       id="{{p}}"
                       ng-attr-d="{{d}}"
                       ng-click="$ctrl.service.inputCommand(p, $ctrl.onOrderSave)"
-                      ng-class="{'clicked': $ctrl.commandData.indexOf('{{p}}') >= 0}">
+                      ng-class="{'clicked': $ctrl.service.isInPendingCommand(p)}">
                 </path>
             </g>
 
