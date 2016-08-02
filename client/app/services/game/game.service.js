@@ -133,11 +133,11 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         },
 
-        adjudicatePhase: function(phase) {
+        adjudicateCurrentPhase: function(game, callback) {
             socketService.socket.emit('phase:adjudicate', {
-                phaseID: phase.id,
-                gameID: phase.game_id
-            });
+                gameID: game.id,
+                playerID: userService.getCurrentUserID()
+            }, callback);
         },
 
         /**
@@ -171,7 +171,7 @@ angular.module('gameService', ['userService', 'socketService'])
                     return game.players[p];
             }
 
-            return null;
+            return { power: null };
         },
 
         /**
@@ -197,7 +197,7 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         isPlayer: function(game) {
-            return this.getCurrentUserInGame(game) !== null;
+            return this.getCurrentUserInGame(game).power !== null;
         },
 
         isParticipant: function(game) {

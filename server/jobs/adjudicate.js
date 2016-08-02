@@ -22,9 +22,11 @@ module.exports = {
             return;
         }
 
+        winston.log('Starting adjudication job', { gameID: gameID });
+
         async.waterfall([
             // Fetches the game in question.
-            function(phase, callback) {
+            function(callback) {
                 core.game.get(gameID, callback);
             },
 
@@ -36,36 +38,38 @@ module.exports = {
                     callback(new Error('Not adjudicating: some players are not ready'));
                 }
 
-                var variant = core.variant.get(game.variant),
+                var variant = core.variant.get(game.get('variant')),
                     phase = game.related('phases').at(0),
+                    phaseJSON = phase.toJSON(),
                     nextState;
 
                 // Godip expects a phase type.
-                phase.phaseType = phase.get('season').split(' ')[1];
+                phaseJSON.phaseType = phase.get('season').split(' ')[1];
 
-                nextState = global.state.NextFromJS(variant, phase);
+                nextState = global.state.NextFromJS(variant, phaseJSON);
                 core.phase.createFromState(variant, game, nextState, callback);
             },
 
             // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.
             function(variant, game, oldPhase, newPhase, callback) {
-                async.each(game.players, function(player, err) {
-                    var emailOptions = {
-                        gameName: game.get('name'),
-                        gameURL: path.join(seekrits.get('domain'), 'games', game.get('id')),
-                        subject: '[' + game.get('name') + '] ' + oldPhase.get('season') + ' ' + oldPhase.get('year') + ' has been adjudicated',
-                        deadline: oldPhase.get('deadline'),
-                        phase: oldPhase.get('season'),
-                        year: oldPhase.get('year')
-                        // nextPhase: oldPhase.getNextPhaseSeason(variant),
-                        // nextYear: oldPhase.getNextPhaseYear(variant)
-                    };
+                async.forEachOf(game.related('players'), function(junk, p, err) {
+                    var player = game.related('players').at(p),
+                        emailOptions = {
+                            gameName: game.get('name'),
+                            gameURL: path.join(seekrits.get('domain'), 'games', game.get('id')),
+                            subject: '[' + game.get('name') + '] ' + oldPhase.get('season') + ' ' + oldPhase.get('year') + ' has been adjudicated',
+                            deadline: oldPhase.get('deadline'),
+                            phase: oldPhase.get('season'),
+                            year: oldPhase.get('year')
+                            // nextPhase: oldPhase.getNextPhaseSeason(variant),
+                            // nextYear: oldPhase.getNextPhaseYear(variant)
+                        };
 
-                    core.user.list({ ID: player.player_id }, function(err, users) {
+                    core.user.get(player.get('player_id'), function(err, user) {
                         if (err)
-                            console.error(err);
+                            winston.error(err);
 
-                        emailOptions.email = users[0].email;
+                        emailOptions.email = user.get('email');
                         mailer.sendOne('adjudication', emailOptions, function(err) {
                             if (err)
                                 winston.error(err);
@@ -76,8 +80,11 @@ module.exports = {
                 });
             }
         ], function(err, game, oldPhase) {
-            if (err)
+            if (err) {
+                winston.error(err);
                 done(err);
+            }
+
             return done(null, {
                 gameID: game.get('id'),
                 gameName: game.get('name'),

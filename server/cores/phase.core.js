@@ -2,7 +2,8 @@
 
 var db = require('./../db'),
     async = require('async'),
-    winston = require('winston');
+    winston = require('winston'),
+    moment = require('moment');
 
 // Log all the things.
 winston.transports.Console.level = 'debug';
@@ -90,20 +91,72 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
 };
 
 PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
-    var self = this;
+    var self = this,
+        currentPhase = game.related('phases').at(0),
+        nextPhaseIndex = (currentPhase.get('phaseIndex') + 1) % variant.phases.length,
+        nextDeadline = moment().add(game.getClockFromPhase(game.phase), 'hours'),
+        nextPhase;
     db.bookshelf.transaction(function(t) {
         async.waterfall([
             // STEP 1: Mark up old phase, keeping orders intact for posterity.
             function(callback) {
                 // Mark units as dislodged.
-                async.forEachOf(state.Dislodgeds(), function(unit, key, cb) {
-                    self.setDislodged(game.related('phases').at(0), unit, t, cb);
-                });
+                // async.forEachOf(state.Dislodgeds(), function(unit, key, cb) {
+                //     self.setDislodged(game.related('phases').at(0), unit, t, cb);
+                // });
 
                 async.forEachOf(state.Resolutions(), function(resolution, key, cb) {
                     if (state.Resolutions()[resolution])
-                        self.setFailed(game.related('phases').at(0), resolution, key, cb);
-                });
+                        self.setFailed(currentPhase, resolution, key, cb);
+                }, callback);
+            },
+
+            // STEP 2: Create new phase.
+            function(callback) {
+                nextPhase = currentPhase.clone();
+                nextPhase.set('id', null);
+                nextPhase.set('deadline', nextDeadline);
+                nextPhase.set('phaseIndex', nextPhaseIndex);
+                nextPhase.set('season', variant.phases[nextPhaseIndex]);
+
+                // Phase rolled back to 0. Bump year.
+                if (nextPhaseIndex < currentPhase.get('phaseIndex'))
+                    nextPhase.set('year', currentPhase.get('year') + 1);
+
+                nextPhase.save(null, { transacting: t }).asCallback(callback);
+            },
+
+            // STEP 3: Create phase provinces from old state + resolutions.
+            function(phase, callback) {
+                callback();
+                // var unitIndex;
+
+                // Apply all units returned by godip.
+                /* for (unitIndex in state.Units()) {
+                    godipUnit = state.Unit(unitIndex)[0];
+                    unit = {
+                        type: godipUnit.Type === 'Fleet' ? 2 : 1,
+                        power: godipUnit.Nation[0]
+                    };
+                    rComponents = unitIndex.split('/');
+
+                    // Not in a subprovince. Apply unit to topmost level.
+                    if (rComponents.length === 1) {
+                        indexedProvinces[rComponents[0]].unit = unit;
+                    }
+                    else {
+                        // In a subprovince. Apply it to the corresponding object in sr: [].
+                        province = indexedProvinces[rComponents[0]];
+                        for (provinceIndex = 0; provinceIndex < province.sr.length; provinceIndex++) {
+                            if (province.sr[provinceIndex].r === rComponents[1]) {
+                                province.sr[provinceIndex].unit = unit;
+                                break;
+                            }
+                        }
+                    }
+
+                    winston.debug('%s\'s unit set to %s:%s', unitIndex, unit.power, unit.type);
+                }*/
             }
         ], function(err, result) {
             if (!err) {

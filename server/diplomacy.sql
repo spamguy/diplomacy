@@ -91,30 +91,34 @@ CREATE TABLE games (
 -- Name: phase_provinces; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE phase_provinces (
-    phase_id uuid NOT NULL,
-    province_key character varying(2044) NOT NULL,
-    subprovince_key character varying(2044),
-    supply_centre character varying(2),
-    unit_type smallint,
-    unit_owner character varying(2),
-    unit_action character varying,
-    unit_target character varying(2044),
-    is_failed boolean DEFAULT false NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    unit_subtarget character varying(2044),
-    unit_target_of_target character varying(2044),
-    unit_subtarget_of_target character varying(2044),
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    unit_fill character varying(7),
-    supply_centre_fill character varying(2044),
-    supply_centre_location point,
-    unit_location point,
-    unit_action_of_target character varying(2044),
-    unit_source character varying(2044),
-    unit_subsource character varying(2044)
+CREATE TABLE "public"."phase_provinces" (
+	"phase_id" UUid NOT NULL,
+	"province_key" Character Varying( 2044 ) NOT NULL,
+	"subprovince_key" Character Varying( 2044 ),
+	"supply_centre" Character Varying( 2 ),
+	"unit_type" SmallInt,
+	"unit_owner" Character Varying( 2 ),
+	"unit_action" Character Varying,
+	"unit_target" Character Varying( 2044 ),
+	"is_failed" Boolean DEFAULT false NOT NULL,
+	"created_at" Timestamp Without Time Zone NOT NULL,
+	"updated_at" Timestamp Without Time Zone NOT NULL,
+	"unit_subtarget" Character Varying( 2044 ),
+	"unit_target_of_target" Character Varying( 2044 ),
+	"unit_subtarget_of_target" Character Varying( 2044 ),
+	"id" UUid DEFAULT uuid_generate_v4() NOT NULL,
+	"unit_fill" Character Varying( 7 ),
+	"supply_centre_fill" Character Varying( 2044 ),
+	"supply_centre_location" Point,
+	"unit_location" Point,
+	"unit_action_of_target" Character Varying( 2044 ),
+	"unit_source" Character Varying( 2044 ),
+	"unit_subsource" Character Varying( 2044 ),
+	"is_dislodged" Boolean DEFAULT false NOT NULL,
+	"dislodged_owner" Character Varying( 2 ),
+	"dislodged_fill" Character Varying( 7 )
 );
+
 
 
 --

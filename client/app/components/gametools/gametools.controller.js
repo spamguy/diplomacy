@@ -20,7 +20,7 @@ angular.module('gametools.component')
                 .cancel('Cancel');
 
             $mdDialog.show(confirm).then(function() {
-                gameService.adjudicatePhase(vm.phase, function() {
+                gameService.adjudicateCurrentPhase(vm.game, function() {
                     $state.go('profile.games');
                 });
             });

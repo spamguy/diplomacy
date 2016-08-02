@@ -20,7 +20,7 @@ module.exports = function(bookshelf) {
         },
 
         isEverybodyReady: function() {
-            return _.every(this.related('players'), function(p) {
+            return this.related('players').every(function(p) {
                 return p.pivot.get('is_ready');
             });
         },
