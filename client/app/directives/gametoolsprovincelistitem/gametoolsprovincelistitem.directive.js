@@ -29,9 +29,9 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
                         provinceStatus += '→ <strong>' + unit.target + '</strong>';
                         break;
                     case 'support':
-                        provinceStatus += 'supports <strong>' + unit.source + '</strong> ';
-                        if (unit.target)
-                            provinceStatus += '→ <strong>' + unit.target + '</strong>';
+                        provinceStatus += 'supports <strong>' + unit.target + '</strong> ';
+                        if (unit.targetOfTarget)
+                            provinceStatus += '→ <strong>' + unit.targetOfTarget + '</strong>';
                         break;
                     case 'hold':
                         provinceStatus += 'holds';

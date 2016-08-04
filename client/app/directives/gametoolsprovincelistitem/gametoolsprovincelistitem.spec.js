@@ -51,8 +51,7 @@ describe('Province list item directive', function() {
 
     it('reports orders supporting a holding target', function() {
         scope.province.unit.action = 'support';
-        scope.province.unit.source = 'STP';
-        scope.province.unit.target = null;
+        scope.province.unit.target = 'STP';
 
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
@@ -61,8 +60,8 @@ describe('Province list item directive', function() {
 
     it('reports orders supporting a moving target', function() {
         scope.province.unit.action = 'support';
-        scope.province.unit.source = 'STP';
-        scope.province.unit.target = 'LVN';
+        scope.province.unit.target = 'STP';
+        scope.province.unit.targetOfTarget = 'LVN';
 
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();

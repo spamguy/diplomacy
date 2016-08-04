@@ -24,13 +24,13 @@ angular.module('games')
         );
     }
 
-    function updateProvinceData(p, action, source, target) {
+    function updateProvinceData(p, action, target, targetOfTarget) {
         // Update local data to reflect DB change.
         $scope.game.phases[0].provinces[p].unit.action = action;
-        if (source)
-            $scope.game.phases[0].provinces[p].unit.source = source;
         if (target)
             $scope.game.phases[0].provinces[p].unit.target = target;
+        if (targetOfTarget)
+            $scope.game.phases[0].provinces[p].unit.targetOfTarget = targetOfTarget;
 
         $scope.$broadcast('orderChange', {
             p: p

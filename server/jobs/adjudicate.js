@@ -40,7 +40,7 @@ module.exports = {
 
                 var variant = core.variant.get(game.get('variant')),
                     phase = game.related('phases').at(0),
-                    phaseJSON = phase.toJSON(),
+                    phaseJSON = phase.toJSON({ obfuscate: false }),
                     nextState;
 
                 // Godip expects a phase type.

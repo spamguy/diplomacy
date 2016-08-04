@@ -93,34 +93,35 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
 PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
     var self = this,
         currentPhase = game.related('phases').at(0),
-        nextPhaseIndex = (currentPhase.get('phaseIndex') + 1) % variant.phases.length,
-        nextDeadline = moment().add(game.getClockFromPhase(game.phase), 'hours'),
+        nextSeasonIndex = (currentPhase.get('seasonIndex') + 1) % variant.phases.length,
+        nextSeason = variant.phases[nextSeasonIndex],
+        nextDeadline = moment().add(game.getClockFromSeason(nextSeason), 'hours'),
         nextPhase;
     db.bookshelf.transaction(function(t) {
         async.waterfall([
             // STEP 1: Mark up old phase, keeping orders intact for posterity.
-            function(callback) {
-                // Mark units as dislodged.
-                // async.forEachOf(state.Dislodgeds(), function(unit, key, cb) {
-                //     self.setDislodged(game.related('phases').at(0), unit, t, cb);
-                // });
-
-                async.forEachOf(state.Resolutions(), function(resolution, key, cb) {
-                    if (state.Resolutions()[resolution])
-                        self.setFailed(currentPhase, resolution, key, cb);
-                }, callback);
-            },
+            // function(callback) {
+            //     // Mark units as dislodged.
+            //     // async.forEachOf(state.Dislodgeds(), function(unit, key, cb) {
+            //     //     self.setDislodged(game.related('phases').at(0), unit, t, cb);
+            //     // });
+            //
+            //     async.forEachOf(state.Resolutions(), function(resolution, key, cb) {
+            //         if (state.Resolutions()[resolution])
+            //             self.setFailed(currentPhase, resolution, key, cb);
+            //     }, callback);
+            // },
 
             // STEP 2: Create new phase.
             function(callback) {
                 nextPhase = currentPhase.clone();
-                nextPhase.set('id', null);
-                nextPhase.set('deadline', nextDeadline);
-                nextPhase.set('phaseIndex', nextPhaseIndex);
-                nextPhase.set('season', variant.phases[nextPhaseIndex]);
+                nextPhase.unset('id');
+                nextPhase.set('deadline', nextDeadline.toDate());
+                nextPhase.set('seasonIndex', nextSeasonIndex);
+                nextPhase.set('season', nextSeason);
 
                 // Phase rolled back to 0. Bump year.
-                if (nextPhaseIndex < currentPhase.get('phaseIndex'))
+                if (nextSeasonIndex < currentPhase.get('seasonIndex'))
                     nextPhase.set('year', currentPhase.get('year') + 1);
 
                 nextPhase.save(null, { transacting: t }).asCallback(callback);
@@ -161,7 +162,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
         ], function(err, result) {
             if (!err) {
                 t.commit();
-                self.get(game.get('id'), cb);
+                self.game.core.get(game.get('id'), cb);
             }
             else {
                 t.rollback();

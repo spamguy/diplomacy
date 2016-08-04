@@ -112,8 +112,6 @@ CREATE TABLE "public"."phase_provinces" (
 	"supply_centre_location" Point,
 	"unit_location" Point,
 	"unit_action_of_target" Character Varying( 2044 ),
-	"unit_source" Character Varying( 2044 ),
-	"unit_subsource" Character Varying( 2044 ),
 	"is_dislodged" Boolean DEFAULT false NOT NULL,
 	"dislodged_owner" Character Varying( 2 ),
 	"dislodged_fill" Character Varying( 7 )

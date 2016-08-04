@@ -25,7 +25,7 @@ module.exports = function(bookshelf) {
             });
         },
 
-        getClockFromPhase: function(phaseName) {
+        getClockFromSeason: function(phaseName) {
             if (_.includes(phaseName.toLowerCase(), 'move'))
                 return this.get('moveClock');
             else if (_.includes(phaseName.toLowerCase(), 'retreat'))
