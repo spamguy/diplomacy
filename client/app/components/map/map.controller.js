@@ -1,5 +1,5 @@
 angular.module('map.component')
-.controller('MapController', ['$scope', 'gameService', 'mapService', function($scope, gameService, MapService) {
+.controller('MapController', ['$scope', 'gameService', 'mapService', '$mdBottomSheet', function($scope, gameService, MapService, $mdBottomSheet) {
     var vm = this,
         phase = this.game.phases ? this.game.phases[this.phaseIndex] : null,
         normalisedVariantName = gameService.getNormalisedVariantName(vm.game.variant),
@@ -28,6 +28,18 @@ angular.module('map.component')
 
             renderForceDirectedGraph();
         }
+    };
+
+    vm.showOrderSheet = function() {
+        $mdBottomSheet.show({
+            templateUrl: 'app/components/map/ordersheet/ordersheet.tmpl.html',
+            controller: 'OrderSheetController',
+            controllerAs: 'vm',
+            clickOutsideToClose: true,
+            locals: {
+                service: vm.service
+            }
+        }).then(vm.service.setCurrentAction);
     };
 
     // Fill out province paths only if the phase is active.

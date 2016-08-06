@@ -14,6 +14,7 @@ angular.module('mapService', ['gameService'])
     service.prototype.getSCPath = getSCPath;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
     service.prototype.setCurrentAction = setCurrentAction;
+    service.prototype.getCurrentAction = getCurrentAction;
     service.prototype.inputCommand = inputCommand;
     service.prototype.userCanMove = userCanMove;
     service.prototype.userCanAdjust = userCanAdjust;
@@ -40,6 +41,10 @@ angular.module('mapService', ['gameService'])
 
         // Reset any half-made orders.
         clearAllCommands();
+    }
+
+    function getCurrentAction() {
+        return currentAction;
     }
 
     function clearAllCommands() {

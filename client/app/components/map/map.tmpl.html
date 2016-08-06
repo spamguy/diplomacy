@@ -6,8 +6,8 @@
         </div>
         <span flex></span>
         <div ng-if="!$ctrl.readonly">
-            <md-button class="md-icon-button" aria-label="Change action" hide-gt-sm>
-                <md-icon md-svg-icon="join"></md-icon>
+            <md-button class="md-icon-button" aria-label="Change action" hide-gt-sm ng-click="$ctrl.showOrderSheet()">
+                <md-icon md-svg-icon="{{$ctrl.service.getCurrentAction()}}"></md-icon>
                 <md-tooltip>Change action</md-tooltip>
             </md-button>
             <md-button ng-if="$ctrl.service.userCanMove()" ng-click="$ctrl.service.setCurrentAction('hold')" class="md-icon-button" aria-label="Hold" hide-sm hide-xs>
