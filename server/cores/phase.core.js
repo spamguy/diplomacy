@@ -43,7 +43,7 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
 };
 
 /**
- * Bulk inserts provinces based on phase data or variant data.
+ * Bulk inserts provinces based on variant data.
  * @param  {Transaction} t           The transaction.
  * @param  {Object}      variant     The variant template.
  * @param  {Phase}       phase       The phase owning the new provinces.
@@ -56,7 +56,7 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
                 var scOwner = province.default ? province.default.power : null,
                     owner = province.default && !province.default.sp ? province.default.power : null;
                 new db.models.PhaseProvince({
-                    phaseID: phase.id,
+                    phaseID: phase.get('id'),
                     provinceKey: province.p,
                     subprovinceKey: null,
                     supplyCentre: scOwner,
@@ -73,7 +73,7 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
                 if (province.sp) {
                     async.each(province.sp, function(sp, eachEachCallback) {
                         new db.models.PhaseProvince({
-                            phaseID: phase.id,
+                            phaseID: phase.get('id'),
                             provinceKey: province.p,
                             subprovinceKey: sp.p,
                             unitLocation: '(' + sp.x + ',' + sp.y + ')',
@@ -88,6 +88,16 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
             }
         ], eachCallback);
     }, cb);
+};
+
+/**
+ * Bulk inserts provinces based on state data.
+ * @param  {Transaction} t           The transaction.
+ * @param  {Object}      variant     The Godip state.
+ * @param  {Phase}       phase       The phase owning the new provinces.
+ * @param  {Function}    cb          The callback.
+ */
+PhaseCore.prototype.generatePhaseProvincesFromState = function(t, state, phase, cb) {
 };
 
 PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
@@ -128,8 +138,11 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
             },
 
             // STEP 3: Create phase provinces from old state + resolutions.
-            function(phase, callback) {
-                callback();
+            function(_nextPhase, callback) {
+                // debugger;
+                nextPhase = _nextPhase;
+                self.generatePhaseProvincesFromState(t, state, nextPhase, callback);
+            }
                 // var unitIndex;
 
                 // Apply all units returned by godip.
@@ -158,7 +171,6 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
 
                     winston.debug('%s\'s unit set to %s:%s', unitIndex, unit.power, unit.type);
                 }*/
-            }
         ], function(err, result) {
             if (!err) {
                 t.commit();

@@ -16,7 +16,8 @@ module.exports = function(bookshelf) {
         },
 
         phases: function() {
-            return this.hasMany('Phase');
+            // Provide phases in the inverse order they were created to keep active one at top.
+            return this.hasMany('Phase').query('orderBy', 'created_at', 'desc');
         },
 
         isEverybodyReady: function() {

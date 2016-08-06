@@ -43,8 +43,8 @@ module.exports = {
                     phaseJSON = phase.toJSON({ obfuscate: false }),
                     nextState;
 
-                // Godip expects a phase type.
-                phaseJSON.phaseType = phase.get('season').split(' ')[1];
+                // Godip expects a season type.
+                phaseJSON.seasonType = phase.get('season').split(' ')[1];
 
                 nextState = global.state.NextFromJS(variant, phaseJSON);
                 core.phase.createFromState(variant, game, nextState, callback);
