@@ -12,7 +12,9 @@ module.exports = {
                 .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
             mailer = require('../mailer/mailer'),
             gameID = job.data.gameID,
-            judgePath = path.join(seekrits.get('judgePath'), 'diplomacy-godip');
+            judgePath = path.join(seekrits.get('judgePath'), 'diplomacy-godip'),
+            variant,
+            game;
 
         if (require('file-exists')(judgePath + '.js')) {
             require(judgePath);
@@ -31,15 +33,16 @@ module.exports = {
             },
 
             // Verifies all players are ready. Fetches the variant, adjudicates, and persists the outcome.
-            function(game, callback) {
+            function(_game, callback) {
+                game = _game;
+
                 // Not everyone is ready. Handling this situation deserves its own block.
                 if (!game.get('ignoreLateOrders') && !game.isEverybodyReady()) {
                     handleLatePhase();
                     callback(new Error('Not adjudicating: some players are not ready'));
                 }
 
-                var variant = core.variant.get(game.get('variant')),
-                    phase = game.related('phases').at(0),
+                var phase = game.related('phases').at(0),
                     phaseJSON = phase.toJSON({ obfuscate: false }),
                     nextState;
 
@@ -51,7 +54,11 @@ module.exports = {
             },
 
             // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.
-            function(variant, game, oldPhase, newPhase, callback) {
+            function(_game, callback) {
+                game = _game;
+
+                var oldPhase = game.related('phases').at(1);
+
                 async.forEachOf(game.related('players'), function(junk, p, err) {
                     var player = game.related('players').at(p),
                         emailOptions = {
