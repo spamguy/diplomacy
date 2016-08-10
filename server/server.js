@@ -15,21 +15,8 @@ var path = require('path'),
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Fire up scheduling.
-app.queue = kue.createQueue({
-    redis: {
-        auth: seekrits.get('redis:password')
-    }
-});
-
 // Add logging transports.
 app.logger = require('./logger');
-
-all(path.join(__dirname, '/jobs'), {
-    each: function(job) {
-        app.queue.process(job.name, job.process);
-    }
-});
 
 app.seekrits = seekrits;
 
@@ -49,6 +36,29 @@ app.io.use(socketioJWT.authorize({
 
 app.io.on('error', function(err) {
     console.log('Unable to authenticate: ' + JSON.stringify(err));
+});
+
+// Fire up scheduling.
+app.queue = kue.createQueue({
+    redis: {
+        auth: seekrits.get('redis:password')
+    }
+});
+
+// Add queue-level event handling. See https://github.com/Automattic/kue#queue-events.
+app.queue.on('job complete', function(id, result) {
+    kue.Job.get(id, function(err, job) {
+        if (!err)
+            app.io.to(job.result.gameID).emit('phase:adjudicate:success', result);
+        else
+            app.logger.error(err);
+    });
+});
+
+all(path.join(__dirname, '/jobs'), {
+    each: function(job) {
+        app.queue.process(job.name, job.process);
+    }
 });
 
 app.listen(9000, function() {

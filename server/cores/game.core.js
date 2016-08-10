@@ -19,11 +19,7 @@ GameCore.prototype.get = function(id, cb) {
 GameCore.prototype.findByGM = function(id, cb) {
     db.models.Game
         .where('gm_id', id)
-        .fetchAll({ withRelated: ['players', {
-            phases: function(query) {
-                query.orderBy('created_at').limit(1);
-            }
-        }] })
+        .fetchAll()
         .asCallback(cb);
 };
 
@@ -115,7 +111,7 @@ GameCore.prototype.disablePlayer = function(playerID, gameID, cb) {
         .asCallback(cb);
 };
 
-GameCore.prototype.start = function(queue, gameID, cb) {
+GameCore.prototype.start = function(gameID, cb) {
     var self = this,
         game; // Keep the correct scope in mind.
     db.bookshelf.transaction(function(t) {
@@ -162,18 +158,7 @@ GameCore.prototype.start = function(queue, gameID, cb) {
                         query: { where: { user_id: game.related('players').at(p).get('id') } }
                     }).asCallback(eachCallback);
                 }, callback);
-            },
-
-            // Schedule adjudication.
-            function(callback) {
-                var job = queue.create('adjudicate', {
-                    gameID: game.get('id')
-                });
-                job.delay(nextPhaseDeadline.toDate())
-                    .backoff({ delay: 'exponential' })
-                    .save(callback);
             }
-
             // TODO: Email the GM too.
         ], function(err, result) {
             if (!err) {

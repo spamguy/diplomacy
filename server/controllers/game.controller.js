@@ -186,17 +186,27 @@ module.exports = function() {
             async.waterfall([
                 function(callback) {
                     core.game.findByPlayer(userID, callback);
+                },
+
+                function(games, callback) {
+                    games.each(function(game) {
+                        req.socket.join(game.get('id'));
+                        watchedGames++;
+                    });
+
+                    core.game.findByGM(userID, callback);
                 }
-            ], function(err, games) {
-                if (err)
+            ], function(err, gmGames) {
+                if (err) {
                     app.logger.error(err);
-
-                games.each(function(game) {
-                    req.socket.join(game.get('id'));
-                    watchedGames++;
-                });
-
-                app.logger.info(userID + ' now watching ' + watchedGames + ' ' + pluralize('room', watchedGames));
+                }
+                else {
+                    _.each(gmGames.models, function(game) {
+                        req.socket.join(game.get('id'));
+                        watchedGames++;
+                    });
+                    app.logger.info(userID + ' now watching ' + watchedGames + ' ' + pluralize('room', watchedGames));
+                }
             });
         },
 
@@ -218,15 +228,28 @@ module.exports = function() {
         },
 
         start: function(req, res) {
-            var variant;
+            var variant,
+                game;
             app.logger.info('Starting game ' + req.data.gameID);
 
             async.waterfall([
                 function(callback) {
-                    core.game.start(app.queue, req.data.gameID, callback);
+                    core.game.start(req.data.gameID, callback);
                 },
 
-                function(game, callback) {
+                // Schedule adjudication.
+                function(_game, callback) {
+                    game = _game;
+                    var job = app.queue.create('adjudicate', {
+                        gameID: game.get('id')
+                    });
+
+                    job.delay(game.related('phases').at(0).get('deadline'))
+                        .backoff({ delay: 'exponential' })
+                        .save(callback);
+                },
+
+                function(callback) {
                     variant = core.variant.get(game.get('variant'));
                     app.logger.info('Players selected for game ' + game.get('id'),
                         game.related('players').map(function(v) { return _.pick(v, ['power', 'email']); }));

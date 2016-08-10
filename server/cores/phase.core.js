@@ -126,7 +126,7 @@ PhaseCore.prototype.generatePhaseProvincesFromState = function(t, variant, state
                     unitOwner: unit ? unit.Nation[0] : null,
                     unitLocation: '(' + province.x + ',' + province.y + ')',
                     isDislodged: dislodgeds[province.p],
-                    isFailed: faileds[province.p]
+                    isFailed: faileds[province.p] !== ''
                 }).save(null, { transacting: t }).asCallback(parallelCallback);
             },
 
@@ -145,7 +145,7 @@ PhaseCore.prototype.generatePhaseProvincesFromState = function(t, variant, state
                             unitType: unit ? convertGodipUnitType(unit.Type) : null, // province.default && province.default.sp === sp.p ? province.default.type : null,
                             unitOwner: unit ? unit.Nation[0] : null,
                             isDislodged: dislodgeds[province.p],
-                            isFailed: faileds[province.p]
+                            isFailed: faileds[province.p] !== ''
                         }).save(null, { transacting: t }).asCallback(eachEachCallback);
                     }, parallelCallback);
                 }
@@ -171,6 +171,8 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
                 async.forEachOf(state.Resolutions(), function(resolution, key, cb) {
                     if (state.Resolutions()[resolution])
                         self.setFailed(currentPhase, resolution, key, cb);
+                    else
+                        cb();
                 }, callback);
             },
 

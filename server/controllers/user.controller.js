@@ -71,10 +71,13 @@ module.exports = function() {
                 },
 
                 function(user, callback) {
-                    if (user)
+                    if (user) {
                         callback(new Error('A user with this email address already exists.'));
-                    else
+                        return;
+                    }
+                    else {
                         core.user.getStubByEmail(email, callback);
+                    }
                 },
 
                 function(user, callback) {

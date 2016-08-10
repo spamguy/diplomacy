@@ -74,20 +74,15 @@ module.exports = function() {
                 },
 
                 function(game, callback) {
-                    if (game.get('gmId') !== playerID)
+                    if (game.get('gmId') !== playerID) {
                         callback(new Error('You are not authorized to schedule adjudications for this game.'));
+                        return;
+                    }
 
                     // FIXME: Purge all existing jobs with this game ID.
 
                     var job = app.queue.create('adjudicate', {
                         gameID: gameID
-                    });
-
-                    job.on('complete', function(err, result) {
-                        if (!err)
-                            req.socket.broadcast.to(result.gameID).emit('phase:adjudicate:success', result);
-                        else
-                            app.logger.error(err);
                     });
 
                     job.backoff({ delay: 'exponential' })

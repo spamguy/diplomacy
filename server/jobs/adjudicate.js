@@ -35,11 +35,14 @@ module.exports = {
             // Verifies all players are ready. Fetches the variant, adjudicates, and persists the outcome.
             function(_game, callback) {
                 game = _game;
+                variant = core.variant.get(game.get('variant'));
 
                 // Not everyone is ready. Handling this situation deserves its own block.
-                if (!game.get('ignoreLateOrders') && !game.isEverybodyReady()) {
+                // FIXME: Drop 'false' when ignoreLateOrders is implemented.
+                if (false && !game.get('ignoreLateOrders') && !game.isEverybodyReady()) {
                     handleLatePhase();
                     callback(new Error('Not adjudicating: some players are not ready'));
+                    return;
                 }
 
                 var phase = game.related('phases').at(0),
@@ -53,7 +56,7 @@ module.exports = {
                 core.phase.createFromState(variant, game, nextState, callback);
             },
 
-            // Schedules next adjudication and notifies participants. Resets ready flag to false for all players.
+            // Schedules next adjudication and notifies participants.
             function(_game, callback) {
                 game = _game;
 
@@ -72,21 +75,23 @@ module.exports = {
                             // nextYear: oldPhase.getNextPhaseYear(variant)
                         };
 
-                    core.user.get(player.get('player_id'), function(err, user) {
+                    core.user.get(player.pivot.get('user_id'), function(err, user) {
                         if (err)
                             winston.error(err);
 
                         emailOptions.email = user.get('email');
-                        mailer.sendOne('adjudication', emailOptions, function(err) {
-                            if (err)
-                                winston.error(err);
-                        });
+                        mailer.sendOne('adjudication', emailOptions, callback);
                     });
-
-                    core.game.resetAllReadyFlags(game, function(err, game) { callback(err, game, oldPhase); });
                 });
+            },
+
+            // TODO: Schedule next adjudication here.
+
+            // Resets ready flag to false for all players.
+            function(result, callback) {
+                core.game.resetAllReadyFlags(game, callback);
             }
-        ], function(err, game, oldPhase) {
+        ], function(err) {
             if (err) {
                 winston.error(err);
                 done(err);
@@ -95,8 +100,8 @@ module.exports = {
             return done(null, {
                 gameID: game.get('id'),
                 gameName: game.get('name'),
-                year: oldPhase.get('year'),
-                phase: oldPhase.get('season')
+                year: game.related('phases').at(1).get('year'),
+                season: game.related('phases').at(1).get('season')
             });
         });
     }
