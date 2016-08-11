@@ -11,6 +11,12 @@ angular.module('games')
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
     $scope.phaseIndex = $stateParams.phase || 0;
 
+    $scope.$on('socket/phase:adjudicate:update', function(event, updatedGame) {
+        // A game just adjudicated, but is it this one?
+        if ($scope.game.id === updatedGame.id)
+            $scope.game = updatedGame;
+    });
+
     // Point out games that haven't started yet.
     if (game.status === 0) {
         $mdDialog.show(

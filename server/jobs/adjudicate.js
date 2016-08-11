@@ -90,19 +90,18 @@ module.exports = {
             // Resets ready flag to false for all players.
             function(result, callback) {
                 core.game.resetAllReadyFlags(game, callback);
+            },
+
+            function(result, callback) {
+                core.game.get(gameID, callback);
             }
-        ], function(err) {
+        ], function(err, game) {
             if (err) {
                 winston.error(err);
                 done(err);
             }
 
-            return done(null, {
-                gameID: game.get('id'),
-                gameName: game.get('name'),
-                year: game.related('phases').at(1).get('year'),
-                season: game.related('phases').at(1).get('season')
-            });
+            return done(null, game.toJSON({ obfuscate: true }));
         });
     }
 };

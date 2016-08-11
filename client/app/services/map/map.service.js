@@ -121,15 +121,15 @@ angular.module('mapService', ['gameService'])
     }
 
     function userCanMove() {
-        return _.includes(this.phase.season.toLowerCase(), 'move');
+        return gameService.isPlayer(this.game) && _.includes(this.phase.season.toLowerCase(), 'move');
     }
 
     function userCanRetreat() {
-        return _.includes(this.phase.season.toLowerCase(), 'retreat');
+        return gameService.isPlayer(this.game) && _.includes(this.phase.season.toLowerCase(), 'retreat');
     }
 
     function userCanAdjust() {
-        return _.includes(this.phase.season.toLowerCase(), 'adjust');
+        return gameService.isPlayer(this.game) && _.includes(this.phase.season.toLowerCase(), 'adjust');
     }
 
     function getSCPath() {

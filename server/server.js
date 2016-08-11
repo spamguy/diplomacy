@@ -48,10 +48,13 @@ app.queue = kue.createQueue({
 // Add queue-level event handling. See https://github.com/Automattic/kue#queue-events.
 app.queue.on('job complete', function(id, result) {
     kue.Job.get(id, function(err, job) {
-        if (!err)
-            app.io.to(job.result.gameID).emit('phase:adjudicate:success', result);
-        else
+        if (!err) {
+            app.io.to(job.result.id).emit('phase:adjudicate:success', job.result);
+            app.io.to(job.result.id).emit('phase:adjudicate:update', job.result);
+        }
+        else {
             app.logger.error(err);
+        }
     });
 });
 

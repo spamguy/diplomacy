@@ -48,13 +48,15 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
             );
         });
 
-        socket.on('phase:adjudicate:success', function(data) {
+        socket.on('phase:adjudicate:success', function(game) {
             $mdToast.show(
                 $mdToast.simple()
-                    .textContent('The game ' + data.gameName + ' has been adjudicated.')
+                    .textContent('Game ' + game.name + ', ' + game.phases[0].season + ' ' + game.phases[0].year + ' has been adjudicated.')
                     .hideDelay(5000)
             );
         });
+
+        socket.forward('phase:adjudicate:update');
     };
 
     return self;
