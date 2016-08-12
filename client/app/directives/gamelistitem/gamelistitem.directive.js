@@ -1,6 +1,6 @@
 /* global humanizeDuration */
 angular.module('gamelistitem.directive', ['ngMaterial'])
-.directive('sgGameListItem', ['gameService', '$mdDialog', '$mdMedia', '$state', function(gameService, $mdDialog, $mdMedia, $state) {
+.directive('sgGameListItem', ['userService', 'gameService', '$mdDialog', '$mdMedia', '$state', function(userService, gameService, $mdDialog, $mdMedia, $state) {
     'use strict';
 
     return {
@@ -9,15 +9,14 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
         templateUrl: 'app/directives/gamelistitem/gamelistitem.tmpl.html',
         scope: {
             game: '=game',
-            joinable: '=joinable',
-            user: '=user'
+            joinable: '=joinable'
         },
         link: function(scope, element, attrs) {
             scope.reasonForNoJoin = function() {
                 // Breaking this down into individual rules to avoid one monstrous if() statement.
 
                 // User doesn't have enough points.
-                if (scope.game.minimumDedication > scope.user.actionCount)
+                if (scope.game.minimumDedication > userService.getCurrentUser().actionCount)
                     return 'You need a minimum reliability of ' + scope.game.minimumDedication + ' to join.';
 
                 // User belongs to game already, whether as GM or user.

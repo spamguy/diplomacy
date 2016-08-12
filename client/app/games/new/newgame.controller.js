@@ -2,6 +2,7 @@
 
 angular.module('games')
 .controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'variants', function($scope, gameService, userService, $state, variants) {
+    var user = userService.getCurrentUser();
     angular.extend($scope, {
         game: {
             name: null,
@@ -27,7 +28,7 @@ angular.module('games')
             visibility: 'public',
             press: 'white',
             minimumScoreToJoin: 0,
-            gmID: $scope.currentUser.id,
+            gmID: userService.getCurrentUserID(),
 
             save: function() {
                 gameService.getVariant($scope.game.variant).then(function(variant) {
@@ -42,7 +43,7 @@ angular.module('games')
     $scope.variants = variants;
 
     $scope.minimumDedicationToGM = 0;
-    $scope.dedication = (($scope.currentUser.actionCount - $scope.currentUser.failedActionCount) / $scope.currentUser.actionCount) * 100;
+    $scope.dedication = ((user.actionCount - user.failedActionCount) / user.actionCount) * 100;
     $scope.hasDecentScore = function() {
         return $scope.dedication >= $scope.minimumDedicationToGM;
     };
