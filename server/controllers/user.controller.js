@@ -33,18 +33,29 @@ module.exports = function() {
     // SOCKETS
     app.io.route('user', {
         login: function(req, res) {
-            authenticate(core.user, req, function(err, user) {
+            var user;
+
+            async.waterfall([
+                function(callback) {
+                    authenticate(core.user, req, callback);
+                },
+
+                function(_user, dummy, callback) {
+                    user = _user;
+                    if (!user) {
+                        return res.status(401).json({
+                            message: 'Incorrect username and/or password.'
+                        });
+                    }
+
+                    user.save({ lastLogin: new Date() }, { patch: true }).asCallback(callback);
+                }
+            ], function(err) {
                 if (err) {
                     app.logger.error(err);
                     return res.status(400).json({
                         message: 'There was a problem logging you in. Please try again later.',
                         error: err
-                    });
-                }
-
-                if (!user) {
-                    return res.status(401).json({
-                        message: 'Incorrect username and/or password.'
                     });
                 }
 

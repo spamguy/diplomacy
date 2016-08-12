@@ -43,14 +43,7 @@ describe('Map component', function() {
             expect($('#mapToolbar', el)).to.have.lengthOf(0);
         });
 
-        it('is invisible when there is no phase data', function() {
-            scope.game.phases = null;
-            el = compile('<sg-map game="game" readonly="readonly" svg="svg" header="true" />')(scope);
-            scope.$digest();
-            expect($('#mapToolbar', el)).to.have.lengthOf(0);
-        });
-
-        it('is visible when \'header\' flag is true and phase data is present', function() {
+        it('is visible when \'header\' flag is true', function() {
             el = compile('<sg-map game="game" readonly="readonly" phase-index="0" svg="svg" header="true" />')(scope);
             scope.$digest();
             expect($('#mapToolbar', el)).to.have.lengthOf(1);

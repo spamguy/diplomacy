@@ -1,4 +1,5 @@
 <md-tabs class="md-whiteframe-2dp" md-dynamic-height md-border-bottom style="margin: auto 20px">
+    <!-- TODO: Rewrite status filtering as actual filter, accepting both array/ints. Active = 1, Inactive = [0,3], Mastering = 0, Complete = 2. -->
     <md-tab label="Active Games">
         <md-list>
             <md-list-item ng-repeat="game in playing | filter: { status: 1 }" class="gameItem">

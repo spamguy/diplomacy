@@ -40,6 +40,7 @@ describe('Game tools component', function() {
                 }
             };
             scope.game = {
+                status: 1,
                 players: [],
                 phases: [{
                     provinces: {
@@ -78,6 +79,12 @@ describe('Game tools component', function() {
         el = compile('<sg-game-tools powers="powers" game="game" phase-index="0" />')(scope);
         scope.$digest();
         expect($('div.md-subheader', el)).to.have.lengthOf(4);
+    });
+
+    it('lists no powers when the game is inactive', function() {
+        scope.game.status = 2;
+        scope.$digest();
+        expect($('div.md-subheader', el)).to.have.lengthOf(0);
     });
 
     it('only lists assigned power when viewing as a player', function() {

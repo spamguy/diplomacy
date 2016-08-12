@@ -4,9 +4,14 @@ describe('Map directive', function() {
     var location,
         MapService,
         service,
-        game;
+        game,
+        mockGameService;
 
     beforeEach(function() {
+        mockGameService = {
+            isPlayer: function(game) { return true; }
+        };
+
         game = {
             variant: 'Standard',
             phases: [{
@@ -31,7 +36,9 @@ describe('Map directive', function() {
             }]
         };
         angular.mock.module('diplomacy.constants');
-        angular.mock.module('gameService');
+        angular.mock.module('gameService', function($provide) {
+            $provide.value('gameService', mockGameService);
+        });
         angular.mock.module('mapService');
 
         inject(function(_mapService_, $location) {

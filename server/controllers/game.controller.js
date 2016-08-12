@@ -292,36 +292,35 @@ module.exports = function() {
             async.waterfall([
                 // Fetches the game to kill.
                 function(callback) {
-                    core.game.list({
-                        gameID: gameID
-                    }, function(err, games) { callback(err, games[0]); });
+                    core.game.get(gameID, callback);
                 },
 
                 // Set game status to 2 (ended).
                 function(game, callback) {
-                    game.status = 2;
-                    core.game.update(game, callback);
+                    game.save({ status: 2 }, { patch: true }).asCallback(callback);
                 },
 
                 // Announce end to players.
                 function(game, callback) {
-                    async.each(game.players, function(player, eachCallback) {
+                    game.related('players').each(function(player) {
                         async.waterfall([
                             function(wfCallback) {
-                                core.user.list({ ID: player.player_id }, function(err, players) { wfCallback(err, players[0]); });
+                                core.user.get(player.pivot.get('user_id'), wfCallback);
                             },
 
                             function(player, wfCallback) {
                                 var emailOptions = {
-                                    subject: '[' + game.name + '] GAME OVER!',
-                                    gameName: game.name,
-                                    email: player.email
+                                    subject: '[' + game.get('name') + '] GAME OVER!',
+                                    gameName: game.get('name'),
+                                    email: player.get('email')
                                 };
 
                                 mailer.sendOne('abort', emailOptions, wfCallback);
                             }
-                        ], eachCallback);
-                    }, function(err) { callback(err, game); });
+                        ]);
+                    });
+
+                    callback(null, game);
                 },
 
                 function(game, callback) {

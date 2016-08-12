@@ -15,7 +15,6 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
             })
         });
 
-        // TODO: move to GameService
         socket.on('game:join:announce', function(data) {
             $mdToast.show(
                 $mdToast.simple()
@@ -47,6 +46,8 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
                     .hideDelay(5000)
             );
         });
+
+        // TODO: Handle game:end:announce here.
 
         socket.on('phase:adjudicate:success', function(game) {
             $mdToast.show(

@@ -139,18 +139,18 @@ CREATE TABLE phases (
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE users (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    email text,
-    password text,
-    password_salt text,
-    action_count integer DEFAULT 1,
-    failed_action_count integer DEFAULT 0,
-    timezone text,
-    temp_email text,
-    updated_at timestamp without time zone NOT NULL,
-    created_at timestamp without time zone
-);
+CREATE TABLE "public"."users" (
+	"id" UUid DEFAULT uuid_generate_v4() NOT NULL,
+	"email" Text,
+	"password" Text,
+	"password_salt" Text,
+	"action_count" Integer DEFAULT 1,
+	"failed_action_count" Integer DEFAULT 0,
+	"timezone" Text,
+	"temp_email" Text,
+	"updated_at" Timestamp Without Time Zone NOT NULL,
+	"created_at" Timestamp Without Time Zone,
+	"last_login" Timestamp Without Time Zone);
 
 
 --
@@ -255,16 +255,6 @@ ALTER TABLE ONLY phase_provinces
 
 ALTER TABLE ONLY phases
     ADD CONSTRAINT seasons_game_id_fkey FOREIGN KEY (game_id) REFERENCES games(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: -
---
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM spamguy;
-GRANT ALL ON SCHEMA public TO spamguy;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
