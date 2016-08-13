@@ -83,6 +83,7 @@ describe('Game tools component', function() {
 
     it('lists no powers when the game is inactive', function() {
         scope.game.status = 2;
+        el = compile('<sg-game-tools powers="powers" game="game" phase-index="0" />')(scope);
         scope.$digest();
         expect($('div.md-subheader', el)).to.have.lengthOf(0);
     });

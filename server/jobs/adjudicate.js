@@ -85,8 +85,6 @@ module.exports = {
                 });
             },
 
-            // TODO: Schedule next adjudication here.
-
             // Resets ready flag to false for all players.
             function(result, callback) {
                 core.game.resetAllReadyFlags(game, callback);

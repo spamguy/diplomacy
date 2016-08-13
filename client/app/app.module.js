@@ -65,16 +65,19 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
     $locationProvider.html5Mode(true);
 }])
 .run(['$rootScope', 'userService', 'socketService', function($rootScope, userService, socketService) {
+    var isRestricted;
+
     // Initialize socket voodoo.
     if (!socketService.socket)
         socketService.initialize();
 
-    userService.setCurrentUser();
-    $rootScope.theUser = userService.getCurrentUser;
-    $rootScope.isAuthenticated = userService.isAuthenticated;
+    userService.setCurrentUser().then(function() {
+        $rootScope.theUser = userService.getCurrentUser;
+        $rootScope.isAuthenticated = userService.isAuthenticated;
+    });
 
     $rootScope.$on('$stateChangeStart', function(event, next) {
-        var isRestricted = !!(next.data && next.data.restricted);
+        isRestricted = !!(next.data && next.data.restricted);
 
         // If page is restricted and auth is bad, block entry to route.
         if (isRestricted && !userService.isAuthenticated()) {

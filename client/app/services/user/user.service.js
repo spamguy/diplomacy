@@ -27,6 +27,7 @@ function(localStorageService, socketService, $q) {
         },
 
         setCurrentUser: function(userID, force) {
+            var userPromise = $q(function(resolve) { return _user; });
             if (userID)
                 localStorageService.set('currentUserID', userID);
             else
@@ -34,10 +35,14 @@ function(localStorageService, socketService, $q) {
 
             // Populate or refresh user.
             if (!_user || force) {
-                this.getUser(userID).then(function(user) {
+                userPromise = this.getUser(userID);
+
+                userPromise.then(function(user) {
                     _user = user;
                 });
             }
+
+            return userPromise;
         },
 
         getUser: function(userID) {
