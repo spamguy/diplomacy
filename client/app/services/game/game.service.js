@@ -174,22 +174,8 @@ angular.module('gameService', ['userService', 'socketService'])
             return { power: null };
         },
 
-        /**
-         * Gets a unit's most precise location within a province.
-         * @param  {Object} r     The province.
-         * @param  {Integer} [type] The unit type by which to filter.
-         * @param  {String} [power] The power by which to filter.
-         * @return {Object}       The province or subprovince with a unit present, or null.
-         */
-        getUnitOwnerInProvince: function(r, type, power) {
-            var subprovinceWithUnit = _.find(r.sr, 'unit');
-
-            if (r.unit && unitMatchesFilters(r.unit, type, power))
-                return r;
-            else if (subprovinceWithUnit && unitMatchesFilters(subprovinceWithUnit.unit, type, power))
-                return subprovinceWithUnit;
-
-            return null;
+        getPlayerInGameByCode: function(game, code) {
+            return _.find(game.players, ['power', code]);
         },
 
         isGM: function(game) {

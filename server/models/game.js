@@ -39,7 +39,8 @@ module.exports = function(bookshelf) {
 
         toJSON: function(options) {
             // FIXME: Resolved state and user role also affect whether to obfuscate.
-            var obfuscate = this.get('pressType') === 0,
+            var self = this,
+                obfuscate = self.get('pressType') === 0,
                 currentUserID,
                 players;
             options = options || { };
@@ -47,31 +48,40 @@ module.exports = function(bookshelf) {
             currentUserID = options.currentUserID;
 
             players = this.related('players').map(function(player) {
-                var isPlayer = player.get('id') === currentUserID;
+                var isPlayer = player.get('id') === currentUserID,
+                    playerPower = player.pivot.get('power'),
+                    scCount = 0;
+
+                // Count supply centres.
+                self.related('phases').at(0).related('provinces').each(function(p) {
+                    scCount += (p.get('supplyCentre') === playerPower);
+                });
+
                 if (isPlayer)
-                    options.currentPlayerPower = player.pivot.get('power');
+                    options.currentPlayerPower = playerPower;
 
                 return {
                     player_id: obfuscate && !isPlayer ? null : player.get('id'),
                     isReady: obfuscate && !isPlayer ? null : player.pivot.get('is_ready'),
-                    power: player.pivot.get('power')
+                    power: playerPower,
+                    scs: scCount
                 };
             });
 
             return {
-                id: this.get('id'),
-                gmID: this.get('gmId'),
-                name: this.get('name'),
-                description: this.get('description'),
-                status: this.get('status'),
-                maxPlayers: this.get('maxPlayers'),
-                variant: this.get('variant'),
-                moveClock: this.get('moveClock'),
-                retreatClock: this.get('retreatClock'),
-                adjustClock: this.get('adjustClock'),
-                pressType: this.get('pressType'),
+                id: self.get('id'),
+                gmID: self.get('gmId'),
+                name: self.get('name'),
+                description: self.get('description'),
+                status: self.get('status'),
+                maxPlayers: self.get('maxPlayers'),
+                variant: self.get('variant'),
+                moveClock: self.get('moveClock'),
+                retreatClock: self.get('retreatClock'),
+                adjustClock: self.get('adjustClock'),
+                pressType: self.get('pressType'),
                 players: players,
-                phases: this.related('phases').toJSON(options)
+                phases: self.related('phases').toJSON(options)
             };
         }
     });

@@ -3,14 +3,14 @@
         <md-tab>
             <md-tab-label>Orders</md-tab-label>
             <md-tab-body>
-                <div layout="row" layout-align="center" ng-if="$ctrl.game.status === 1 && $ctrl.service.isPlayer($ctrl.game)">
+                <div layout="row" layout-align="center" ng-if="$ctrl.game.status === 1 && $ctrl.service.isPlayer($ctrl.game)" style="display: none">
                     <md-switch ng-model="$ctrl.currentUserInGame.isReady" ng-change="$ctrl.setReadyState()">
                         <span class="md-title">{{$ctrl.currentUserInGame.isReady ? 'Ready!' : 'Not ready'}}</span>
                     </md-switch>
                 </div>
 
                 <section ng-if="$ctrl.game.status === 1" ng-repeat="(code, power) in $ctrl.getPowerList()">
-                    <md-subheader>{{power.name}}</md-subheader>
+                    <md-subheader>{{power.name}} ({{$ctrl.service.getPlayerInGameByCode($ctrl.game, code).scs}})</md-subheader>
                     <md-divider></md-divider>
                     <md-list>
                         <md-list-item ng-repeat="(key, province) in $ctrl.game.phases[$ctrl.phaseIndex].provinces" ng-if="$ctrl.powerOwnsProvince(code, province)">

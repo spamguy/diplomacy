@@ -73,63 +73,7 @@ describe('gameService', function() {
         expect(gameService.isParticipant(game)).to.be.true;
     });
 
-    describe('getUnitOwnerInProvince()', function() {
-        var phase;
-        beforeEach(function() {
-            phase = {
-                provinces: [{
-                    r: 'BUD',
-                    unit: {
-                        power: 'A',
-                        type: 1
-                    }
-                }, {
-                    r: 'HUN',
-                    unit: {
-                        power: 'A',
-                        type: 1
-                    }
-                }, {
-                    r: 'ROM',
-                    unit: {
-                        power: 'I',
-                        type: 1
-                    }
-                }, {
-                    r: 'BUL',
-                    sr: [{
-                        r: 'EC',
-                        unit: {
-                            power: 'A',
-                            type: 2
-                        }
-                    }]
-                }]
-            };
-        });
-
-        it('finds units in occupied provinces/subprovinces', function() {
-            for (var i = 0; i < phase.provinces.length; i++)
-                expect(gameService.getUnitOwnerInProvince(phase.provinces[i])).not.to.be.null;
-        });
-
-        it('returns null in unoccupied provinces', function() {
-            phase.provinces.push({ r: 'TRI' });
-            phase.provinces.push({ r: 'SPA', sr: [{ r: 'NC' }, { r: 'SC' }] });
-            for (var i = 0; i < phase.provinces.length; i++) {
-                if (i > 3)
-                    expect(gameService.getUnitOwnerInProvince(phase.provinces[i])).to.be.null;
-            }
-        });
-
-        it('filters by type if supplied', function() {
-            expect(gameService.getUnitOwnerInProvince(phase.provinces[0], 1)).not.to.be.null;
-            expect(gameService.getUnitOwnerInProvince(phase.provinces[0], 2)).to.be.null;
-        });
-
-        it('filters by power if supplied', function() {
-            expect(gameService.getUnitOwnerInProvince(phase.provinces[1], null, 'A')).not.to.be.null;
-            expect(gameService.getUnitOwnerInProvince(phase.provinces[1], null, 'I')).to.be.null;
-        });
+    it('gets a player by code', function() {
+        expect(gameService.getPlayerInGameByCode(game, 'Q').player_id).to.equal('123');
     });
 });
