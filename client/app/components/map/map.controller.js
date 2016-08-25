@@ -9,14 +9,10 @@ angular.module('map.component')
         moveLayer = d3.select('svg g.moveLayer'),
         moveLayerArrows = moveLayer.selectAll('path'),
         moveLayerHolds = moveLayer.selectAll('circle'),
-        evenMorePadding,
-        unitRadius = 8,
-        unitRadiusPlusPadding = unitRadius + 6,
-        pathLength,
-        midpoint,
         force,
         links = [],
-        holds = [];
+        holds = [],
+        unitRadiusPlusPadding = 16;
 
     vm.paths = { };
     vm.service = new MapService(this.game, this.phaseIndex);
@@ -80,55 +76,19 @@ angular.module('map.component')
                 sy = sourceProvince.unitLocation.y,
                 tx = targetProvince.unitLocation.x,
                 ty = targetProvince.unitLocation.y,
-                dx,
-                dy,
                 action = d.target.action,
-                actionOfTarget,
-                pathOfTarget,
-                dr;
+                actionOfTarget = targetProvince.unit ? targetProvince.unit.action : null;
 
-            // Tweak coordinates of arrows that interact with other arrows.
-            if (action === 'move') {
-                // Move arrows should appear to run head-to-tail as closely as possible.
-                if (sx > tx)
-                    tx += 20;
+            switch (action) {
+            case 'move':
+                return vm.service.generateArc(sx, sy, tx, ty);
+            case 'support':
+                if (actionOfTarget === 'move' || actionOfTarget === 'convoy')
+                    return vm.service.generateBisectingLine(d.source.p, d.target.p, sx, sy);
                 else
-                    tx -= 20;
-            }
-            else if (targetProvince.unit && targetProvince.unit.targetOfTarget) {
-                actionOfTarget = targetProvince.unit.action;
-
-                if (action !== 'support') {
-                    evenMorePadding = -2;
-
-                    // Figure out a good corner to which to point.
-                    if (sx > tx)
-                        tx += unitRadiusPlusPadding + evenMorePadding;
-                    else
-                        tx -= unitRadiusPlusPadding + evenMorePadding;
-
-                    if (sy > ty)
-                        ty += unitRadiusPlusPadding + evenMorePadding;
-                    else
-                        ty -= unitRadiusPlusPadding + evenMorePadding;
-                }
-            }
-
-            dx = tx - sx;
-            dy = ty - sy;
-
-            // Use generic arc for moves and units supporting holding targets.
-            if ((!actionOfTarget && action === 'support') || action === 'move') {
-                dr = Math.sqrt(dx * dx + dy * dy);
-                return 'M' + sx + ',' + sy + 'A' + dr + ',' + dr + ' 0 0,1 ' + tx + ',' + ty;
-            }
-            // Use straight line for units supporting moving targets.
-            else if (moveLayerArrows && actionOfTarget === 'move') {
-                pathOfTarget = d3.selectAll('g.moveLayer path#' + d.target.r + '-link').node();
-                pathLength = pathOfTarget.getTotalLength();
-                midpoint = pathOfTarget.getPointAtLength(pathLength / 2);
-
-                return 'M' + sx + ',' + sy + 'L' + midpoint.x + ',' + midpoint.y;
+                    return vm.service.generateArc(sx, sy, tx, ty);
+            case 'convoy':
+                return vm.service.generateLine(sx, sy, tx, ty);
             }
         });
     }
@@ -155,10 +115,22 @@ angular.module('map.component')
                 holds.push(province);
             }
             else {
-                target = province.unit.source || province.unit.target;
+                target = province.unit.target;
                 links.push({
                     source: _.defaults(province, { fixed: true }),
-                    target: _.defaults(phase.provinces[target], {
+                    target: _.assignIn({ }, phase.provinces[target], {
+                        fixed: true, // To keep d3 from treating this map like a true force graph.
+                        action: province.unit.action,
+                        failed: province.unit.failed
+                    })
+                });
+            }
+
+            // Convoys get an extra link to express, um, conveyance.
+            if (province.unit.action === 'convoy') {
+                links.push({
+                    source: _.defaults(province, { fixed: true }),
+                    target: _.assignIn({ }, phase.provinces[province.unit.targetOfTarget], {
                         fixed: true, // To keep d3 from treating this map like a true force graph.
                         action: province.unit.action,
                         failed: province.unit.failed
@@ -170,12 +142,13 @@ angular.module('map.component')
         moveLayerArrows = moveLayerArrows.data(links);
         moveLayerArrows.enter()
             .insert('svg:path')
+            .attr('marker-start', vm.service.generateMarkerStart)
             .attr('marker-end', vm.service.generateMarkerEnd)
             .attr('class', function(d) {
                 var failed = d.target.failed ? 'failed ' : 'ok ';
-                return failed + 'link move';
+                return failed + 'link ' + d.target.action;
             })
-            .attr('id', function(d) { return d.source.p + '-link'; });
+            .attr('id', function(d) { return d.source.p + '-' + d.target.p + '-link'; });
         moveLayerArrows.exit().remove();
 
         // Append circles to units perceived to or actually holding.

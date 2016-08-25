@@ -38,14 +38,16 @@ module.exports = function(bookshelf) {
         },
 
         toJSON: function(options) {
+            options = options || { };
+
             // FIXME: Resolved state and user role also affect whether to obfuscate.
             var self = this,
-                obfuscate = self.get('pressType') === 0,
-                currentUserID,
-                players;
-            options = options || { };
-            options.obfuscate = obfuscate;
-            currentUserID = options.currentUserID;
+	    	currentUserID = options.currentUserID,
+                players,
+                phases = [],
+                phaseIndex;
+
+            options.obfuscate = currentUserID !== this.get('gmId');
 
             players = this.related('players').map(function(player) {
                 var isPlayer = player.get('id') === currentUserID,
@@ -68,6 +70,12 @@ module.exports = function(bookshelf) {
                 };
             });
 
+            for (phaseIndex = 0; phaseIndex < this.related('phases').length; phaseIndex++) {
+                // Obfuscate active season, but for players only.
+                options.obfuscate = options.obfuscate && phaseIndex === 0;
+                phases.push(this.related('phases').at(phaseIndex).toJSON(options));
+            }
+
             return {
                 id: self.get('id'),
                 gmID: self.get('gmId'),
@@ -81,7 +89,7 @@ module.exports = function(bookshelf) {
                 adjustClock: self.get('adjustClock'),
                 pressType: self.get('pressType'),
                 players: players,
-                phases: self.related('phases').toJSON(options)
+                phases: phases
             };
         }
     });

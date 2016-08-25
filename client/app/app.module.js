@@ -83,6 +83,7 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
         if (isRestricted && !userService.isAuthenticated()) {
             event.preventDefault();
             console.log('State change blocked');
+            $rootScope.logOut();
         }
     });
 }]);

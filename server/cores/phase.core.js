@@ -1,6 +1,7 @@
 'use strict';
 
-var db = require('./../db'),
+var _ = require('lodash'),
+    db = require('./../db'),
     async = require('async'),
     winston = require('winston'),
     moment = require('moment');
@@ -160,10 +161,21 @@ PhaseCore.prototype.generatePhaseProvincesFromState = function(t, variant, state
 PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
     var self = this,
         currentPhase = game.related('phases').at(0),
-        nextSeasonIndex = (currentPhase.get('seasonIndex') + 1) % variant.phases.length,
-        nextSeason = variant.phases[nextSeasonIndex],
-        nextDeadline = moment().add(game.getClockFromSeason(nextSeason), 'hours'),
+        nextSeasonIndex = currentPhase.get('seasonIndex') + 1,
+        nextSeason,
+        nextDeadline,
         nextPhase;
+
+    // Retreat phases can be skipped if no retreats necessary.
+    if (_.keys(state.Dislodgeds()).length === 0) {
+        winston.log('Skipping retreat season', { gameID: game.get('id') });
+        nextSeasonIndex++;
+    }
+
+    nextSeasonIndex = nextSeasonIndex % variant.phases.length;
+    nextSeason = variant.phases[nextSeasonIndex];
+    nextDeadline = moment().add(game.getClockFromSeason(nextSeason), 'hours');
+
     db.bookshelf.transaction(function(t) {
         async.waterfall([
             // STEP 1: Mark up old phase, keeping orders intact for posterity.

@@ -12,7 +12,11 @@ angular.module('mapService', ['gameService'])
 
     service.prototype.getSCTransform = getSCTransform;
     service.prototype.getSCPath = getSCPath;
+    service.prototype.generateMarkerStart = generateMarkerStart;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
+    service.prototype.generateLine = generateLine;
+    service.prototype.generateArc = generateArc;
+    service.prototype.generateBisectingLine = generateBisectingLine;
     service.prototype.setCurrentAction = setCurrentAction;
     service.prototype.getCurrentAction = getCurrentAction;
     service.prototype.inputCommand = inputCommand;
@@ -30,10 +34,66 @@ angular.module('mapService', ['gameService'])
         return 'translate(' + p.sc.location.x + ',' + p.sc.location.y + ') scale(0.04)';
     }
 
+    function generateMarkerStart(d) {
+        // See CSS file for why separate markers exist for failed orders.
+        var failed = d.target.failed ? 'failed' : '';
+
+        if (d.target.action === 'convoy')
+            return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
+        else
+            return null;
+    }
+
     function generateMarkerEnd(d) {
         // See CSS file for why separate markers exist for failed orders.
         var failed = d.target.failed ? 'failed' : '';
         return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
+    }
+
+    /**
+     * Generate a line segment with padding on both ends.
+     * @param  {Number} sx The source unit's x coordinate.
+     * @param  {Number} sy The source unit's y coordinate.
+     * @param  {Number} tx The target unit's x coordinate.
+     * @param  {Number} ty The target unit's y coordinate.
+     * @return {String}    An SVG path.
+     */
+    function generateLine(sx, sy, tx, ty) {
+        var LINK_UNIT_PADDING = 16,
+            dx = tx - sx,
+            dy = ty - sy,
+            dr = Math.sqrt(dx * dx + dy * dy),
+            offsetX = (dx * LINK_UNIT_PADDING) / dr,
+            offsetY = (dy * LINK_UNIT_PADDING) / dr;
+
+        return 'M' + (sx + offsetX) + ',' + (sy + offsetY) + 'L' + (tx - offsetX) + ',' + (ty - offsetY);
+    }
+
+    /**
+     * Generate an SVG path line with a slight arc to it.
+     * @param  {Number} sx The source unit's x coordinate.
+     * @param  {Number} sy The source unit's y coordinate.
+     * @param  {Number} tx The target unit's x coordinate.
+     * @param  {Number} ty The target unit's y coordinate.
+     * @return {String}    An SVG path.
+     */
+    function generateArc(sx, sy, tx, ty) {
+        var LINK_UNIT_PADDING = 30,
+            dx = tx - sx,
+            dy = ty - sy,
+            dr = Math.sqrt(dx * dx + dy * dy),
+            offsetX = (dx * LINK_UNIT_PADDING) / dr,
+            offsetY = (dy * LINK_UNIT_PADDING) / dr;
+
+        return 'M' + sx + ',' + sy + 'A' + dr + ',' + dr + ' 0 0,1 ' + (tx - offsetX) + ',' + (ty - offsetY);
+    }
+
+    function generateBisectingLine(source, target, sx, sy) {
+        var pathOfTarget = d3.selectAll('g.moveLayer path#' + source + '-' + target + '-link').node(),
+            pathLength = pathOfTarget.getTotalLength(),
+            midpoint = pathOfTarget.getPointAtLength(pathLength / 2);
+
+        return 'M' + sx + ',' + sy + 'L' + midpoint.x + ',' + midpoint.y;
     }
 
     function setCurrentAction(action) {
@@ -97,11 +157,14 @@ angular.module('mapService', ['gameService'])
             }
             break;
         case 'convoy':
+            if (commandData.length < 3)
+                return;
+
             /*
              * Don't convoy the convoyer.
              * Don't convoy into the convoyer.
              * Don't let the start equal the finish.
-             * In short, source, target, target of target should be distinct.
+             * In short, source/target/target of target should be distinct.
              * Treat violations of the above as a hold.
              */
             if (commandData.length !== _.uniq(commandData).length) {

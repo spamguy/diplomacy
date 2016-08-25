@@ -71,11 +71,11 @@ describe('Province list item directive', function() {
     it('reports convoy orders', function() {
         scope.province.p = 'MOS';
         scope.province.unit.action = 'convoy';
-        scope.province.unit.source = 'HEL';
         scope.province.unit.target = 'NRG';
+        scope.province.unit.targetOfTarget = 'LVN';
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();
-        expect($('div span', el).html()).to.equal('<strong>MOS</strong> ~ <strong>NRG</strong>');
+        expect($('div span', el).html()).to.equal('<strong>MOS</strong> convoys <strong>NRG</strong> → <strong>LVN</strong>');
     });
 
     it('reports disband orders', function() {
@@ -87,7 +87,6 @@ describe('Province list item directive', function() {
 
     it('reports units still needing orders', function() {
         scope.province.unit.action = null;
-        scope.province.unit.source = null;
         scope.province.unit.target = null;
         el = compile('<sg-province-list-item province="province" />')(scope);
         scope.$digest();

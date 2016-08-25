@@ -4,7 +4,7 @@ angular.module('gametools.component')
         confirm;
 
     vm.service = gameService;
-    vm.powerOwnsProvince = powerOwnsProvince;
+    vm.powerOwnsUnitInProvince = powerOwnsUnitInProvince;
     vm.getPowerList = getPowerList;
     vm.setReadyState = setReadyState;
     vm.currentUserInGame = gameService.getCurrentUserInGame(vm.game);
@@ -65,8 +65,8 @@ angular.module('gametools.component')
         }
     };
 
-    function powerOwnsProvince(code, province) {
-        return province.sc && province.sc.owner === code;
+    function powerOwnsUnitInProvince(code, province) {
+        return province.unit && province.unit.owner === code;
     }
 
     function getPowerList() {

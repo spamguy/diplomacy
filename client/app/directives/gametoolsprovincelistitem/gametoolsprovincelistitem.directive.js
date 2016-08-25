@@ -37,7 +37,7 @@ angular.module('gametoolsprovincelistitem.directive', ['ngSanitize'])
                         provinceStatus += 'holds';
                         break;
                     case 'convoy':
-                        provinceStatus += '~ <strong>' + unit.target + '</strong>';
+                        provinceStatus += 'convoys <strong>' + unit.target + '</strong> → <strong>' + unit.targetOfTarget + '</strong>';
                         break;
                     case 'build':
                         provinceStatus += 'builds a'; break;

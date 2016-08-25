@@ -33,8 +33,8 @@ function(localStorageService, socketService, $q) {
             else
                 userID = this.getCurrentUserID();
 
-            // Populate or refresh user.
-            if (!_user || force) {
+            // Populate or refresh user if logged in.
+            if (userID || (_user && force)) {
                 userPromise = this.getUser(userID);
 
                 userPromise.then(function(user) {

@@ -22,6 +22,7 @@ module.exports = function(bookshelf) {
                 season: this.get('season'),
                 isActive: this.get('isActive'),
                 deadline: this.get('deadline'),
+                seasonIndex: this.get('seasonIndex'),
                 provinces: _.keyBy(this.related('provinces').toJSON(options), 'p')
             };
         }
