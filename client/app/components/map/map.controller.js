@@ -1,5 +1,5 @@
 angular.module('map.component')
-.controller('MapController', ['$scope', 'gameService', 'mapService', '$mdBottomSheet', function($scope, gameService, MapService, $mdBottomSheet) {
+.controller('MapController', ['$scope', '$state', 'gameService', 'mapService', '$mdBottomSheet', function($scope, $state, gameService, MapService, $mdBottomSheet) {
     var vm = this,
         phase = this.game.phases ? this.game.phases[this.phaseIndex] : null,
         normalisedVariantName = gameService.getNormalisedVariantName(vm.game.variant),
@@ -17,6 +17,7 @@ angular.module('map.component')
     vm.paths = { };
     vm.service = new MapService(this.game, this.phaseIndex);
     vm.getFormattedDeadline = gameService.getFormattedDeadline;
+    vm.goToIndex = goToIndex;
 
     vm.onOrderSave = function(response, r, action, source, target) {
         if (response.status === 'ok') {
@@ -169,5 +170,18 @@ angular.module('map.component')
 
     function getSVGAttribute(attr) {
         return vm.svg.documentElement.getAttribute(attr);
+    }
+
+    function goToIndex(index) {
+        // Keep phase index inside countable number of phases.
+        if (index > vm.game.phases.length)
+            index = vm.game.phases.length;
+        else if (index <= 0)
+            index = null;
+
+        $state.go('.', {
+            id: vm.game.id,
+            phaseIndex: index
+        }, { reload: true });
     }
 }]);

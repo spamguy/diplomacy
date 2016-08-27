@@ -42,7 +42,7 @@ module.exports = function(bookshelf) {
 
             // FIXME: Resolved state and user role also affect whether to obfuscate.
             var self = this,
-	    	currentUserID = options.currentUserID,
+                currentUserID = options.currentUserID,
                 players,
                 phases = [],
                 phaseIndex;
@@ -63,8 +63,8 @@ module.exports = function(bookshelf) {
                     options.currentPlayerPower = playerPower;
 
                 return {
-                    player_id: obfuscate && !isPlayer ? null : player.get('id'),
-                    isReady: obfuscate && !isPlayer ? null : player.pivot.get('is_ready'),
+                    player_id: options.obfuscate && !isPlayer ? null : player.get('id'),
+                    isReady: options.obfuscate && !isPlayer ? null : player.pivot.get('is_ready'),
                     power: playerPower,
                     scs: scCount
                 };

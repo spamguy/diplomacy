@@ -1,7 +1,9 @@
 'use strict';
 
 angular.module('games')
-.controller('ViewController', ['$scope', 'userService', 'gameService', 'game', 'svg', 'powers', '$mdDialog', '$stateParams', function($scope, userService, gameService, game, svg, powers, $mdDialog, $stateParams) {
+.controller('ViewController', ['$scope', '$state', 'userService', 'gameService', 'game', 'svg', 'powers', '$mdDialog', '$stateParams', function($scope, $state, userService, gameService, game, svg, powers, $mdDialog, $stateParams) {
+    var phaseCount = 0;
+
     $scope.updateProvinceData = updateProvinceData;
 
     $scope.powers = powers;
@@ -9,7 +11,11 @@ angular.module('games')
     $scope.readonly = userService.getCurrentUserID() === game.gm_id;
     $scope.currentUserInGame = gameService.getCurrentUserInGame(game);
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
-    $scope.phaseIndex = $stateParams.phase || 0;
+
+    // Because phases are ordered in reverse, count backwards.
+    if (game.phases)
+        phaseCount = game.phases.length;
+    $scope.phaseIndex = phaseCount - ($stateParams.phaseIndex || phaseCount);
 
     $scope.$on('socket/phase:adjudicate:update', function(event, updatedGame) {
         // A game just adjudicated, but is it this one?

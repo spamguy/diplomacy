@@ -41,16 +41,17 @@ angular.module('games', [
         }
     })
     .state('games.view', {
-        url: '/:id/{phase:int}',
+        url: '/:id/{phaseIndex:int}',
         controller: 'ViewController',
         templateUrl: 'app/games/view/view.html',
         data: {
             restricted: true
         },
         params: {
-            phase: {
+            phaseIndex: {
                 value: null,
-                squash: true
+                squash: true,
+                dynamic: true
             }
         },
         resolve: {

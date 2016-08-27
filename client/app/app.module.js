@@ -42,7 +42,11 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
         .icon('clock', '/assets/icons/ic_query_builder_black_48px.svg', 48)
         .icon('account', '/assets/icons/ic_account_circle_black_48px.svg', 48)
         .icon('calendar', '/assets/icons/ic_date_range_black_48px.svg', 48)
-        .icon('map', '/assets/icons/ic_map_black_48px.svg', 48);
+        .icon('map', '/assets/icons/ic_map_black_48px.svg', 48)
+        .icon('first', '/assets/icons/ic_first_page_black_48px.svg', 48)
+        .icon('previous', '/assets/icons/ic_chevron_left_black_48px.svg', 48)
+        .icon('next', '/assets/icons/ic_chevron_right_black_48px.svg', 48)
+        .icon('last', '/assets/icons/ic_last_page_black_48px.svg', 48);
 
     // Local storage setup.
     localStorageServiceProvider.setPrefix('diplomacy');

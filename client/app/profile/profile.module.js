@@ -20,13 +20,12 @@ angular.module('profile', [
             restricted: true
         },
         resolve: {
-            gameService: 'gameService',
-            games: function(gameService) {
+            games: ['gameService', function(gameService) {
                 return gameService.getAllGamesForCurrentUser();
-            },
-            gmGames: function(gameService) {
+            }],
+            gmGames: ['gameService', function(gameService) {
                 return gameService.getAllGamesOwnedByCurrentUser();
-            }
+            }]
         }
     })
     .state('profile.verify', {

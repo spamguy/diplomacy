@@ -1,9 +1,11 @@
-#mapToolbar
+#mapToolbar md-icon.active
 {
-    md-icon.active
-    {
-        fill: yellow;
-    }
+    fill: yellow;
+}
+
+#mapNavToolbar svg
+{
+    fill: #fff;
 }
 
 .mapContainer

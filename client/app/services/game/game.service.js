@@ -203,8 +203,4 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         }
     };
-
-    function unitMatchesFilters(unit, type, power) {
-        return (!type || unit.type === type) && (!power || unit.power === power);
-    }
 }]);
