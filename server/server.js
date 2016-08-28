@@ -45,10 +45,18 @@ app.queue = kue.createQueue({
     }
 });
 
-// Add queue-level event handling. See https://github.com/Automattic/kue#queue-events.
+// Add queue-level event handling, because job-level won't handle sockets. See https://github.com/Automattic/kue#queue-events.
 app.queue.on('job complete', function(id, result) {
     kue.Job.get(id, function(err, job) {
         if (!err) {
+            var nextJob = app.queue.create('adjudicate', {
+                gameID: job.result.id
+            });
+
+            debugger;
+            nextJob.delay(new Date(result.phases[0].deadline))
+                .backoff({ delay: 'exponential' })
+                .save();
             app.io.to(job.result.id).emit('phase:adjudicate:success', job.result);
             app.io.to(job.result.id).emit('phase:adjudicate:update', job.result);
         }

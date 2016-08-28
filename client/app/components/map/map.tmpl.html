@@ -4,6 +4,7 @@
             <div class="md-title">{{$ctrl.game.phases[$ctrl.phaseIndex].season}} {{$ctrl.game.phases[$ctrl.phaseIndex].year}}</div>
             <div ng-switch="$ctrl.game.status">
                 <div ng-switch-when="0" class="md-caption">(Game has not started)</div>
+                <!-- FIXME: Display more intelligent timer. Wrap seconds-only timer in humanizeDuration()? -->
                 <div ng-switch-when="1" class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.game.phases[$ctrl.phaseIndex])">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
                 <div ng-switch-when="2" class="md-caption">Game ended!</div>
             </div>

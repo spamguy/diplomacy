@@ -64,7 +64,7 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
                     subprovinceKey: null,
                     supplyCentre: scOwner,
                     supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
-                    supplyCentreFill: province.sc && scOwner ? variant.powers[owner].colour : null,
+                    supplyCentreFill: province.sc && scOwner ? variant.powers[scOwner].colour : null,
                     unitFill: owner ? variant.powers[owner].colour : null,
                     unitType: province.default && !province.default.sp ? province.default.type : null,
                     unitOwner: owner,

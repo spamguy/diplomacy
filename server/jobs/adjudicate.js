@@ -56,7 +56,7 @@ module.exports = {
                 core.phase.createFromState(variant, game, nextState, callback);
             },
 
-            // Schedules next adjudication and notifies participants.
+            // Notify participants.
             function(_game, callback) {
                 game = _game;
 
@@ -96,7 +96,7 @@ module.exports = {
         ], function(err, game) {
             if (err) {
                 winston.error(err);
-                done(err);
+                return done(err);
             }
 
             return done(null, game.toJSON({ obfuscate: true }));
