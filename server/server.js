@@ -53,10 +53,12 @@ app.queue.on('job complete', function(id, result) {
                 gameID: job.result.id
             });
 
-            debugger;
+            // Schedule next job using active phase's deadline.
             nextJob.delay(new Date(result.phases[0].deadline))
                 .backoff({ delay: 'exponential' })
                 .save();
+
+            // Announce resolution to room.
             app.io.to(job.result.id).emit('phase:adjudicate:success', job.result);
             app.io.to(job.result.id).emit('phase:adjudicate:update', job.result);
         }

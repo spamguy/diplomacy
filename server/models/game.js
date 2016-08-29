@@ -52,12 +52,15 @@ module.exports = function(bookshelf) {
             players = this.related('players').map(function(player) {
                 var isPlayer = player.get('id') === currentUserID,
                     playerPower = player.pivot.get('power'),
-                    scCount = 0;
+                    scCount = 0,
+                    currentPhase = self.related('phases').at(0);
 
                 // Count supply centres.
-                self.related('phases').at(0).related('provinces').each(function(p) {
-                    scCount += (p.get('supplyCentre') === playerPower);
-                });
+                if (currentPhase) {
+                    currentPhase.related('provinces').each(function(p) {
+                        scCount += (p.get('supplyCentre') === playerPower);
+                    });
+                }
 
                 if (isPlayer)
                     options.currentPlayerPower = playerPower;
