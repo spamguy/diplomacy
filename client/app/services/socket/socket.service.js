@@ -57,7 +57,9 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
             );
         });
 
-        socket.forward('phase:adjudicate:update');
+        // HACK: socket.io-mock doesn't mock forward(). See https://github.com/nullivex/angular-socket.io-mock/issues/13
+        if (socket.forward)
+            socket.forward('phase:adjudicate:update');
     };
 
     return self;

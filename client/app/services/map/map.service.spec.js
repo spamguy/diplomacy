@@ -1,4 +1,4 @@
-describe('Map directive', function() {
+describe('Map service', function() {
     'use strict';
 
     var location,
@@ -64,17 +64,28 @@ describe('Map directive', function() {
         expect(service.isActionCurrent('convoy')).to.be.true;
     });
 
-    it('checks if the user can move this season', function() {
-        expect(service.userCanMove()).to.be.true;
-    });
+    describe('Move permissions', function() {
+        it('checks if the user can move this season', function() {
+            expect(service.userCanMove()).to.be.true;
+        });
 
-    it('checks if the user can adjust this season', function() {
-        game.phases[0].season = 'Winter Adjustment';
-        expect(service.userCanAdjust()).to.be.true;
-    });
+        it('checks if the user can adjust this season', function() {
+            game.phases[0].season = 'Winter Adjustment';
+            expect(service.userCanAdjust()).to.be.true;
+        });
 
-    it('checks if the user can retreat this season', function() {
-        game.phases[0].season = 'Fall Retreat';
-        expect(service.userCanRetreat()).to.be.true;
+        it('checks if the user can retreat this season', function() {
+            game.phases[0].season = 'Fall Retreat';
+            expect(service.userCanRetreat()).to.be.true;
+        });
+
+        it('forbids all moves during unstarted games', function() {
+            game.phases = [];
+            service = new MapService(game, 0);
+
+            expect(service.userCanMove()).to.be.false;
+            expect(service.userCanRetreat()).to.be.false;
+            expect(service.userCanAdjust()).to.be.false;
+        });
     });
 });

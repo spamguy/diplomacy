@@ -19,7 +19,7 @@ GameCore.prototype.get = function(id, cb) {
 GameCore.prototype.findByGM = function(id, cb) {
     db.models.Game
         .where('gm_id', id)
-        .fetchAll()
+        .fetchAll({ withRelated: ['players', 'phases'] })
         .asCallback(cb);
 };
 

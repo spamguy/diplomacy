@@ -7,7 +7,7 @@ angular.module('mapService', ['gameService'])
         service = function(game, phaseIndex) {
             this.game = game;
             this.phaseIndex = phaseIndex;
-            this.phase = game.phases ? game.phases[phaseIndex] : null;
+            this.phase = game.phases && game.phases.length ? game.phases[phaseIndex] : null;
         };
 
     service.prototype.getSCTransform = getSCTransform;
@@ -184,15 +184,15 @@ angular.module('mapService', ['gameService'])
     }
 
     function userCanMove() {
-        return gameService.isPlayer(this.game) && _.includes(this.phase.season.toLowerCase(), 'move');
+        return gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'move');
     }
 
     function userCanRetreat() {
-        return gameService.isPlayer(this.game) && _.includes(this.phase.season.toLowerCase(), 'retreat');
+        return gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'retreat');
     }
 
     function userCanAdjust() {
-        return gameService.isPlayer(this.game) && _.includes(this.phase.season.toLowerCase(), 'adjust');
+        return gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'adjust');
     }
 
     function getSCPath() {

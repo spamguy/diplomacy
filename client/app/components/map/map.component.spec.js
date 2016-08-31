@@ -3,19 +3,29 @@ describe('Map component', function() {
 
     var scope,
         compile,
-        el;
+        el,
+        httpBackend;
 
     beforeEach(function() {
-        angular.mock.module('diplomacy');
-        angular.mock.module('templates');
         angular.mock.module('diplomacy.constants');
+        angular.mock.module('templates');
+        angular.mock.module('diplomacy');
         angular.mock.module('map.component');
     });
 
+    // Shut up 'unexpected GET' errors. See https://github.com/angular-ui/ui-router/issues/212#issuecomment-130384152
+    beforeEach(angular.mock.module(function($urlRouterProvider) {
+        $urlRouterProvider.deferIntercept();
+    }));
+
     beforeEach(function() {
-        inject(function($injector, $rootScope, $compile) {
+        inject(function($injector, $rootScope, $compile, $httpBackend) {
+            httpBackend = $httpBackend;
             compile = $compile;
             scope = $rootScope;
+
+            // Icon fetches are to be expected.
+            httpBackend.whenGET(/\/icons\//).respond(200);
 
             scope.game = {
                 name: 'That Game',
@@ -38,7 +48,7 @@ describe('Map component', function() {
 
     describe('Map header', function() {
         it('is invisible when \'header\' flag is false', function() {
-            el = compile('<sg-map game="game" readonly="readonly" svg="svg" header="false" />')(scope);
+            el = compile('<sg-map game="game" phase-index="0" readonly="readonly" svg="svg" header="false" />')(scope);
             scope.$digest();
             expect($('#mapToolbar', el)).to.have.lengthOf(0);
         });
@@ -52,7 +62,7 @@ describe('Map component', function() {
 
     describe('SVG element', function() {
         it('creates an SVG element with expected attributes', function() {
-            el = compile('<sg-map game="game" readonly="readonly" svg="svg" />')(scope);
+            el = compile('<sg-map game="game" phase-index="0" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
             expect($('svg', el)).to.have.lengthOf(1);
             expect($('svg', el)).to.have.prop('viewBox');
@@ -61,7 +71,7 @@ describe('Map component', function() {
         it('is slightly transparent when no phase is passed in', function() {
             scope.game.phases = null;
 
-            el = compile('<sg-map game="game" readonly="readonly" svg="svg" />')(scope);
+            el = compile('<sg-map game="game" phase-index="0" readonly="readonly" svg="svg" />')(scope);
             scope.$digest();
             expect($('div.mapContainer', el)).to.have.class('notStarted');
         });
