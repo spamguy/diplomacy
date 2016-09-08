@@ -100,7 +100,6 @@ CREATE TABLE "public"."phase_provinces" (
 	"unit_owner" Character Varying( 2 ),
 	"unit_action" Character Varying,
 	"unit_target" Character Varying( 2044 ),
-	"is_failed" Boolean DEFAULT false NOT NULL,
 	"created_at" Timestamp Without Time Zone NOT NULL,
 	"updated_at" Timestamp Without Time Zone NOT NULL,
 	"unit_subtarget" Character Varying( 2044 ),
@@ -114,9 +113,9 @@ CREATE TABLE "public"."phase_provinces" (
 	"unit_action_of_target" Character Varying( 2044 ),
 	"is_dislodged" Boolean DEFAULT false NOT NULL,
 	"dislodged_owner" Character Varying( 2 ),
-	"dislodged_fill" Character Varying( 7 )
+	"dislodged_fill" Character Varying( 7 ),
+	"resolution" Character Varying( 2044 )
 );
-
 
 
 --

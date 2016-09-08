@@ -25,7 +25,7 @@ module.exports = function(bookshelf) {
                     fill: this.get('unitFill'),
                     action: obfuscate ? null : this.get('unitAction'),
                     target: obfuscate ? null : this.getFullName(this.get('unitTarget'), this.get('unitSubtarget')),
-                    failed: this.get('isFailed'),
+                    resolution: this.get('resolution'),
                     targetOfTarget: obfuscate ? null : this.getFullName(this.get('unitTargetOfTarget'), this.get('unitSubtargetOfTarget')),
                     actionOfTarget: obfuscate ? null : this.get('unitActionOfTarget')
                 } : null,

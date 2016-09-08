@@ -298,7 +298,12 @@ module.exports = function(grunt) {
         'open',
         'watch'
     ]);
-    grunt.registerTask('test', ['ngconstant:mock', 'karma', 'mochaTest']);
+    grunt.registerTask('test', [
+        'ngconstant:mock',
+        'sass',
+        'karma',
+        'mochaTest'
+    ]);
     grunt.registerTask('test:protractor-travis', [
         'ngconstant:mock',
         'karma',

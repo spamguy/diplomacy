@@ -92,4 +92,13 @@ describe('Province list item directive', function() {
         scope.$digest();
         expect($('div span', el).html()).to.equal('<strong>MOS</strong> <em>awaiting orders</em>');
     });
+
+    it('applies a special class and tooltip to failed orders', function() {
+        var error = 'Wore white shoes after Labor Day.';
+        scope.province.unit.resolution = error;
+        el = compile('<sg-province-list-item province="province" />')(scope);
+        scope.$digest();
+        expect($('div span', el)).to.have.class('failed');
+        expect($('div', el)).to.have.attr('aria-label', error);
+    });
 });

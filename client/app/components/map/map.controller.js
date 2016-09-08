@@ -84,9 +84,9 @@ angular.module('map.component')
             case 'move':
                 return vm.service.generateArc(sx, sy, tx, ty);
             case 'support':
-                if (actionOfTarget === 'move' || actionOfTarget === 'convoy')
-                    return vm.service.generateBisectingLine(d.source.p, d.target.p, sx, sy);
-                else
+                if (actionOfTarget === 'move' || actionOfTarget === 'convoy') // Get the targeted path and draw a line pointing to the middle.
+                    return vm.service.generateBisectingLine(d.target.p, targetProvince.unit.target, sx, sy);
+                else // Support a holding unit with a plain ol' line.
                     return vm.service.generateArc(sx, sy, tx, ty);
             case 'convoy':
                 return vm.service.generateLine(sx, sy, tx, ty);
@@ -122,19 +122,19 @@ angular.module('map.component')
                     target: _.assignIn({ }, phase.provinces[target], {
                         fixed: true, // To keep d3 from treating this map like a true force graph.
                         action: province.unit.action,
-                        failed: province.unit.failed
+                        resolution: province.unit.resolution
                     })
                 });
             }
 
-            // Convoys get an extra link to express, um, conveyance.
+            // Convoys get an extra link to convey conveyance.
             if (province.unit.action === 'convoy') {
                 links.push({
                     source: _.defaults(province, { fixed: true }),
                     target: _.assignIn({ }, phase.provinces[province.unit.targetOfTarget], {
                         fixed: true, // To keep d3 from treating this map like a true force graph.
                         action: province.unit.action,
-                        failed: province.unit.failed
+                        resolution: province.unit.resolution
                     })
                 });
             }
@@ -146,7 +146,7 @@ angular.module('map.component')
             .attr('marker-start', vm.service.generateMarkerStart)
             .attr('marker-end', vm.service.generateMarkerEnd)
             .attr('class', function(d) {
-                var failed = d.target.failed ? 'failed ' : 'ok ';
+                var failed = d.target.resolution ? 'failed ' : 'ok ';
                 return failed + 'link ' + d.target.action;
             })
             .attr('id', function(d) { return d.source.p + '-' + d.target.p + '-link'; });

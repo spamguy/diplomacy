@@ -46,6 +46,9 @@ module.exports = function(config) {
             'client/app/**/*.html',
             'client/app/**/*.spec.js',
 
+            // CSS.
+            'client/temp/app.css',
+
             // HTML files and templates.
             'client/app/**/*.tmpl.html'
         ],

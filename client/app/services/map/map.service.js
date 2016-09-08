@@ -36,7 +36,7 @@ angular.module('mapService', ['gameService'])
 
     function generateMarkerStart(d) {
         // See CSS file for why separate markers exist for failed orders.
-        var failed = d.target.failed ? 'failed' : '';
+        var failed = d.target.unit.resolution ? 'failed' : '';
 
         if (d.target.action === 'convoy')
             return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
@@ -46,7 +46,7 @@ angular.module('mapService', ['gameService'])
 
     function generateMarkerEnd(d) {
         // See CSS file for why separate markers exist for failed orders.
-        var failed = d.target.failed ? 'failed' : '';
+        var failed = d.target.unit.resolution ? 'failed' : '';
         return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
     }
 
@@ -88,8 +88,8 @@ angular.module('mapService', ['gameService'])
         return 'M' + sx + ',' + sy + 'A' + dr + ',' + dr + ' 0 0,1 ' + (tx - offsetX) + ',' + (ty - offsetY);
     }
 
-    function generateBisectingLine(source, target, sx, sy) {
-        var pathOfTarget = d3.selectAll('g.moveLayer path#' + source + '-' + target + '-link').node(),
+    function generateBisectingLine(target, targetOfTarget, sx, sy) {
+        var pathOfTarget = d3.selectAll('g.moveLayer path#' + target + '-' + targetOfTarget + '-link').node(),
             pathLength = pathOfTarget.getTotalLength(),
             midpoint = pathOfTarget.getPointAtLength(pathLength / 2);
 

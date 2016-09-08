@@ -105,8 +105,7 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
 PhaseCore.prototype.generatePhaseProvincesFromState = function(t, variant, state, phase, cb) {
     var supplyCentres = state.SupplyCenters(),
         units = state.Units(),
-        dislodgeds = state.Dislodgeds(),
-        faileds = state.Resolutions(); // Resolutions() is only used for identifying failed moves, hence 'faileds'.
+        dislodgeds = state.Dislodgeds();
 
     async.each(variant.provinces, function(province, eachCallback) {
         // Iterate through all template provinces in parallel.
@@ -127,7 +126,7 @@ PhaseCore.prototype.generatePhaseProvincesFromState = function(t, variant, state
                     unitOwner: unit ? unit.Nation[0] : null,
                     unitLocation: '(' + province.x + ',' + province.y + ')',
                     isDislodged: dislodgeds[province.p],
-                    isFailed: faileds[province.p] !== ''
+                    resolution: null
                 }).save(null, { transacting: t }).asCallback(parallelCallback);
             },
 
@@ -146,7 +145,7 @@ PhaseCore.prototype.generatePhaseProvincesFromState = function(t, variant, state
                             unitType: unit ? convertGodipUnitType(unit.Type) : null, // province.default && province.default.sp === sp.p ? province.default.type : null,
                             unitOwner: unit ? unit.Nation[0] : null,
                             isDislodged: dislodgeds[province.p],
-                            isFailed: faileds[province.p] !== ''
+                            resolution: null
                         }).save(null, { transacting: t }).asCallback(eachEachCallback);
                     }, parallelCallback);
                 }
@@ -181,8 +180,8 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
             // STEP 1: Mark up old phase, keeping orders intact for posterity.
             function(callback) {
                 async.forEachOf(state.Resolutions(), function(resolution, key, cb) {
-                    if (state.Resolutions()[resolution])
-                        self.setFailed(currentPhase, resolution, key, cb);
+                    if (state.Resolutions()[key] !== '')
+                        self.setFailed(currentPhase, key, resolution, t, cb);
                     else
                         cb();
                 }, callback);
@@ -286,19 +285,22 @@ PhaseCore.prototype.setDislodged = function(phase, province, unit, t, cb) {
  * @param  {Function} cb       The callback.
  */
 PhaseCore.prototype.setFailed = function(phase, province, resolution, t, cb) {
-    var provinceArray = province.split('/'),
+    var readableResolution = convertGodipResolution(resolution),
+        provinceArray = province.split('/'),
         provinceToUpdate = {
             phaseID: phase.get('id'),
-            unitOwner: resolution.Nation[0],
             provinceKey: provinceArray[0]
         };
 
     if (provinceArray[1])
         provinceToUpdate.subprovinceKey = provinceArray[1];
 
-    winston.debug('Marking %s:%s as failed', province, resolution.Nation[0], { phaseID: phase.get('id') });
+    winston.debug('Marking %s as failed (code %s)', province, resolution, { phaseID: phase.get('id') });
 
-    new db.models.PhaseProvince(provinceToUpdate).save('is_failed', true).asCallback(cb);
+    new db.models.PhaseProvince(provinceToUpdate).save(
+        { resolution: readableResolution },
+        { patch: true, action: 'update' })
+    .asCallback(cb);
 };
 
 function convertGodipUnitType(godipType) {
@@ -306,6 +308,25 @@ function convertGodipUnitType(godipType) {
     case 'Army': return 1;
     case 'Fleet': return 2;
     default: throw new Error('Unrecognised unit type \'' + godipType + '\' sent by Godip');
+    }
+}
+
+/**
+ * Maps Godip resolution codes to human-readable text.
+ * @param  {[String} resolution The Godip resolution code.
+ * @return {String}             A human-readable equivalent description.
+ */
+function convertGodipResolution(resolution) {
+    // Split off extra info to make resolution codes more predictable.
+    var resolutionParts = resolution.split(':'),
+        code = resolutionParts[0],
+        context = resolutionParts[1] ? resolutionParts[1] : null;
+
+    switch (code) {
+    case 'ErrBounce': return 'The unit bounced against ' + context;
+    case 'ErrIllegalConvoyPath': return 'The convoy setup was not valid.';
+    case 'ErrIllegalDestination': return 'The destination was unreachable from the unit\'s location.';
+    default: return code;
     }
 }
 
