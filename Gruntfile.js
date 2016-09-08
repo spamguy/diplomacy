@@ -17,7 +17,6 @@ module.exports = function(grunt) {
         };
 
     grunt.initConfig({
-        // environment variable pkg
         pkg: grunt.file.readJSON('package.json'),
 
         express: {
@@ -33,14 +32,25 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            main: {
+            options: {
+                livereload: {
+                    cert: grunt.file.read('/Users/woram/certs/server/my-server.crt.pem'),
+                    key: grunt.file.read('/Users/woram/certs/server/my-server.key.pem')
+                }
+            },
+            css: {
+                files: 'client/app/**/*.scss',
+                tasks: ['sass']
+            },
+            angular: {
+                files: [
+                    'client/index.html',
+                    'client/app/**/*.js',
+                    'client/app/**/*.html'
+                ],
                 options: {
-                    livereload: true,
-                    livereloadOnError: false,
                     spawn: false
-                },
-                files: ['client/**/*.js', 'client/**/*.html'],
-                tasks: []
+                }
             }
         },
         ngconstant: {
@@ -74,8 +84,14 @@ module.exports = function(grunt) {
             }
         },
         preprocess: {
-            main: {
-
+            prod: {
+                src: ['dist/client/index.html'],
+                options: {
+                    inline: true,
+                    context: {
+                        NODE_ENV: 'production'
+                    }
+                }
             }
         },
         eslint: {
@@ -271,7 +287,6 @@ module.exports = function(grunt) {
         'eslint',
         'clean:before',
         'ngconstant:prod',
-        'preprocess',
         'wiredep',
         'useminPrepare',
         'ngtemplates',
@@ -280,6 +295,7 @@ module.exports = function(grunt) {
         'ngAnnotate',
         'copy:dist',
         'sass',
+        'preprocess:prod',
         'usemin',
         'htmlmin',
         'cssmin',
@@ -291,7 +307,6 @@ module.exports = function(grunt) {
     grunt.registerTask('serve', [
         'eslint',
         'ngconstant:mongo',
-        'preprocess',
         'wiredep',
         'sass',
         'express:dev',

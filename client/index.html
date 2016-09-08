@@ -14,6 +14,10 @@
     <link href="../bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css" />
     <link href="temp/app.css" rel="stylesheet" type="text/css" />
     <!-- endbuild -->
+
+    <!-- @if NODE_ENV='development' -->
+    <script src="https://0.0.0.0:35729/livereload.js"></script>
+    <!-- @endif -->
 </head>
 <body ng-controller="AppController">
     <md-toolbar style="background-color:transparent;" ng-if="isAuthenticated()">
