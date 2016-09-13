@@ -33,13 +33,18 @@ module.exports = function(bookshelf) {
                     owner: this.get('supplyCentre'),
                     fill: this.get('supplyCentreFill'),
                     location: this.get('supplyCentreLocation')
+                } : null,
+                dislodged = this.get('dislodgedOwner') ? {
+                    owner: this.get('dislodgedOwner'),
+                    fill: this.get('dislodgedFill')
                 } : null;
 
             return {
                 p: this.getFullName(this.get('provinceKey'), this.get('subprovinceKey')),
                 sc: sc,
                 unitLocation: this.get('unitLocation'),
-                unit: unit
+                unit: unit,
+                dislodged: dislodged
             };
         }
     });

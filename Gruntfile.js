@@ -33,10 +33,10 @@ module.exports = function(grunt) {
         },
         watch: {
             options: {
-                livereload: {
-                    cert: grunt.file.read('/Users/woram/certs/server/my-server.crt.pem'),
-                    key: grunt.file.read('/Users/woram/certs/server/my-server.key.pem')
-                }
+                // livereload: {
+                //     cert: grunt.file.read('~/certs/server/my-server.crt.pem'),
+                //     key: grunt.file.read('~/certs/server/my-server.key.pem')
+                // }
             },
             css: {
                 files: 'client/app/**/*.scss',

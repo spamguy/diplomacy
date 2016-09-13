@@ -160,6 +160,7 @@ PhaseCore.prototype.generatePhaseProvincesFromState = function(t, variant, state
 PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
     var self = this,
         currentPhase = game.related('phases').at(0),
+        currentPhaseJSON = currentPhase.toJSON(),
         nextSeasonIndex = currentPhase.get('seasonIndex') + 1,
         nextSeason,
         nextDeadline,
@@ -177,7 +178,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
 
     db.bookshelf.transaction(function(t) {
         async.waterfall([
-            // STEP 1: Mark up old phase, keeping orders intact for posterity.
+            // STEP 1: Mark up old phase with resolution data, keeping orders intact for posterity.
             function(callback) {
                 async.forEachOf(state.Resolutions(), function(resolution, key, cb) {
                     if (state.Resolutions()[key] !== '')
@@ -187,7 +188,14 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
                 }, callback);
             },
 
-            // STEP 2: Create new phase.
+            // STEP 2: Mark up old phase with dislodged data.
+            function(callback) {
+                async.forEachOf(state.Dislodgeds(), function(dislodged, key, cb) {
+                    self.setFailed(variant, currentPhaseJSON, key, getDislodger(key), t, cb);
+                }, callback);
+            },
+
+            // STEP 3: Create new phase.
             function(callback) {
                 nextPhase = currentPhase.clone();
                 nextPhase.unset('id');
@@ -253,27 +261,35 @@ PhaseCore.prototype.setOrder = function(phaseID, data, action, cb) {
 };
 
 /**
- * Marks a phase province's sitting unit as dislodged.
- * @param  {Phase}   phase     The phase.
- * @param  {String}   province The province key.
- * @param  {Object}   unit     The Godip-generated unit.
- * @param  {Transaction}   t   The transaction.
- * @param  {Function} cb       The callback.
+ * Marks a phase province's unit's order as dislodged.
+ * @param  {Object}   variant   The variant.
+ * @param  {Phase}    phase     The phase.
+ * @param  {String}   province  The province key.
+ * @param  {Object}   dislodger The dislodging unit.
+ * @param  {Transaction}   t    The transaction.
+ * @param  {Function} cb        The callback.
  */
-PhaseCore.prototype.setDislodged = function(phase, province, unit, t, cb) {
+PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislodger, t, cb) {
     var provinceArray = province.split('/'),
-        provinceToUpdate = {
-            phaseID: phase.get('id'),
-            unitOwner: unit.Nation[0],
+        originalProvince = phaseJSON.provinces[province],
+        updatedProvince = {
+            phaseID: phaseJSON.id,
             provinceKey: provinceArray[0]
         };
 
     if (provinceArray[1])
-        provinceToUpdate.subprovinceKey = provinceArray[1];
+        updatedProvince.subprovinceKey = provinceArray[1];
 
-    winston.debug('Marking %s:%s as dislodged', province, unit.Nation[0], { phaseID: phase.get('id') });
+    winston.debug('Marking %s as dislodged by %s', province, dislodger.Nation[0], { phaseID: phaseJSON.id });
 
-    new db.models.PhaseProvince(provinceToUpdate).save('is_dislodged', true).asCallback(cb);
+    // Bump current unit to dislodged slot.
+    new db.models.PhaseProvince(updatedProvince).save({
+        unitOwner: dislodger.Nation[0],
+        unitFill: variant.powers[dislodger.Nation[0]].colour,
+        dislodgedOwner: originalProvince.unit.owner,
+        dislodgedFill: originalProvince.unit.fill
+    }, { patch: true, action: 'update' })
+    .asCallback(cb);
 };
 
 /**
@@ -329,5 +345,15 @@ function convertGodipResolution(resolution) {
     default: return code;
     }
 }
+
+/**
+ * Finds attacker, given the victim.
+ * @param  {Object} dislodgers The attacker-victim dictionary.
+ * @param  {String} province   The province's key.
+ * @return {String}            The attacking province's key.
+ */
+function getDislodger(dislodgers, province) {
+    return _.findKey(dislodgers, function(d) { return d === province; });
+};
 
 module.exports = PhaseCore;
