@@ -39,7 +39,7 @@ module.exports = {
 
                 // Not everyone is ready. Handling this situation deserves its own block.
                 // FIXME: Drop 'false' when ignoreLateOrders is implemented.
-                if (false && !game.get('ignoreLateOrders') && !game.isEverybodyReady()) {
+                if (false && !game.get('ignoreLateOrders') && !game.isEverybodyReady()) { // eslint-disable-line
                     handleLatePhase();
                     callback(new Error('Not adjudicating: some players are not ready'));
                     return;
@@ -62,6 +62,8 @@ module.exports = {
 
                 var oldPhase = game.related('phases').at(1);
 
+                // FIXME: Next phase name missing.
+                // FIXME: Deadline not human-readable.
                 async.forEachOf(game.related('players'), function(junk, p, err) {
                     var player = game.related('players').at(p),
                         emailOptions = {

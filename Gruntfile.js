@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(grunt) {
-    // load all grunt tasks
+    // Load all grunt tasks.
     require('jit-grunt')(grunt, {
         ngconstant: 'grunt-ng-constant',
         express: 'grunt-express-server',
@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         replace: 'grunt-text-replace'
     });
 
-    // for smarter date formatting
+    // For smarter date formatting.
     var moment = require('moment'),
         formatDate = function() {
             return moment().format('YYYYMMDD');

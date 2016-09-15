@@ -16,6 +16,7 @@ module.exports = function(bookshelf) {
         },
 
         toJSON: function(options) {
+            options = options || { obfuscate: false };
             return {
                 id: this.get('id'),
                 year: this.get('year'),
