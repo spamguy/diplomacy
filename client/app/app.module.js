@@ -75,6 +75,7 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
     if (!socketService.socket)
         socketService.initialize();
 
+    // Take existing login data to build complete user object.
     userService.setCurrentUser().then(function() {
         $rootScope.theUser = userService.getCurrentUser;
         $rootScope.isAuthenticated = userService.isAuthenticated;
