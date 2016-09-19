@@ -39,7 +39,8 @@ describe('Map component', function() {
                             sc: null
                         }
                     }
-                }]
+                }],
+                players: []
             };
             scope.readonly = true;
             scope.svg = new DOMParser().parseFromString('<svg height="1" width="1"><g id="mouseLayer"></g></svg>', 'image/svg+xml');

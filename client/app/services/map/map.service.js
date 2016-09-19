@@ -7,7 +7,8 @@ angular.module('mapService', ['gameService'])
         service = function(game, phaseIndex) {
             this.game = game;
             this.phaseIndex = phaseIndex;
-            this.phase = game.phases && game.phases.length ? game.phases[phaseIndex] : null;
+            this.phase = game.phases && game.phases.length > 0 ? game.phases[phaseIndex] : null;
+            this.userPower = gameService.getCurrentUserInGame(this.game).power;
         };
 
     service.prototype.getSCTransform = getSCTransform;
@@ -23,6 +24,8 @@ angular.module('mapService', ['gameService'])
     service.prototype.userCanMove = userCanMove;
     service.prototype.userCanAdjust = userCanAdjust;
     service.prototype.userCanRetreat = userCanRetreat;
+    service.prototype.retreatExpected = retreatExpected;
+    service.prototype.adjustExpected = adjustExpected;
     service.prototype.isActionCurrent = isActionCurrent;
     service.prototype.isInPendingCommand = isInPendingCommand;
 
@@ -188,11 +191,44 @@ angular.module('mapService', ['gameService'])
     }
 
     function userCanRetreat() {
-        return gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'retreat');
+        var canRetreat = gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'retreat'),
+            retreatExpected = this.retreatExpected(this.userPower);
+
+        return canRetreat && retreatExpected;
     }
 
     function userCanAdjust() {
-        return gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'adjust');
+        var canAdjust = gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'adjust'),
+            adjustExpected = this.adjustExpected(this.userPower);
+
+        return canAdjust && adjustExpected;
+    }
+
+    /**
+     * Whether a player is expected to retreat in an active season.
+     * @param  {String} power The power's letter code.
+     * @return {Boolean}      True if the player is expected to retreat.
+     */
+    function retreatExpected(power) {
+        if (!this.phase)
+            return false;
+
+        return _.isString(_.findKey(this.phase.provinces, function(p) {
+            return p && p.owner === power;
+        }));
+    }
+
+    /**
+     * Whether a player is expected to adjust in an active season.
+     * @param  {String} power The power's letter code.
+     * @return {Boolean}      True if the player is expected to adjust.
+     */
+    function adjustExpected(power) {
+        if (!this.phase)
+            return false;
+
+        // FIXME: Not accurate, obviously.
+        return true;
     }
 
     function getSCPath() {

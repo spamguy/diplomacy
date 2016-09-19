@@ -114,6 +114,7 @@ CREATE TABLE "public"."phase_provinces" (
 	"is_dislodged" Boolean DEFAULT false NOT NULL,
 	"dislodged_owner" Character Varying( 2 ),
 	"dislodged_fill" Character Varying( 7 ),
+    "dislodged_action" Character Varying,
 	"resolution" Character Varying( 2044 )
 );
 

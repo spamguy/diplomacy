@@ -166,9 +166,11 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         getCurrentUserInGame: function(game) {
-            for (var p = 0; p < game.players.length; p++) {
-                if (game.players[p].player_id === userService.getCurrentUserID())
-                    return game.players[p];
+            var p = 0,
+                players = game.players || [];
+            for (p = 0; p < players.length; p++) {
+                if (players[p].player_id === userService.getCurrentUserID())
+                    return players[p];
             }
 
             return { power: null };

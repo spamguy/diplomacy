@@ -17,8 +17,10 @@ angular.module('loginService', [ ])
              * Not to be confused with setting up user data when logged in and after reloading page.
              */
             userService.setCurrentUser(data.id, function() {
-                $rootScope.theUser = userService.getCurrentUser;
-                $rootScope.isAuthenticated = userService.isAuthenticated;
+                $rootScope.$apply(function() {
+                    $rootScope.theUser = userService.getCurrentUser;
+                    $rootScope.isAuthenticated = userService.isAuthenticated;
+                });
 
                 // Subscribe to all associated games after authenticating.
                 socketService.socket.emit('game:watch');

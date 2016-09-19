@@ -89,7 +89,30 @@
             </g>
 
             <g class="unitLayer">
-                <circle ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:1"
+                <g class="dislodgedUnitLayer">
+                    <circle ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:1:true"
+                            id="{{province.p}}-dislodged-army"
+                            r="8"
+                            stroke="#f00"
+                            stroke-width="3px"
+                            ng-attr-cx="{{province.unitLocation.x + 8}}"
+                            ng-attr-cy="{{province.unitLocation.y + 8}}"
+                            ng-attr-fill="{{province.dislodged.fill}}">
+                    </circle>
+
+                    <rect ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:2:true"
+                          id="{{province.p.replace('/', '-')}}-dislodged-fleet"
+                          height="8"
+                          width="16"
+                          stroke="#f00"
+                          stroke-width="3px"
+                          ng-attr-x="{{province.unitLocation.x + 8 - 16/2}}"
+                          ng-attr-y="{{province.unitLocation.y + 8 - 8/2}}"
+                          ng-attr-fill="{{province.dislodged.fill}}">
+                    </rect>
+                </g>
+
+                <circle ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:1:false"
                         id="{{province.p}}-army"
                         r="8"
                         stroke="#000"
@@ -99,7 +122,7 @@
                         ng-attr-fill="{{province.unit.fill}}">
                 </circle>
 
-                <rect ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:2"
+                <rect ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:2:false"
                       id="{{province.p.replace('/', '-')}}-fleet"
                       height="8"
                       width="16"

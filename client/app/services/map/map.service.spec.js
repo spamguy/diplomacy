@@ -9,7 +9,8 @@ describe('Map service', function() {
 
     beforeEach(function() {
         mockGameService = {
-            isPlayer: function(game) { return true; }
+            isPlayer: function(game) { return true; },
+            getCurrentUserInGame: function(game) { return 'R'; }
         };
 
         game = {
