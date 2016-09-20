@@ -35,9 +35,11 @@
   "devDependencies": {
     "body-parser": "1.5.2",
     "browserify": "13.0.0",
+    "byline": "^5.0.0",
     "chai": "3.5.0",
     "chai-as-promised": "5.2.0",
     "chai-jquery": "2.0.0",
+    "dir-glob": "^1.1.0",
     "eslint": "3.5.0",
     "eslint-config-semistandard": "7.0.0",
     "eslint-config-standard": "6.0.0",

@@ -70,8 +70,8 @@ CREATE TABLE game_players (
 CREATE TABLE games (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     gm_id uuid,
-    name text,
-    variant text,
+    name text NOT NULL,
+    variant text NOT NULL,
     description character varying(2044),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
