@@ -8,6 +8,8 @@ var fs = require('fs'),
     glob = require('glob'),
     logger = require('./server/logger'),
     db = require('./server/db'),
+    core = require('./server/cores/index'),
+    variant = core.variant.get('Standard'),
     filePatternToImport = dirGlob.sync([process.argv[2]])[0];
 
 async.waterfall([
@@ -59,48 +61,51 @@ function createGameFromFile(file, index, cb) {
 }
 
 function processFileContents(file, game, t, cb) {
-    var phase,
+    var phaseID,
         stream = byline(fs.createReadStream(file, { encoding: 'utf8' })),
         IMPORT_PATTERNS = {
-            NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/)
+            NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/),
+            UNIT_POSITION: new RegExp(/^(\D)\D+: (\barmy|fleet|supply) (.+)$/)
         };
 
     stream.on('data', function(line) {
-        var match;
-        if (line === '') {
-            // Do nothing.
-        }
-        else if (match = line.match(IMPORT_PATTERNS.NEW_PHASE)) {
+        var match,
+            splitProvince;
+
+        if (match = line.match(IMPORT_PATTERNS.NEW_PHASE)) {
             logger.debug('New phase: ' + line);
 
             stream.pause();
 
             new db.models.Phase({
-                gameID: game.get('id')
-            }).save(null, { transacting: t }).asCallback(function(err, _phase) {
-                if (err) {
-                    cb(err);
-                    return;
-                }
-
-                phase = _phase;
-
-                stream.resume();
+                gameID: game.get('id'),
+                year: match[1],
+                season: match[2],
+                seasonIndex: variant.phases.indexOf(match[2]) + 1
+            }).save(null, { transacting: t }).then(function(phase) {
+                phaseID = phase.get('id');
+                core.phase.generatePhaseProvincesFromTemplate(t, variant, phase, function(err) {
+                    if (err)
+                        cb(err);
+                    stream.resume();
+                });
             });
         }
-        else if (match = line.match(IMPORT_PATTERNS.MOVE)) {
-            new db.models.PhaseProvince({
-                phaseID: phase.get('id')
-            }).save(null, { transacting: t });
+        else if (match = line.match(IMPORT_PATTERNS.UNIT_POSITION)) {
+            splitProvince = match[3].toUpperCase().split('/');
         }
-    });
-
-    stream.on('end', function() {
-        cb(null);
     });
 
     stream.on('error', function(err) {
         cb(err);
         return;
     });
+}
+
+function mapUnitTypeToCode(type) {
+    switch (type) {
+    case 'ARMY': return 1;
+    case 'FLEET': return 2;
+    default: return null;
+    }
 }

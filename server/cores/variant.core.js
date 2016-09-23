@@ -3,8 +3,7 @@
 var fs = require('fs'),
     path = require('path');
 
-function VariantCore(options) {
-    this.core = options.core;
+function VariantCore() {
 }
 
 VariantCore.prototype.get = function(name) {

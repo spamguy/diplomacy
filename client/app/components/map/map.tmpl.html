@@ -139,7 +139,7 @@
     </div>
 
     <md-toolbar class="md-toolbar-tools" id="mapNavToolbar" ng-if="$ctrl.header && $ctrl.game.phases">
-        <md-icon md-menu-origin md-svg-icon="first" ng-click="$ctrl.goToIndex(1)" class="svg48px"></md-icon>
+        <md-icon md-menu-origin md-svg-icon="first" ng-click="$ctrl.goToIndex($ctrl.game.phases.length)" class="svg48px"></md-icon>
         <md-icon md-menu-origin md-svg-icon="previous" ng-click="$ctrl.goToIndex($ctrl.phaseIndex + 1)" class="svg48px"></md-icon>
         <span>Previous</span>
         <span flex></span>
