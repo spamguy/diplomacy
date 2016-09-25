@@ -132,7 +132,7 @@ GameCore.prototype.start = function(gameID, cb) {
 
                 if (!game.get('currentPhase')) {
                     nextPhaseDeadline.add(game.getClockFromSeason(variant.phases[0]), 'hours');
-                    self.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline, callback);
+                    self.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline).asCallback(callback);
                 }
                 else {
                     callback(null, phase);

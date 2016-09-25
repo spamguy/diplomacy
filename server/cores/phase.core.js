@@ -2,6 +2,7 @@
 
 var _ = require('lodash'),
     db = require('./../db'),
+    Promise = require('bluebird'),
     async = require('async'),
     winston = require('winston'),
     moment = require('moment');
@@ -15,7 +16,7 @@ function PhaseCore(options) {
         this.core = options.core;
 }
 
-PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
+PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline) {
     var self = this,
         newPhase = new db.models.Phase({
             year: variant.startYear,
@@ -24,22 +25,11 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
             deadline: deadline
         });
 
-    async.waterfall([
-        // Save new phase.
-        function(callback) {
-            newPhase.save(null, { transacting: t }).asCallback(callback);
-        },
-
+    // Save new phase.
+    return newPhase.save(null, { transacting: t })
+    .then(function(phase) {
         // Generate region data for this phase, using variant template.
-        function(phase, callback) {
-            newPhase = phase;
-            self.generatePhaseProvincesFromTemplate(t, variant, phase, callback);
-        }
-    ], function(err, result) {
-        if (err)
-            cb(err, null);
-        else
-            cb(null, newPhase);
+        return self.generatePhaseProvincesFromTemplate(t, variant, phase);
     });
 };
 
@@ -50,48 +40,40 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline, cb) {
  * @param  {Phase}       phase       The phase owning the new provinces.
  * @param  {Function}    cb          The callback.
  */
-PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, phase, cb) {
+PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, phase) {
     // Iterate through all template provinces in parallel.
-    async.each(variant.provinces, function(province, eachCallback) {
-        async.parallel([
-            // Insert the base province.
-            function(parallelCallback) {
-                var scOwner = province.default ? province.default.power : null,
-                    owner = province.default && !province.default.sp ? province.default.power : null;
-                new db.models.PhaseProvince({
+    // TODO: Break up this nested function hellhole.
+    return Promise.map(variant.provinces, function(province) {
+        // Insert the base province.
+        var scOwner = province.default ? province.default.power : null,
+            owner = province.default && !province.default.sp ? province.default.power : null;
+
+        return new db.models.PhaseProvince({
+            phaseID: phase.get('id'),
+            provinceKey: province.p,
+            subprovinceKey: null,
+            supplyCentre: scOwner,
+            supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
+            supplyCentreFill: province.sc && scOwner ? variant.powers[scOwner].colour : null,
+            unitFill: owner ? variant.powers[owner].colour : null,
+            unitType: province.default && !province.default.sp ? province.default.type : null,
+            unitOwner: owner,
+            unitLocation: '(' + province.x + ',' + province.y + ')'
+        }).save(null, { transacting: t })
+        .then(function(newProvince) {
+            // Insert subprovinces, if any.
+            return Promise.map(province.sp || [], function(sp) {
+                return new db.models.PhaseProvince({
                     phaseID: phase.get('id'),
                     provinceKey: province.p,
-                    subprovinceKey: null,
-                    supplyCentre: scOwner,
-                    supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
-                    supplyCentreFill: province.sc && scOwner ? variant.powers[scOwner].colour : null,
-                    unitFill: owner ? variant.powers[owner].colour : null,
-                    unitType: province.default && !province.default.sp ? province.default.type : null,
-                    unitOwner: owner,
-                    unitLocation: '(' + province.x + ',' + province.y + ')'
-                }).save(null, { transacting: t }).asCallback(parallelCallback);
-            },
-
-            // Insert subprovinces, if any.
-            function(parallelCallback) {
-                if (province.sp) {
-                    async.each(province.sp, function(sp, eachEachCallback) {
-                        new db.models.PhaseProvince({
-                            phaseID: phase.get('id'),
-                            provinceKey: province.p,
-                            subprovinceKey: sp.p,
-                            unitLocation: '(' + sp.x + ',' + sp.y + ')',
-                            unitType: province.default && province.default.sp === sp.p ? province.default.type : null,
-                            unitOwner: province.default && province.default.sp === sp.p ? province.default.power : null
-                        }).save(null, { transacting: t }).asCallback(eachEachCallback);
-                    }, parallelCallback);
-                }
-                else {
-                    parallelCallback(null);
-                }
-            }
-        ], eachCallback);
-    }, cb);
+                    subprovinceKey: sp.p,
+                    unitLocation: '(' + sp.x + ',' + sp.y + ')',
+                    unitType: province.default && province.default.sp === sp.p ? province.default.type : null,
+                    unitOwner: province.default && province.default.sp === sp.p ? province.default.power : null
+                }).save(null, { transacting: t });
+            });
+        });
+    });
 };
 
 /**
