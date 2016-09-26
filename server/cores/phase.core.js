@@ -30,6 +30,14 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline) {
     .then(function(phase) {
         // Generate region data for this phase, using variant template.
         return self.generatePhaseProvincesFromTemplate(t, variant, phase);
+    })
+    .then(function() {
+        return db.models.Game
+            .where('id', game.get('id'))
+            .fetch({
+                transacting: t,
+                withRelated: ['players', 'phases', 'phases.provinces']
+            });
     });
 };
 
@@ -38,7 +46,7 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline) {
  * @param  {Transaction} t           The transaction.
  * @param  {Object}      variant     The variant template.
  * @param  {Phase}       phase       The phase owning the new provinces.
- * @param  {Function}    cb          The callback.
+ * @return {Promise}                 The revised phase.
  */
 PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, phase) {
     // Iterate through all template provinces in parallel.
@@ -216,8 +224,9 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
     });
 };
 
-PhaseCore.prototype.setOrder = function(phaseID, data, action, cb) {
-    var province = data[0].split('/'),
+PhaseCore.prototype.setOrder = function(phaseID, data, action, t) {
+    var update,
+        province = data[0].split('/'),
         subprovince = null,
         targetFullName = data[1],
         targetOfTargetFullName = data[2],
@@ -231,7 +240,7 @@ PhaseCore.prototype.setOrder = function(phaseID, data, action, cb) {
     if (province[1])
         subprovince = province[1];
 
-    db.bookshelf.knex('phase_provinces')
+    update = db.bookshelf.knex('phase_provinces')
         .where({
             'phase_id': phaseID,
             'province_key': province[0],
@@ -244,8 +253,12 @@ PhaseCore.prototype.setOrder = function(phaseID, data, action, cb) {
             'unit_target_of_target': targetOfTarget,
             'unit_subtarget_of_target': subTargetOfTarget,
             'updated_at': new Date()
-        })
-        .asCallback(cb);
+        });
+
+    if (t)
+        update.transacting(t).forUpdate();
+
+    return update;
 };
 
 /**

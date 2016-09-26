@@ -3,15 +3,21 @@
 
 var Promise = require('bluebird'),
     fs = require('fs'),
+    path = require('path'),
     readline = require('readline'),
     Stream = require('stream'),
     dirGlob = Promise.promisify(require('dir-glob')),
     globAsync = Promise.promisify(require('glob')),
+    seekrits = require('nconf')
+        .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
+        .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
     logger = require('./server/logger'),
     db = require('./server/db'),
     core = require('./server/cores/index'),
     variant = core.variant.get('Standard'),
     filePatternToImport = dirGlob.sync([process.argv[2]])[0];
+
+require(path.join(seekrits.get('judgePath'), 'diplomacy-godip'));
 
 Promise.longStackTraces();
 
@@ -55,6 +61,8 @@ function initGame(t, file, game) {
 }
 
 function processFileContents(t, file, game) {
+    var currentPhase = game.related('phases').at(0);
+
     return new Promise(function(resolve, reject) {
         var stream = fs.createReadStream(file, { encoding: 'utf8' }),
             rl = readline.createInterface(stream, new Stream());
@@ -63,60 +71,38 @@ function processFileContents(t, file, game) {
         rl.on('error', reject);
         rl.on('close', resolve);
     });
-}
 
-function parseLine(line) {
-    var match,
-        IMPORT_PATTERNS = {
-            NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/),
-            UNIT_POSITION: new RegExp(/^(\D)\D+: (\barmy|fleet|supply) (.+)$/)
-        };
+    function parseLine(line) {
+        var match,
+            commands = [],
+            IMPORT_PATTERNS = {
+                NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/),
+                UNIT_POSITION: new RegExp(/^(\D)\D+: (\barmy|fleet|supply) (.+)$/),
+                UNIT_ORDER: new RegExp(/^(\w+) (\bhold|move|support|convoy\b) (\w+)(?: \bmove|convoy\b (\w+))?$/)
+            };
 
-    if (match = line.match(IMPORT_PATTERNS.NEW_PHASE)) {
-        logger.debug('New phase: ' + line);
+        if (match = line.match(IMPORT_PATTERNS.NEW_PHASE)) {
+            logger.debug('New phase: ' + line);
+
+            // First phase was created already.
+            if (match[1] === '1901' && match[2] === 'Spring Movement')
+                return;
+        }
+        else if (match = line.match(IMPORT_PATTERNS.UNIT_POSITION)) {
+            /*
+             * Mostly immaterial, except for verification purposes.
+             * Godip will be handling unit position declarations.
+             */
+        }
+        else if (match = line.match(IMPORT_PATTERNS.UNIT_ORDER)) {
+            commands.push(match[1].toUpperCase());
+            commands.push(match[3].toUpperCase());
+            if (match[4])
+                commands.push(match[4].toUpperCase());
+
+            core.phase.setOrder(currentPhase.get('id'), commands, match[2], t)
+            .then(function(result) {
+            });
+        }
     }
-    else if (match = line.match(IMPORT_PATTERNS.UNIT_POSITION)) {
-    }
 }
-
-//     stream.on('data', function(line) {
-//         var match,
-//             splitProvince;
-//
-//         if (match = line.match(IMPORT_PATTERNS.NEW_PHASE)) {
-//             logger.debug('New phase: ' + line);
-//
-//             stream.pause();
-//
-//             new db.models.Phase({
-//                 gameID: game.get('id'),
-//                 year: match[1],
-//                 season: match[2],
-//                 seasonIndex: variant.phases.indexOf(match[2]) + 1
-//             }).save(null, { transacting: t }).then(function(phase) {
-//                 phaseID = phase.get('id');
-//                 core.phase.generatePhaseProvincesFromTemplate(t, variant, phase, function(err) {
-//                     if (err)
-//                         cb(err);
-//                     stream.resume();
-//                 });
-//             });
-//         }
-//         else if (match = line.match(IMPORT_PATTERNS.UNIT_POSITION)) {
-//             splitProvince = match[3].toUpperCase().split('/');
-//         }
-//     });
-//
-//     stream.on('error', function(err) {
-//         cb(err);
-//         return;
-//     });
-// }
-//
-// function mapUnitTypeToCode(type) {
-//     switch (type) {
-//     case 'ARMY': return 1;
-//     case 'FLEET': return 2;
-//     default: return null;
-//     }
-// }
