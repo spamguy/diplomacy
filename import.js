@@ -61,12 +61,11 @@ function initGame(t, file, game) {
 }
 
 function processFileContents(t, file, game) {
-    var currentPhase = game.related('phases').at(0);
+    var stream = fs.createReadStream(file, { encoding: 'utf8' }),
+        currentPhase = game.related('phases').at(0);
 
     return new Promise(function(resolve, reject) {
-        var stream = fs.createReadStream(file, { encoding: 'utf8' }),
-            rl = readline.createInterface(stream, new Stream());
-
+        var rl = readline.createInterface(stream, new Stream());
         rl.on('line', parseLine);
         rl.on('error', reject);
         rl.on('close', resolve);
@@ -74,6 +73,8 @@ function processFileContents(t, file, game) {
 
     function parseLine(line) {
         var match,
+            phaseJSON,
+            nextState,
             commands = [],
             IMPORT_PATTERNS = {
                 NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/),
@@ -87,6 +88,20 @@ function processFileContents(t, file, game) {
             // First phase was created already.
             if (match[1] === '1901' && match[2] === 'Spring Movement')
                 return;
+
+            // Adjudicate previous phase to create new phase.
+            phaseJSON = currentPhase.toJSON({ obfuscate: false });
+            phaseJSON.seasonType = currentPhase.get('season').split(' ')[1];
+            nextState = global.state.NextFromJS(variant, phaseJSON);
+
+            core.phase.createFromState(variant, game, nextState, t)
+            .then(function(phase) {
+                currentPhase = phase;
+            })
+            .catch(function(err) {
+                logger.error(err);
+                stream.stop();
+            });
         }
         else if (match = line.match(IMPORT_PATTERNS.UNIT_POSITION)) {
             /*

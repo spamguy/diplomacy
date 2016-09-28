@@ -3,7 +3,6 @@
 var _ = require('lodash'),
     db = require('./../db'),
     Promise = require('bluebird'),
-    async = require('async'),
     winston = require('winston'),
     moment = require('moment');
 
@@ -29,7 +28,7 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline) {
     return newPhase.save(null, { transacting: t })
     .then(function(phase) {
         // Generate region data for this phase, using variant template.
-        return self.generatePhaseProvincesFromTemplate(t, variant, phase);
+        return self.generatePhaseProvincesFromTemplate(variant, phase, t);
     })
     .then(function() {
         return db.models.Game
@@ -43,12 +42,12 @@ PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline) {
 
 /**
  * Bulk inserts provinces based on variant data.
- * @param  {Transaction} t           The transaction.
  * @param  {Object}      variant     The variant template.
  * @param  {Phase}       phase       The phase owning the new provinces.
+ * @param  {Transaction} t           The transaction.
  * @return {Promise}                 The revised phase.
  */
-PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, phase) {
+PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(variant, phase, t) {
     // Iterate through all template provinces in parallel.
     // TODO: Break up this nested function hellhole.
     return Promise.map(variant.provinces, function(province) {
@@ -86,78 +85,71 @@ PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(t, variant, ph
 
 /**
  * Bulk inserts provinces based on state data.
- * @param  {Transaction} t           The transaction.
  * @param  {Object}      variant     The variant template.
  * @param  {Object}      state       The Godip state.
  * @param  {Phase}       phase       The phase owning the new provinces.
- * @param  {Function}    cb          The callback.
+ * @param  {Transaction} t           The transaction.
+ * @param  {Promise}                 The query's promise.
  */
-PhaseCore.prototype.generatePhaseProvincesFromState = function(t, variant, state, phase, cb) {
+PhaseCore.prototype.generatePhaseProvincesFromState = function(variant, state, phase, t) {
     var supplyCentres = state.SupplyCenters(),
         units = state.Units(),
         dislodgeds = state.Dislodgeds();
 
-    async.each(variant.provinces, function(province, eachCallback) {
-        // Iterate through all template provinces in parallel.
-        async.parallel([
-            // Use state info instead of template whenever possible.
-            function(parallelCallback) {
-                var supplyCentre = supplyCentres[province.p],
-                    unit = units[province.p],
-                    dislodgedUnit = dislodgeds[province.p];
-                new db.models.PhaseProvince({
+    // Iterate through all template provinces in parallel.
+    // TODO: Break up this nested function hellhole.
+    return Promise.map(variant.provinces, function(province) {
+        var supplyCentre = supplyCentres[province.p],
+            unit = units[province.p],
+            dislodgedUnit = dislodgeds[province.p];
+
+        // Use state info instead of template whenever possible.
+        return new db.models.PhaseProvince({
+            phaseID: phase.get('id'),
+            provinceKey: province.p,
+            subprovinceKey: null,
+            supplyCentre: supplyCentre && supplyCentre !== 'Neutral' ? supplyCentre[0] : null,
+            supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
+            supplyCentreFill: supplyCentre && supplyCentre !== 'Neutral' ? variant.powers[supplyCentre[0]].colour : null,
+            unitFill: unit ? variant.powers[unit.Nation[0]].colour : null,
+            unitType: unit ? convertGodipUnitType(unit.Type) : null,
+            unitOwner: unit ? unit.Nation[0] : null,
+            unitLocation: '(' + province.x + ',' + province.y + ')',
+            dislodgedFill: dislodgedUnit ? variant.powers[dislodgedUnit.Nation[0]].colour : null,
+            dislodgedType: dislodgedUnit ? convertGodipUnitType(dislodgedUnit.Type) : null,
+            dislodgedOwner: dislodgedUnit ? dislodgedUnit.Nation[0] : null,
+            resolution: null
+        }).save(null, { transacting: t })
+        .then(function(newProvince) {
+            // Insert subprovinces, if any.
+            return Promise.map(province.sp || [], function(sp) {
+                var fullProvinceKey = province.p + '/' + sp.p,
+                    unit = units[fullProvinceKey],
+                    dislodgedUnit = dislodgeds[fullProvinceKey];
+
+                return new db.models.PhaseProvince({
                     phaseID: phase.get('id'),
                     provinceKey: province.p,
-                    subprovinceKey: null,
-                    supplyCentre: supplyCentre && supplyCentre !== 'Neutral' ? supplyCentre[0] : null,
-                    supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
-                    supplyCentreFill: supplyCentre && supplyCentre !== 'Neutral' ? variant.powers[supplyCentre[0]].colour : null,
-                    unitFill: unit ? variant.powers[unit.Nation[0]].colour : null,
-                    unitType: unit ? convertGodipUnitType(unit.Type) : null,
+                    subprovinceKey: sp.p,
+                    unitLocation: '(' + sp.x + ',' + sp.y + ')',
+                    unitType: unit ? convertGodipUnitType(unit.Type) : null, // province.default && province.default.sp === sp.p ? province.default.type : null,
                     unitOwner: unit ? unit.Nation[0] : null,
-                    unitLocation: '(' + province.x + ',' + province.y + ')',
                     dislodgedFill: dislodgedUnit ? variant.powers[dislodgedUnit.Nation[0]].colour : null,
                     dislodgedType: dislodgedUnit ? convertGodipUnitType(dislodgedUnit.Type) : null,
                     dislodgedOwner: dislodgedUnit ? dislodgedUnit.Nation[0] : null,
                     resolution: null
-                }).save(null, { transacting: t }).asCallback(parallelCallback);
-            },
-
-            // Insert subprovinces, if any.
-            function(parallelCallback) {
-                if (province.sp) {
-                    async.each(province.sp, function(sp, eachEachCallback) {
-                        var fullProvinceKey = province.p + '/' + sp.p,
-                            unit = units[fullProvinceKey],
-                            dislodgedUnit = dislodgeds[province.p];
-
-                        new db.models.PhaseProvince({
-                            phaseID: phase.get('id'),
-                            provinceKey: province.p,
-                            subprovinceKey: sp.p,
-                            unitLocation: '(' + sp.x + ',' + sp.y + ')',
-                            unitType: unit ? convertGodipUnitType(unit.Type) : null, // province.default && province.default.sp === sp.p ? province.default.type : null,
-                            unitOwner: unit ? unit.Nation[0] : null,
-                            dislodgedFill: dislodgedUnit ? variant.powers[dislodgedUnit.Nation[0]].colour : null,
-                            dislodgedType: dislodgedUnit ? convertGodipUnitType(dislodgedUnit.Type) : null,
-                            dislodgedOwner: dislodgedUnit ? dislodgedUnit.Nation[0] : null,
-                            resolution: null
-                        }).save(null, { transacting: t }).asCallback(eachEachCallback);
-                    }, parallelCallback);
-                }
-                else {
-                    parallelCallback(null);
-                }
-            }
-        ], eachCallback);
-    }, cb);
+                }).save(null, { transacting: t });
+            });
+        });
+    });
 };
 
-PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
+PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     var self = this,
         currentPhase = game.related('phases').at(0),
         currentPhaseJSON = currentPhase.toJSON(),
         nextSeasonIndex = currentPhase.get('seasonIndex') + 1,
+        failedResolutions = _.omitBy(state.Resolutions(), function(r) { return r.length; }),
         nextSeason,
         nextDeadline,
         nextPhase;
@@ -172,55 +164,31 @@ PhaseCore.prototype.createFromState = function(variant, game, state, cb) {
     nextSeason = variant.phases[nextSeasonIndex];
     nextDeadline = moment().add(game.getClockFromSeason(nextSeason), 'hours');
 
-    db.bookshelf.transaction(function(t) {
-        async.waterfall([
-            // STEP 1: Mark up old phase with resolution data, keeping orders intact for posterity.
-            function(callback) {
-                async.forEachOf(state.Resolutions(), function(resolution, key, cb) {
-                    if (state.Resolutions()[key] !== '')
-                        self.setFailed(currentPhase, key, resolution, t, cb);
-                    else
-                        cb();
-                }, callback);
-            },
+    // STEP 1: Mark up old phase with resolution data, keeping orders intact for posterity.
+    return Promise.props(_.mapValues(failedResolutions, function(resolution, key) {
+        return self.setFailed(currentPhase, key, resolution, t);
+    }))
+    .then(function(result) { // STEP 2: Mark up old phase with dislodged data.
+        return Promise.props(_.mapValues(state.Dislodgeds(), function(resolution, key) {
+            return self.setDislodged(variant, currentPhaseJSON, key, getDislodgerProvince(state.Dislodgers(), key), t);
+        }));
+    })
+    .then(function() { // STEP 3: Create new phase.
+        nextPhase = currentPhase.clone();
+        nextPhase.unset('id');
+        nextPhase.set('deadline', nextDeadline.toDate());
+        nextPhase.set('seasonIndex', nextSeasonIndex);
+        nextPhase.set('season', nextSeason);
 
-            // STEP 2: Mark up old phase with dislodged data.
-            function(callback) {
-                async.forEachOf(state.Dislodgeds(), function(dislodged, key, cb) {
-                    self.setDislodged(variant, currentPhaseJSON, key, getDislodgerProvince(state.Dislodgers(), key), t, cb);
-                }, callback);
-            },
+        // Phase rolled back to 0. Bump year.
+        if (nextSeasonIndex < currentPhase.get('seasonIndex'))
+            nextPhase.set('year', currentPhase.get('year') + 1);
 
-            // STEP 3: Create new phase.
-            function(callback) {
-                nextPhase = currentPhase.clone();
-                nextPhase.unset('id');
-                nextPhase.set('deadline', nextDeadline.toDate());
-                nextPhase.set('seasonIndex', nextSeasonIndex);
-                nextPhase.set('season', nextSeason);
-
-                // Phase rolled back to 0. Bump year.
-                if (nextSeasonIndex < currentPhase.get('seasonIndex'))
-                    nextPhase.set('year', currentPhase.get('year') + 1);
-
-                nextPhase.save(null, { transacting: t }).asCallback(callback);
-            },
-
-            // STEP 3: Create phase provinces from old state + resolutions.
-            function(_nextPhase, callback) {
-                nextPhase = _nextPhase;
-                self.generatePhaseProvincesFromState(t, variant, state, nextPhase, callback);
-            }
-        ], function(err, result) {
-            if (!err) {
-                t.commit();
-                self.core.game.get(game.get('id'), cb);
-            }
-            else {
-                t.rollback();
-                cb(err);
-            }
-        });
+        return nextPhase.save(null, { transacting: t });
+    })
+    .then(function(_phase) { // STEP 3: Create phase provinces from old state + resolutions.
+        nextPhase = _phase;
+        return self.generatePhaseProvincesFromState(variant, state, nextPhase, t);
     });
 };
 
@@ -268,9 +236,9 @@ PhaseCore.prototype.setOrder = function(phaseID, data, action, t) {
  * @param  {String}   province  The province key.
  * @param  {String}   dislodger The dislodging unit.
  * @param  {Transaction}   t    The transaction.
- * @param  {Function} cb        The callback.
+ * @return  {Promise}       The query's promise.
  */
-PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislodger, t, cb) {
+PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislodger, t) {
     var provinceArray = province.split('/'),
         originalProvince = phaseJSON.provinces[province],
         updatedProvince = {
@@ -285,7 +253,7 @@ PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislod
     winston.debug('Marking %s as dislodged by %s', province, dislodger, { phaseID: phaseJSON.id });
 
     // Bump current unit to dislodged slot.
-    db.bookshelf.knex('phase_provinces')
+    return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
     .where(updatedProvince)
@@ -294,8 +262,7 @@ PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislod
         unit_fill: variant.powers[attackingUnitOwner].colour,
         dislodged_owner: originalProvince.unit.owner,
         dislodged_fill: originalProvince.unit.fill
-    })
-    .asCallback(cb);
+    });
 };
 
 /**
@@ -304,25 +271,28 @@ PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislod
  * @param  {String}   province The province key.
  * @param  {Object}   resolution     The Godip-generated resolution.
  * @param  {Transaction}   t   The transaction.
- * @param  {Function} cb       The callback.
+ * @return  {Promise}       The query's promise.
  */
-PhaseCore.prototype.setFailed = function(phase, province, resolution, t, cb) {
+PhaseCore.prototype.setFailed = function(phase, province, resolution, t) {
     var readableResolution = convertGodipResolution(resolution),
         provinceArray = province.split('/'),
         provinceToUpdate = {
-            phaseID: phase.get('id'),
-            provinceKey: provinceArray[0]
+            phase_id: phase.get('id'),
+            province_key: provinceArray[0]
         };
 
     if (provinceArray[1])
-        provinceToUpdate.subprovinceKey = provinceArray[1];
+        provinceToUpdate.subprovince_key = provinceArray[1];
 
     winston.debug('Marking %s as failed (code %s)', province, resolution, { phaseID: phase.get('id') });
 
-    new db.models.PhaseProvince(provinceToUpdate).save(
-        { resolution: readableResolution },
-        { patch: true, action: 'update', transacting: t })
-    .asCallback(cb);
+    return db.bookshelf.knex('phase_provinces')
+    .transacting(t)
+    .forUpdate()
+    .where(provinceToUpdate)
+    .update({
+        resolution: readableResolution
+    });
 };
 
 function convertGodipUnitType(godipType) {
