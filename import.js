@@ -38,86 +38,157 @@ function processAllFiles(files) {
 
 function createGameFromFile(file, index) {
     return db.bookshelf.transaction(function(t) {
-        return createNewGame(t, file, index)
-        .spread(initGame)
-        .spread(processFileContents);
+        var game = new ImportGame(t, file, index);
+
+        return game.createNew()
+        .then(game.init)
+        .then(game.fileContentsToPhaseArray)
+        .then(game.phaseArrayToDB);
     });
 }
 
-function createNewGame(t, file, index) {
-    return Promise.all([t, file, new db.models.Game({
-        variant: 'Standard',
-        moveClock: 1,
-        retreatClock: 1,
-        adjustClock: 1,
-        name: 'Godip Game #' + (index + 1),
-        status: 2,
-        maxPlayers: 7
-    }).save(null, { transacting: t })]);
-}
+// INDIVIDUAL GAME IMPORT ---------------
 
-function initGame(t, file, game) {
-    return Promise.all([t, file, core.phase.initFromVariant(t, variant, game, new Date())]);
-}
+function ImportGame(_t, _file, _index) {
+    var t = _t,
+        file = _file,
+        index = _index,
+        game = null,
+        phaseArray = [ ];
 
-function processFileContents(t, file, game) {
-    var stream = fs.createReadStream(file, { encoding: 'utf8' }),
-        currentPhase = game.related('phases').at(0);
+    ImportGame.prototype.createNew = createNew;
+    ImportGame.prototype.init = init;
+    ImportGame.prototype.fileContentsToPhaseArray = fileContentsToPhaseArray;
+    ImportGame.prototype.phaseArrayToDB = phaseArrayToDB;
 
-    return new Promise(function(resolve, reject) {
-        var rl = readline.createInterface(stream, new Stream());
-        rl.on('line', parseLine);
-        rl.on('error', reject);
-        rl.on('close', resolve);
-    });
+    function createNew() {
+        return new db.models.Game({
+            variant: 'Standard',
+            moveClock: 1,
+            retreatClock: 1,
+            adjustClock: 1,
+            name: 'Godip Game #' + (index + 1),
+            status: 2,
+            maxPlayers: 7
+        }).save(null, { transacting: t });
+    }
 
-    function parseLine(line) {
-        var match,
-            phaseJSON,
-            nextState,
-            commands = [],
-            IMPORT_PATTERNS = {
-                NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/),
-                UNIT_POSITION: new RegExp(/^(\D)\D+: (\barmy|fleet|supply) (.+)$/),
-                UNIT_ORDER: new RegExp(/^(\w+) (\bhold|move|support|convoy\b) (\w+)(?: \bmove|convoy\b (\w+))?$/)
-            };
+    function init(_game) {
+        return core.phase.initFromVariant(variant, _game, new Date(), t);
+    }
 
-        if (match = line.match(IMPORT_PATTERNS.NEW_PHASE)) {
-            logger.debug('New phase: ' + line);
+    function fileContentsToPhaseArray(_game) {
+        game = _game;
 
-            // First phase was created already.
-            if (match[1] === '1901' && match[2] === 'Spring Movement')
-                return;
+        var currentYear,
+            currentSeason,
+            stream = fs.createReadStream(file, { encoding: 'utf8' });
 
-            // Adjudicate previous phase to create new phase.
-            phaseJSON = currentPhase.toJSON({ obfuscate: false });
-            phaseJSON.seasonType = currentPhase.get('season').split(' ')[1];
-            nextState = global.state.NextFromJS(variant, phaseJSON);
+        return new Promise(function(resolve, reject) {
+            var rl = readline.createInterface(stream, new Stream());
+            rl.on('line', parseLine);
+            rl.on('error', reject);
+            rl.on('close', function() { resolve([game, phaseArray]); });
+        });
 
-            core.phase.createFromState(variant, game, nextState, t)
-            .then(function(phase) {
-                currentPhase = phase;
-            })
-            .catch(function(err) {
-                logger.error(err);
-                stream.stop();
-            });
-        }
-        else if (match = line.match(IMPORT_PATTERNS.UNIT_POSITION)) {
-            /*
-             * Mostly immaterial, except for verification purposes.
-             * Godip will be handling unit position declarations.
-             */
-        }
-        else if (match = line.match(IMPORT_PATTERNS.UNIT_ORDER)) {
-            commands.push(match[1].toUpperCase());
-            commands.push(match[3].toUpperCase());
-            if (match[4])
-                commands.push(match[4].toUpperCase());
+        function parseLine(line) {
+            var match,
+                commands = [],
+                IMPORT_PATTERNS = {
+                    NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/),
+                    UNIT_POSITION: new RegExp(/^(\D)\D+: (\barmy|fleet|supply) (.+)$/),
+                    UNIT_ORDER: new RegExp(/^(\w+) (\bhold|move|support|convoy\b) (\w+)(?: \bmove|convoy\b (\w+))?$/)
+                };
 
-            core.phase.setOrder(currentPhase.get('id'), commands, match[2], t)
-            .then(function(result) {
-            });
+            if (match = line.match(IMPORT_PATTERNS.NEW_PHASE)) {
+                currentYear = match[1];
+                currentSeason = match[2];
+
+                phaseArray.push({
+                    year: currentYear,
+                    season: currentSeason,
+                    orders: [ ]
+                });
+
+                // Adjudicate previous phase to create new phase.
+                // phaseJSON = currentPhase.toJSON({ obfuscate: false });
+                // phaseJSON.seasonType = currentPhase.get('season').split(' ')[1];
+                // nextState = global.state.NextFromJS(variant, phaseJSON);
+                //
+                // core.phase.createFromState(variant, game, nextState, t)
+                // .then(function(phase) {
+                //     currentPhase = phase;
+                // })
+                // .catch(function(err) {
+                //     logger.error(err);
+                //     stream.stop();
+                // });
+            }
+            else if (match = line.match(IMPORT_PATTERNS.UNIT_POSITION)) {
+                /*
+                 * Mostly immaterial, except for verification purposes.
+                 * Godip will be handling unit position declarations.
+                 */
+            }
+            else if (match = line.match(IMPORT_PATTERNS.UNIT_ORDER)) {
+                commands.push(match[1].toUpperCase());
+                commands.push(match[3].toUpperCase());
+                if (match[4])
+                    commands.push(match[4].toUpperCase());
+
+                // Throw the action on top for now and pop it later.
+                commands.push(match[2]);
+
+                phaseArray[phaseArray.length - 1].orders.push(commands);
+            }
         }
     }
+
+    function phaseArrayToDB() {
+        return Promise.all(phaseArray)
+        .mapSeries(createNextPhaseFromOrders);
+    }
+
+    function createNextPhaseFromOrders(phaseObject) {
+        return Promise.all(phaseObject.orders)
+        .mapSeries(function(order) {
+            var action = order.pop();
+            return core.phase.setOrder(game.related('phases').at(0).get('id'), order, action, t)
+            .then(function() {
+                var nextState,
+                    phaseJSON = game.related('phases').at(0).toJSON({ obfuscate: false });
+
+                phaseJSON.seasonType = phaseJSON.season.split(' ')[1];
+                nextState = global.state.NextFromJS(variant, phaseJSON);
+
+                return core.phase.createFromState(variant, game, nextState, t)
+                .then(function() {
+                    return core.game.getAsync(game.get('id'), t)
+                    .then(function(_game) {
+                        game = _game;
+                    });
+                });
+            });
+        });
+    }
+
+        // The first phase has been created and populated already.
+        // if (phaseObject.year === '1901' && phaseObject.season === 'Spring Movement')
+        //     return Promise.resolve(game.related('phases').at(0));
+        //
+        // return new db.models.Phase({
+        //     year: phaseObject.year,
+        //     season: phaseObject.season,
+        //     gameID: game.get('id')
+        // }).save(null, { transacting: t })
+        // .then(function(phase) {
+        //     logger.debug('New phase: %s %s', phase.get('season'), phase.get('year'));
+        //
+        //     return Promise.all(phaseObject.orders)
+        //     .mapSeries(function(order) {
+        //         var action = order.pop();
+        //         return core.phase.setOrder(phase.get('id'), order, action, t);
+        //     });
+        // });
+    // }
 }

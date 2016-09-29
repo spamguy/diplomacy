@@ -16,6 +16,12 @@ GameCore.prototype.get = function(id, cb) {
         .asCallback(cb);
 };
 
+GameCore.prototype.getAsync = function(id, t) {
+    return db.models.Game
+        .where('id', id)
+        .fetch({ transacting: t, withRelated: ['players', 'phases', 'phases.provinces'] });
+};
+
 GameCore.prototype.findByGM = function(id, cb) {
     db.models.Game
         .where('gm_id', id)
@@ -132,7 +138,7 @@ GameCore.prototype.start = function(gameID, cb) {
 
                 if (!game.get('currentPhase')) {
                     nextPhaseDeadline.add(game.getClockFromSeason(variant.phases[0]), 'hours');
-                    self.core.phase.initFromVariant(t, variant, game, nextPhaseDeadline).asCallback(callback);
+                    self.core.phase.initFromVariant(variant, game, nextPhaseDeadline, t).asCallback(callback);
                 }
                 else {
                     callback(null, phase);

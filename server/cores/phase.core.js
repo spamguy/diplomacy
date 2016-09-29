@@ -15,7 +15,7 @@ function PhaseCore(options) {
         this.core = options.core;
 }
 
-PhaseCore.prototype.initFromVariant = function(t, variant, game, deadline) {
+PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
     var self = this,
         newPhase = new db.models.Phase({
             year: variant.startYear,
@@ -149,7 +149,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
         currentPhase = game.related('phases').at(0),
         currentPhaseJSON = currentPhase.toJSON(),
         nextSeasonIndex = currentPhase.get('seasonIndex') + 1,
-        failedResolutions = _.omitBy(state.Resolutions(), function(r) { return r.length; }),
+        failedResolutions = _.omitBy(state.Resolutions(), function(r) { return r === ''; }),
         nextSeason,
         nextDeadline,
         nextPhase;
