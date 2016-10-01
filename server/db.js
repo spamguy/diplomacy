@@ -3,7 +3,6 @@ var path = require('path'),
         .file('custom', path.join(process.cwd(), 'server/config/local.env.json'))
         .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
     knex = require('knex')({
-        debug: true,
         client: 'postgresql',
         connection: {
             host: '127.0.0.1',

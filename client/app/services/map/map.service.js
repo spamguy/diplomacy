@@ -39,7 +39,7 @@ angular.module('mapService', ['gameService'])
 
     function generateMarkerStart(d) {
         // See CSS file for why separate markers exist for failed orders.
-        var failed = d.target.unit.resolution ? 'failed' : '';
+        var failed = d.source.unit.resolution ? 'failed' : '';
 
         if (d.target.action === 'convoy')
             return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
@@ -49,7 +49,7 @@ angular.module('mapService', ['gameService'])
 
     function generateMarkerEnd(d) {
         // See CSS file for why separate markers exist for failed orders.
-        var failed = d.target.unit.resolution ? 'failed' : '';
+        var failed = d.source.unit.resolution ? 'failed' : '';
         return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
     }
 

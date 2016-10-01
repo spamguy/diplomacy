@@ -96,10 +96,11 @@ function ImportGame(_t, _file, _index) {
                 commands = [],
                 IMPORT_PATTERNS = {
                     NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/),
-                    UNIT_POSITION: new RegExp(/^(\D)\D+: (\barmy|fleet|supply) (.+)$/),
-                    UNIT_ORDER: new RegExp(/^(\w+) (\bhold|move|support|convoy\b) (\w+)(?: \bmove|convoy\b (\w+))?$/),
-                    UNIT_BUILD: new RegExp(/^build (\w+) (\w+)$/),
-                    UNIT_DISBAND: new RegExp(/^(\w+) disband$/)
+                    UNIT_POSITION: new RegExp(/^(\D)\D+: (army|fleet|supply)(?:\/dislodged)? (.+)$/),
+                    UNIT_ORDER: new RegExp(/^(\S+) (hold|move|support|convoy)(?: (\S+)(?: (?:move|support) (\S+))?)?(?: via convoy)?$/),
+                    UNIT_BUILD: new RegExp(/^build (\S+) (\S+)$/),
+                    UNIT_REMOVE: new RegExp(/^remove (\S+)$/),
+                    UNIT_DISBAND: new RegExp(/^(\S+) disband$/)
                 };
 
             if (match = line.match(IMPORT_PATTERNS.NEW_PHASE)) {
@@ -120,7 +121,8 @@ function ImportGame(_t, _file, _index) {
             }
             else if (match = line.match(IMPORT_PATTERNS.UNIT_ORDER)) {
                 commands.push(match[1].toUpperCase());
-                commands.push(match[3].toUpperCase());
+                if (match[2] !== 'hold')
+                    commands.push(match[3].toUpperCase());
                 if (match[4])
                     commands.push(match[4].toUpperCase());
 
@@ -135,11 +137,17 @@ function ImportGame(_t, _file, _index) {
                 // Throw the action on top for now and pop it later.
                 commands.push('build');
             }
-            else if (match = line.match(IMPORT_PATTERNS.UNIT_DISBAND)) {
+            else if (match = line.match(IMPORT_PATTERNS.UNIT_DISBAND) || match = line.match(IMPORT_PATTERNS.UNIT_REMOVE)) {
                 commands.push(match[1].toUpperCase());
 
                 // Throw the action on top for now and pop it later.
                 commands.push('disband');
+            }
+            else if (line === 'ORDERS' || line === 'POSITIONS' || line === '') {
+                // Expected but useless. Stuff it.
+            }
+            else {
+                logger.warn('Line not processed: "%s"', line);
             }
         }
     }

@@ -48,7 +48,7 @@ PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
  * @return {Promise}                 The revised phase.
  */
 PhaseCore.prototype.generatePhaseProvincesFromTemplate = function(variant, phase, t) {
-    var CONCURRENCY = 1;
+    var CONCURRENCY = 5;
     // Iterate through all template provinces in parallel.
     // TODO: Break up this nested function hellhole.
     return Promise.map(variant.provinces, function(province) {
@@ -96,55 +96,54 @@ PhaseCore.prototype.generatePhaseProvincesFromState = function(variant, state, p
     var supplyCentres = state.SupplyCenters(),
         units = state.Units(),
         dislodgeds = state.Dislodgeds(),
-        CONCURRENCY = 1;
+        CONCURRENCY = 5;
 
     // Iterate through all template provinces in parallel.
     // TODO: Break up this nested function hellhole.
-    return Promise.resolve(0);
-    // return Promise.map(variant.provinces, function(province) {
-    //     var supplyCentre = supplyCentres[province.p],
-    //         unit = units[province.p],
-    //         dislodgedUnit = dislodgeds[province.p];
-    //
-    //     // Use state info instead of template whenever possible.
-    //     return new db.models.PhaseProvince({
-    //         phaseID: phase.get('id'),
-    //         provinceKey: province.p,
-    //         subprovinceKey: null,
-    //         supplyCentre: supplyCentre && supplyCentre !== 'Neutral' ? supplyCentre[0] : null,
-    //         supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
-    //         supplyCentreFill: supplyCentre && supplyCentre !== 'Neutral' ? variant.powers[supplyCentre[0]].colour : null,
-    //         unitFill: unit ? variant.powers[unit.Nation[0]].colour : null,
-    //         unitType: unit ? convertGodipUnitType(unit.Type) : null,
-    //         unitOwner: unit ? unit.Nation[0] : null,
-    //         unitLocation: '(' + province.x + ',' + province.y + ')',
-    //         dislodgedFill: dislodgedUnit ? variant.powers[dislodgedUnit.Nation[0]].colour : null,
-    //         dislodgedType: dislodgedUnit ? convertGodipUnitType(dislodgedUnit.Type) : null,
-    //         dislodgedOwner: dislodgedUnit ? dislodgedUnit.Nation[0] : null,
-    //         resolution: null
-    //     }).save(null, { transacting: t })
-    //     .then(function(newProvince) {
-    //         // Insert subprovinces, if any.
-    //         return Promise.map(province.sp || [], function(sp) {
-    //             var fullProvinceKey = province.p + '/' + sp.p,
-    //                 unit = units[fullProvinceKey],
-    //                 dislodgedUnit = dislodgeds[fullProvinceKey];
-    //
-    //             return new db.models.PhaseProvince({
-    //                 phaseID: phase.get('id'),
-    //                 provinceKey: province.p,
-    //                 subprovinceKey: sp.p,
-    //                 unitLocation: '(' + sp.x + ',' + sp.y + ')',
-    //                 unitType: unit ? convertGodipUnitType(unit.Type) : null, // province.default && province.default.sp === sp.p ? province.default.type : null,
-    //                 unitOwner: unit ? unit.Nation[0] : null,
-    //                 dislodgedFill: dislodgedUnit ? variant.powers[dislodgedUnit.Nation[0]].colour : null,
-    //                 dislodgedType: dislodgedUnit ? convertGodipUnitType(dislodgedUnit.Type) : null,
-    //                 dislodgedOwner: dislodgedUnit ? dislodgedUnit.Nation[0] : null,
-    //                 resolution: null
-    //             }).save(null, { transacting: t });
-    //         }, { concurrency: CONCURRENCY });
-    //     });
-    // }, { concurrency: CONCURRENCY });
+    return Promise.map(variant.provinces, function(province) {
+        var supplyCentre = supplyCentres[province.p],
+            unit = units[province.p],
+            dislodgedUnit = dislodgeds[province.p];
+
+        // Use state info instead of template whenever possible.
+        return new db.models.PhaseProvince({
+            phaseID: phase.get('id'),
+            provinceKey: province.p,
+            subprovinceKey: null,
+            supplyCentre: supplyCentre && supplyCentre !== 'Neutral' ? supplyCentre[0] : null,
+            supplyCentreLocation: province.sc ? '(' + province.sc.x + ',' + province.sc.y + ')' : null,
+            supplyCentreFill: supplyCentre && supplyCentre !== 'Neutral' ? variant.powers[supplyCentre[0]].colour : null,
+            unitFill: unit ? variant.powers[unit.Nation[0]].colour : null,
+            unitType: unit ? convertGodipUnitType(unit.Type) : null,
+            unitOwner: unit ? unit.Nation[0] : null,
+            unitLocation: '(' + province.x + ',' + province.y + ')',
+            dislodgedFill: dislodgedUnit ? variant.powers[dislodgedUnit.Nation[0]].colour : null,
+            dislodgedType: dislodgedUnit ? convertGodipUnitType(dislodgedUnit.Type) : null,
+            dislodgedOwner: dislodgedUnit ? dislodgedUnit.Nation[0] : null,
+            resolution: null
+        }).save(null, { transacting: t })
+        .then(function(newProvince) {
+            // Insert subprovinces, if any.
+            return Promise.map(province.sp || [], function(sp) {
+                var fullProvinceKey = province.p + '/' + sp.p,
+                    unit = units[fullProvinceKey],
+                    dislodgedUnit = dislodgeds[fullProvinceKey];
+
+                return new db.models.PhaseProvince({
+                    phaseID: phase.get('id'),
+                    provinceKey: province.p,
+                    subprovinceKey: sp.p,
+                    unitLocation: '(' + sp.x + ',' + sp.y + ')',
+                    unitType: unit ? convertGodipUnitType(unit.Type) : null, // province.default && province.default.sp === sp.p ? province.default.type : null,
+                    unitOwner: unit ? unit.Nation[0] : null,
+                    dislodgedFill: dislodgedUnit ? variant.powers[dislodgedUnit.Nation[0]].colour : null,
+                    dislodgedType: dislodgedUnit ? convertGodipUnitType(dislodgedUnit.Type) : null,
+                    dislodgedOwner: dislodgedUnit ? dislodgedUnit.Nation[0] : null,
+                    resolution: null
+                }).save(null, { transacting: t });
+            }, { concurrency: CONCURRENCY });
+        });
+    }, { concurrency: CONCURRENCY });
 };
 
 PhaseCore.prototype.createFromState = function(variant, game, state, t) {
@@ -158,7 +157,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
         nextPhase;
 
     // Retreat phases can be skipped if no retreats necessary.
-    if (_.keys(state.Dislodgeds()).length === 0 && currentPhase.get('season').indexOf('Retreat') > 0) {
+    if (_.keys(state.Dislodgeds()).length === 0 && currentPhase.get('season').indexOf('Movement') > 0) {
         winston.log('Skipping retreat season', { gameID: game.get('id') });
         nextSeasonIndex++;
     }
@@ -191,7 +190,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
         if (nextSeasonIndex < currentPhase.get('seasonIndex'))
             nextPhase.set('year', currentPhase.get('year') + 1);
 
-        return nextPhase.save(null, { transacting: t });
+        return nextPhase.save(null, { transacting: t, debug: true });
     })
     .then(function() {
         return self.generatePhaseProvincesFromState(variant, state, nextPhase, t);
@@ -223,6 +222,7 @@ PhaseCore.prototype.setOrder = function(phaseID, data, action, t) {
             'province_key': province[0],
             'subprovince_key': subprovince
         })
+        .debug(true)
         .update({
             'unit_action': action,
             'unit_target': target,
