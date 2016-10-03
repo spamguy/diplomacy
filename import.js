@@ -137,7 +137,13 @@ function ImportGame(_t, _file, _index) {
                 // Throw the action on top for now and pop it later.
                 commands.push('build');
             }
-            else if (match = line.match(IMPORT_PATTERNS.UNIT_DISBAND) || match = line.match(IMPORT_PATTERNS.UNIT_REMOVE)) {
+            else if (match = line.match(IMPORT_PATTERNS.UNIT_DISBAND)) {
+                commands.push(match[1].toUpperCase());
+
+                // Throw the action on top for now and pop it later.
+                commands.push('disband');
+            }
+            else if (match = line.match(IMPORT_PATTERNS.UNIT_REMOVE)) {
                 commands.push(match[1].toUpperCase());
 
                 // Throw the action on top for now and pop it later.
@@ -161,9 +167,18 @@ function ImportGame(_t, _file, _index) {
         return Promise.all(phaseObject.orders)
         .mapSeries(function(order) {
             var action = order.pop();
-            return core.phase.setOrder(game.related('phases').at(0).get('id'), order, action, t);
+            return core.phase.setOrder(
+                game.related('phases').at(0).get('id'),
+                game.related('phases').at(0).get('season'),
+                order,
+                action,
+                t);
         })
         .then(function() {
+            return core.game.getAsync(game.get('id'), t);
+        })
+        .then(function(_game) {
+            game = _game;
             var nextState,
                 phaseJSON = game.related('phases').at(0).toJSON({ obfuscate: false });
 

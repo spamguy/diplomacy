@@ -200,7 +200,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     });
 };
 
-PhaseCore.prototype.setOrder = function(phaseID, data, action, t) {
+PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
     var update,
         province = data[0].split('/'),
         subprovince = null,
@@ -211,10 +211,30 @@ PhaseCore.prototype.setOrder = function(phaseID, data, action, t) {
         target = splitTarget ? splitTarget[0] : null,
         subTarget = splitTarget && splitTarget.length > 1 ? splitTarget[1] : null,
         targetOfTarget = splitTargetOfTarget ? splitTargetOfTarget[0] : null,
-        subTargetOfTarget = splitTargetOfTarget && splitTargetOfTarget.length > 1 ? splitTargetOfTarget[1] : null;
+        subTargetOfTarget = splitTargetOfTarget && splitTargetOfTarget.length > 1 ? splitTargetOfTarget[1] : null,
+        orderData;
 
     if (province[1])
         subprovince = province[1];
+
+    if (season.indexOf('Retreat') > -1) {
+        orderData = {
+            'dislodged_action': action,
+            'dislodged_target': target,
+            'dislodged_subtarget': subTarget,
+            'updated_at': new Date()
+        };
+    }
+    else {
+        orderData = {
+            'unit_action': action,
+            'unit_target': target,
+            'unit_subtarget': subTarget,
+            'unit_target_of_target': targetOfTarget,
+            'unit_subtarget_of_target': subTargetOfTarget,
+            'updated_at': new Date()
+        };
+    }
 
     update = db.bookshelf.knex('phase_provinces')
         .where({
@@ -223,14 +243,7 @@ PhaseCore.prototype.setOrder = function(phaseID, data, action, t) {
             'subprovince_key': subprovince
         })
         .debug(true)
-        .update({
-            'unit_action': action,
-            'unit_target': target,
-            'unit_subtarget': subTarget,
-            'unit_target_of_target': targetOfTarget,
-            'unit_subtarget_of_target': subTargetOfTarget,
-            'updated_at': new Date()
-        });
+        .update(orderData);
 
     if (t)
         update.transacting(t).forUpdate();
@@ -270,7 +283,9 @@ PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislod
         unit_owner: attackingUnitOwner,
         unit_fill: variant.powers[attackingUnitOwner].colour,
         dislodged_owner: originalProvince.unit.owner,
-        dislodged_fill: originalProvince.unit.fill
+        dislodged_fill: originalProvince.unit.fill,
+        dislodged_type: originalProvince.unit.type,
+        dislodged_action: null
     });
 };
 
@@ -301,6 +316,34 @@ PhaseCore.prototype.setFailed = function(phase, province, resolution, t) {
     .where(provinceToUpdate)
     .update({
         resolution: readableResolution
+    });
+};
+
+PhaseCore.prototype.setMovementPhaseDefaults = function(phase, t) {
+    return db.bookshelf.knex('phase_provinces')
+    .transacting(t)
+    .forUpdate()
+    .where({
+        phase_id: phase.get('id')
+    })
+    .whereNull('unit_action')
+    .whereNotNull('unit_owner')
+    .update({
+        unit_action: 'hold'
+    });
+};
+
+PhaseCore.prototype.setRetreatPhaseDefaults = function(phase, t) {
+    return db.bookshelf.knex('phase_provinces')
+    .transacting(t)
+    .forUpdate()
+    .where({
+        phase_id: phase.get('id')
+    })
+    .whereNull('dislodged_action')
+    .whereNotNull('dislodged_owner')
+    .update({
+        dislodged_action: 'disband'
     });
 };
 
