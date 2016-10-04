@@ -1,8 +1,8 @@
 angular.module('map.component')
 .controller('MapController', ['$scope', '$state', 'gameService', 'mapService', '$mdBottomSheet', function($scope, $state, gameService, MapService, $mdBottomSheet) {
     var vm = this,
-        phase = this.game.phases ? this.game.phases[this.phaseIndex] : null,
-        normalisedVariantName = gameService.getNormalisedVariantName(vm.game.variant),
+        // vm.service.phase = this.game.vm.service.phases ? this.game.vm.service.phases[this.vm.service.phaseIndex] : null,
+        normalisedVariantName = gameService.getNormalisedVariantName(vm.service.game.variant),
         paths = vm.svg.getElementsByTagName('path'),
         p,
         i,
@@ -15,7 +15,6 @@ angular.module('map.component')
         unitRadiusPlusPadding = 16;
 
     vm.paths = { };
-    vm.service = new MapService(this.game, this.phaseIndex);
     vm.getFormattedDeadline = gameService.getFormattedDeadline;
     vm.goToIndex = goToIndex;
 
@@ -26,6 +25,10 @@ angular.module('map.component')
             renderForceDirectedGraph();
         }
     };
+
+    $scope.$on('renderphase', function(event) {
+        renderForceDirectedGraph();
+    });
 
     vm.showOrderSheet = function() {
         $mdBottomSheet.show({
@@ -39,7 +42,7 @@ angular.module('map.component')
         }).then(vm.service.setCurrentAction);
     };
 
-    // Fill out province paths only if the phase is active.
+    // Fill out province paths only if the vm.service.phase is active.
     if (!vm.readonly) {
         for (p = 0; p < paths.length; p++)
             vm.paths[paths[p].id.toUpperCase()] = paths[p].getAttribute('d');
@@ -48,14 +51,13 @@ angular.module('map.component')
     vm.imagePath = 'variants/' + normalisedVariantName + '/' + normalisedVariantName + '.png';
     vm.viewBox = '0 0 ' + getSVGAttribute('width') + ' ' + getSVGAttribute('height');
 
-    if (!phase)
+    if (!vm.service.phase)
         return;
 
     vm.clickCount = 0;
-    vm.provinceArray = _.values(phase.provinces);
 
     force = d3.layout.force()
-        .nodes(vm.game)
+        .nodes(vm.service.game)
         .links(links)
         .on('tick', onForceDirectedGraphTick.bind(this)); // bind() forces function's scope to controller.
 
@@ -71,8 +73,8 @@ angular.module('map.component')
              * In all other cases T as an endpoint is fine.
              */
 
-            var sourceProvince = phase.provinces[d.source.p],
-                targetProvince = phase.provinces[d.target.p],
+            var sourceProvince = vm.service.phase.provinces[d.source.p],
+                targetProvince = vm.service.phase.provinces[d.target.p],
                 sx = sourceProvince.unitLocation.x,
                 sy = sourceProvince.unitLocation.y,
                 tx = targetProvince.unitLocation.x,
@@ -105,8 +107,8 @@ angular.module('map.component')
         links = [];
         holds = [];
 
-        for (p in phase.provinces) {
-            province = phase.provinces[p];
+        for (p in vm.service.phase.provinces) {
+            province = vm.service.phase.provinces[p];
 
             // Nothing to render for provinces without units or units without orders.
             if (!province.unit || !province.unit.action)
@@ -119,7 +121,7 @@ angular.module('map.component')
                 target = province.unit.target;
                 links.push({
                     source: _.defaults(province, { fixed: true }),
-                    target: _.assignIn({ }, phase.provinces[target], {
+                    target: _.assignIn({ }, vm.service.phase.provinces[target], {
                         fixed: true, // To keep d3 from treating this map like a true force graph.
                         action: province.unit.action,
                         resolution: province.unit.resolution
@@ -131,7 +133,7 @@ angular.module('map.component')
             if (province.unit.action === 'convoy') {
                 links.push({
                     source: _.defaults(province, { fixed: true }),
-                    target: _.assignIn({ }, phase.provinces[province.unit.targetOfTarget], {
+                    target: _.assignIn({ }, vm.service.phase.provinces[province.unit.targetOfTarget], {
                         fixed: true, // To keep d3 from treating this map like a true force graph.
                         action: province.unit.action,
                         resolution: province.unit.resolution
@@ -158,8 +160,8 @@ angular.module('map.component')
             .insert('svg:circle')
             .attr('id', function(d) { return d.p + '-hold'; })
             .attr('class', 'hold')
-            .attr('cx', function(d) { return phase.provinces[d.p].unitLocation.x; })
-            .attr('cy', function(d) { return phase.provinces[d.p].unitLocation.y; })
+            .attr('cx', function(d) { return vm.service.phase.provinces[d.p].unitLocation.x; })
+            .attr('cy', function(d) { return vm.service.phase.provinces[d.p].unitLocation.y; })
             .attr('r', unitRadiusPlusPadding);
         moveLayerHolds.exit().remove();
 
@@ -173,16 +175,16 @@ angular.module('map.component')
     }
 
     function goToIndex(index) {
-        var humanIndex = vm.game.phases.length - index;
-        // Keep phase index inside countable number of phases.
-        if (humanIndex > vm.game.phases.length)
+        var humanIndex = vm.service.game.phases.length - index;
+        // Keep vm.service.phase index inside countable number of vm.service.phases.
+        if (humanIndex > vm.service.game.phases.length)
             humanIndex = null;
         else if (humanIndex <= 0)
             humanIndex = 1;
 
         $state.go('.', {
-            id: vm.game.id,
+            id: vm.service.game.id,
             phaseIndex: humanIndex
-        }, { reload: true });
+        }, { notify: false });
     }
 }]);

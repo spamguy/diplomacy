@@ -1,11 +1,11 @@
 <div class="md-whiteframe-2dp">
     <md-toolbar class="md-toolbar-tools" id="mapToolbar" ng-if="$ctrl.header">
         <div layout="column" layout-align="center center">
-            <div class="md-title">{{$ctrl.game.phases[$ctrl.phaseIndex].season}} {{$ctrl.game.phases[$ctrl.phaseIndex].year}}</div>
-            <div ng-switch="$ctrl.game.status" ng-if="$ctrl.phaseIndex === 0">
+            <div class="md-title">{{$ctrl.service.phase.season}} {{$ctrl.service.phase.year}}</div>
+            <div ng-switch="$ctrl.service.game.status" ng-if="$ctrl.service.phaseIndex === 0">
                 <div ng-switch-when="0" class="md-caption">(Game has not started)</div>
                 <!-- FIXME: Display more intelligent timer. Wrap seconds-only timer in humanizeDuration()? -->
-                <div ng-switch-when="1" class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.game.phases[$ctrl.phaseIndex])">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
+                <div ng-switch-when="1" class="md-caption">Deadline in <timer ng-attr-end-time="$ctrl.getFormattedDeadline($ctrl.service.game.phases[$ctrl.service.phaseIndex])">{{days}} days, {{hours}} hours, {{minutes}} minute{{minutesS}}</timer></div>
                 <div ng-switch-when="2" class="md-caption">Game ended!</div>
             </div>
         </div>
@@ -42,7 +42,7 @@
         </div>
     </md-toolbar>
 
-    <div class="mapContainer" ng-class="{'notStarted': !$ctrl.game.phases}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
+    <div class="mapContainer" ng-class="{'notStarted': !$ctrl.service.game.phases}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
         <svg width="100%" ng-attr-view_box="{{$ctrl.viewBox}}">
             <defs>
                 <marker id="move" viewBox="0 -5 10 10" markerWidth="6" markerHeight="6" orient="auto">
@@ -67,10 +67,9 @@
                 <!-- Supply centre template -->
                 <path d="m 15.64,213.212 117.92,105.865 -33.174,154.959 c -1.035,4.834 0.876,9.824 4.876,12.729 3.999,2.906 9.335,3.181 13.613,0.704 l 137.124,-79.434 137.124,79.434 c 1.944,1.126 4.107,1.684 6.265,1.684 2.588,0 5.167,-0.802 7.348,-2.387 4,-2.906 5.911,-7.896 4.876,-12.729 L 378.44,319.077 496.359,213.212 c 3.679,-3.302 5.065,-8.462 3.538,-13.164 -1.528,-4.702 -5.683,-8.061 -10.6,-8.571 L 331.671,175.143 267.425,30.279 c -2.004,-4.519 -6.483,-7.432 -11.427,-7.432 -4.944,0 -9.423,2.914 -11.427,7.433 L 180.329,175.143 22.702,191.477 c -4.917,0.51 -9.072,3.869 -10.6,8.571 -1.528,4.702 -0.141,9.862 3.538,13.164 z" id="sc"></path>
             </defs>
-
             <g class="scLayer">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                     ng-repeat="province in $ctrl.provinceArray | provinceHasSC"
+                     ng-repeat="province in $ctrl.service.getProvinceArray() | provinceHasSC"
                      xlink:href="" ng-href="{{$ctrl.service.getSCPath(province)}}"
                      ng-attr-transform="{{$ctrl.service.getSCTransform(province)}}"
                      ng-attr-fill="{{province.sc.fill}}"
@@ -90,7 +89,7 @@
 
             <g class="unitLayer">
                 <g class="dislodgedUnitLayer">
-                    <circle ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:1:true"
+                    <circle ng-repeat="province in $ctrl.service.getProvinceArray() | provinceHasUnit:1:true"
                             id="{{province.p}}-dislodged-army"
                             r="8"
                             stroke="#f00"
@@ -100,7 +99,7 @@
                             ng-attr-fill="{{province.dislodged.fill}}">
                     </circle>
 
-                    <rect ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:2:true"
+                    <rect ng-repeat="province in $ctrl.service.getProvinceArray() | provinceHasUnit:2:true"
                           id="{{province.p.replace('/', '-')}}-dislodged-fleet"
                           height="8"
                           width="16"
@@ -112,7 +111,7 @@
                     </rect>
                 </g>
 
-                <circle ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:1:false"
+                <circle ng-repeat="province in $ctrl.service.getProvinceArray() | provinceHasUnit:1:false"
                         id="{{province.p}}-army"
                         r="8"
                         stroke="#000"
@@ -122,7 +121,7 @@
                         ng-attr-fill="{{province.unit.fill}}">
                 </circle>
 
-                <rect ng-repeat="province in $ctrl.provinceArray | provinceHasUnit:2:false"
+                <rect ng-repeat="province in $ctrl.service.getProvinceArray() | provinceHasUnit:2:false"
                       id="{{province.p.replace('/', '-')}}-fleet"
                       height="8"
                       width="16"
@@ -138,13 +137,13 @@
         </svg>
     </div>
 
-    <md-toolbar class="md-toolbar-tools" id="mapNavToolbar" ng-if="$ctrl.header && $ctrl.game.phases">
-        <md-icon md-menu-origin md-svg-icon="first" ng-click="$ctrl.goToIndex($ctrl.game.phases.length)" class="svg48px"></md-icon>
-        <md-icon md-menu-origin md-svg-icon="previous" ng-click="$ctrl.goToIndex($ctrl.phaseIndex + 1)" class="svg48px"></md-icon>
+    <md-toolbar class="md-toolbar-tools" id="mapNavToolbar" ng-if="$ctrl.header && $ctrl.service.game.phases">
+        <md-icon md-menu-origin md-svg-icon="first" ng-click="$ctrl.goToIndex($ctrl.service.game.phases.length)" class="svg48px"></md-icon>
+        <md-icon md-menu-origin md-svg-icon="previous" ng-click="$ctrl.goToIndex($ctrl.service.phaseIndex + 1)" class="svg48px"></md-icon>
         <span>Previous</span>
         <span flex></span>
         <span>Next</span>
-        <md-icon md-menu-origin md-svg-icon="next" ng-click="$ctrl.goToIndex($ctrl.phaseIndex - 1)" class="svg48px"></md-icon>
+        <md-icon md-menu-origin md-svg-icon="next" ng-click="$ctrl.goToIndex($ctrl.service.phaseIndex - 1)" class="svg48px"></md-icon>
         <md-icon md-menu-origin md-svg-icon="last" ng-click="$ctrl.goToIndex(null)" class="svg48px"></md-icon>
     </md-toolbar>
 </div>

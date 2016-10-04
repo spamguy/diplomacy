@@ -2,8 +2,7 @@ angular.module('map.component', ['mapService', 'timer'])
 .component('sgMap', {
     bindings: {
         svg: '=',
-        game: '=',
-        phaseIndex: '=',
+        service: '=',
         readonly: '<',
         header: '<'
     },

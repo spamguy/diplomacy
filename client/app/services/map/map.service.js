@@ -6,13 +6,12 @@ angular.module('mapService', ['gameService'])
         commandData = [],
         service = function(game, phaseIndex) {
             this.game = game;
-            this.phaseIndex = phaseIndex;
-            this.phase = game.phases && game.phases.length > 0 ? game.phases[phaseIndex] : null;
-            this.userPower = gameService.getCurrentUserInGame(this.game).power;
+            this.setPhaseIndex(phaseIndex);
         };
 
     service.prototype.getSCTransform = getSCTransform;
     service.prototype.getSCPath = getSCPath;
+    service.prototype.getProvinceArray = getProvinceArray;
     service.prototype.generateMarkerStart = generateMarkerStart;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
     service.prototype.generateLine = generateLine;
@@ -28,6 +27,7 @@ angular.module('mapService', ['gameService'])
     service.prototype.adjustExpected = adjustExpected;
     service.prototype.isActionCurrent = isActionCurrent;
     service.prototype.isInPendingCommand = isInPendingCommand;
+    service.prototype.setPhaseIndex = setPhaseIndex;
 
     return service;
 
@@ -41,8 +41,8 @@ angular.module('mapService', ['gameService'])
         // See CSS file for why separate markers exist for failed orders.
         var failed = d.source.unit.resolution ? 'failed' : '';
 
-        if (d.target.action === 'convoy')
-            return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
+        if (d.source.unit.action === 'convoy')
+            return 'url(' + $location.absUrl() + '#' + failed + d.source.unit.action + ')';
         else
             return null;
     }
@@ -50,7 +50,7 @@ angular.module('mapService', ['gameService'])
     function generateMarkerEnd(d) {
         // See CSS file for why separate markers exist for failed orders.
         var failed = d.source.unit.resolution ? 'failed' : '';
-        return 'url(' + $location.absUrl() + '#' + failed + d.target.action + ')';
+        return 'url(' + $location.absUrl() + '#' + failed + d.source.unit.action + ')';
     }
 
     /**
@@ -235,11 +235,21 @@ angular.module('mapService', ['gameService'])
         return $location.absUrl() + '#sc';
     }
 
+    function getProvinceArray() {
+        return _.values(this.phase.provinces);
+    }
+
     function isActionCurrent(action) {
         return action === currentAction;
     }
 
     function isInPendingCommand(province) {
         return commandData.indexOf(province) >= 0;
+    }
+
+    function setPhaseIndex(index) {
+        this.phaseIndex = index;
+        this.phase = this.game.phases && this.game.phases.length > 0 ? this.game.phases[index] : null;
+        this.userPower = gameService.getCurrentUserInGame(this.game).power;
     }
 }]);

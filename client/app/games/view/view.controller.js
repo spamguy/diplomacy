@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('games')
-.controller('ViewController', ['$scope', '$state', 'userService', 'gameService', 'game', 'svg', 'powers', '$mdDialog', '$stateParams', function($scope, $state, userService, gameService, game, svg, powers, $mdDialog, $stateParams) {
+.controller('ViewController', ['$scope', '$state', 'userService', 'gameService', 'mapService', 'game', 'svg', 'powers', '$mdDialog', '$stateParams', function($scope, $state, userService, gameService, MapService, game, svg, powers, $mdDialog, $stateParams) {
     var phaseCount = 0;
 
     $scope.updateProvinceData = updateProvinceData;
@@ -12,10 +12,18 @@ angular.module('games')
     $scope.currentUserInGame = gameService.getCurrentUserInGame(game);
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
 
+    this.uiOnParamsChanged = function(params) {
+        if (game.phases)
+            phaseCount = game.phases.length;
+        $scope.service.setPhaseIndex(phaseCount - (params.phaseIndex || phaseCount));
+        $scope.$broadcast('renderphase');
+    };
+
     // Because phases are ordered in reverse, count backwards.
     if (game.phases)
         phaseCount = game.phases.length;
     $scope.phaseIndex = phaseCount - ($stateParams.phaseIndex || phaseCount);
+    $scope.service = new MapService($scope.game, $scope.phaseIndex);
 
     $scope.$on('socket/phase:adjudicate:update', function(event, updatedGame) {
         // A game just adjudicated, but is it this one?
