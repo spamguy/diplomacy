@@ -175,10 +175,6 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
             return self.setDislodged(variant, currentPhaseJSON, key, getDislodgerProvince(state.Dislodgers(), key), t);
         }));
     })
-    .then(function(result) {
-        // TODO: Process builds/disbands here.
-        return Promise.resolve(0);
-    })
     .then(function() { // STEP 3: Create new phase.
         nextPhase = currentPhase.clone();
         nextPhase.unset('id');
@@ -194,6 +190,12 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     })
     .then(function() {
         return self.generatePhaseProvincesFromState(variant, state, nextPhase, t);
+    })
+    .then(function() {
+        if (nextPhase.get('season').indexOf('Adjustment') > -1)
+            return self.syncSupplyCentreOwnership(nextPhase, t);
+        else
+            return Promise.resolve(0);
     })
     .then(function() { // STEP 3: Create phase provinces from old state + resolutions.
         return self.core.game.getAsync(game.get('id'), t);
@@ -323,6 +325,7 @@ PhaseCore.prototype.setMovementPhaseDefaults = function(phase, t) {
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
+    .debug(true)
     .where({
         phase_id: phase.get('id')
     })
@@ -337,6 +340,7 @@ PhaseCore.prototype.setRetreatPhaseDefaults = function(phase, t) {
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
+    .debug(true)
     .where({
         phase_id: phase.get('id')
     })
@@ -344,6 +348,21 @@ PhaseCore.prototype.setRetreatPhaseDefaults = function(phase, t) {
     .whereNotNull('dislodged_owner')
     .update({
         dislodged_action: 'disband'
+    });
+};
+
+PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
+    return db.bookshelf.knex('phase_provinces')
+    .transacting(t)
+    .forUpdate()
+    .debug(true)
+    .where({
+        phase_id: phase.get('id')
+    })
+    .whereNotNull('supply_centre_location')
+    .whereNotNull('unit_owner')
+    .update({
+        supply_centre: db.bookshelf.knex.raw('unit_owner')
     });
 };
 

@@ -175,6 +175,15 @@ function ImportGame(_t, _file, _index) {
                 t);
         })
         .then(function() {
+            var season = game.related('phases').at(0).get('season');
+            if (season.indexOf('Movement') > -1)
+                return core.phase.setMovementPhaseDefaults(game.related('phases').at(0), t);
+            else if (season.indexOf('Retreat') > -1)
+                return core.phase.setRetreatPhaseDefaults(game.related('phases').at(0), t);
+            else
+                return Promise.resolve(0);
+        })
+        .then(function() {
             return core.game.getAsync(game.get('id'), t);
         })
         .then(function(_game) {
