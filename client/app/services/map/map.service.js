@@ -11,6 +11,7 @@ angular.module('mapService', ['gameService'])
 
     service.prototype.getSCTransform = getSCTransform;
     service.prototype.getSCPath = getSCPath;
+    service.prototype.getSCFill = getSCFill;
     service.prototype.getProvinceArray = getProvinceArray;
     service.prototype.generateMarkerStart = generateMarkerStart;
     service.prototype.generateMarkerEnd = generateMarkerEnd;
@@ -35,6 +36,10 @@ angular.module('mapService', ['gameService'])
 
     function getSCTransform(p) {
         return 'translate(' + p.sc.location.x + ',' + p.sc.location.y + ') scale(0.04)';
+    }
+
+    function getSCFill(p) {
+        return (p.sc && p.sc.owner) ? p.sc.fill : '#ccc';
     }
 
     function generateMarkerStart(d) {

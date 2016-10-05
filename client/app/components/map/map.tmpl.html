@@ -72,7 +72,7 @@
                      ng-repeat="province in $ctrl.service.getProvinceArray() | provinceHasSC"
                      xlink:href="" ng-href="{{$ctrl.service.getSCPath(province)}}"
                      ng-attr-transform="{{$ctrl.service.getSCTransform(province)}}"
-                     ng-attr-fill="{{province.sc.fill}}"
+                     ng-attr-fill="{{$ctrl.service.getSCFill(province)}}"
                      class="sc">
                 </use>
             </g>
