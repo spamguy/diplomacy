@@ -362,7 +362,8 @@ PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
     .whereNotNull('supply_centre_location')
     .whereNotNull('unit_owner')
     .update({
-        supply_centre: db.bookshelf.knex.raw('unit_owner')
+        supply_centre: db.bookshelf.knex.raw('unit_owner'),
+        supply_centre_fill: db.bookshelf.knex.raw('unit_fill')
     });
 };
 
