@@ -4,9 +4,11 @@ angular.module('mapService', ['gameService'])
 
     var currentAction = 'hold',
         commandData = [],
-        service = function(game, phaseIndex) {
+        service = function(game, phase, index) {
             this.game = game;
-            this.setPhaseIndex(phaseIndex);
+            this.phase = phase;
+            this.phaseIndex = index;
+            this.userPower = gameService.getCurrentUserInGame(this.game).power;
         };
 
     service.prototype.getSCTransform = getSCTransform;
@@ -28,7 +30,6 @@ angular.module('mapService', ['gameService'])
     service.prototype.adjustExpected = adjustExpected;
     service.prototype.isActionCurrent = isActionCurrent;
     service.prototype.isInPendingCommand = isInPendingCommand;
-    service.prototype.setPhaseIndex = setPhaseIndex;
 
     return service;
 
@@ -250,11 +251,5 @@ angular.module('mapService', ['gameService'])
 
     function isInPendingCommand(province) {
         return commandData.indexOf(province) >= 0;
-    }
-
-    function setPhaseIndex(index) {
-        this.phaseIndex = index;
-        this.phase = this.game.phases && this.game.phases.length > 0 ? this.game.phases[index] : null;
-        this.userPower = gameService.getCurrentUserInGame(this.game).power;
     }
 }]);

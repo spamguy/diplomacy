@@ -43,24 +43,13 @@ module.exports = function(bookshelf) {
             // FIXME: Resolved state and user role also affect whether to obfuscate.
             var self = this,
                 currentUserID = options.currentUserID,
-                players,
-                phases = [],
-                phaseIndex;
+                players;
 
             options.obfuscate = currentUserID !== this.get('gmId');
 
             players = this.related('players').map(function(player) {
                 var isPlayer = player.get('id') === currentUserID,
-                    playerPower = player.pivot.get('power'),
-                    scCount = 0,
-                    currentPhase = self.related('phases').at(0);
-
-                // Count supply centres.
-                if (currentPhase) {
-                    currentPhase.related('provinces').each(function(p) {
-                        scCount += (p.get('supplyCentre') === playerPower);
-                    });
-                }
+                    playerPower = player.pivot.get('power');
 
                 if (isPlayer)
                     options.currentPlayerPower = playerPower;
@@ -68,16 +57,9 @@ module.exports = function(bookshelf) {
                 return {
                     player_id: options.obfuscate && !isPlayer ? null : player.get('id'),
                     isReady: options.obfuscate && !isPlayer ? null : player.pivot.get('is_ready'),
-                    power: playerPower,
-                    scs: scCount
+                    power: playerPower
                 };
             });
-
-            for (phaseIndex = 0; phaseIndex < this.related('phases').length; phaseIndex++) {
-                // Obfuscate active season, but for players only.
-                options.obfuscate = options.obfuscate && phaseIndex === 0;
-                phases.push(this.related('phases').at(phaseIndex).toJSON(options));
-            }
 
             return {
                 id: self.get('id'),
@@ -91,8 +73,7 @@ module.exports = function(bookshelf) {
                 retreatClock: self.get('retreatClock'),
                 adjustClock: self.get('adjustClock'),
                 pressType: self.get('pressType'),
-                players: players,
-                phases: phases
+                players: players
             };
         }
     });

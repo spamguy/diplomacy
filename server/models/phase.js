@@ -17,6 +17,10 @@ module.exports = function(bookshelf) {
 
         toJSON: function(options) {
             options = options || { obfuscate: false };
+
+            var currentUserID = options.currentUserID;
+
+            options.obfuscate = currentUserID !== this.get('gmId');
             return {
                 id: this.get('id'),
                 year: this.get('year'),

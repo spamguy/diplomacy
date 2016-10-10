@@ -15,6 +15,28 @@ function PhaseCore(options) {
         this.core = options.core;
 }
 
+PhaseCore.prototype.get = function(gameID, offset, t) {
+    var order = 'asc';
+
+    // Null offset caused by visiting game's default state. Represents current phase.
+    if (offset === null) {
+        order = 'desc';
+        offset = 0;
+    }
+
+    return db.models.Phase
+    .query(function(query) { // { where: { 'game_id': gameID } })
+        query.orderBy('created_at', order)
+        .where('game_id', gameID)
+        .limit(1)
+        .offset(offset);
+
+        if (t)
+            query.transacting(t);
+    })
+    .fetch({ debug: true, withRelated: ['provinces'] });
+};
+
 PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
     var self = this,
         newPhase = new db.models.Phase({
@@ -31,12 +53,7 @@ PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
         return self.generatePhaseProvincesFromTemplate(variant, phase, t);
     })
     .then(function() {
-        return db.models.Game
-            .where('id', game.get('id'))
-            .fetch({
-                transacting: t,
-                withRelated: ['players', 'phases', 'phases.provinces']
-            });
+        return newPhase.refresh({ transacting: t });
     });
 };
 
@@ -148,31 +165,38 @@ PhaseCore.prototype.generatePhaseProvincesFromState = function(variant, state, p
 
 PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     var self = this,
-        currentPhase = game.related('phases').at(0),
-        currentPhaseJSON = currentPhase.toJSON(),
-        nextSeasonIndex = currentPhase.get('seasonIndex') + 1,
+        currentPhase,
+        nextSeasonIndex,
         failedResolutions = _.omitBy(state.Resolutions(), function(r) { return r === ''; }),
         nextSeason,
         nextDeadline,
         nextPhase;
 
-    // Retreat phases can be skipped if no retreats necessary.
-    if (_.keys(state.Dislodgeds()).length === 0 && currentPhase.get('season').indexOf('Movement') > 0) {
-        winston.log('Skipping retreat season', { gameID: game.get('id') });
-        nextSeasonIndex++;
-    }
+    // STEP 1: Get current phase.
+    return self.getWithTransaction(game.get('id'), null, t)
 
-    nextSeasonIndex = nextSeasonIndex % variant.phases.length;
-    nextSeason = variant.phases[nextSeasonIndex];
-    nextDeadline = moment().add(game.getClockFromSeason(nextSeason), 'hours');
+    // STEP 2: Mark up old phase with resolution data, keeping orders intact for posterity.
+    .then(function(phase) {
+        currentPhase = phase;
+        nextSeasonIndex = currentPhase.get('seasonIndex') + 1;
 
-    // STEP 1: Mark up old phase with resolution data, keeping orders intact for posterity.
-    return Promise.props(_.mapValues(failedResolutions, function(resolution, key) {
-        return self.setFailed(currentPhase, key, resolution, t);
-    }))
-    .then(function(result) { // STEP 2: Mark up old phase with dislodged data.
+        // Retreat phases can be skipped if no retreats necessary.
+        if (_.keys(state.Dislodgeds()).length === 0 && currentPhase.get('season').indexOf('Movement') > 0) {
+            winston.log('Skipping retreat season', { gameID: game.get('id') });
+            nextSeasonIndex++;
+        }
+
+        nextSeasonIndex = nextSeasonIndex % variant.phases.length;
+        nextSeason = variant.phases[nextSeasonIndex];
+        nextDeadline = moment().add(game.getClockFromSeason(nextSeason), 'hours');
+
+        return Promise.props(_.mapValues(failedResolutions, function(resolution, key) {
+            return self.setFailed(currentPhase, key, resolution, t);
+        }));
+    })
+    .then(function() { // STEP 2: Mark up old phase with dislodged data.
         return Promise.props(_.mapValues(state.Dislodgeds(), function(resolution, key) {
-            return self.setDislodged(variant, currentPhaseJSON, key, getDislodgerProvince(state.Dislodgers(), key), t);
+            return self.setDislodged(variant, currentPhase.toJSON({ obfuscate: false }), key, getDislodgerProvince(state.Dislodgers(), key), t);
         }));
     })
     .then(function() { // STEP 3: Create new phase.
@@ -195,10 +219,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
         if (nextPhase.get('season').indexOf('Adjustment') > -1)
             return self.syncSupplyCentreOwnership(nextPhase, t);
         else
-            return Promise.resolve(0);
-    })
-    .then(function() { // STEP 3: Create phase provinces from old state + resolutions.
-        return self.core.game.getAsync(game.get('id'), t);
+            return Promise.resolve(nextPhase);
     });
 };
 
@@ -333,6 +354,9 @@ PhaseCore.prototype.setMovementPhaseDefaults = function(phase, t) {
     .whereNotNull('unit_owner')
     .update({
         unit_action: 'hold'
+    })
+    .then(function() {
+        return phase.refresh({ transacting: t });
     });
 };
 
@@ -348,6 +372,9 @@ PhaseCore.prototype.setRetreatPhaseDefaults = function(phase, t) {
     .whereNotNull('dislodged_owner')
     .update({
         dislodged_action: 'disband'
+    })
+    .then(function() {
+        return phase.refresh({ transacting: t });
     });
 };
 
@@ -364,6 +391,9 @@ PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
     .update({
         supply_centre: db.bookshelf.knex.raw('unit_owner'),
         supply_centre_fill: db.bookshelf.knex.raw('unit_fill')
+    })
+    .then(function() {
+        return phase.refresh({ transacting: t });
     });
 };
 

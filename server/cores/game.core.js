@@ -12,20 +12,20 @@ function GameCore(options) {
 GameCore.prototype.get = function(id, cb) {
     db.models.Game
         .where('id', id)
-        .fetch({ withRelated: ['players', 'phases', 'phases.provinces'] })
+        .fetch({ withRelated: ['players'] })
         .asCallback(cb);
 };
 
 GameCore.prototype.getAsync = function(id, t) {
     return db.models.Game
         .where('id', id)
-        .fetch({ transacting: t, withRelated: ['players', 'phases', 'phases.provinces'] });
+        .fetch({ transacting: t, withRelated: ['players'] });
 };
 
 GameCore.prototype.findByGM = function(id, cb) {
     db.models.Game
         .where('gm_id', id)
-        .fetchAll({ withRelated: ['players', 'phases'] })
+        .fetchAll({ withRelated: ['players'] })
         .asCallback(cb);
 };
 
@@ -38,8 +38,8 @@ GameCore.prototype.findByPlayer = function(id, cb) {
     });
 };
 
-GameCore.prototype.listOpen = function(cb) {
-    db.models.Game
+GameCore.prototype.listOpen = function() {
+    return db.models.Game
         .query(function(query) {
             query.select('g.*')
                 .from('games AS g')
@@ -56,8 +56,8 @@ GameCore.prototype.listOpen = function(cb) {
             phases: function(query) {
                 query.orderBy('created_at').limit(1);
             }
-        }]})
-        .asCallback(cb);
+        }]
+    });
 };
 
 GameCore.prototype.create = function(gmID, options, cb) {

@@ -1,34 +1,30 @@
 'use strict';
 
 angular.module('games')
-.controller('ViewController', ['$scope', '$state', 'userService', 'gameService', 'mapService', 'game', 'svg', 'powers', '$mdDialog', '$stateParams', function($scope, $state, userService, gameService, MapService, game, svg, powers, $mdDialog, $stateParams) {
-    var phaseCount = 0;
-
+.controller('ViewController', ['$scope', '$state', 'userService', 'gameService', 'mapService', 'game', 'phase', 'svg', 'powers', '$mdDialog', '$stateParams', function($scope, $state, userService, gameService, MapService, game, phase, svg, powers, $mdDialog, $stateParams) {
     $scope.updateProvinceData = updateProvinceData;
 
     $scope.powers = powers;
-    $scope.game = game;
     $scope.readonly = userService.getCurrentUserID() === game.gm_id;
     $scope.currentUserInGame = gameService.getCurrentUserInGame(game);
     $scope.svg = new DOMParser().parseFromString(svg.data, 'image/svg+xml');
+    $scope.service = new MapService(game, phase, $stateParams.phaseIndex);
 
     this.uiOnParamsChanged = function(params) {
-        if (game.phases)
-            phaseCount = game.phases.length;
-        $scope.service.setPhaseIndex(phaseCount - (params.phaseIndex || phaseCount));
-        $scope.$broadcast('renderphase');
+        var index = params.phaseIndex;
+        if (index !== null)
+            index--;
+        gameService.getPhase(game.id, params.phaseIndex)
+        .then(function(phase) {
+            $scope.service.phase = phase;
+            $scope.$broadcast('renderphase');
+        });
     };
 
-    // Because phases are ordered in reverse, count backwards.
-    if (game.phases)
-        phaseCount = game.phases.length;
-    $scope.phaseIndex = phaseCount - ($stateParams.phaseIndex || phaseCount);
-    $scope.service = new MapService($scope.game, $scope.phaseIndex);
-
-    $scope.$on('socket/phase:adjudicate:update', function(event, updatedGame) {
+    $scope.$on('socket/phase:adjudicate:update', function(event, newPhase) {
         // A game just adjudicated, but is it this one?
-        if ($scope.game.id === updatedGame.id)
-            $scope.game = updatedGame;
+        if ($scope.service.game.id === newPhase.gameID)
+            $scope.service.phase = newPhase;
     });
 
     // Point out games that haven't started yet.
@@ -46,11 +42,11 @@ angular.module('games')
 
     function updateProvinceData(p, action, target, targetOfTarget) {
         // Update local data to reflect DB change.
-        $scope.game.phases[0].provinces[p].unit.action = action;
+        $scope.service.phase.provinces[p].unit.action = action;
         if (target)
-            $scope.game.phases[0].provinces[p].unit.target = target;
+            $scope.service.phase.provinces[p].unit.target = target;
         if (targetOfTarget)
-            $scope.game.phases[0].provinces[p].unit.targetOfTarget = targetOfTarget;
+            $scope.service.phase.provinces[p].unit.targetOfTarget = targetOfTarget;
 
         $scope.$broadcast('orderChange', {
             p: p

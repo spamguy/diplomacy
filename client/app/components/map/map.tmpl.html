@@ -42,7 +42,7 @@
         </div>
     </md-toolbar>
 
-    <div class="mapContainer" ng-class="{'notStarted': !$ctrl.service.game.phases}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
+    <div class="mapContainer" ng-class="{'notStarted': !$ctrl.service.phase}" ng-style="{'background-image':'url({{$ctrl.imagePath}})'}">
         <svg width="100%" ng-attr-view_box="{{$ctrl.viewBox}}">
             <defs>
                 <marker id="move" viewBox="0 -5 10 10" markerWidth="5" markerHeight="5" orient="auto">
@@ -137,13 +137,13 @@
         </svg>
     </div>
 
-    <md-toolbar class="md-toolbar-tools" id="mapNavToolbar" ng-if="$ctrl.header && $ctrl.service.game.phases">
-        <md-icon md-menu-origin md-svg-icon="first" ng-click="$ctrl.goToIndex($ctrl.service.game.phases.length)" class="svg48px"></md-icon>
-        <md-icon md-menu-origin md-svg-icon="previous" ng-click="$ctrl.goToIndex($ctrl.service.phaseIndex + 1)" class="svg48px"></md-icon>
+    <md-toolbar class="md-toolbar-tools" id="mapNavToolbar" ng-if="$ctrl.header && $ctrl.service.phase">
+        <md-icon md-menu-origin md-svg-icon="first" ng-click="$ctrl.goToIndex(1)" class="svg48px"></md-icon>
+        <md-icon md-menu-origin md-svg-icon="previous" ng-click="$ctrl.goToIndex($ctrl.service.phaseIndex)" class="svg48px"></md-icon>
         <span>Previous</span>
         <span flex></span>
         <span>Next</span>
-        <md-icon md-menu-origin md-svg-icon="next" ng-click="$ctrl.goToIndex($ctrl.service.phaseIndex - 1)" class="svg48px"></md-icon>
+        <md-icon md-menu-origin md-svg-icon="next" ng-click="$ctrl.goToIndex($ctrl.service.phaseIndex + 2)" class="svg48px"></md-icon>
         <md-icon md-menu-origin md-svg-icon="last" ng-click="$ctrl.goToIndex(null)" class="svg48px"></md-icon>
     </md-toolbar>
 </div>

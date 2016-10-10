@@ -54,6 +54,7 @@ function ImportGame(_t, _file, _index) {
         file = _file,
         index = _index,
         game = null,
+        phase = null,
         phaseArray = [ ];
 
     ImportGame.prototype.createNew = createNew;
@@ -74,11 +75,12 @@ function ImportGame(_t, _file, _index) {
     }
 
     function init(_game) {
+        game = _game;
         return core.phase.initFromVariant(variant, _game, new Date(), t);
     }
 
-    function fileContentsToPhaseArray(_game) {
-        game = _game;
+    function fileContentsToPhaseArray(firstPhase) {
+        phase = firstPhase;
 
         var currentYear,
             currentSeason,
@@ -168,35 +170,32 @@ function ImportGame(_t, _file, _index) {
         .mapSeries(function(order) {
             var action = order.pop();
             return core.phase.setOrder(
-                game.related('phases').at(0).get('id'),
-                game.related('phases').at(0).get('season'),
+                phase.get('id'),
+                phase.get('season'),
                 order,
                 action,
                 t);
         })
         .then(function() {
-            var season = game.related('phases').at(0).get('season');
+            var season = phase.get('season');
             if (season.indexOf('Movement') > -1)
-                return core.phase.setMovementPhaseDefaults(game.related('phases').at(0), t);
+                return core.phase.setMovementPhaseDefaults(phase, t);
             else if (season.indexOf('Retreat') > -1)
-                return core.phase.setRetreatPhaseDefaults(game.related('phases').at(0), t);
+                return core.phase.setRetreatPhaseDefaults(phase, t);
             else
-                return Promise.resolve(0);
+                return Promise.resolve(phase);
         })
-        .then(function() {
-            return core.game.getAsync(game.get('id'), t);
-        })
-        .then(function(_game) {
-            game = _game;
+        .then(function(_phase) {
+            phase = _phase;
             var nextState,
-                phaseJSON = game.related('phases').at(0).toJSON({ obfuscate: false });
+                phaseJSON = phase.toJSON({ obfuscate: false });
 
             phaseJSON.seasonType = phaseJSON.season.split(' ')[1];
             nextState = global.state.NextFromJS(variant, phaseJSON);
 
             return core.phase.createFromState(variant, game, nextState, t)
-            .then(function(_game) {
-                game = _game;
+            .then(function(_phase) {
+                phase = _phase;
             });
         });
     }

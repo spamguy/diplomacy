@@ -69,6 +69,14 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         },
 
+        getPhase: function(gameID, phaseIndex) {
+            return $q(function(resolve) {
+                socketService.socket.emit('phase:get', { gameID: gameID, offset: phaseIndex }, function(phase) {
+                    resolve(phase);
+                });
+            });
+        },
+
         getAllOpenGames: function() {
             return $q(function(resolve) {
                 socketService.socket.emit('game:listopen', function(games) {

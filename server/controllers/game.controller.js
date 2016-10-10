@@ -43,10 +43,13 @@ module.exports = function() {
         },
 
         listopen: function(req, res) {
-            core.game.listOpen(function(err, games) {
-                if (err)
-                    console.error(err);
+            core.game.listOpen()
+            .then(function(games) {
                 return res.json(games.toJSON({ currentUserID: req.socket.decoded_token.id }));
+            })
+            .catch(function(err) {
+                app.logger.error(err);
+                return res.status(400).json({ error: err });
             });
         },
 

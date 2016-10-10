@@ -7,6 +7,17 @@ module.exports = function() {
         core = this.core;
 
     app.io.route('phase', {
+        get: function(req, res) {
+            core.phase.get(req.data.gameID, req.data.offset)
+            .then(function(phase) {
+                return res.json(phase.toJSON({ currentUserID: req.socket.decoded_token.id }));
+            })
+            .catch(function(err) {
+                app.logger.error(err);
+                return res.status(400).json({ error: err });
+            });
+        },
+
         create: function(req, res) {
             var phase = req.data.phase;
 

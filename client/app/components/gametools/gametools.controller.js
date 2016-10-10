@@ -3,11 +3,11 @@ angular.module('gametools.component')
     var vm = this,
         confirm;
 
-    vm.service = gameService;
+    vm.gameService = gameService;
     vm.powerOwnsUnitInProvince = powerOwnsUnitInProvince;
     vm.getPowerList = getPowerList;
     vm.setReadyState = setReadyState;
-    vm.currentUserInGame = gameService.getCurrentUserInGame(vm.game);
+    vm.currentUserInGame = gameService.getCurrentUserInGame(vm.service.game);
 
     vm.actions = {
         adjudicateNow: function() {
@@ -20,7 +20,7 @@ angular.module('gametools.component')
                 .cancel('Cancel');
 
             $mdDialog.show(confirm).then(function() {
-                gameService.adjudicateCurrentPhase(vm.game, function() {
+                gameService.adjudicateCurrentPhase(vm.service.game, function() {
                     $state.go('profile.games');
                 });
             });
@@ -35,7 +35,7 @@ angular.module('gametools.component')
                 .cancel('Cancel');
 
             $mdDialog.show(confirm).then(function() {
-                gameService.endGame(vm.game, function() {
+                gameService.endGame(vm.service.game, function() {
                     $state.go('profile.games');
                 });
             });
@@ -58,7 +58,7 @@ angular.module('gametools.component')
                 .cancel('Cancel');
 
             $mdDialog.show(confirm).then(function() {
-                gameService.removePlayer(userService.getCurrentUserID(), vm.game, true, function() {
+                gameService.removePlayer(userService.getCurrentUserID(), vm.service.game, true, function() {
                     $state.go('profile.games');
                 });
             });
@@ -71,18 +71,18 @@ angular.module('gametools.component')
 
     function getPowerList() {
         var p;
-        if (gameService.isGM(vm.game)) { // GMs see everyone.
+        if (gameService.isGM(vm.service.game)) { // GMs see everyone.
             return vm.powers;
         }
         else {
-            for (p = 0; p < vm.game.players.length; p++) {
-                if (vm.game.players[p].player_id === userService.getCurrentUserID())
-                    return _.pick(vm.powers, [vm.game.players[p].power]);
+            for (p = 0; p < vm.service.game.players.length; p++) {
+                if (vm.service.game.players[p].player_id === userService.getCurrentUserID())
+                    return _.pick(vm.powers, [vm.service.game.players[p].power]);
             }
         }
     }
 
     function setReadyState() {
-        gameService.setReadyState(vm.game, gameService.getCurrentUserInGame(vm.game).isReady);
+        gameService.setReadyState(vm.service.game, gameService.getCurrentUserInGame(vm.service.game).isReady);
     }
 }]);

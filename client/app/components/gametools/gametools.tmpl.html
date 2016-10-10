@@ -3,17 +3,17 @@
         <md-tab>
             <md-tab-label>Orders</md-tab-label>
             <md-tab-body>
-                <div layout="row" layout-align="center" ng-if="$ctrl.game.status === 1 && $ctrl.service.isPlayer($ctrl.game)" style="display: none">
+                <div layout="row" layout-align="center" ng-if="$ctrl.service.game.status === 1 && $ctrl.gameService.isPlayer($ctrl.service.game)" style="display: none">
                     <md-switch ng-model="$ctrl.currentUserInGame.isReady" ng-change="$ctrl.setReadyState()">
                         <span class="md-title">{{$ctrl.currentUserInGame.isReady ? 'Ready!' : 'Not ready'}}</span>
                     </md-switch>
                 </div>
 
-                <section ng-if="$ctrl.game.status === 1" ng-repeat="(code, power) in $ctrl.getPowerList()">
-                    <md-subheader>{{power.name}} ({{$ctrl.service.getPlayerInGameByCode($ctrl.game, code).scs}})</md-subheader>
+                <section ng-if="$ctrl.service.game.status === 1" ng-repeat="(code, power) in $ctrl.getPowerList()">
+                    <md-subheader>{{power.name}} ({{$ctrl.service.getPlayerInGameByCode($ctrl.service.game, code).scs}})</md-subheader>
                     <md-divider></md-divider>
                     <md-list>
-                        <md-list-item ng-repeat="(key, province) in $ctrl.game.phases[$ctrl.phaseIndex].provinces" ng-if="$ctrl.powerOwnsUnitInProvince(code, province)">
+                        <md-list-item ng-repeat="(key, province) in $ctrl.service.phase.provinces" ng-if="$ctrl.powerOwnsUnitInProvince(code, province)">
                             <sg-province-list-item province="province" />
                         </md-list-item>
                     </md-list>
@@ -21,31 +21,31 @@
             </md-tab-body>
         </md-tab>
 
-        <md-tab ng-disabled="$ctrl.game.status > 1 || !$ctrl.service.isParticipant($ctrl.game)">
+        <md-tab ng-disabled="$ctrl.service.game.status > 1 || !$ctrl.gameService.isParticipant($ctrl.service.game)">
             <md-tab-label>Actions</md-tab-label>
             <md-tab-body>
                 <md-list>
-                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game) && $ctrl.game.status === 1" ng-click="$ctrl.actions.adjudicateNow()">
+                    <md-list-item ng-if="$ctrl.gameService.isGM($ctrl.service.game) && $ctrl.service.game.status === 1" ng-click="$ctrl.actions.adjudicateNow()">
                         <div><span>Adjudicate now</span></div>
                         <md-divider></md-divider>
                     </md-list-item>
 
-                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.excusePlayer()">
+                    <md-list-item ng-if="$ctrl.gameService.isGM($ctrl.service.game)" ng-click="$ctrl.actions.excusePlayer()">
                         <div><span>Excuse player</span></div>
                         <md-divider></md-divider>
                     </md-list-item>
 
-                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.bootPlayer()">
+                    <md-list-item ng-if="$ctrl.gameService.isGM($ctrl.service.game)" ng-click="$ctrl.actions.bootPlayer()">
                         <div><span>Boot player</span></div>
                         <md-divider></md-divider>
                     </md-list-item>
 
-                    <md-list-item ng-if="$ctrl.service.isGM($ctrl.game)" ng-click="$ctrl.actions.endGame()">
+                    <md-list-item ng-if="$ctrl.gameService.isGM($ctrl.service.game)" ng-click="$ctrl.actions.endGame()">
                         <div><span>End game</span></div>
                         <md-divider></md-divider>
                     </md-list-item>
 
-                    <md-list-item ng-if="$ctrl.service.isPlayer($ctrl.game)" ng-click="$ctrl.actions.quitGame()">
+                    <md-list-item ng-if="$ctrl.gameService.isPlayer($ctrl.service.game)" ng-click="$ctrl.actions.quitGame()">
                         <div><span>Quit game</span></div>
                         <md-divider></md-divider>
                     </md-list-item>

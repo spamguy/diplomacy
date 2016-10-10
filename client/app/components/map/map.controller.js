@@ -175,16 +175,13 @@ angular.module('map.component')
     }
 
     function goToIndex(index) {
-        var humanIndex = vm.service.game.phases.length - index;
-        // Keep vm.service.phase index inside countable number of vm.service.phases.
-        if (humanIndex > vm.service.game.phases.length)
-            humanIndex = null;
-        else if (humanIndex <= 0)
-            humanIndex = 1;
+        // Keep phase index inside countable number of phases.
+        if (index !== null && index <= 0)
+            index = 1;
 
         $state.go('.', {
             id: vm.service.game.id,
-            phaseIndex: humanIndex
+            phaseIndex: index
         }, { notify: false });
     }
 }]);
