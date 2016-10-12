@@ -12,9 +12,8 @@ angular.module('games')
 
     this.uiOnParamsChanged = function(params) {
         var index = params.phaseIndex;
-        if (index !== null)
-            index--;
-        gameService.getPhase(game.id, params.phaseIndex)
+
+        gameService.getPhase(game.id, index)
         .then(function(phase) {
             $scope.service.phase = phase;
             $scope.$broadcast('renderphase');

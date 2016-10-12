@@ -13,7 +13,7 @@ var Promise = require('bluebird'),
         .file('default', path.join(process.cwd(), 'server/config/local.env.sample.json')),
     logger = require('./server/logger'),
     db = require('./server/db'),
-    core = require('./server/cores/index'),
+    core = require('./server/cores/index')(logger),
     variant = core.variant.get('Standard'),
     filePatternToImport = dirGlob.sync([process.argv[2]])[0];
 

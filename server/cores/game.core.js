@@ -5,8 +5,9 @@ var db = require('./../db'),
     moment = require('moment'),
     _ = require('lodash');
 
-function GameCore(options) {
-    this.core = options.core;
+function GameCore(core, logger) {
+    this.core = core;
+    this.logger = logger;
 }
 
 GameCore.prototype.get = function(id, cb) {

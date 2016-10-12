@@ -4,26 +4,13 @@ var UserCore = require('./user.core'),
     GameCore = require('./game.core'),
     PhaseCore = require('./phase.core'),
     VariantCore = require('./variant.core'),
-    EventEmitter = require('events').EventEmitter;
+    core = { };
 
-function Core() {
-    EventEmitter.call(this);
+module.exports = function(logger) {
+    core.user = new UserCore(core, logger);
+    core.game = new GameCore(core, logger);
+    core.phase = new PhaseCore(core, logger);
+    core.variant = new VariantCore(core, logger);
 
-    this.user = new UserCore({
-        core: this
-    });
-
-    this.game = new GameCore({
-        core: this
-    });
-
-    this.phase = new PhaseCore({
-        core: this
-    });
-
-    this.variant = new VariantCore({
-        core: this
-    });
-}
-
-module.exports = new Core();
+    return core;
+};

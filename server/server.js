@@ -5,7 +5,7 @@ var path = require('path'),
     _ = require('lodash'),
     kue = require('kue'),
     controllers = all(path.join(__dirname, '/controllers')),
-    core = require('./cores/index'),
+    core,
     app = express(),
     socketioJWT = require('socketio-jwt'),
     seekrits = require('nconf')
@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 
 // Add logging transports.
 app.logger = require('./logger');
+core = require('./cores/index')(app.logger);
 
 app.seekrits = seekrits;
 

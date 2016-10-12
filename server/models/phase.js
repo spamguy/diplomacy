@@ -16,11 +16,14 @@ module.exports = function(bookshelf) {
         },
 
         toJSON: function(options) {
-            options = options || { obfuscate: false };
+            options = options || { };
 
             var currentUserID = options.currentUserID;
 
-            options.obfuscate = currentUserID !== this.get('gmId');
+            // Obscure sensitive info if the user is not the GM *and* it is the current season.
+            options.obfuscate = currentUserID !== this.get('gmId') &&
+                this.related('game').get('currentPhaseId') === this.get('id');
+
             return {
                 id: this.get('id'),
                 year: this.get('year'),

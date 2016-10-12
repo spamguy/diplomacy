@@ -3,38 +3,48 @@
 var _ = require('lodash'),
     db = require('./../db'),
     Promise = require('bluebird'),
-    winston = require('winston'),
     moment = require('moment');
 
-// Log all the things.
-winston.transports.Console.level = 'debug';
-
-function PhaseCore(options) {
-    options = options || { };
-    if (options.core)
-        this.core = options.core;
+function PhaseCore(core, logger) {
+    this.core = core;
+    this.logger = logger;
 }
 
 PhaseCore.prototype.get = function(gameID, offset, t) {
-    var order = 'asc';
+    var order = 'asc',
+        options = {
+            debug: true,
+            withRelated: [
+                'provinces', {
+                    game: function(query) {
+                        query.select('id', 'gm_id', 'current_phase_id');
+                    }
+                }
+            ]
+        };
+
+    if (t)
+        options.transacting = t;
 
     // Null offset caused by visiting game's default state. Represents current phase.
     if (offset === null) {
         order = 'desc';
         offset = 0;
     }
+    else {
+        offset--;
+    }
 
     return db.models.Phase
-    .query(function(query) { // { where: { 'game_id': gameID } })
+    .query(function(query) {
         query.orderBy('created_at', order)
         .where('game_id', gameID)
-        .limit(1)
-        .offset(offset);
+        .limit(1);
 
-        if (t)
-            query.transacting(t);
+        if (offset > 0)
+            query.offset(offset);
     })
-    .fetch({ debug: true, withRelated: ['provinces'] });
+    .fetch(options);
 };
 
 PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
@@ -51,6 +61,9 @@ PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
     .then(function(phase) {
         // Generate region data for this phase, using variant template.
         return self.generatePhaseProvincesFromTemplate(variant, phase, t);
+    })
+    .then(function() {
+        return game.save({ currentPhaseId: newPhase.get('id') }, { transacting: t });
     })
     .then(function() {
         return newPhase.refresh({ transacting: t });
@@ -173,7 +186,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
         nextPhase;
 
     // STEP 1: Get current phase.
-    return self.getWithTransaction(game.get('id'), null, t)
+    return self.get(game.get('id'), null, t)
 
     // STEP 2: Mark up old phase with resolution data, keeping orders intact for posterity.
     .then(function(phase) {
@@ -182,7 +195,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
 
         // Retreat phases can be skipped if no retreats necessary.
         if (_.keys(state.Dislodgeds()).length === 0 && currentPhase.get('season').indexOf('Movement') > 0) {
-            winston.log('Skipping retreat season', { gameID: game.get('id') });
+            this.logger.log('Skipping retreat season', { gameID: game.get('id') });
             nextSeasonIndex++;
         }
 
@@ -211,6 +224,9 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
             nextPhase.set('year', currentPhase.get('year') + 1);
 
         return nextPhase.save(null, { transacting: t, debug: true });
+    })
+    .then(function(nextPhase) {
+        return game.save({ currentPhaseId: nextPhase.get('id') }, { transacting: t });
     })
     .then(function() {
         return self.generatePhaseProvincesFromState(variant, state, nextPhase, t);
@@ -265,7 +281,6 @@ PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
             'province_key': province[0],
             'subprovince_key': subprovince
         })
-        .debug(true)
         .update(orderData);
 
     if (t)
@@ -290,12 +305,20 @@ PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislod
             phase_id: phaseJSON.id,
             province_key: provinceArray[0]
         },
+        attackingUnitOwner;
+
+    if (phaseJSON.provinces[dislodger].unit) {
         attackingUnitOwner = phaseJSON.provinces[dislodger].unit.owner;
+    }
+    else {
+        this.logger.warn('Dislodger %s does not have a unit. Ignoring order');
+        return Promise.resolve(0);
+    }
 
     if (provinceArray[1])
         updatedProvince.subprovinceKey = provinceArray[1];
 
-    winston.debug('Marking %s as dislodged by %s', province, dislodger, { phaseID: phaseJSON.id });
+    this.logger.debug('Marking %s as dislodged by %s', province, dislodger, { phaseID: phaseJSON.id });
 
     // Bump current unit to dislodged slot.
     return db.bookshelf.knex('phase_provinces')
@@ -331,7 +354,7 @@ PhaseCore.prototype.setFailed = function(phase, province, resolution, t) {
     if (provinceArray[1])
         provinceToUpdate.subprovince_key = provinceArray[1];
 
-    winston.debug('Marking %s as failed (code %s)', province, resolution, { phaseID: phase.get('id') });
+    this.logger.debug('Marking %s as failed (code %s)', province, resolution, { phaseID: phase.get('id') });
 
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)

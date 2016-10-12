@@ -2,8 +2,9 @@
 
 var db = require('./../db');
 
-function UserCore(options) {
-    this.core = options.core;
+function UserCore(core, logger) {
+    this.core = core;
+    this.logger = logger;
 }
 
 UserCore.prototype.get = function(id, cb) {

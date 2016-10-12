@@ -179,6 +179,8 @@ angular.module('map.component')
         if (index !== null && index <= 0)
             index = 1;
 
+        vm.service.phaseIndex = index;
+
         $state.go('.', {
             id: vm.service.game.id,
             phaseIndex: index
