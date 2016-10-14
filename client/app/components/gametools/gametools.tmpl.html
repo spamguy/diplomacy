@@ -9,7 +9,7 @@
                     </md-switch>
                 </div>
 
-                <section ng-if="$ctrl.service.game.status === 1" ng-repeat="(code, power) in $ctrl.getPowerList()">
+                <section ng-if="$ctrl.service.game.status > 0" ng-repeat="(code, power) in $ctrl.getPowerList()">
                     <md-subheader>{{power.name}} ({{$ctrl.service.getPlayerInGameByCode($ctrl.service.game, code).scs}})</md-subheader>
                     <md-divider></md-divider>
                     <md-list>

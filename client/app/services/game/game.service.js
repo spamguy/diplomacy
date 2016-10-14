@@ -174,6 +174,8 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         getCurrentUserInGame: function(game) {
+            if (game.gmID === userService.getCurrentUserID())
+                return { power: 'GM' };
             var p = 0,
                 players = game.players || [];
             for (p = 0; p < players.length; p++) {
@@ -181,6 +183,7 @@ angular.module('gameService', ['userService', 'socketService'])
                     return players[p];
             }
 
+            // Just a viewer.
             return { power: null };
         },
 

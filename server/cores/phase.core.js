@@ -66,7 +66,7 @@ PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
         return game.save({ currentPhaseId: newPhase.get('id') }, { transacting: t });
     })
     .then(function() {
-        return newPhase.refresh({ transacting: t });
+        return self.core.phase.get(newPhase.get('game_id'), null, t);
     });
 };
 
@@ -195,7 +195,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
 
         // Retreat phases can be skipped if no retreats necessary.
         if (_.keys(state.Dislodgeds()).length === 0 && currentPhase.get('season').indexOf('Movement') > 0) {
-            this.logger.log('Skipping retreat season', { gameID: game.get('id') });
+            self.logger.log('Skipping retreat season', { gameID: game.get('id') });
             nextSeasonIndex++;
         }
 
@@ -213,11 +213,13 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
         }));
     })
     .then(function() { // STEP 3: Create new phase.
-        nextPhase = currentPhase.clone();
-        nextPhase.unset('id');
-        nextPhase.set('deadline', nextDeadline.toDate());
-        nextPhase.set('seasonIndex', nextSeasonIndex);
-        nextPhase.set('season', nextSeason);
+        nextPhase = new db.models.Phase({
+            deadline: nextDeadline.toDate(),
+            seasonIndex: nextSeasonIndex,
+            season: nextSeason,
+            year: currentPhase.get('year'),
+            gameId: currentPhase.get('gameId')
+        });
 
         // Phase rolled back to 0. Bump year.
         if (nextSeasonIndex < currentPhase.get('seasonIndex'))
@@ -225,7 +227,8 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
 
         return nextPhase.save(null, { transacting: t, debug: true });
     })
-    .then(function(nextPhase) {
+    .then(function(_nextPhase) {
+        nextPhase = _nextPhase;
         return game.save({ currentPhaseId: nextPhase.get('id') }, { transacting: t });
     })
     .then(function() {
@@ -366,6 +369,7 @@ PhaseCore.prototype.setFailed = function(phase, province, resolution, t) {
 };
 
 PhaseCore.prototype.setMovementPhaseDefaults = function(phase, t) {
+    var self = this;
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
@@ -379,11 +383,12 @@ PhaseCore.prototype.setMovementPhaseDefaults = function(phase, t) {
         unit_action: 'hold'
     })
     .then(function() {
-        return phase.refresh({ transacting: t });
+        return self.core.phase.get(phase.get('gameId'), null, t);
     });
 };
 
 PhaseCore.prototype.setRetreatPhaseDefaults = function(phase, t) {
+    var self = this;
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
@@ -397,11 +402,12 @@ PhaseCore.prototype.setRetreatPhaseDefaults = function(phase, t) {
         dislodged_action: 'disband'
     })
     .then(function() {
-        return phase.refresh({ transacting: t });
+        return self.core.phase.get(phase.get('gameId'), null, t);
     });
 };
 
 PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
+    var self = this;
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
@@ -416,7 +422,7 @@ PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
         supply_centre_fill: db.bookshelf.knex.raw('unit_fill')
     })
     .then(function() {
-        return phase.refresh({ transacting: t });
+        return self.core.phase.get(phase.get('gameId'), null, t);
     });
 };
 

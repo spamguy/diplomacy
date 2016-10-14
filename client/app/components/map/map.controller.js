@@ -74,7 +74,7 @@ angular.module('map.component')
              */
 
             var sourceProvince = vm.service.phase.provinces[d.source.p],
-                targetProvince = vm.service.phase.provinces[d.target.p],
+                targetProvince = vm.service.phase.provinces[d.source.unit.target],
                 sx = sourceProvince.unitLocation.x,
                 sy = sourceProvince.unitLocation.y,
                 tx = targetProvince.unitLocation.x,

@@ -4,6 +4,7 @@ angular.module('games')
 .controller('ViewController', ['$scope', '$state', 'userService', 'gameService', 'mapService', 'game', 'phase', 'svg', 'powers', '$mdDialog', '$stateParams', function($scope, $state, userService, gameService, MapService, game, phase, svg, powers, $mdDialog, $stateParams) {
     $scope.updateProvinceData = updateProvinceData;
 
+    powers.GM = { name: 'Game Master' };
     $scope.powers = powers;
     $scope.readonly = userService.getCurrentUserID() === game.gm_id;
     $scope.currentUserInGame = gameService.getCurrentUserInGame(game);

@@ -87,7 +87,7 @@ angular.module('mapService', ['gameService'])
      * @return {String}    An SVG path.
      */
     function generateArc(sx, sy, tx, ty) {
-        var LINK_UNIT_PADDING = 30,
+        var LINK_UNIT_PADDING = 20,
             dx = tx - sx,
             dy = ty - sy,
             dr = Math.sqrt(dx * dx + dy * dy),

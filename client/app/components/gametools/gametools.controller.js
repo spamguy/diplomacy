@@ -70,16 +70,7 @@ angular.module('gametools.component')
     }
 
     function getPowerList() {
-        var p;
-        if (gameService.isGM(vm.service.game)) { // GMs see everyone.
-            return vm.powers;
-        }
-        else {
-            for (p = 0; p < vm.service.game.players.length; p++) {
-                if (vm.service.game.players[p].player_id === userService.getCurrentUserID())
-                    return _.pick(vm.powers, [vm.service.game.players[p].power]);
-            }
-        }
+        return vm.powers;
     }
 
     function setReadyState() {
