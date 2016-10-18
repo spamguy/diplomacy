@@ -183,7 +183,11 @@ function ImportGame(_t, _file, _index) {
                 phase.get('season'),
                 order,
                 action,
-                t);
+                t)
+            .catch(function(ex) {
+                logger.warn('Could not set order for %s: %s', order[0], ex);
+                return Promise.resolve(0);
+            });
         })
         .then(function() {
             var season = phase.get('season');
@@ -195,17 +199,10 @@ function ImportGame(_t, _file, _index) {
                 return Promise.resolve(phase);
         })
         .then(function(_phase) {
-            phase = _phase;
-            var nextState,
-                phaseJSON = phase.toJSON({ obfuscate: false });
-
-            phaseJSON.seasonType = phaseJSON.season.split(' ')[1];
-            nextState = global.state.NextFromJS(variant, phaseJSON);
-
-            return core.phase.createFromState(variant, game, nextState, t)
-            .then(function(_phase) {
-                phase = _phase;
-            });
+            return core.phase.adjudicatePhase(variant, game, _phase, t);
+        })
+        .then(function(newPhase) {
+            phase = newPhase;
         });
     }
 }

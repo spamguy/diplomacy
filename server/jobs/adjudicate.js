@@ -14,7 +14,8 @@ module.exports = {
             gameID = job.data.gameID,
             judgePath = path.join(seekrits.get('judgePath'), 'diplomacy-godip'),
             variant,
-            game;
+            game,
+            phase;
 
         if (require('file-exists')(judgePath + '.js')) {
             require(judgePath);
@@ -26,41 +27,25 @@ module.exports = {
 
         winston.log('Starting adjudication job', { gameID: gameID });
 
-        async.waterfall([
-            // Fetches the game in question.
-            function(callback) {
-                core.game.get(gameID, callback);
-            },
+        core.game.get(gameID, callback) // Fetches the game in question.
+        .then(function(_game) {
+            game = _game;
+            variant = core.variant.get(game.get('variant'));
 
-            // Verifies all players are ready. Fetches the variant, adjudicates, and persists the outcome.
-            function(_game, callback) {
-                game = _game;
-                variant = core.variant.get(game.get('variant'));
+            // Not everyone is ready. Handling this situation deserves its own block.
+            // FIXME: Drop 'false' when ignoreLateOrders is implemented.
+            if (false && !game.get('ignoreLateOrders') && !game.isEverybodyReady()) { // eslint-disable-line
+                handleLatePhase();
+                callback(new Error('Not adjudicating: some players are not ready'));
+                return;
+            }
 
-                // Not everyone is ready. Handling this situation deserves its own block.
-                // FIXME: Drop 'false' when ignoreLateOrders is implemented.
-                if (false && !game.get('ignoreLateOrders') && !game.isEverybodyReady()) { // eslint-disable-line
-                    handleLatePhase();
-                    callback(new Error('Not adjudicating: some players are not ready'));
-                    return;
-                }
+            core.phase.adjudicatePhase(variant, game, phase, t);
+        })
 
-                var phase = game.related('phases').at(0),
-                    phaseJSON = phase.toJSON({ obfuscate: false }),
-                    nextState;
-
-                // Godip expects a season type.
-                phaseJSON.seasonType = phase.get('season').split(' ')[1];
-
-                nextState = global.state.NextFromJS(variant, phaseJSON);
-                core.phase.createFromState(variant, game, nextState).asCallback(callback);
-            },
-
-            // Notify participants.
-            function(_game, callback) {
-                game = _game;
-
-                var oldPhase = game.related('phases').at(1);
+        // Notify participants.
+        .then(function(_phase) {
+                phase = _phase;
 
                 // FIXME: Next phase name missing.
                 // FIXME: Deadline not human-readable.
@@ -72,9 +57,9 @@ module.exports = {
                             subject: '[' + game.get('name') + '] ' + oldPhase.get('season') + ' ' + oldPhase.get('year') + ' has been adjudicated',
                             deadline: oldPhase.get('deadline'),
                             phase: oldPhase.get('season'),
-                            year: oldPhase.get('year')
-                            // nextPhase: oldPhase.getNextPhaseSeason(variant),
-                            // nextYear: oldPhase.getNextPhaseYear(variant)
+                            year: oldPhase.get('year'),
+                            nextPhase: phase.getNextPhaseSeason(variant),
+                            nextYear: phase.getNextPhaseYear(variant)
                         };
 
                     core.user.get(player.pivot.get('user_id'), function(err, user) {

@@ -258,50 +258,48 @@ PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
     if (province[1])
         subprovince = province[1];
 
-    return this.core.phase.isTravellingViaConvoy(phaseID, province, subprovince, t)
-    .then(function(isViaConvoy) {
-        if (season.indexOf('Retreat') > -1) {
-            orderData = {
-                'dislodged_action': action,
-                'dislodged_target': target,
-                'dislodged_subtarget': subTarget,
-                'updated_at': new Date()
-            };
-        }
-        else if (season.indexOf('Winter') > -1) {
-            orderData = {
-                unit_action: action,
-                unit_type: convertGodipUnitType(data[1]),
-                unit_fill: db.bookshelf.knex.raw('supply_centre_fill'),
-                unit_owner: db.bookshelf.knex.raw('supply_centre'),
-                updated_at: new Date()
-            };
-        }
-        else {
-            orderData = {
-                'unit_action': action,
-                'unit_target': target,
-                'unit_subtarget': subTarget,
-                'unit_target_of_target': targetOfTarget,
-                'unit_subtarget_of_target': subTargetOfTarget,
-                'is_via_convoy': isViaConvoy,
-                'updated_at': new Date()
-            };
-        }
+    if (season.indexOf('Retreat') > -1) {
+        orderData = {
+            'dislodged_action': action,
+            'dislodged_target': target,
+            'dislodged_subtarget': subTarget,
+            'updated_at': new Date()
+        };
+    }
+    else if (season.indexOf('Winter') > -1) {
+        orderData = {
+            unit_action: action,
+            unit_type: convertGodipUnitType(data[1]),
+            unit_fill: db.bookshelf.knex.raw('supply_centre_fill'),
+            unit_owner: db.bookshelf.knex.raw('supply_centre'),
+            updated_at: new Date()
+        };
+    }
+    else {
+        orderData = {
+            'unit_action': action,
+            'unit_target': target,
+            'unit_subtarget': subTarget,
+            'unit_target_of_target': targetOfTarget,
+            'unit_subtarget_of_target': subTargetOfTarget,
+            'updated_at': new Date()
+        };
+    }
 
-        update = db.bookshelf.knex('phase_provinces')
-            .where({
-                'phase_id': phaseID,
-                'province_key': province[0],
-                'subprovince_key': subprovince
-            })
-            .update(orderData);
+    this.logger.debug('Setting order: %s:%s %s %s', province[0], subprovince || '', action, target);
 
-        if (t)
-            update.transacting(t).forUpdate();
+    update = db.bookshelf.knex('phase_provinces')
+        .where({
+            'phase_id': phaseID,
+            'province_key': province[0],
+            'subprovince_key': subprovince
+        })
+        .update(orderData);
 
-        return update;
-    });
+    if (t)
+        update.transacting(t).forUpdate();
+
+    return update;
 };
 
 /**
@@ -438,8 +436,36 @@ PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
     });
 };
 
-PhaseCore.prototype.isTravellingViaConvoy = function(phaseID, province, subprovince, t) {
-    return Promise.resolve(false);
+PhaseCore.prototype.adjudicatePhase = function(variant, game, phase, t) {
+    var nextState,
+        phaseJSON = phase.toJSON({ obfuscate: false }),
+        key,
+        convoyingProvince;
+
+    // Flag which units are moving via convoy, because Godip insists.
+    for (key in phaseJSON.provinces) {
+        // Ignore non-moving units.
+        if (!phaseJSON.provinces[key].unit)
+            continue;
+        if (phaseJSON.provinces[key].unit.action !== 'move') {
+            phaseJSON.provinces[key].unit.isViaConvoy = false;
+            continue;
+        }
+
+        // A unit is convoyed if another unit is ordered to convoy it specifically.
+        convoyingProvince = _.find(phaseJSON.provinces, function(otherProvince, b) {
+            return otherProvince.unit &&
+                otherProvince.unit.action === 'convoy' &&
+                otherProvince.unit.target === key;
+        });
+        phaseJSON.provinces[key].unit.isViaConvoy = !_.isUndefined(convoyingProvince);
+    }
+
+    debugger;
+    phaseJSON.seasonType = phaseJSON.season.split(' ')[1];
+    nextState = global.state.NextFromJS(variant, phaseJSON);
+
+    return this.core.phase.createFromState(variant, game, nextState, t);
 };
 
 function convertGodipUnitType(godipType) {
