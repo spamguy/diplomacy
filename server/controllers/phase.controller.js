@@ -33,7 +33,7 @@ module.exports = function() {
             async.waterfall([
                 // Get relevant phase.
                 function(callback) {
-                    core.phase.setOrder(req.data.phaseID, req.data.season, req.data.command, req.data.action).asCallback(callback);
+                    core.phase.setOrder(req.data.variant, req.data.phaseID, req.data.season, req.data.command, req.data.action).asCallback(callback);
                 }
             ], function(err) {
                 if (err) {

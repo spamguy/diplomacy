@@ -134,22 +134,31 @@ function ImportGame(_t, _file, _index) {
                 phaseArray[phaseArray.length - 1].orders.push(commands);
             }
             else if (match = line.match(IMPORT_PATTERNS.UNIT_BUILD)) {
-                commands.push(match[1].toUpperCase());
+                commands.push(match[2].toUpperCase());
+                commands.push(match[1]);
 
                 // Throw the action on top for now and pop it later.
                 commands.push('build');
+
+                phaseArray[phaseArray.length - 1].orders.push(commands);
             }
             else if (match = line.match(IMPORT_PATTERNS.UNIT_DISBAND)) {
                 commands.push(match[1].toUpperCase());
+                commands.push(null);
 
                 // Throw the action on top for now and pop it later.
                 commands.push('disband');
+
+                phaseArray[phaseArray.length - 1].orders.push(commands);
             }
             else if (match = line.match(IMPORT_PATTERNS.UNIT_REMOVE)) {
                 commands.push(match[1].toUpperCase());
+                commands.push(null);
 
                 // Throw the action on top for now and pop it later.
                 commands.push('disband');
+
+                phaseArray[phaseArray.length - 1].orders.push(commands);
             }
             else if (line === 'ORDERS' || line === 'POSITIONS' || line === '') {
                 // Expected but useless. Stuff it.

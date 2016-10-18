@@ -13,7 +13,6 @@ function PhaseCore(core, logger) {
 PhaseCore.prototype.get = function(gameID, offset, t) {
     var order = 'asc',
         options = {
-            debug: true,
             withRelated: [
                 'provinces', {
                     game: function(query) {
@@ -259,37 +258,50 @@ PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
     if (province[1])
         subprovince = province[1];
 
-    if (season.indexOf('Retreat') > -1) {
-        orderData = {
-            'dislodged_action': action,
-            'dislodged_target': target,
-            'dislodged_subtarget': subTarget,
-            'updated_at': new Date()
-        };
-    }
-    else {
-        orderData = {
-            'unit_action': action,
-            'unit_target': target,
-            'unit_subtarget': subTarget,
-            'unit_target_of_target': targetOfTarget,
-            'unit_subtarget_of_target': subTargetOfTarget,
-            'updated_at': new Date()
-        };
-    }
+    return this.core.phase.isTravellingViaConvoy(phaseID, province, subprovince, t)
+    .then(function(isViaConvoy) {
+        if (season.indexOf('Retreat') > -1) {
+            orderData = {
+                'dislodged_action': action,
+                'dislodged_target': target,
+                'dislodged_subtarget': subTarget,
+                'updated_at': new Date()
+            };
+        }
+        else if (season.indexOf('Winter') > -1) {
+            orderData = {
+                unit_action: action,
+                unit_type: convertGodipUnitType(data[1]),
+                unit_fill: db.bookshelf.knex.raw('supply_centre_fill'),
+                unit_owner: db.bookshelf.knex.raw('supply_centre'),
+                updated_at: new Date()
+            };
+        }
+        else {
+            orderData = {
+                'unit_action': action,
+                'unit_target': target,
+                'unit_subtarget': subTarget,
+                'unit_target_of_target': targetOfTarget,
+                'unit_subtarget_of_target': subTargetOfTarget,
+                'is_via_convoy': isViaConvoy,
+                'updated_at': new Date()
+            };
+        }
 
-    update = db.bookshelf.knex('phase_provinces')
-        .where({
-            'phase_id': phaseID,
-            'province_key': province[0],
-            'subprovince_key': subprovince
-        })
-        .update(orderData);
+        update = db.bookshelf.knex('phase_provinces')
+            .where({
+                'phase_id': phaseID,
+                'province_key': province[0],
+                'subprovince_key': subprovince
+            })
+            .update(orderData);
 
-    if (t)
-        update.transacting(t).forUpdate();
+        if (t)
+            update.transacting(t).forUpdate();
 
-    return update;
+        return update;
+    });
 };
 
 /**
@@ -426,11 +438,22 @@ PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
     });
 };
 
+PhaseCore.prototype.isTravellingViaConvoy = function(phaseID, province, subprovince, t) {
+    return Promise.resolve(false);
+};
+
 function convertGodipUnitType(godipType) {
     switch (godipType) {
-    case 'Army': return 1;
-    case 'Fleet': return 2;
-    default: throw new Error('Unrecognised unit type \'' + godipType + '\' sent by Godip');
+    case null:
+        return null;
+    case 1:
+    case 'Army':
+        return 1;
+    case 2:
+    case 'Fleet':
+        return 2;
+    default:
+        throw new Error('Unrecognised unit type \'' + godipType + '\' sent by Godip');
     }
 }
 
