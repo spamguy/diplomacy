@@ -242,7 +242,8 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
 };
 
 PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
-    var update,
+    var self = this,
+        update,
         province = data[0].split('/'),
         subprovince = null,
         targetFullName = data[1],
@@ -269,11 +270,11 @@ PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
     else if (season.indexOf('Winter') > -1) {
         orderData = {
             unit_action: action,
-            unit_type: convertGodipUnitType(data[1]),
-            unit_fill: db.bookshelf.knex.raw('supply_centre_fill'),
-            unit_owner: db.bookshelf.knex.raw('supply_centre'),
+            adjusted_unit_type: convertGodipUnitType(data[1]),
             updated_at: new Date()
         };
+
+        this.logger.debug('Setting %s %s %s', data[0], action, data[1]);
     }
     else {
         orderData = {
@@ -284,20 +285,44 @@ PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
             'unit_subtarget_of_target': subTargetOfTarget,
             'updated_at': new Date()
         };
-    }
 
-    this.logger.debug('Setting order: %s:%s %s %s', province[0], subprovince || '', action, target);
+        switch (action) {
+        case 'hold':
+            this.logger.debug('Setting %s hold', data[0]);
+            break;
+        case 'move':
+            this.logger.debug('Setting %s -> %s', data[0], data[1]);
+            break;
+        case 'support':
+            this.logger.debug('Setting %s support %s %s', data[0], data[1], data[2] ? '-> ' + data[2] : 'hold');
+            break;
+        case 'convoy':
+            this.logger.debug('Setting %s convoy %s -> %s', data[0], data[1], data[2]);
+            break;
+        }
+    }
 
     update = db.bookshelf.knex('phase_provinces')
         .where({
             'phase_id': phaseID,
             'province_key': province[0],
             'subprovince_key': subprovince
-        })
-        .update(orderData);
+        });
+
+    if (action !== 'build')
+        update.whereNotNull('unit_owner');
+
+    update.update(orderData);
 
     if (t)
         update.transacting(t).forUpdate();
+
+    update.then(function(count) {
+        if (count > 1)
+            self.logger.warn('More than one province was updated');
+        else if (count === 0)
+            self.logger.warn('No provinces were updated');
+    });
 
     return update;
 };
@@ -461,9 +486,9 @@ PhaseCore.prototype.adjudicatePhase = function(variant, game, phase, t) {
         phaseJSON.provinces[key].unit.isViaConvoy = !_.isUndefined(convoyingProvince);
     }
 
-    debugger;
     phaseJSON.seasonType = phaseJSON.season.split(' ')[1];
     nextState = global.state.NextFromJS(variant, phaseJSON);
+    debugger;
 
     return this.core.phase.createFromState(variant, game, nextState, t);
 };

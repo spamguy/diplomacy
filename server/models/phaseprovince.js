@@ -46,7 +46,8 @@ module.exports = function(bookshelf) {
                 sc: sc,
                 unitLocation: this.get('unitLocation'),
                 unit: unit,
-                dislodged: dislodged
+                dislodged: dislodged,
+                adjustedUnitType: this.get('adjustedUnitType')
             };
         }
     });

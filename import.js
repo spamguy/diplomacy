@@ -196,7 +196,7 @@ function ImportGame(_t, _file, _index) {
             else if (season.indexOf('Retreat') > -1)
                 return core.phase.setRetreatPhaseDefaults(phase, t);
             else
-                return Promise.resolve(phase);
+                return core.phase.get(game.get('id'), null, t); // TODO: setAdjustmentPhaseDefaults()
         })
         .then(function(_phase) {
             return core.phase.adjudicatePhase(variant, game, _phase, t);
