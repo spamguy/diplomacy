@@ -178,16 +178,22 @@ function ImportGame(_t, _file, _index) {
         return Promise.all(phaseObject.orders)
         .mapSeries(function(order) {
             var action = order.pop();
-            return core.phase.setOrder(
-                phase.get('id'),
-                phase.get('season'),
-                order,
-                action,
-                t)
-            .catch(function(ex) {
+            try {
+                return core.phase.setOrder(
+                    phase.get('id'),
+                    phase.get('season'),
+                    order,
+                    action,
+                    t)
+                .catch(function(ex) {
+                    logger.warn('Could not set order for %s: %s', order[0], ex);
+                    return Promise.resolve(0);
+                });
+            }
+            catch (ex) {
                 logger.warn('Could not set order for %s: %s', order[0], ex);
                 return Promise.resolve(0);
-            });
+            }
         })
         .then(function() {
             var season = phase.get('season');

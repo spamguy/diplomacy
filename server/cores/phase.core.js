@@ -442,20 +442,29 @@ PhaseCore.prototype.setRetreatPhaseDefaults = function(phase, t) {
 };
 
 PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
-    var self = this;
+    var self = this,
+        subquery = function(fields) {
+            return db.bookshelf.knex
+            .select(fields)
+            .from('phase_provinces AS pp')
+            .where('pp.phase_id', db.bookshelf.knex.raw('phase_provinces.phase_id'))
+            .andWhere('pp.province_key', db.bookshelf.knex.raw('phase_provinces.province_key'))
+            .whereNotNull('unit_owner');
+        };
+
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
     .debug(true)
+    .update({
+        supply_centre: subquery('unit_owner'),
+        supply_centre_fill: subquery('unit_fill')
+    })
     .where({
         phase_id: phase.get('id')
     })
     .whereNotNull('supply_centre_location')
-    .whereNotNull('unit_owner')
-    .update({
-        supply_centre: db.bookshelf.knex.raw('unit_owner'),
-        supply_centre_fill: db.bookshelf.knex.raw('unit_fill')
-    })
+    .whereExists(subquery('unit_owner'))
     .then(function() {
         return self.core.phase.get(phase.get('gameId'), null, t);
     });
@@ -488,7 +497,6 @@ PhaseCore.prototype.adjudicatePhase = function(variant, game, phase, t) {
 
     phaseJSON.seasonType = phaseJSON.season.split(' ')[1];
     nextState = global.state.NextFromJS(variant, phaseJSON);
-    debugger;
 
     return this.core.phase.createFromState(variant, game, nextState, t);
 };
@@ -537,7 +545,7 @@ function getDislodgerProvince(dislodgers, victim) {
     var dislodger = _.findKey(dislodgers, function(d) { return d === victim; });
 
     if (!dislodger)
-        throw new Error('A unit dislodging ' + victim + ' was expected but not found');
+        this.logger.warn('A unit dislodging %s was expected but not found', victim);
 
     return dislodger;
 }
