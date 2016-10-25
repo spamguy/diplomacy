@@ -208,7 +208,13 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     })
     .then(function() { // STEP 2: Mark up old phase with dislodged data.
         return Promise.props(_.mapValues(state.Dislodgeds(), function(resolution, key) {
-            return self.setDislodged(variant, currentPhase.toJSON({ obfuscate: false }), key, getDislodgerProvince(state.Dislodgers(), key), t);
+            try {
+                // if (currentPhase.get('year') === 1909) debugger;
+                return self.setDislodged(variant, currentPhase.toJSON({ obfuscate: false }), key, getDislodgerProvince(state.Dislodgers(), key), t);
+            }
+            catch (ex) {
+                self.logger.warn(ex);
+            }
         }));
     })
     .then(function() { // STEP 3: Create new phase.
@@ -224,7 +230,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
         if (nextSeasonIndex < currentPhase.get('seasonIndex'))
             nextPhase.set('year', currentPhase.get('year') + 1);
 
-        return nextPhase.save(null, { transacting: t, debug: true });
+        return nextPhase.save(null, { transacting: t });
     })
     .then(function(_nextPhase) {
         nextPhase = _nextPhase;
@@ -237,7 +243,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
         if (nextPhase.get('season').indexOf('Adjustment') > -1)
             return self.syncSupplyCentreOwnership(nextPhase, t);
         else
-            return Promise.resolve(nextPhase);
+            return self.get(game.get('id'), null, t);
     });
 };
 
@@ -299,6 +305,9 @@ PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
         case 'convoy':
             this.logger.debug('Setting %s convoy %s -> %s', data[0], data[1], data[2]);
             break;
+        case 'remove':
+        case 'disband':
+            this.logger.debug('Setting %s to disband', data[0]);
         }
     }
 
@@ -309,8 +318,14 @@ PhaseCore.prototype.setOrder = function(phaseID, season, data, action, t) {
             'subprovince_key': subprovince
         });
 
-    if (action !== 'build')
-        update.whereNotNull('unit_owner');
+    if (action !== 'build') {
+        update.whereExists(db.bookshelf.knex
+        .select('pp.province_key')
+        .from('phase_provinces AS pp')
+        .where('pp.phase_id', db.bookshelf.knex.raw('phase_provinces.phase_id'))
+        .andWhere('pp.province_key', db.bookshelf.knex.raw('phase_provinces.province_key'))
+        .whereNotNull('unit_owner'));
+    }
 
     update.update(orderData);
 
@@ -343,20 +358,22 @@ PhaseCore.prototype.setDislodged = function(variant, phaseJSON, province, dislod
             phase_id: phaseJSON.id,
             province_key: provinceArray[0]
         },
-        attackingUnitOwner;
+        attackingUnitOwner,
+        actualDislodger = _.keys(_.pickBy(phaseJSON.provinces, function(province, key) { return _.startsWith(key, dislodger) && province.unit; }))[0];
 
-    if (phaseJSON.provinces[dislodger].unit) {
-        attackingUnitOwner = phaseJSON.provinces[dislodger].unit.owner;
+    // Godip gives the base province, but a subprovince may be the actual dislodger.
+    if (actualDislodger) {
+        attackingUnitOwner = phaseJSON.provinces[actualDislodger].unit.owner;
     }
     else {
-        this.logger.warn('Dislodger %s does not have a unit. Ignoring order');
+        this.logger.warn('Dislodger %s does not have a unit. Ignoring order', dislodger);
         return Promise.resolve(0);
     }
 
     if (provinceArray[1])
-        updatedProvince.subprovinceKey = provinceArray[1];
+        updatedProvince.subprovince_key = provinceArray[1];
 
-    this.logger.debug('Marking %s as dislodged by %s', province, dislodger, { phaseID: phaseJSON.id });
+    this.logger.debug('Marking %s as dislodged by %s', province, actualDislodger, { phaseID: phaseJSON.id });
 
     // Bump current unit to dislodged slot.
     return db.bookshelf.knex('phase_provinces')
@@ -408,7 +425,6 @@ PhaseCore.prototype.setMovementPhaseDefaults = function(phase, t) {
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
-    .debug(true)
     .where({
         phase_id: phase.get('id')
     })
@@ -427,7 +443,6 @@ PhaseCore.prototype.setRetreatPhaseDefaults = function(phase, t) {
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
-    .debug(true)
     .where({
         phase_id: phase.get('id')
     })
@@ -455,7 +470,6 @@ PhaseCore.prototype.syncSupplyCentreOwnership = function(phase, t) {
     return db.bookshelf.knex('phase_provinces')
     .transacting(t)
     .forUpdate()
-    .debug(true)
     .update({
         supply_centre: subquery('unit_owner'),
         supply_centre_fill: subquery('unit_fill')
@@ -494,7 +508,7 @@ PhaseCore.prototype.adjudicatePhase = function(variant, game, phase, t) {
         });
         phaseJSON.provinces[key].unit.isViaConvoy = !_.isUndefined(convoyingProvince);
     }
-
+    if (phaseJSON.year === 1904) debugger;
     phaseJSON.seasonType = phaseJSON.season.split(' ')[1];
     nextState = global.state.NextFromJS(variant, phaseJSON);
 
@@ -542,10 +556,10 @@ function convertGodipResolution(resolution) {
  * @return {String}            The attacking province's key.
  */
 function getDislodgerProvince(dislodgers, victim) {
-    var dislodger = _.findKey(dislodgers, function(d) { return d === victim; });
+    var dislodger = _.findKey(dislodgers, function(d) { return d === victim.split('/')[0]; });
 
     if (!dislodger)
-        this.logger.warn('A unit dislodging %s was expected but not found', victim);
+        throw new Error('A unit dislodging ' + victim + ' was expected but not found');
 
     return dislodger;
 }

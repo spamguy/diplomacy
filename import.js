@@ -6,6 +6,7 @@ var Promise = require('bluebird'),
     path = require('path'),
     readline = require('readline'),
     Stream = require('stream'),
+    _ = require('lodash'),
     dirGlob = Promise.promisify(require('dir-glob')),
     globAsync = Promise.promisify(require('glob')),
     seekrits = require('nconf')
@@ -98,7 +99,7 @@ function ImportGame(_t, _file, _index) {
                 commands = [],
                 IMPORT_PATTERNS = {
                     NEW_PHASE: new RegExp(/^PHASE (\d+) (\D+)$/),
-                    UNIT_POSITION: new RegExp(/^(\D)\D+: (army|fleet|supply)(?:\/dislodged)? (.+)$/),
+                    UNIT_POSITION: new RegExp(/^(\D)\D+: (army|fleet|supply)(\/dislodged)? (.+)$/),
                     UNIT_ORDER: new RegExp(/^(\S+) (hold|move|support|convoy)(?: (\S+)(?: (?:move|support) (\S+))?)?(?: via convoy)?$/),
                     UNIT_BUILD: new RegExp(/^build (\S+) (\S+)$/),
                     UNIT_REMOVE: new RegExp(/^remove (\S+)$/),
@@ -112,7 +113,8 @@ function ImportGame(_t, _file, _index) {
                 phaseArray.push({
                     year: currentYear,
                     season: currentSeason,
-                    orders: [ ]
+                    orders: [ ],
+                    units: { }
                 });
             }
             else if (match = line.match(IMPORT_PATTERNS.UNIT_POSITION)) {
@@ -120,6 +122,10 @@ function ImportGame(_t, _file, _index) {
                  * Mostly immaterial, except for verification purposes.
                  * Godip will be handling unit position declarations.
                  */
+                if (match[2] === 'supply')
+                    return;
+
+                phaseArray[phaseArray.length - 1].units[match[4].toUpperCase()] = match[1].toUpperCase()[0];
             }
             else if (match = line.match(IMPORT_PATTERNS.UNIT_ORDER)) {
                 commands.push(match[1].toUpperCase());
@@ -175,6 +181,8 @@ function ImportGame(_t, _file, _index) {
     }
 
     function createNextPhaseFromOrders(phaseObject) {
+        logger.info('Processing %s %s', phaseObject.season, phaseObject.year, { gameID: game.get('id') });
+
         return Promise.all(phaseObject.orders)
         .mapSeries(function(order) {
             var action = order.pop();
@@ -205,6 +213,14 @@ function ImportGame(_t, _file, _index) {
                 return core.phase.get(game.get('id'), null, t); // TODO: setAdjustmentPhaseDefaults()
         })
         .then(function(_phase) {
+            logger.info('Adjudicating %s %s', _phase.get('season'), _phase.get('year'), { gameID: game.get('id') });
+            var p;
+            for (p in _.keyBy(_.filter(_phase.toJSON().provinces, function(p) { return p.unit || p.dislodged; }), 'p'))
+                delete phaseObject.units[p];
+
+            for (p in phaseObject.units)
+                logger.warn('%s: Expected unit owned by %s, but was not found', p, phaseObject.units[p]);
+
             return core.phase.adjudicatePhase(variant, game, _phase, t);
         })
         .then(function(newPhase) {
