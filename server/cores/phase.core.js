@@ -508,7 +508,7 @@ PhaseCore.prototype.adjudicatePhase = function(variant, game, phase, t) {
         });
         phaseJSON.provinces[key].unit.isViaConvoy = !_.isUndefined(convoyingProvince);
     }
-    if (phaseJSON.year === 1904) debugger;
+
     phaseJSON.seasonType = phaseJSON.season.split(' ')[1];
     nextState = global.state.NextFromJS(variant, phaseJSON);
 
