@@ -2,7 +2,7 @@
 
 angular.module('games')
 .controller('NewGameController', ['$scope', 'gameService', 'userService', '$state', 'variants', function($scope, gameService, userService, $state, variants) {
-    var user = userService.getCurrentUser();
+    var user = $scope.$storage.theUser;
     angular.extend($scope, {
         game: {
             name: null,

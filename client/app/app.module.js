@@ -3,7 +3,6 @@
 angular.module('diplomacy', [
     'diplomacy.constants',
     'ui.router',
-    'LocalStorageModule',
     'angular-jwt',
     'userService',
     'gameService',
@@ -13,10 +12,11 @@ angular.module('diplomacy', [
     'map.component',
     'gamelistitem.directive',
     'ngMaterial',
+    'ngStorage',
     'socketService'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', 'localStorageServiceProvider', '$mdThemingProvider', '$mdIconProvider',
-function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, localStorageServiceProvider, $mdThemingProvider, $mdIconProvider) {
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', '$localStorageProvider', '$mdThemingProvider', '$mdIconProvider',
+function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, $localStorageProvider, $mdThemingProvider, $mdIconProvider) {
     $urlRouterProvider.otherwise('/main/home');
 
     // Material design theme definitions.
@@ -49,11 +49,11 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
         .icon('last', '/assets/icons/ic_last_page_black_48px.svg', 48);
 
     // Local storage setup.
-    localStorageServiceProvider.setPrefix('diplomacy');
+    $localStorageProvider.setKeyPrefix('diplomacy');
 
     // JWT/auth setup.
     jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$rootScope', 'userService', function(jwtHelper, $rootScope, userService) {
-        var oldToken = userService.getToken();
+        var oldToken = $rootScope.$storage.token;
 
         if (oldToken && jwtHelper.isTokenExpired(oldToken)) {
             console.log('Token is expired: ' + oldToken);
@@ -69,17 +69,11 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
     $locationProvider.html5Mode(true);
 }])
 .run(['$rootScope', 'userService', 'socketService', function($rootScope, userService, socketService) {
-    var isRestricted;
-
-    // Initialize socket voodoo.
+    // Initialize socket voodoo if user is logged in but refreshed page.
     if (!socketService.socket)
         socketService.initialize();
 
-    // Take existing login data to build complete user object.
-    userService.setCurrentUser(null, function() {
-        $rootScope.theUser = userService.getCurrentUser;
-        $rootScope.isAuthenticated = userService.isAuthenticated;
-    });
+    var isRestricted;
 
     $rootScope.$on('$stateChangeStart', function(event, next) {
         isRestricted = !!(next.data && next.data.restricted);

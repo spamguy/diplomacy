@@ -1,55 +1,53 @@
 'use strict';
 
-angular.module('userService', ['LocalStorageModule'])
-.factory('userService', ['localStorageService', 'socketService', '$q',
-function(localStorageService, socketService, $q) {
-    var _user;
-
+angular.module('userService', [])
+.factory('userService', ['$localStorage', 'socketService', '$q',
+function($localStorage, socketService, $q) {
     return {
         isAuthenticated: function() {
-            return !!localStorageService.get('token');
+            return $localStorage.user;
         },
 
-        getToken: function() {
-            return localStorageService.get('token');
-        },
-
-        setToken: function(token) {
-            localStorageService.set('token', token);
-        },
+        // getToken: function() {
+        //     return $localStorage.get('token');
+        // },
+        //
+        // setToken: function(token) {
+        //     $localStorage.set('token', token);
+        // },
 
         getCurrentUserID: function() {
-            return localStorageService.get('currentUserID');
+            return $localStorage.theUser.id;
         },
 
-        getCurrentUser: function() {
-            return _user;
-        },
-
-        setCurrentUser: function(userID, callback) {
-            if (userID)
-                localStorageService.set('currentUserID', userID);
-            else
-                userID = this.getCurrentUserID();
-
-            if (_user || !userID) {
-                callback();
-                return;
-            }
-
-            this.getUser(userID, function(user) {
-                _user = user;
-                callback();
-            });
-        },
+        // getCurrentUser: function() {
+        //     return _user;
+        // },
+        //
+        // setCurrentUser: function(userID, callback) {
+        //     if (userID)
+        //         localStorageService.set('currentUserID', userID);
+        //     else
+        //         userID = this.getCurrentUserID();
+        //
+        //     if (_user || !userID) {
+        //         callback();
+        //         return;
+        //     }
+        //
+        //     this.getUser(userID, function(user) {
+        //         _user = user;
+        //         callback();
+        //     });
+        // },
 
         getUser: function(userID, callback) {
             socketService.socket.emit('user:get', { ID: userID }, callback);
-        },
-
-        clearUser: function() {
-            localStorageService.clearAll();
-            _user = null;
         }
+
+        // clearUser: function() {
+        //     localStorageService.clearAll();
+        //     _user = null;
+        // }
     };
 }]);

@@ -1,9 +1,12 @@
 'use strict';
 
 angular.module('diplomacy')
-.controller('AppController', ['$rootScope', 'userService', 'localStorageService', '$state', function($rootScope, userService, localStorageService, $state) {
+.controller('AppController', ['$rootScope', 'userService', 'socketService', '$localStorage', '$state', function($rootScope, userService, socketService, $localStorage, $state) {
+    $rootScope.$storage = $localStorage;
+
     $rootScope.logOut = function() {
-        userService.clearUser();
+        $localStorage.$reset();
+        socketService.destroy();
         $state.go('main.home');
     };
 }]);

@@ -20,12 +20,12 @@
     <!-- @endif -->
 </head>
 <body ng-controller="AppController">
-    <md-toolbar style="background-color:transparent;" ng-if="isAuthenticated()">
+    <md-toolbar style="background-color:transparent;" ng-if="$storage.theUser">
         <div class="md-toolbar-tools">
             <span class="md-primary logo"><a ui-sref="main.home">dipl<span class="stab">.</span>io</a></span>
             <span flex></span>
             <div class="info" layout="row" layout-margin>
-                <span class="email">{{theUser().email}}</span>
+                <span class="email">{{$storage.theUser.email}}</span>
 
                 <md-menu md-position-mode="target-right target">
                     <md-icon md-menu-origin md-svg-icon="account" ng-click="$mdOpenMenu($event)" class="svg48px"></md-icon>
@@ -88,7 +88,7 @@
     <script src="../bower_components/angular/angular.js"></script>
     <!-- <script src="../bower_components/angular-typewrite/dist/angular-typewrite.js"></script> -->
     <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script src="../bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+    <script src="../bower_components/ngstorage/ngStorage.min.js"></script>
     <script src="../bower_components/angular-jwt/dist/angular-jwt.js"></script>
     <script src="../bower_components/angular-messages/angular-messages.js"></script>
     <script src="../bower_components/angular-animate/angular-animate.js"></script>

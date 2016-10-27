@@ -16,7 +16,7 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 // Breaking this down into individual rules to avoid one monstrous if() statement.
 
                 // User doesn't have enough points.
-                if (scope.game.minimumDedication > userService.getCurrentUser().actionCount)
+                if (scope.game.minimumDedication > scope.$root.$storage.theUser.actionCount)
                     return 'You need a minimum reliability of ' + scope.game.minimumDedication + ' to join.';
 
                 // User belongs to game already, whether as GM or user.

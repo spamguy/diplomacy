@@ -209,6 +209,7 @@ module.exports = function() {
                         watchedGames++;
                     });
                     app.logger.info(userID + ' now watching ' + watchedGames + ' ' + pluralize('room', watchedGames));
+                    return res.status(200);
                 }
             });
         },

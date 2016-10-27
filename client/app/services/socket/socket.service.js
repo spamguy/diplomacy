@@ -1,17 +1,17 @@
 // Service adapted from http://wmyers.github.io/technical/nodejs/Simple-JWT-auth-for-SocketIO/
-angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMaterial'])
-.factory('socketService', ['socketFactory', 'localStorageService', '$mdToast', 'CONST', function(socketFactory, localStorageService, $mdToast, CONST) {
+angular.module('socketService', ['btford.socket-io', 'ngMaterial'])
+.factory('socketService', ['socketFactory', '$localStorage', '$mdToast', 'CONST', function(socketFactory, $localStorage, $mdToast, CONST) {
     'use strict';
 
     var socket,
         self = { };
 
-    self.initialize = function() {
+    self.initialize = function(token) {
         self.socket = socket = socketFactory({
             prefix: 'socket/',
             ioSocket: io.connect(CONST.socketEndpoint, {
                 secure: true,
-                query: 'token=' + localStorageService.get('token')
+                query: 'token=' + $localStorage.token
             })
         });
 
@@ -60,6 +60,10 @@ angular.module('socketService', ['btford.socket-io', 'LocalStorageModule', 'ngMa
         // HACK: socket.io-mock doesn't mock forward(). See https://github.com/nullivex/angular-socket.io-mock/issues/13
         if (socket.forward)
             socket.forward('phase:adjudicate:update');
+    };
+
+    self.destroy = function() {
+        self.socket = socket = null;
     };
 
     return self;

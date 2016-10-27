@@ -3,7 +3,7 @@
 angular.module('diplomacy.main')
 .controller('SignupController', ['CONST', '$scope', '$http', '$state', 'loginService', 'socketService', '$mdToast', function(CONST, $scope, $http, $state, loginService, socketService, $mdToast) {
     // Keep logged-in users out of this page.
-    if ($scope.$root.isAuthenticated)
+    if ($scope.$storage.theUser)
         $state.go('profile.games');
 
     angular.extend($scope, {

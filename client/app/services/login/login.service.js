@@ -7,8 +7,9 @@ angular.module('loginService', [ ])
             data = data.data; // data? data!
 
             // Set JWT.
-            userService.setToken(data.token);
+            $rootScope.$storage.token = data.token;
 
+            // Initialize socket voodoo.
             if (!socketService.socket)
                 socketService.initialize();
 
@@ -16,15 +17,11 @@ angular.module('loginService', [ ])
              * Set up user data after successful login.
              * Not to be confused with setting up user data when logged in and after reloading page.
              */
-            userService.setCurrentUser(data.id, function() {
-                $rootScope.$apply(function() {
-                    $rootScope.theUser = userService.getCurrentUser;
-                    $rootScope.isAuthenticated = userService.isAuthenticated;
-                });
+            userService.getUser(data.id, function(user) {
+                $rootScope.$storage.theUser = user;
 
                 // Subscribe to all associated games after authenticating.
                 socketService.socket.emit('game:watch');
-
                 $state.go('profile.games');
             });
         }
