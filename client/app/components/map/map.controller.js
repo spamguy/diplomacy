@@ -1,7 +1,6 @@
 angular.module('map.component')
 .controller('MapController', ['$scope', '$state', 'gameService', 'mapService', '$mdBottomSheet', function($scope, $state, gameService, MapService, $mdBottomSheet) {
     var vm = this,
-        // vm.service.phase = this.game.vm.service.phases ? this.game.vm.service.phases[this.vm.service.phaseIndex] : null,
         normalisedVariantName = gameService.getNormalisedVariantName(vm.service.game.variant),
         paths = vm.svg.getElementsByTagName('path'),
         p,
@@ -176,10 +175,8 @@ angular.module('map.component')
 
     function goToIndex(index) {
         // Keep phase index inside countable number of phases.
-        if (index !== null && index <= 0)
+        if (index <= 0)
             index = 1;
-
-        vm.service.phaseIndex = index;
 
         $state.go('.', {
             id: vm.service.game.id,

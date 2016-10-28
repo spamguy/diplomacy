@@ -10,40 +10,31 @@ function PhaseCore(core, logger) {
     this.logger = logger;
 }
 
-PhaseCore.prototype.get = function(gameID, offset, t) {
-    var order = 'asc',
-        options = {
-            withRelated: [
-                'provinces', {
-                    game: function(query) {
-                        query.select('id', 'gm_id', 'current_phase_id');
-                    }
-                }
-            ]
-        };
+PhaseCore.prototype.get = function(gameID, index, t) {
+    var options = {
+        withRelated: ['provinces']
+    };
 
     if (t)
         options.transacting = t;
 
-    // Null offset caused by visiting game's default state. Represents current phase.
-    if (offset === null) {
-        order = 'desc';
-        offset = 0;
+    if (index !== null) {
+        return db.models.Phase
+        .where({
+            gameID: gameID,
+            phaseIndex: index
+        })
+        .fetch(options);
     }
     else {
-        offset--;
+        return db.models.Phase
+        .query(function(query) {
+            query.orderBy('created_at', 'desc')
+            .where('game_id', gameID)
+            .limit(1);
+        })
+        .fetch(options);
     }
-
-    return db.models.Phase
-    .query(function(query) {
-        query.orderBy('created_at', order)
-        .where('game_id', gameID)
-        .limit(1);
-
-        if (offset > 0)
-            query.offset(offset);
-    })
-    .fetch(options);
 };
 
 PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
@@ -52,7 +43,8 @@ PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
             year: variant.startYear,
             season: variant.phases[0],
             game_id: game.get('id'),
-            deadline: deadline
+            deadline: deadline,
+            phaseIndex: 1
         });
 
     // Save new phase.
@@ -219,6 +211,7 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     })
     .then(function() { // STEP 3: Create new phase.
         nextPhase = new db.models.Phase({
+            phaseIndex: currentPhase.get('phaseIndex') + 1,
             deadline: nextDeadline.toDate(),
             seasonIndex: nextSeasonIndex,
             season: nextSeason,

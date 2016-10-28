@@ -52,7 +52,7 @@ describe('Map service', function() {
 
     it('retains game and phase index data', function() {
         expect(service.game).to.not.be.null;
-        expect(service.phaseIndex).to.equal(0);
+        expect(service.phase.phaseIndex).to.equal(0);
     });
 
     it('generates the URL pointing to the supply centre SVG', function() {

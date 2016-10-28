@@ -260,12 +260,6 @@ ALTER TABLE ONLY phase_provinces
 ALTER TABLE ONLY phases
     ADD CONSTRAINT seasons_game_id_fkey FOREIGN KEY (game_id) REFERENCES games(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
-    ALTER TABLE "public"."games"
-    	ADD CONSTRAINT "lnk_phases_games" FOREIGN KEY ( "current_phase_id" )
-    	REFERENCES "public"."phases" ( "id" ) MATCH FULL
-    	ON DELETE Set NULL
-    	ON UPDATE Cascade;
-
 --
 -- PostgreSQL database dump complete
 --

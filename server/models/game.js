@@ -20,10 +20,6 @@ module.exports = function(bookshelf) {
             return this.hasMany('Phase').query('orderBy', 'created_at', 'desc');
         },
 
-        currentPhase: function() {
-            return this.hasOne('Phase', 'current_phase_id');
-        },
-
         isEverybodyReady: function() {
             return this.related('players').every(function(p) {
                 return p.pivot.get('is_ready');

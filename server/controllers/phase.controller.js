@@ -8,7 +8,7 @@ module.exports = function() {
 
     app.io.route('phase', {
         get: function(req, res) {
-            core.phase.get(req.data.gameID, req.data.offset)
+            core.phase.get(req.data.gameID, req.data.index)
             .then(function(phase) {
                 return res.json(phase.toJSON({ currentUserID: req.socket.decoded_token.id }));
             })
@@ -18,32 +18,15 @@ module.exports = function() {
             });
         },
 
-        create: function(req, res) {
-            var phase = req.data.phase;
-
-            core.phase.create(phase, function(err, savedPhase) {
-                if (err)
-                    app.logger.error(err);
-            });
-        },
-
         setorder: function(req, res) {
             // TODO: Make sure order issuer actually owns the unit!
-
-            async.waterfall([
-                // Get relevant phase.
-                function(callback) {
-                    core.phase.setOrder(req.data.variant, req.data.phaseID, req.data.season, req.data.command, req.data.action).asCallback(callback);
-                }
-            ], function(err) {
-                if (err) {
-                    app.logger.error(err);
-                    return res.status(400).json({
-                        message: err
-                    });
-                }
-
+            core.phase.setOrder(req.data.variant, req.data.phaseID, req.data.season, req.data.command, req.data.action)
+            .then(function() {
                 return res.json({ status: 'ok' });
+            })
+            .catch(function(err) {
+                app.logger.error(err);
+                return res.status(400).json({ error: err });
             });
         },
 
