@@ -23,19 +23,24 @@ GameCore.prototype.getAsync = function(id, t) {
         .fetch({ transacting: t, withRelated: ['players'] });
 };
 
-GameCore.prototype.findByGM = function(id, cb) {
-    db.models.Game
-        .where('gm_id', id)
-        .fetchAll({ withRelated: ['players'] })
-        .asCallback(cb);
+GameCore.prototype.findByGM = function(id) {
+    return db.models.Game
+    .where({
+        'gm_id': id,
+        status: 1
+    })
+    .fetchAll({ withRelated: ['players'] });
 };
 
-GameCore.prototype.findByPlayer = function(id, cb) {
-    this.core.user.get(id, function(err, user) {
-        if (err)
-            cb(err, null);
-
-        return cb(null, user.related('games'));
+GameCore.prototype.findByPlayer = function(id) {
+    return new db.models.User({ id: id })
+    .fetch({
+        withRelated: {
+            games: function(qb) { return qb.where('status', 1); }
+        }
+    })
+    .then(function(user) {
+        return user.related('games');
     });
 };
 
@@ -83,11 +88,9 @@ GameCore.prototype.create = function(gmID, options, cb) {
     }
 
     // Get user to be GM.
-    this.core.user.get(gmID, function(err, user) {
-        if (err)
-            cb(err, null);
-
-        newGame.save().asCallback(cb);
+    this.core.user.get(gmID)
+    .then(function(user) {
+        return newGame.save('gmID', gmID);
     });
 };
 

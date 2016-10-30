@@ -21,10 +21,10 @@ angular.module('profile', [
         },
         resolve: {
             games: ['gameService', function(gameService) {
-                return gameService.getAllGamesForCurrentUser();
+                return gameService.getAllActiveGamesForCurrentUser();
             }],
             gmGames: ['gameService', function(gameService) {
-                return gameService.getAllGamesOwnedByCurrentUser();
+                return gameService.getAllActiveGamesOwnedByCurrentUser();
             }]
         }
     })

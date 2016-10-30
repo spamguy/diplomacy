@@ -12,6 +12,12 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
             joinable: '=joinable'
         },
         link: function(scope, element, attrs) {
+            var timeUntilDeadline;
+            gameService.getPhase(scope.game.id, null)
+            .then(function(phase) {
+                scope.phase = phase;
+            });
+
             scope.reasonForNoJoin = function() {
                 // Breaking this down into individual rules to avoid one monstrous if() statement.
 
@@ -80,10 +86,11 @@ angular.module('gamelistitem.directive', ['ngMaterial'])
                 scope.readableTimer = humanizeDuration(scope.game.moveClock * 60 * 60 * 1000) + ' deadline';
                 break;
             case 1:
-                var currentPhase = scope.game.phases[0],
-                    timeUntilDeadline = new Date(currentPhase.deadline).getTime() - new Date().getTime();
-                scope.phaseDescription = currentPhase.season + ' ' + currentPhase.year;
-                scope.readableTimer = humanizeDuration(timeUntilDeadline, { largest: 2, round: true });
+                if (scope.phase) {
+                    timeUntilDeadline = new Date(scope.phase.deadline).getTime() - new Date().getTime();
+                    scope.phaseDescription = scope.phase.season + ' ' + scope.phase.year;
+                    scope.readableTimer = humanizeDuration(timeUntilDeadline, { largest: 2, round: true });
+                }
                 break;
             case 2:
                 scope.phaseDescription = 'Complete';

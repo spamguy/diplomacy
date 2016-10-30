@@ -166,15 +166,13 @@ module.exports = function() {
         },
 
         get: function(req, res) {
-            core.user.get(req.data.ID, function(err, user) {
-                if (err) {
-                    app.logger.error(err);
-                    return res.status(400).json({
-                        error: err
-                    });
-                }
-
-                return res.json(user.toJSON());
+            core.user.get(req.data.ID)
+            .then(function(game) {
+                return res.json(game.toJSON({ currentUserID: req.socket.decoded_token.id }));
+            })
+            .catch(function(err) {
+                app.logger.error(err);
+                return res.status(400).json({ error: err });
             });
         }
     });

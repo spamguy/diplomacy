@@ -14,7 +14,7 @@ angular.module('gameService', ['userService', 'socketService'])
          * @memberof GameService
          * @returns {Promise<array>} A list of games.
          */
-        getAllGamesForCurrentUser: function() {
+        getAllActiveGamesForCurrentUser: function() {
             return $q(function(resolve) {
                 socketService.socket.emit('game:userlist', {
                     playerID: userService.getCurrentUserID()
@@ -29,7 +29,7 @@ angular.module('gameService', ['userService', 'socketService'])
          * @memberof GameService
          * @returns {Promise<array>} A list of games.
          */
-        getAllGamesOwnedByCurrentUser: function() {
+        getAllActiveGamesOwnedByCurrentUser: function() {
             return $q(function(resolve) {
                 socketService.socket.emit('game:usergmlist', {
                     'gmID': userService.getCurrentUserID()

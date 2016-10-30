@@ -13,24 +13,24 @@ module.exports = function() {
 
     app.io.route('game', {
         userlist: function(req, res) {
-            core.game.findByPlayer(req.data.playerID, function(err, games) {
-                if (err) {
-                    app.logger.error(err);
-                    return res.status(400).json({ error: err });
-                }
-
+            core.game.findByPlayer(req.data.playerID)
+            .then(function(games) {
                 return res.json(games.toJSON({ currentUserID: req.socket.decoded_token.id }));
+            })
+            .catch(function(err) {
+                app.logger.error(err);
+                return res.status(400).json({ error: err });
             });
         },
 
         usergmlist: function(req, res) {
-            core.game.findByGM(req.data.gmID, function(err, games) {
-                if (err) {
-                    app.logger.error(err);
-                    return res.status(400).json({ error: err });
-                }
-
+            core.game.findByGM(req.data.gmID)
+            .then(function(games) {
                 return res.json(games.toJSON({ currentUserID: req.socket.decoded_token.id }));
+            })
+            .catch(function(err) {
+                app.logger.error(err);
+                return res.status(400).json({ error: err });
             });
         },
 
@@ -63,7 +63,7 @@ module.exports = function() {
 
             async.waterfall([
                 function(callback) {
-                    core.user.get(playerID, callback);
+                    core.user.get(playerID).asCallback(callback);
                 },
 
                 function(_user, callback) {
@@ -309,7 +309,7 @@ module.exports = function() {
                     game.related('players').each(function(player) {
                         async.waterfall([
                             function(wfCallback) {
-                                core.user.get(player.pivot.get('user_id'), wfCallback);
+                                core.user.get(player.pivot.get('user_id')).asCallback(wfCallback);
                             },
 
                             function(player, wfCallback) {

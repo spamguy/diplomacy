@@ -57,10 +57,8 @@ module.exports = {
                             nextYear: nextPhase.getNextPhaseYear(variant)
                         };
 
-                    core.user.get(player.pivot.get('user_id'), function(err, user) {
-                        if (err)
-                            winston.error(err);
-
+                    core.user.get(player.pivot.get('user_id'))
+                    .then(function(user) {
                         emailOptions.email = user.get('email');
                         return sendOneAsync('adjudication', emailOptions);
                     });

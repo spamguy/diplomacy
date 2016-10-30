@@ -7,11 +7,10 @@ function UserCore(core, logger) {
     this.logger = logger;
 }
 
-UserCore.prototype.get = function(id, cb) {
-    db.models.User
-        .where('id', id)
-        .fetch({ withRelated: ['games', 'games.players', 'games.phases'] })
-        .asCallback(cb);
+UserCore.prototype.get = function(id) {
+    return db.models.User
+    .where('id', id)
+    .fetch({ withRelated: ['games', 'games.players', 'games.phases'] });
 };
 
 UserCore.prototype.getByEmail = function(email, cb) {

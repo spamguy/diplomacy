@@ -193,18 +193,18 @@ angular.module('mapService', ['gameService'])
     }
 
     function userCanMove() {
-        return gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'move');
+        return gameService.isPlayer(this.game) && this.phase.season && _.includes(this.phase.season.toLowerCase(), 'move');
     }
 
     function userCanRetreat() {
-        var canRetreat = gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'retreat'),
+        var canRetreat = gameService.isPlayer(this.game) && this.phase.season && _.includes(this.phase.season.toLowerCase(), 'retreat'),
             retreatExpected = this.retreatExpected(this.userPower);
 
         return canRetreat && retreatExpected;
     }
 
     function userCanAdjust() {
-        var canAdjust = gameService.isPlayer(this.game) && !!this.phase && _.includes(this.phase.season.toLowerCase(), 'adjust'),
+        var canAdjust = gameService.isPlayer(this.game) && this.phase.season && _.includes(this.phase.season.toLowerCase(), 'adjust'),
             adjustExpected = this.adjustExpected(this.userPower);
 
         return canAdjust && adjustExpected;
