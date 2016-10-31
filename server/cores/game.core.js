@@ -44,6 +44,12 @@ GameCore.prototype.findByPlayer = function(id) {
     });
 };
 
+GameCore.prototype.listArchived = function() {
+    return db.models.Game
+    .where('status', '>', '1')
+    .fetchAll();
+};
+
 GameCore.prototype.listOpen = function() {
     return db.models.Game
         .query(function(query) {

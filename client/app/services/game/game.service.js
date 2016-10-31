@@ -85,6 +85,14 @@ angular.module('gameService', ['userService', 'socketService'])
             });
         },
 
+        getAllArchivedGames: function() {
+            return $q(function(resolve) {
+                socketService.socket.emit('game:listarchives', function(games) {
+                    resolve(games);
+                });
+            });
+        },
+
         getMoveData: function(gameID, year, phase) {
             console.warn('This method is deprecated. Moves should already be present in the game data.');
 

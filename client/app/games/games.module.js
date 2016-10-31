@@ -27,6 +27,16 @@ angular.module('games', [
             }]
         }
     })
+    .state('games.archive', {
+        url: '/archive',
+        controller: 'GameArchiveController as vm',
+        templateUrl: 'app/games/archive/archive.html',
+        resolve: {
+            games: ['gameService', function(gameService) {
+                return gameService.getAllArchivedGames();
+            }]
+        }
+    })
     .state('games.new', {
         url: '/new',
         controller: 'NewGameController',
@@ -44,9 +54,6 @@ angular.module('games', [
         url: '/:id/{phaseIndex:int}',
         controller: 'ViewController',
         templateUrl: 'app/games/view/view.html',
-        data: {
-            restricted: true
-        },
         params: {
             phaseIndex: {
                 value: null,

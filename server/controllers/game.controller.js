@@ -53,6 +53,17 @@ module.exports = function() {
             });
         },
 
+        listarchives: function(req, res) {
+            core.game.listArchived()
+            .then(function(games) {
+                return res.json(games.toJSON({ currentUserID: req.socket.decoded_token.id }));
+            })
+            .catch(function(err) {
+                app.logger.error(err);
+                return res.status(400).json({ error: err });
+            });
+        },
+
         join: function(req, res) {
             var gameID = req.data.gameID,
                 playerID = req.socket.decoded_token.id,
