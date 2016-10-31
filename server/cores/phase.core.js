@@ -54,9 +54,6 @@ PhaseCore.prototype.initFromVariant = function(variant, game, deadline, t) {
         return self.generatePhaseProvincesFromTemplate(variant, phase, t);
     })
     .then(function() {
-        return game.save({ currentPhaseId: newPhase.get('id') }, { transacting: t });
-    })
-    .then(function() {
         return self.core.phase.get(newPhase.get('game_id'), null, t);
     });
 };
@@ -201,7 +198,6 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     .then(function() { // STEP 2: Mark up old phase with dislodged data.
         return Promise.props(_.mapValues(state.Dislodgeds(), function(resolution, key) {
             try {
-                // if (currentPhase.get('year') === 1909) debugger;
                 return self.setDislodged(variant, currentPhase.toJSON({ obfuscate: false }), key, getDislodgerProvince(state.Dislodgers(), key), t);
             }
             catch (ex) {
@@ -227,9 +223,6 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     })
     .then(function(_nextPhase) {
         nextPhase = _nextPhase;
-        return game.save({ currentPhaseId: nextPhase.get('id') }, { transacting: t });
-    })
-    .then(function() {
         return self.generatePhaseProvincesFromState(variant, state, nextPhase, t);
     })
     .then(function() {

@@ -21,13 +21,13 @@ module.exports = function(bookshelf) {
             var currentUserID = options.currentUserID;
 
             // Obscure sensitive info if the user is not the GM *and* it is the current season.
-            options.obfuscate = currentUserID !== this.get('gmId') &&
-                this.related('game').get('currentPhaseId') === this.get('id');
+            options.obfuscate = currentUserID !== this.get('gmId') && this.get('phaseIndex') === 0;
 
             return {
                 id: this.get('id'),
                 year: this.get('year'),
                 season: this.get('season'),
+                phaseIndex: this.get('phaseIndex'),
                 isActive: this.get('isActive'),
                 deadline: this.get('deadline'),
                 seasonIndex: this.get('seasonIndex'),

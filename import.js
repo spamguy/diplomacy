@@ -1,7 +1,11 @@
 /* eslint-disable no-cond-assign */
 'use strict';
 
-var Promise = require('bluebird'),
+var bogusPlayerIDs = ['169c63c3-64c6-40f9-9e9f-d321b0255ce1', 'a48a1d1d-c6ef-4e41-ad60-d7e10d5fadd3',
+                    '2eec6004-b653-4c2b-a5f3-64f4a76512f3', '9587f7fb-2378-475e-82c9-e397cce53826',
+                    'f084dd06-347a-43d7-8c41-f37c62d82cad', 'f4cb7f39-8f88-4f4f-a932-34eb94e4c6f4',
+                    '9b74dea1-3b59-432a-8ae3-f924e2003864'],
+    Promise = require('bluebird'),
     fs = require('fs'),
     path = require('path'),
     readline = require('readline'),
@@ -16,20 +20,42 @@ var Promise = require('bluebird'),
     db = require('./server/db'),
     core = require('./server/cores/index')(logger),
     variant = core.variant.get('Standard'),
+    variantPowers = _.keys(variant.powers),
     filePatternToImport = dirGlob.sync([process.argv[2]])[0];
 
 require(path.join(seekrits.get('judgePath'), 'diplomacy-godip'));
 
 Promise.longStackTraces();
 
-globAsync(filePatternToImport, { nodir: true })
-    .then(processAllFiles)
-    .catch(function(err) {
-        logger.error('Import failed:\n' + err.stack);
-    })
-    .finally(function() {
-        process.exit();
+generatePlayers()
+.then(function() {
+    return globAsync(filePatternToImport, { nodir: true });
+})
+.then(processAllFiles)
+.catch(function(err) {
+    logger.error('Import failed:\n' + err.stack);
+})
+.finally(function() {
+    process.exit();
+});
+
+// Use a set of dummy players for all imported games. Skip if they exist already.
+function generatePlayers() {
+    return core.user.get(bogusPlayerIDs[0])
+    .then(function(user) {
+        if (!user) {
+            return Promise.map(bogusPlayerIDs, function(id, index) {
+                return new db.models.User({
+                    id: id,
+                    email: 'bogus' + (index + 1) + '@bogus.com'
+                }).save(null, { method: 'insert' });
+            });
+        }
+        else {
+            return Promise.resolve(0);
+        }
     });
+}
 
 function processAllFiles(files) {
     logger.info('Importing %d game files into dipl.io', files.length);
@@ -72,12 +98,24 @@ function ImportGame(_t, _file, _index) {
             name: 'Godip Game #' + (index + 1),
             status: 2,
             maxPlayers: 7
-        }).save(null, { transacting: t });
+        }).save(null, { transacting: t })
+        .then(function(_game) {
+            var shuffledPlayers = _.shuffle(bogusPlayerIDs);
+            game = _game;
+            return Promise.map(shuffledPlayers, function(id, index) {
+                return game.related('players').attach({
+                    user_id: id,
+                    game_id: game.get('id'),
+                    power: variantPowers[index],
+                    created_at: new Date(),
+                    updated_at: new Date()
+                }, { transacting: t });
+            });
+        });
     }
 
-    function init(_game) {
-        game = _game;
-        return core.phase.initFromVariant(variant, _game, new Date(), t);
+    function init() {
+        return core.phase.initFromVariant(variant, game, new Date(), t);
     }
 
     function fileContentsToPhaseArray(firstPhase) {
