@@ -16,9 +16,10 @@ angular.module('profile', [
         url: '/games',
         templateUrl: 'app/profile/usergames/usergames.html',
         controller: 'UserGamesController',
-        data: {
-            restricted: true
-        },
+        onEnter: ['userService', '$state', function(userService, $state) {
+            if (!userService.isAuthenticated())
+                $state.go('main.home');
+        }],
         resolve: {
             games: ['gameService', function(gameService) {
                 return gameService.getAllActiveGamesForCurrentUser();
@@ -37,16 +38,18 @@ angular.module('profile', [
         url: '/:id',
         templateUrl: 'app/profile/view/view.html',
         controller: 'ProfileViewController',
-        data: {
-            restricted: true
-        }
+        onEnter: ['userService', '$state', function(userService, $state) {
+            if (!userService.isAuthenticated())
+                $state.go('main.home');
+        }]
     })
     .state('profile.edit', {
         url: '/edit',
         templateUrl: 'app/profile/edit/edit.html',
         controller: 'ProfileEditController',
-        data: {
-            restricted: true
-        }
+        onEnter: ['userService', '$state', function(userService, $state) {
+            if (!userService.isAuthenticated())
+                $state.go('main.home');
+        }]
     });
 }]);

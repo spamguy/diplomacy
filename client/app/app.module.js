@@ -68,21 +68,8 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
     // Hide ugly # in URL.
     $locationProvider.html5Mode(true);
 }])
-.run(['$rootScope', 'userService', 'socketService', function($rootScope, userService, socketService) {
-    // Initialize socket voodoo if user is logged in but refreshed page.
+.run(['socketService', function(socketService) {
+    // Initialize socket voodoo if user is logged in but has refreshed page.
     if (!socketService.socket)
         socketService.initialize();
-
-    var isRestricted;
-
-    $rootScope.$on('$stateChangeStart', function(event, next) {
-        isRestricted = !!(next.data && next.data.restricted);
-
-        // If page is restricted and auth is bad, block entry to route.
-        if (isRestricted && !userService.isAuthenticated()) {
-            event.preventDefault();
-            console.log('State change blocked');
-            $rootScope.logOut();
-        }
-    });
 }]);

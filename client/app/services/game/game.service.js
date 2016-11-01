@@ -16,11 +16,16 @@ angular.module('gameService', ['userService', 'socketService'])
          */
         getAllActiveGamesForCurrentUser: function() {
             return $q(function(resolve) {
-                socketService.socket.emit('game:userlist', {
-                    playerID: userService.getCurrentUserID()
-                }, function(games) {
-                    resolve(games);
-                });
+                if (userService.isAuthenticated()) {
+                    socketService.socket.emit('game:userlist', {
+                        playerID: userService.getCurrentUserID()
+                    }, function(games) {
+                        resolve(games);
+                    });
+                }
+                else {
+                    resolve([]);
+                }
             });
         },
 
@@ -31,11 +36,16 @@ angular.module('gameService', ['userService', 'socketService'])
          */
         getAllActiveGamesOwnedByCurrentUser: function() {
             return $q(function(resolve) {
-                socketService.socket.emit('game:usergmlist', {
-                    'gmID': userService.getCurrentUserID()
-                }, function(games) {
-                    resolve(games);
-                });
+                if (userService.isAuthenticated()) {
+                    socketService.socket.emit('game:usergmlist', {
+                        'gmID': userService.getCurrentUserID()
+                    }, function(games) {
+                        resolve(games);
+                    });
+                }
+                else {
+                    resolve([]);
+                }
             });
         },
 

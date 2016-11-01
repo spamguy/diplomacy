@@ -18,14 +18,15 @@ angular.module('games', [
         url: '',
         controller: 'GameListController',
         templateUrl: 'app/games/games.html',
-        data: {
-            restricted: true
-        },
         resolve: {
             games: ['gameService', function(gameService) {
                 return gameService.getAllOpenGames();
             }]
-        }
+        },
+        onEnter: ['userService', '$state', function(userService, $state) {
+            if (!userService.isAuthenticated())
+                $state.go('main.home');
+        }]
     })
     .state('games.archive', {
         url: '/archive',
@@ -35,20 +36,25 @@ angular.module('games', [
             games: ['gameService', function(gameService) {
                 return gameService.getAllArchivedGames();
             }]
-        }
+        },
+        onEnter: ['userService', '$state', function(userService, $state) {
+            if (!userService.isAuthenticated())
+                $state.go('main.home');
+        }]
     })
     .state('games.new', {
         url: '/new',
         controller: 'NewGameController',
         templateUrl: 'app/games/new/new.html',
-        data: {
-            restricted: true
-        },
         resolve: {
             variants: ['gameService', function(gameService) {
                 return gameService.getAllVariantNames();
             }]
-        }
+        },
+        onEnter: ['userService', '$state', function(userService, $state) {
+            if (!userService.isAuthenticated())
+                $state.go('main.home');
+        }]
     })
     .state('games.view', {
         url: '/:id/{phaseIndex:int}',
@@ -77,6 +83,10 @@ angular.module('games', [
             powers: ['gameService', 'game', function(gameService, game) {
                 return gameService.getPowerData(game.variant);
             }]
-        }
+        },
+        onEnter: ['userService', '$state', function(userService, $state) {
+            if (!userService.isAuthenticated())
+                $state.go('main.home');
+        }]
     });
 }]);
