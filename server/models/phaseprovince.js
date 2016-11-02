@@ -37,7 +37,7 @@ module.exports = function(bookshelf) {
                 dislodged = this.get('dislodgedOwner') ? {
                     owner: this.get('dislodgedOwner'),
                     fill: this.get('dislodgedFill'),
-                    target: this.get('dislodgedTarget'),
+                    target: this.getFullName(this.get('dislodgedTarget'), this.get('dislodgedSubtarget')),
                     action: this.get('dislodgedAction'),
                     type: this.get('dislodgedType')
                 } : null;
