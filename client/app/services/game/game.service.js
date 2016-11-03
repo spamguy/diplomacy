@@ -59,8 +59,15 @@ angular.module('gameService', ['userService', 'socketService'])
         },
 
         getVariantSVG: function(variantName) {
-            variantName = this.getNormalisedVariantName(variantName);
-            return $http.get('variants/' + variantName + '/' + variantName + '.svg');
+            if (variantName) {
+                variantName = this.getNormalisedVariantName(variantName);
+                return $http.get('variants/' + variantName + '/' + variantName + '.svg');
+            }
+            else {
+                return $q(function(resolve) {
+                    resolve({ });
+                });
+            }
         },
 
         getAllVariantNames: function() {
@@ -73,33 +80,53 @@ angular.module('gameService', ['userService', 'socketService'])
 
         getGame: function(gameID) {
             return $q(function(resolve) {
-                socketService.socket.emit('game:get', { gameID: gameID }, function(game) {
-                    resolve(game);
-                });
+                if (userService.isAuthenticated()) {
+                    socketService.socket.emit('game:get', { gameID: gameID }, function(game) {
+                        resolve(game);
+                    });
+                }
+                else {
+                    resolve({ variant: '' });
+                }
             });
         },
 
         getPhase: function(gameID, phaseIndex) {
             return $q(function(resolve) {
-                socketService.socket.emit('phase:get', { gameID: gameID, index: phaseIndex }, function(phase) {
-                    resolve(phase);
-                });
+                if (userService.isAuthenticated()) {
+                    socketService.socket.emit('phase:get', { gameID: gameID, index: phaseIndex }, function(phase) {
+                        resolve(phase);
+                    });
+                }
+                else {
+                    resolve({ });
+                }
             });
         },
 
         getAllOpenGames: function() {
             return $q(function(resolve) {
-                socketService.socket.emit('game:listopen', function(games) {
-                    resolve(games);
-                });
+                if (userService.isAuthenticated()) {
+                    socketService.socket.emit('game:listopen', function(games) {
+                        resolve(games);
+                    });
+                }
+                else {
+                    return resolve({ });
+                }
             });
         },
 
         getAllArchivedGames: function() {
             return $q(function(resolve) {
-                socketService.socket.emit('game:listarchives', function(games) {
-                    resolve(games);
-                });
+                if (userService.isAuthenticated()) {
+                    socketService.socket.emit('game:listarchives', function(games) {
+                        resolve(games);
+                    });
+                }
+                else {
+                    return resolve({ });
+                }
             });
         },
 
@@ -228,9 +255,14 @@ angular.module('gameService', ['userService', 'socketService'])
         getPowerData: function(variant) {
             var options = { variant: this.getNormalisedVariantName(variant) };
             return $q(function(resolve) {
-                socketService.socket.emit('variant:powers', options, function(powers) {
-                    resolve(powers);
-                });
+                if (userService.isAuthenticated()) {
+                    socketService.socket.emit('variant:powers', options, function(powers) {
+                        resolve(powers);
+                    });
+                }
+                else {
+                    return resolve({ });
+                }
             });
         }
     };

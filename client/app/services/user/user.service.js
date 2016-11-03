@@ -5,7 +5,7 @@ angular.module('userService', [])
 function($localStorage, socketService, $q) {
     return {
         isAuthenticated: function() {
-            return !!$localStorage.user;
+            return !!$localStorage.theUser;
         },
 
         getCurrentUserID: function() {

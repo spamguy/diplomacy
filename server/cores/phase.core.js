@@ -197,8 +197,9 @@ PhaseCore.prototype.createFromState = function(variant, game, state, t) {
     })
     .then(function() { // STEP 2: Mark up old phase with dislodged data.
         return Promise.props(_.mapValues(state.Dislodgeds(), function(resolution, key) {
+            var json = currentPhase.toJSON({ obfuscate: false });
             try {
-                return self.setDislodged(variant, currentPhase.toJSON({ obfuscate: false }), key, getDislodgerProvince(state.Dislodgers(), key), t);
+                return self.setDislodged(variant, json, key, getDislodgerProvince(json.provinces, key), t);
             }
             catch (ex) {
                 self.logger.warn(ex);
@@ -541,13 +542,17 @@ function convertGodipResolution(resolution) {
  * @param  {String} victim     The victim province's key.
  * @return {String}            The attacking province's key.
  */
-function getDislodgerProvince(dislodgers, victim) {
-    var dislodger = _.findKey(dislodgers, function(d) { return d === victim.split('/')[0]; });
+function getDislodgerProvince(provinces, victim) {
+    var province,
+        p;
 
-    if (!dislodger)
-        throw new Error('A unit dislodging ' + victim + ' was expected but not found');
+    for (p in provinces) {
+        province = provinces[p];
+        if (province.unit && province.unit.target === victim)
+            return p;
+    }
 
-    return dislodger;
+    throw new Error('A unit dislodging ' + victim + ' was expected but not found');
 }
 
 module.exports = PhaseCore;
