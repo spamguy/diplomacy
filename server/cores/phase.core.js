@@ -21,8 +21,8 @@ PhaseCore.prototype.get = function(gameID, index, t) {
     if (index !== null) {
         return db.models.Phase
         .where({
-            gameID: gameID,
-            phaseIndex: index
+            game_id: gameID,
+            phase_index: index
         })
         .fetch(options);
     }

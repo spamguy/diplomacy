@@ -1,3 +1,4 @@
+/* global pluralize */
 angular.module('gametools.component')
 .controller('GameToolsController', ['userService', 'gameService', '$mdDialog', '$state', function(userService, gameService, $mdDialog, $state) {
     var vm = this,
@@ -8,6 +9,7 @@ angular.module('gametools.component')
     vm.getPowerList = getPowerList;
     vm.setReadyState = setReadyState;
     vm.currentUserInGame = gameService.getCurrentUserInGame(vm.service.game);
+    vm.getPowerHeader = getPowerHeader;
 
     vm.actions = {
         adjudicateNow: function() {
@@ -70,10 +72,17 @@ angular.module('gametools.component')
     }
 
     function getPowerList() {
-        return vm.powers;
+        var powersWithoutGM = vm.powers;
+        delete powersWithoutGM.GM;
+        return powersWithoutGM;
     }
 
     function setReadyState() {
         gameService.setReadyState(vm.service.game, gameService.getCurrentUserInGame(vm.service.game).isReady);
+    }
+
+    function getPowerHeader(code, power) {
+        var unitCount = document.querySelectorAll('section.section-' + code + ' md-list-item').length;
+        return power.name + ' (' + unitCount + ' ' + pluralize('unit', unitCount) + ')';
     }
 }]);

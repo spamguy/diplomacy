@@ -3,7 +3,7 @@
     <h1 class="md-headline typewriter" ng-if="currentUserInGame.power">Playing as {{currentUserInGame.power ? powers[currentUserInGame.power].name : 'Game Master'}}</h1>
 </div>
 
-<div layout="row" layout-margin layout-wrap>
+<div layout-gt-xs="row" layout-xs="column" layout-margin>
     <div flex="65" flex-xs="100">
         <sg-map service="service" arrows="true" header="true" readonly="readonly" svg="svg" />
     </div>

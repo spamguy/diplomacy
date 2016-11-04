@@ -25,7 +25,7 @@
     "passport": "0.3.2",
     "passport-local": "~1.0.0",
     "pg": "6.1.0",
-    "pluralize": "1.2.1",
+    "pluralize": "3.0.0",
     "require-tree": "1.1.1",
     "socket.io": "1.4.8",
     "socketio-jwt": "4.5.0",

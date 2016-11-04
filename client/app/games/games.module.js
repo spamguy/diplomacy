@@ -73,8 +73,6 @@ angular.module('games', [
             }],
             phase: ['gameService', '$stateParams', function(gameService, $stateParams) {
                 var phaseIndex = $stateParams.phaseIndex;
-                if (phaseIndex > 0)
-                    phaseIndex -= 1;
                 return gameService.getPhase($stateParams.id, phaseIndex);
             }],
             svg: ['gameService', 'game', function(gameService, game) {

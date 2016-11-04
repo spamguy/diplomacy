@@ -68,8 +68,8 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
     // Hide ugly # in URL.
     $locationProvider.html5Mode(true);
 }])
-.run(['socketService', function(socketService) {
+.run(['socketService', '$localStorage', function(socketService, $localStorage) {
     // Initialize socket voodoo if user is logged in but has refreshed page.
     if (!socketService.socket)
-        socketService.initialize();
+        socketService.initialize($localStorage.token);
 }]);
