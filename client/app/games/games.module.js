@@ -22,11 +22,11 @@ angular.module('games', [
             games: ['gameService', function(gameService) {
                 return gameService.getAllOpenGames();
             }]
-        },
-        onEnter: ['userService', '$state', function(userService, $state) {
-            if (!userService.isAuthenticated())
-                $state.go('main.home');
-        }]
+        }// ,
+        // onEnter: ['userService', '$state', function(userService, $state) {
+        //     if (!userService.isAuthenticated())
+        //         $state.go('main.home');
+        // }]
     })
     .state('games.archive', {
         url: '/archive',

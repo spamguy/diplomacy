@@ -13,7 +13,7 @@ angular.module('profile', [
         template: '<ui-view />'
     })
     .state('profile.games', {
-        url: '/games',
+        url: '/games?token',
         templateUrl: 'app/profile/usergames/usergames.html',
         controller: 'UserGamesController',
         onEnter: ['userService', '$state', function(userService, $state) {
@@ -34,15 +34,15 @@ angular.module('profile', [
         controller: 'VerifyController',
         templateUrl: 'app/profile/verify/verify.html'
     })
-    .state('profile.view', {
-        url: '/:id',
-        templateUrl: 'app/profile/view/view.html',
-        controller: 'ProfileViewController',
-        onEnter: ['userService', '$state', function(userService, $state) {
-            if (!userService.isAuthenticated())
-                $state.go('main.home');
-        }]
-    })
+    // .state('profile.view', {
+    //     url: '/:id',
+    //     templateUrl: 'app/profile/view/view.html',
+    //     controller: 'ProfileViewController',
+    //     onEnter: ['userService', '$state', function(userService, $state) {
+    //         if (!userService.isAuthenticated())
+    //             $state.go('main.home');
+    //     }]
+    // })
     .state('profile.edit', {
         url: '/edit',
         templateUrl: 'app/profile/edit/edit.html',

@@ -132,6 +132,7 @@ CREATE TABLE phases (
     year smallint DEFAULT 1901 NOT NULL,
     season text DEFAULT 'Spring Movement'::text NOT NULL,
     season_index smallint DEFAULT 0,
+    phase_index int NOT NULL DEFAULT 1,
     game_id uuid NOT NULL,
     deadline timestamp with time zone,
     created_at timestamp without time zone NOT NULL,
