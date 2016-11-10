@@ -13,8 +13,8 @@ function($http, $localStorage, $scope, $state, $stateParams, CONST, gameService,
     $scope.variants = { };
     $scope.moves = { };
 
-    $scope.playing = games;
-    $scope.GMing = gmGames;
+    $scope.playing = games.Properties;
+    $scope.GMing = gmGames.Properties;
 
     for (i = 0; i < games.length; i++) {
         theGame = games[i];

@@ -57,9 +57,7 @@ function(CONST, $stateProvider, $urlRouterProvider, $locationProvider, $httpProv
     // Set up default config for communication with Diplicity.
     RestangularProvider.setBaseUrl(CONST.diplicityEndpoint);
     RestangularProvider.setDefaultHeaders({ Accept: 'application/json' });
+}])
+.run(['loginService', function(loginService) {
+    loginService.applyToken();
 }]);
-// .run(['socketService', '$localStorage', function(socketService, $localStorage) {
-//     // Initialize socket voodoo if user is logged in but has refreshed page.
-//     if (!socketService.socket)
-//         socketService.initialize($localStorage.token);
-// }]);

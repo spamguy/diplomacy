@@ -12,30 +12,19 @@ angular.module('gameService', ['userService', 'socketService'])
         /**
          * Gets all games the logged-in user has played in.
          * @memberof GameService
-         * @returns {Promise<array>} A list of games.
+         * @returns {Promise} Diplicity data containing a list of games.
          */
         getAllActiveGamesForCurrentUser: function() {
-            return Restangular.all('Games').all('My').all('Started').getList();
+            return Restangular.all('Games').all('My').customGET('Started');
         },
 
         /**
          * Gets all games owned by the logged-in user.
          * @memberof GameService
-         * @returns {Promise<array>} A list of games.
+         * @returns {Promise} Diplicity data containing a list of games.
          */
         getAllActiveGamesOwnedByCurrentUser: function() {
-            return $q(function(resolve) {
-                if (userService.isAuthenticated()) {
-                    socketService.socket.emit('game:usergmlist', {
-                        'gmID': userService.getCurrentUserID()
-                    }, function(games) {
-                        resolve(games);
-                    });
-                }
-                else {
-                    resolve([]);
-                }
-            });
+            return Restangular.all('Games').all('My').customGET('Staging');
         },
 
         getNormalisedVariantName: function(variantName) {
