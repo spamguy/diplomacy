@@ -3,7 +3,8 @@
 angular.module('profile', [
     'ui.router',
     'gameService',
-    'ngMaterial'
+    'ngMaterial',
+    'restangular'
 ])
 .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
     $stateProvider
@@ -13,13 +14,9 @@ angular.module('profile', [
         template: '<ui-view />'
     })
     .state('profile.games', {
-        url: '/games?token',
+        url: '/games',
         templateUrl: 'app/profile/usergames/usergames.html',
         controller: 'UserGamesController',
-        onEnter: ['userService', '$state', function(userService, $state) {
-            if (!userService.isAuthenticated())
-                $state.go('main.home');
-        }],
         resolve: {
             games: ['gameService', function(gameService) {
                 return gameService.getAllActiveGamesForCurrentUser();
@@ -32,7 +29,12 @@ angular.module('profile', [
     .state('profile.verify', {
         url: '/verify/{token}',
         controller: 'VerifyController',
-        templateUrl: 'app/profile/verify/verify.html'
+        templateUrl: 'app/profile/verify/verify.html',
+        onEnter: ['userService', '$state', function(userService, $state) {
+            if (!userService.isAuthenticated())
+                $state.go('main.home');
+        }]
+
     })
     // .state('profile.view', {
     //     url: '/:id',

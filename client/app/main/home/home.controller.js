@@ -19,8 +19,8 @@ angular.module('diplomacy.main')
             password: null,
 
             login: function() {
-                $window.location = 'https://diplicity-engine.appspot.com/Auth/Login?redirect-to=' +
-                encodeURIComponent(CONST.socketEndpoint + '/profile/games');
+                $window.location = CONST.diplicityEndpoint + '/Auth/Login?redirect-to=' +
+                encodeURIComponent(CONST.socketEndpoint + '/main/login');
             }
         }
     });

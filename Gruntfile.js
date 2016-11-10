@@ -62,7 +62,8 @@ module.exports = function(grunt) {
                 constants: {
                     CONST: {
                         apiEndpoint: 'http://private-182900-diplio.apiary-mock.com',
-                        socketEndpoint: 'https://localhost'
+                        socketEndpoint: 'https://localhost',
+                        diplicityEndpoint: 'https://diplicity-engine.appspot.com'
                     }
                 }
             },
@@ -70,7 +71,8 @@ module.exports = function(grunt) {
                 constants: {
                     CONST: {
                         apiEndpoint: 'https://localhost/api',
-                        socketEndpoint: 'https://localhost'
+                        socketEndpoint: 'https://localhost',
+                        diplicityEndpoint: 'https://diplicity-engine.appspot.com'
                     }
                 }
             },
@@ -78,7 +80,8 @@ module.exports = function(grunt) {
                 constants: {
                     CONST: {
                         apiEndpoint: 'https://dipl.io/api',
-                        socketEndpoint: 'https://dipl.io'
+                        socketEndpoint: 'https://dipl.io',
+                        diplicityEndpoint: 'https://diplicity-engine.appspot.com'
                     }
                 }
             }

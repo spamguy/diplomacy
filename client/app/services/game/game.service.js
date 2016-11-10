@@ -5,7 +5,7 @@
  * @description Interacts with game, variant, and move data.
  */
 angular.module('gameService', ['userService', 'socketService'])
-.factory('gameService', ['$http', 'userService', 'socketService', '$q', function($http, userService, socketService, $q) {
+.factory('gameService', ['$http', 'userService', 'socketService', 'Restangular', '$q', function($http, userService, socketService, Restangular, $q) {
     'use strict';
 
     return {
@@ -15,18 +15,7 @@ angular.module('gameService', ['userService', 'socketService'])
          * @returns {Promise<array>} A list of games.
          */
         getAllActiveGamesForCurrentUser: function() {
-            return $q(function(resolve) {
-                if (userService.isAuthenticated()) {
-                    socketService.socket.emit('game:userlist', {
-                        playerID: userService.getCurrentUserID()
-                    }, function(games) {
-                        resolve(games);
-                    });
-                }
-                else {
-                    resolve([]);
-                }
-            });
+            return Restangular.all('Games').all('My').all('Started').getList();
         },
 
         /**

@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('profile')
-.controller('UserGamesController', ['$localStorage', '$scope', '$stateParams', 'gameService', 'games', 'gmGames', function($localStorage, $scope, $stateParams, gameService, games, gmGames) {
+.controller('UserGamesController', ['$http', '$localStorage', '$scope', '$state', '$stateParams', 'CONST', 'gameService', 'games', 'gmGames', 'Restangular',
+function($http, $localStorage, $scope, $state, $stateParams, CONST, gameService, games, gmGames, Restangular) {
     var i,
         theGame,
         variantName,
@@ -14,9 +15,6 @@ angular.module('profile')
 
     $scope.playing = games;
     $scope.GMing = gmGames;
-
-    if ($stateParams.token)
-        $localStorage.token = $stateParams.token;
 
     for (i = 0; i < games.length; i++) {
         theGame = games[i];

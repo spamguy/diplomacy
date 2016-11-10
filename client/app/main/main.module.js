@@ -27,5 +27,10 @@ angular.module('diplomacy.main', [
         url: '/signup',
         templateUrl: 'app/main/signup/signup.html',
         controller: 'SignupController'
+    })
+    .state('main.login', {
+        url: '/login?token',
+        template: ' ',
+        controller: 'LoginController'
     });
 }]);

@@ -3,7 +3,6 @@
 angular.module('diplomacy', [
     'diplomacy.constants',
     'ui.router',
-    'angular-jwt',
     'userService',
     'gameService',
     'games',
@@ -13,10 +12,11 @@ angular.module('diplomacy', [
     'gamelistitem.directive',
     'ngMaterial',
     'ngStorage',
-    'socketService'
+    'socketService',
+    'restangular'
 ])
-.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', 'jwtInterceptorProvider', '$localStorageProvider', '$mdThemingProvider', '$mdIconProvider',
-function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, jwtInterceptorProvider, $localStorageProvider, $mdThemingProvider, $mdIconProvider) {
+.config(['CONST', '$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', '$localStorageProvider', '$mdThemingProvider', '$mdIconProvider', 'RestangularProvider',
+function(CONST, $stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $localStorageProvider, $mdThemingProvider, $mdIconProvider, RestangularProvider) {
     $urlRouterProvider.otherwise('/main/home');
 
     // Material design theme definitions.
@@ -51,25 +51,15 @@ function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, j
     // Local storage setup.
     $localStorageProvider.setKeyPrefix('diplomacy');
 
-    // JWT/auth setup.
-    jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$rootScope', 'userService', function(jwtHelper, $rootScope, userService) {
-        var oldToken = $rootScope.$storage.token;
-
-        if (oldToken && jwtHelper.isTokenExpired(oldToken)) {
-            console.log('Token is expired: ' + oldToken);
-            $rootScope.logOut();
-        }
-        else {
-            return oldToken;
-        }
-    }];
-    $httpProvider.interceptors.push('jwtInterceptor');
-
     // Hide ugly # in URL.
     $locationProvider.html5Mode(true);
-}])
-.run(['socketService', '$localStorage', function(socketService, $localStorage) {
-    // Initialize socket voodoo if user is logged in but has refreshed page.
-    if (!socketService.socket)
-        socketService.initialize($localStorage.token);
+
+    // Set up default config for communication with Diplicity.
+    RestangularProvider.setBaseUrl(CONST.diplicityEndpoint);
+    RestangularProvider.setDefaultHeaders({ Accept: 'application/json' });
 }]);
+// .run(['socketService', '$localStorage', function(socketService, $localStorage) {
+//     // Initialize socket voodoo if user is logged in but has refreshed page.
+//     if (!socketService.socket)
+//         socketService.initialize($localStorage.token);
+// }]);

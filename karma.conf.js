@@ -27,7 +27,6 @@ module.exports = function(config) {
             'bower_components/angular-animate/angular-animate.js',
             'bower_components/angular-local-storage/dist/angular-local-storage.js',
             'bower_components/angular-timer/dist/angular-timer.js',
-            'bower_components/angular-jwt/dist/angular-jwt.js',
             'bower_components/angular-material/angular-material.js',
             'bower_components/angular-aria/angular-aria.js',
             // 'bower_components/angular-socket-io/socket.js',

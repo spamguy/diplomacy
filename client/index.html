@@ -25,7 +25,7 @@
             <span class="md-primary logo"><a ui-sref="main.home">dipl<span class="stab">.</span>io</a></span>
             <span flex></span>
             <div class="info" layout="row">
-                <span class="email" hide-sm hide-xs>{{$storage.theUser.email}}</span>
+                <span class="email" hide-sm hide-xs>{{$storage.theUser.Email}}</span>
 
                 <md-menu md-position-mode="target-right target">
                     <md-icon md-menu-origin md-svg-icon="account" ng-click="$mdOpenMenu($event)" class="svg48px"></md-icon>
@@ -94,8 +94,8 @@
     <script src="../bower_components/angular/angular.js"></script>
     <!-- <script src="../bower_components/angular-typewrite/dist/angular-typewrite.js"></script> -->
     <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="../bower_components/restangular/dist/restangular.js"></script>
     <script src="../bower_components/ngstorage/ngStorage.js"></script>
-    <script src="../bower_components/angular-jwt/dist/angular-jwt.js"></script>
     <script src="../bower_components/angular-messages/angular-messages.js"></script>
     <script src="../bower_components/angular-animate/angular-animate.js"></script>
     <script src="../bower_components/angular-aria/angular-aria.js"></script>
@@ -127,6 +127,7 @@
 
     <script src="app/app.controller.js"></script>
     <script src="app/main/home/home.controller.js"></script>
+    <script src="app/main/login/login.controller.js"></script>
     <script src="app/filters/provinceHasSC/provinceHasSC.filter.js"></script>
     <script src="app/filters/provinceHasUnit/provinceHasUnit.filter.js"></script>
     <script src="app/components/map/map.component.js"></script>
