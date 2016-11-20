@@ -1,4 +1,4 @@
-# dipl.io [![Build Status](https://travis-ci.org/spamguy/diplomacy.svg?branch=master)](https://travis-ci.org/spamguy/diplomacy)
+## dipl.io's development can now be found at [spamguy/dipl.io][6].
 
 [dipl.io website][3] | [dipl.io blog][4]
 
@@ -8,7 +8,8 @@
 [2]:http://en.wikipedia.org/wiki/Risk_(game)
 [3]:http://dipl.io
 [4]:http://blog.dipl.io
-
+[5]:https://github.com/zond/diplicity
+[6]:https://github.com/spamguy/dipl.io
 # Goals
 1. The development process will be fully transparent. Custom map and ruleset creation should be simple but flexible.
 2. The user interface will be responsive and fun.
