@@ -1,4 +1,4 @@
-## dipl.io's development can now be found at [spamguy/dipl.io][6].
+## 🚨 dipl.io's development can now be found at [spamguy/dipl.io][6]. 🚨
 
 [dipl.io website][3] | [dipl.io blog][4]
 
